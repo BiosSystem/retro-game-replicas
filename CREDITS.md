@@ -1,4 +1,4 @@
-# Credits & Acknowledgments
+﻿# Credits & Acknowledgments
 
 **Universal Retro Arcade** is an original open-source project by the **BiosSystem Open Source Community**.
 
@@ -52,4 +52,4 @@ All 11 games in Universal Retro Arcade are original BiosSystem implementations. 
 
 ---
 
-*Crafted with passion by BiosSystem — Open Source Community*
+*Crafted with passion by BiosSystem - Open Source Community*
