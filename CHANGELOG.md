@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Replaced all em dashes with hyphens in `README.md` and `CREDITS.md` for cross-platform doc consistency.
+
 ### Added
 - Completed implementation for all 11 premium game replicas.
 - Added **Cyber Chasm**, a high-tech labyrinth runner with overclock power-ups and sentinel AI.
