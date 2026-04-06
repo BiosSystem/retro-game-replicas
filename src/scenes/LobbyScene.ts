@@ -78,7 +78,6 @@ export default class LobbyScene extends Phaser.Scene {
 
   private gamepadConnected = false;
   private padLastState = { up: false, down: false, button: false, back: false };
-  private crtPipeline: any;
   private isCrtEnabled = false;
 
   private buildCrtShader() {
