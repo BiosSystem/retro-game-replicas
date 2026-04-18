@@ -13,27 +13,28 @@
   <img src="https://img.shields.io/badge/Tauri-v2-blue?style=flat-square" alt="Tauri">
   <img src="https://img.shields.io/badge/Phaser-4.1-orange?style=flat-square" alt="Phaser">
   <img src="https://img.shields.io/github/license/BiosSystem/retro-game-replicas?style=flat-square" alt="License">
+  <img src="https://img.shields.io/github/stars/BiosSystem/retro-game-replicas?style=flat-square&color=00ff72" alt="Stars">
 </p>
 
 ---
 
-**Universal Retro Arcade** is a premium collection of 11 classic and 2000s-era game replicas rebuilt using modern cross-platform web technologies. Optimized for everything from Macbooks to mobile devices and cloud compute servers.
+**Universal Retro Arcade** is a premium collection of 11 classic and 2000s-era game replicas rebuilt using modern cross-platform web technologies. Optimized for everything from MacBooks to mobile devices.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/BiosSystem/retro-game-replicas/main/docs/images/lobby.png" width="800" alt="Games Lobby" />
+  <img src="docs/images/lobby.png" width="800" alt="Retro Arcade Lobby" />
 </p>
 
 ## ✨ Why It's Unique
 
 Most retro game projects are either standalone web games or bulky emulator frontends requiring illegal ROMs. This is an entirely self-contained arcade:
 
-- **11 Built-In Games**: Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, and Cyber Chasm. All built from scratch.
-- **Hardware Gamepad Support**: Plug-and-play support for Xbox and PlayStation controllers via the HTML5 Gamepad API, automatically mapped to all games.
-- **GLSL CRT Shader**: Press `Ctrl+Shift+C` to toggle a hardware-accelerated post-processing pipeline featuring chromatic aberration, barrel distortion, and vignette.
-- **Persistent High-Score Board**: Per-game difficulty high scores saved locally.
-- **The B-I-O-S Easter Egg**: Type `B-I-O-S` on your keyboard to activate a neon diagnostic overlay.
+- **11 Built-In Games** — Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, and Cyber Chasm. All built from scratch.
+- **Hardware Gamepad Support** — Plug-and-play support for Xbox and PlayStation controllers via the HTML5 Gamepad API, automatically mapped to all games.
+- **GLSL CRT Shader** — Press `Ctrl+Shift+C` to toggle a hardware-accelerated post-processing pipeline featuring chromatic aberration, barrel distortion, and vignette.
+- **Persistent High-Score Board** — Per-game difficulty high scores saved locally with IndexedDB.
+- **B-I-O-S Easter Egg** — Type `B-I-O-S` on your keyboard to activate a neon diagnostic overlay.
 
-## 🎯 Feature Matrix
+## 📊 Feature Matrix
 
 | Feature | Universal Retro Arcade | EmulationStation | Web Retro Clones |
 |---|:---:|:---:|:---:|
@@ -41,17 +42,16 @@ Most retro game projects are either standalone web games or bulky emulator front
 | **Binary Size** | <15MB (Tauri v2) | >100MB | N/A |
 | **Native Mobile APK** | ✅ | ❌ | ❌ |
 | **GLSL CRT Shaders** | ✅ | ✅ | ❌ |
+| **Gamepad Support** | ✅ | ✅ | ❌ |
 
-## 📦 Platform Device Matrix
+## 🖥️ Platform Support
 
-Powered by Tauri v2, the arcade uses native OS webviews for ultra-lightweight binaries.
-
-| Platform | Artifact | Purpose |
+| Platform | Artifact | Notes |
 |---|---|---|
-| 🍏 **macOS** (`arm64`/`x64`) | `.dmg` | Native desktop app. Silky 60 FPS gameplay via Metal. |
-| 🪟 **Windows** (`x64`) | `.exe` | Standalone installer. Uses WebView2. |
-| 🤖 **Android** (`arm64`) | `.apk` | Play the arcade on the go with optimized touch controls. |
-| ☁️ **Cloud Compute** | `.tar.gz` | Headless game server host container for remote high-score tracking. |
+| **macOS** (`arm64`/`x64`) | `.dmg` | Native desktop app via Metal. |
+| **Windows** (`x64`) | `.exe` | Standalone installer using WebView2. |
+| **Android** (`arm64`) | `.apk` | Touch-optimized controls. |
+| **Cloud / Headless** | `.tar.gz` | Remote high-score tracking server. |
 
 ## 🚀 Quick Start (Development)
 
@@ -63,9 +63,29 @@ npm install
 npm run tauri dev
 ```
 
-## 🛠️ Credits & Maintenance
+## 📖 Documentation
 
-All game replica logic, physics tuning, juicy particle systems, CRT shaders, and Tauri integration are designed, created, and maintained by **BiosSystem**.
+Full documentation is available in the **[Wiki](https://github.com/BiosSystem/retro-game-replicas/wiki)**.
+
+## 🕹️ Game List
+
+| Game | Genre | Controls |
+|---|---|---|
+| Snake | Arcade | Arrow Keys / D-Pad |
+| Pong | Sports | W/S Keys / Left Stick |
+| Asteroids | Shooter | WASD + Space / Right Trigger |
+| Breakout | Arcade | Mouse / Left Stick |
+| Frogger | Arcade | Arrow Keys / D-Pad |
+| Space Invaders | Shooter | Arrow Keys + Space |
+| Tetris | Puzzle | Arrow Keys / D-Pad |
+| Minesweeper | Puzzle | Mouse / Touch |
+| Runner | Endless | Space / A Button |
+| Flappy Bird | Endless | Space / A Button |
+| Cyber Chasm | Platformer | WASD / Left Stick |
+
+## 🙏 Credits & Maintenance
+
+All game replica logic, physics tuning, particle systems, CRT shaders, and Tauri integration are designed and maintained by **BiosSystem**.
 
 ---
-*Copyright (c) 2026 by BiosSystem | Powered by Bios System Kernel*
+*Copyright © 2026 BiosSystem | Powered by BiosSystem Kernel*
