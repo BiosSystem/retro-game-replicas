@@ -21,7 +21,7 @@
 **Universal Retro Arcade** is a premium collection of 11 classic and 2000s-era game replicas rebuilt using modern cross-platform web technologies. Optimized for everything from MacBooks to mobile devices.
 
 <p align="center">
-  <img src="docs/images/lobby.png" width="800" alt="Retro Arcade Lobby" />
+  <img src="https://raw.githubusercontent.com/BiosSystem/retro-game-replicas/master/docs/images/lobby.png" width="800" alt="Retro Arcade Lobby" />
 </p>
 
 ## ✨ Why It's Unique
