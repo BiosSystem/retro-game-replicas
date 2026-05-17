@@ -33,6 +33,11 @@ export default class BirdScene extends Phaser.Scene {
     body.setCollideWorldBounds(false);
 
     // Trail
+    if (!this.textures.exists('spark')) {
+      const g = this.add.graphics();
+      g.fillStyle(0xffffff); g.fillRect(0, 0, 4, 4); g.generateTexture('spark', 4, 4); g.destroy();
+    }
+
     this.particles = this.add.particles(0, 0, 'spark', {
         speed: 20,
         scale: { start: 1, end: 0 },
@@ -107,10 +112,15 @@ export default class BirdScene extends Phaser.Scene {
       this.physics.add.existing(top);
       this.physics.add.existing(bot);
 
-      (top.body as Phaser.Physics.Arcade.Body).setVelocityX(-180);
-      (top.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
-      (bot.body as Phaser.Physics.Arcade.Body).setVelocityX(-180);
-      (bot.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
+      const topBody = top.body as Phaser.Physics.Arcade.Body;
+      topBody.setVelocityX(-180);
+      topBody.setAllowGravity(false);
+      topBody.setImmovable(true); // CRITICAL: Prevent bird from pushing pipe!
+
+      const botBody = bot.body as Phaser.Physics.Arcade.Body;
+      botBody.setVelocityX(-180);
+      botBody.setAllowGravity(false);
+      botBody.setImmovable(true); // CRITICAL: Prevent bird from pushing pipe!
 
       this.pipes.add(top);
       this.pipes.add(bot);
@@ -121,8 +131,8 @@ export default class BirdScene extends Phaser.Scene {
       this.cameras.main.shake(400, 0.03);
       this.bird.setFillStyle(0xff0000);
       
-      const banner = this.add.rectangle(320, 240, 640, 120, 0x000000, 0.8);
+      const banner = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.85).setInteractive();
       this.add.text(320, 240, `FLIGHT TERMINATED\nSCORE: ${Math.floor(this.score)}\nCLICK TO REBOOT`, { fontFamily: 'Courier', fontSize: '28px', color: '#ffff00', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.setInteractive().on('pointerdown', () => this.scene.restart());
+      banner.on('pointerdown', () => this.scene.restart());
   }
 }

@@ -13,18 +13,35 @@ export default class AsteroidsScene extends Phaser.Scene {
   create() {
     this.add.text(320, 20, 'ASTRO DRIFT - ARROWS TO MOVE - SPACE TO SHOOT - ESC TO LOBBY', { fontSize: '12px', color: '#00ff00' }).setOrigin(0.5);
 
-    this.ship = this.physics.add.image(320, 240, ''); // Using a placeholder triangle via graphics later
-    this.ship.setCollideWorldBounds(true);
-    this.ship.setDrag(0.99);
-    this.ship.setMaxVelocity(300);
+    if (!this.textures.exists('ship')) {
+      const graphics = this.add.graphics();
+      graphics.lineStyle(2, 0x00ff00);
+      graphics.strokeTriangle(0, -15, -10, 10, 10, 10);
+      graphics.generateTexture('ship', 30, 30);
+      graphics.destroy();
+    }
 
-    // Create a simple ship shape
-    const graphics = this.add.graphics();
-    graphics.lineStyle(2, 0x00ff00);
-    graphics.strokeTriangle(0, -15, -10, 10, 10, 10);
-    graphics.generateTexture('ship', 30, 30);
-    graphics.destroy();
-    this.ship.setTexture('ship');
+    if (!this.textures.exists('asteroid')) {
+      const graphics = this.add.graphics();
+      graphics.lineStyle(2, 0xffffff);
+      graphics.strokeCircle(20, 20, 18);
+      graphics.generateTexture('asteroid', 40, 40);
+      graphics.destroy();
+    }
+
+    if (!this.textures.exists('bullet')) {
+      const graphics = this.add.graphics();
+      graphics.fillStyle(0x00ff00, 1);
+      graphics.fillRect(0, 0, 4, 4);
+      graphics.generateTexture('bullet', 4, 4);
+      graphics.destroy();
+    }
+
+    this.ship = this.physics.add.image(320, 240, 'ship');
+    this.ship.setCollideWorldBounds(false); // We want wrapping!
+    this.ship.setDamping(true);
+    this.ship.setDrag(0.98);
+    this.ship.setMaxVelocity(300);
 
     this.asteroids = this.physics.add.group();
     this.bullets = this.physics.add.group();
@@ -44,28 +61,13 @@ export default class AsteroidsScene extends Phaser.Scene {
   spawnAsteroid() {
     const x = Phaser.Math.Between(0, 640);
     const y = Phaser.Math.Between(0, 480);
-    const asteroid = this.asteroids.create(x, y, '');
-    
-    const graphics = this.add.graphics();
-    graphics.lineStyle(2, 0xffffff);
-    graphics.strokeCircle(0, 0, 20);
-    graphics.generateTexture('asteroid', 40, 40);
-    graphics.destroy();
-    asteroid.setTexture('asteroid');
-    
+    const asteroid = this.asteroids.create(x, y, 'asteroid');
     asteroid.setVelocity(Phaser.Math.Between(-100, 100), Phaser.Math.Between(-100, 100));
     asteroid.setBounce(1, 1);
   }
 
   fireBullet() {
-    const bullet = this.bullets.create(this.ship.x, this.ship.y, '');
-    const graphics = this.add.graphics();
-    graphics.fillStyle(0x00ff00, 1);
-    graphics.fillRect(0, 0, 4, 4);
-    graphics.generateTexture('bullet', 4, 4);
-    graphics.destroy();
-    bullet.setTexture('bullet');
-
+    const bullet = this.bullets.create(this.ship.x, this.ship.y, 'bullet');
     const angle = this.ship.rotation - Math.PI / 2;
     this.physics.velocityFromRotation(angle, 400, bullet.body.velocity);
   }
@@ -78,6 +80,10 @@ export default class AsteroidsScene extends Phaser.Scene {
   }
 
   update() {
+    this.physics.world.wrap(this.ship, 16);
+    this.physics.world.wrap(this.asteroids, 20);
+    this.physics.world.wrap(this.bullets, 2);
+
     if (this.cursors.left.isDown) this.ship.setAngularVelocity(-200);
     else if (this.cursors.right.isDown) this.ship.setAngularVelocity(200);
     else this.ship.setAngularVelocity(0);

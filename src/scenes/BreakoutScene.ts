@@ -12,41 +12,56 @@ export default class BreakoutScene extends Phaser.Scene {
   }
 
   create() {
+    this.score = 0;
     this.add.text(320, 20, 'BRICK BREAKER - ARROWS TO MOVE - ESC TO LOBBY', { fontSize: '12px', color: '#00ff00' }).setOrigin(0.5);
     this.scoreText = this.add.text(320, 50, 'SCORE: 0', { fontSize: '24px', color: '#ffffff' }).setOrigin(0.5);
 
-    this.paddle = this.physics.add.image(320, 440, '');
-    const paddleGraphics = this.add.graphics();
-    paddleGraphics.fillStyle(0x00ffff, 1);
-    paddleGraphics.fillRect(0, 0, 100, 15);
-    paddleGraphics.generateTexture('paddle', 100, 15);
-    paddleGraphics.destroy();
-    this.paddle.setTexture('paddle');
+    // Create textures once if missing
+    if (!this.textures.exists('paddle')) {
+      const paddleGraphics = this.add.graphics();
+      paddleGraphics.fillStyle(0x00ffff, 1);
+      paddleGraphics.fillRect(0, 0, 100, 15);
+      paddleGraphics.generateTexture('paddle', 100, 15);
+      paddleGraphics.destroy();
+    }
+
+    if (!this.textures.exists('ball')) {
+      const ballGraphics = this.add.graphics();
+      ballGraphics.fillStyle(0xffffff, 1);
+      ballGraphics.fillCircle(8, 8, 8);
+      ballGraphics.generateTexture('ball', 16, 16);
+      ballGraphics.destroy();
+    }
+
+    const colors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff];
+    colors.forEach((c, r) => {
+      if (!this.textures.exists('brick' + r)) {
+        const brickGraphics = this.add.graphics();
+        brickGraphics.fillStyle(c, 1);
+        brickGraphics.fillRect(0, 0, 60, 20);
+        brickGraphics.generateTexture('brick' + r, 60, 20);
+        brickGraphics.destroy();
+      }
+    });
+
+    this.paddle = this.physics.add.image(320, 440, 'paddle');
     this.paddle.setImmovable(true);
+    this.paddle.setCollideWorldBounds(true);
     (this.paddle.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
 
-    this.ball = this.physics.add.image(320, 410, '');
-    const ballGraphics = this.add.graphics();
-    ballGraphics.fillStyle(0xffffff, 1);
-    ballGraphics.fillCircle(8, 8, 8);
-    ballGraphics.generateTexture('ball', 16, 16);
-    ballGraphics.destroy();
-    this.ball.setTexture('ball');
+    this.ball = this.physics.add.image(320, 410, 'ball');
+    // Collide with top, left, right, but NOT bottom!
+    (this.ball.body as Phaser.Physics.Arcade.Body).setBoundsRectangle(new Phaser.Geom.Rectangle(0, 0, 640, 500));
     this.ball.setCollideWorldBounds(true);
+    (this.ball.body as Phaser.Physics.Arcade.Body).onWorldBounds = true;
     this.ball.setBounce(1);
     this.ball.setVelocity(200, -200);
 
     this.bricks = this.physics.add.staticGroup();
-    const colors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff];
     
     for (let r = 0; r < 5; r++) {
       for (let c = 0; c < 8; c++) {
-        const brick = this.bricks.create(80 + c * 70, 100 + r * 30, '');
-        const brickGraphics = this.add.graphics();
-        brickGraphics.fillStyle(colors[r], 1);
-        brickGraphics.fillRect(0, 0, 60, 20);
-        brickGraphics.generateTexture('brick' + r, 60, 20);
-        brickGraphics.destroy();
+        const brick = this.bricks.create(80 + c * 70, 100 + r * 30, 'brick' + r);
         brick.setTexture('brick' + r);
       }
     }

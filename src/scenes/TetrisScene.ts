@@ -12,6 +12,7 @@ export default class TetrisScene extends Phaser.Scene {
   private scoreText!: Phaser.GameObjects.Text;
   private dropInterval = 800;
   private particles!: Phaser.GameObjects.Particles.ParticleEmitter;
+  private graphics!: Phaser.GameObjects.Graphics;
 
   constructor() {
     super('TetrisScene');
@@ -23,17 +24,19 @@ export default class TetrisScene extends Phaser.Scene {
     this.scoreText = this.add.text(450, 100, 'SCORE: 0', { fontFamily: 'Courier', fontSize: '20px', color: '#ffffff' });
     this.add.text(450, 140, 'ARROWS: MOVE\nUP: ROTATE\nSPACE: DROP\nESC: LOBBY', { fontFamily: 'Courier', fontSize: '14px', color: '#aaaaaa' });
 
+    this.graphics = this.add.graphics();
+
     // Grid Init
     for (let r = 0; r < ROWS; r++) {
       this.grid[r] = new Array(COLS).fill(0);
     }
 
     // Particles for effects
-    const graphics = this.add.graphics();
-    graphics.fillStyle(0xffffff);
-    graphics.fillRect(0, 0, 4, 4);
-    graphics.generateTexture('spark', 4, 4);
-    graphics.destroy();
+    const tempG = this.add.graphics();
+    tempG.fillStyle(0xffffff);
+    tempG.fillRect(0, 0, 4, 4);
+    tempG.generateTexture('spark', 4, 4);
+    tempG.destroy();
 
     this.particles = this.add.particles(0, 0, 'spark', {
         speed: { min: 50, max: 150 },
@@ -184,7 +187,7 @@ export default class TetrisScene extends Phaser.Scene {
   }
 
   draw() {
-    const g = this.add.graphics();
+    const g = this.graphics;
     g.clear();
     const offsetX = 220;
     const offsetY = 50;

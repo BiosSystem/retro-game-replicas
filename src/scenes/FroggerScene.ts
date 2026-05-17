@@ -65,8 +65,13 @@ export default class FroggerScene extends Phaser.Scene {
           x: this.player.x + dx,
           y: this.player.y + dy,
           duration: 100,
+          onUpdate: () => {
+              // CRITICAL: Update physics body during tween animation!
+              (this.player.body as Phaser.Physics.Arcade.Body).updateFromGameObject();
+          },
           onComplete: () => {
               this.isMoving = false;
+              (this.player.body as Phaser.Physics.Arcade.Body).updateFromGameObject();
               this.checkPosition();
           }
       });
@@ -129,6 +134,7 @@ export default class FroggerScene extends Phaser.Scene {
       // Drifting on log
       if (this.onLog && !this.isMoving) {
           this.player.x += this.onLog.body.velocity.x * (delta / 1000);
+          (this.player.body as Phaser.Physics.Arcade.Body).updateFromGameObject();
           if (this.player.x < 0 || this.player.x > 640) this.endGame('OUT OF BOUNDS');
       }
 
@@ -155,6 +161,7 @@ export default class FroggerScene extends Phaser.Scene {
           this.scoreText.setText('SCORE: ' + this.score);
           this.cameras.main.flash(200, 0, 255, 0);
           this.player.setPosition(320, 448);
+          (this.player.body as Phaser.Physics.Arcade.Body).updateFromGameObject();
           this.onLog = null;
       }
   }
@@ -163,8 +170,8 @@ export default class FroggerScene extends Phaser.Scene {
       this.physics.pause();
       this.cameras.main.shake(300, 0.02);
       
-      const banner = this.add.rectangle(320, 240, 640, 120, 0x000000, 0.8);
+      const banner = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.85).setInteractive();
       this.add.text(320, 240, `${reason}\nFINAL SCORE: ${this.score}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff0055', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.setInteractive().on('pointerdown', () => this.scene.restart());
+      banner.on('pointerdown', () => this.scene.restart());
   }
 }

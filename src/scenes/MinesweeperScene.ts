@@ -177,10 +177,10 @@ export default class MinesweeperScene extends Phaser.Scene {
 
       const msg = win ? 'SYSTEM SECURED' : 'BREACH DETECTED';
       const color = win ? '#00ffcc' : '#ff0055';
-      const banner = this.add.rectangle(320, 240, 640, 100, 0x000000, 0.8);
+      const banner = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.85).setInteractive();
       this.add.text(320, 240, `${msg}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: color, align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
 
-      banner.setInteractive().on('pointerdown', () => this.scene.restart());
+      banner.on('pointerdown', () => this.scene.restart());
       if (!win) this.cameras.main.shake(500, 0.03);
   }
 }

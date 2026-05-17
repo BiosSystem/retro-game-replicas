@@ -14,16 +14,44 @@ export default class InvadersScene extends Phaser.Scene {
   }
 
   create() {
+    this.score = 0;
     this.add.text(320, 20, 'SPACE DEFENDERS - ARROWS TO MOVE - SPACE TO SHOOT - ESC TO LOBBY', { fontSize: '10px', color: '#00ff00' }).setOrigin(0.5);
     this.scoreText = this.add.text(10, 10, 'SCORE: 0', { fontSize: '20px', color: '#ffffff' });
 
-    this.player = this.physics.add.image(320, 450, '');
-    const playerG = this.add.graphics();
-    playerG.lineStyle(2, 0x00ff00);
-    playerG.strokeRect(0, 0, 30, 20);
-    playerG.generateTexture('player', 30, 20);
-    playerG.destroy();
-    this.player.setTexture('player');
+    // Generate textures once if missing
+    if (!this.textures.exists('player')) {
+      const playerG = this.add.graphics();
+      playerG.lineStyle(2, 0x00ff00);
+      playerG.strokeRect(0, 0, 30, 20);
+      playerG.generateTexture('player', 30, 20);
+      playerG.destroy();
+    }
+
+    if (!this.textures.exists('alien')) {
+      const alienG = this.add.graphics();
+      alienG.lineStyle(2, 0xffffff);
+      alienG.strokeCircle(15, 15, 10);
+      alienG.generateTexture('alien', 30, 30);
+      alienG.destroy();
+    }
+
+    if (!this.textures.exists('inv_bullet')) {
+      const g = this.add.graphics();
+      g.fillStyle(0x00ff00, 1);
+      g.fillRect(0, 0, 4, 10);
+      g.generateTexture('inv_bullet', 4, 10);
+      g.destroy();
+    }
+
+    if (!this.textures.exists('alien_bullet')) {
+      const g = this.add.graphics();
+      g.fillStyle(0xffffff, 1);
+      g.fillRect(0, 0, 4, 10);
+      g.generateTexture('alien_bullet', 4, 10);
+      g.destroy();
+    }
+
+    this.player = this.physics.add.image(320, 450, 'player');
     this.player.setCollideWorldBounds(true);
 
     this.aliens = this.physics.add.group();
@@ -32,13 +60,7 @@ export default class InvadersScene extends Phaser.Scene {
 
     for (let r = 0; r < 4; r++) {
       for (let c = 0; c < 10; c++) {
-        const alien = this.aliens.create(100 + c * 50, 80 + r * 40, '');
-        const alienG = this.add.graphics();
-        alienG.lineStyle(2, 0xffffff);
-        alienG.strokeCircle(15, 15, 10);
-        alienG.generateTexture('alien', 30, 30);
-        alienG.destroy();
-        alien.setTexture('alien');
+        this.aliens.create(100 + c * 50, 80 + r * 40, 'alien');
       }
     }
 
@@ -53,26 +75,14 @@ export default class InvadersScene extends Phaser.Scene {
   }
 
   fireBullet() {
-    const bullet = this.bullets.create(this.player.x, this.player.y - 10, '');
-    const g = this.add.graphics();
-    g.fillStyle(0x00ff00, 1);
-    g.fillRect(0, 0, 4, 10);
-    g.generateTexture('inv_bullet', 4, 10);
-    g.destroy();
-    bullet.setTexture('inv_bullet');
+    const bullet = this.bullets.create(this.player.x, this.player.y - 10, 'inv_bullet');
     bullet.setVelocityY(-400);
   }
 
   alienShoot() {
     const alien = this.aliens.getChildren()[Phaser.Math.Between(0, this.aliens.getLength() - 1)] as any;
     if (alien) {
-      const b = this.alienBullets.create(alien.x, alien.y + 10, '');
-      const g = this.add.graphics();
-      g.fillStyle(0xffffff, 1);
-      g.fillRect(0, 0, 4, 10);
-      g.generateTexture('alien_bullet', 4, 10);
-      g.destroy();
-      b.setTexture('alien_bullet');
+      const b = this.alienBullets.create(alien.x, alien.y + 10, 'alien_bullet');
       b.setVelocityY(200);
     }
   }
@@ -92,6 +102,8 @@ export default class InvadersScene extends Phaser.Scene {
 
     this.aliens.getChildren().forEach((a: any) => {
       a.x += Math.sin(this.time.now / 1000) * 2;
+      // CRITICAL: Update physics body after modifying X directly!
+      a.body.updateFromGameObject();
     });
 
     if (this.aliens.getLength() === 0) this.scene.restart();

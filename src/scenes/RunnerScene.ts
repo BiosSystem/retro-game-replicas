@@ -19,14 +19,16 @@ export default class RunnerScene extends Phaser.Scene {
     this.speed = 300;
     this.spawnTimer = 0;
 
+    // Create textures if missing
+    if (!this.textures.exists('bg_city')) {
+      const g = this.add.graphics();
+      g.fillStyle(0x111122); g.fillRect(0, 0, 64, 64); g.generateTexture('bg_city', 64, 64); g.clear();
+      g.fillStyle(0x112222); g.fillRect(0, 0, 64, 64); g.generateTexture('bg_trees', 64, 64); g.destroy();
+    }
+
     // Parallax BG
     this.bg1 = this.add.tileSprite(320, 240, 640, 480, 'bg_city').setTint(0x112233);
     this.bg2 = this.add.tileSprite(320, 240, 640, 480, 'bg_trees').setTint(0x224455);
-    
-    // Create textures if missing
-    const g = this.add.graphics();
-    g.fillStyle(0x111122); g.fillRect(0, 0, 64, 64); g.generateTexture('bg_city', 64, 64); g.clear();
-    g.fillStyle(0x112222); g.fillRect(0, 0, 64, 64); g.generateTexture('bg_trees', 64, 64); g.destroy();
 
     // Ground
     const ground = this.add.rectangle(320, 440, 640, 80, 0x336677);
@@ -104,8 +106,11 @@ export default class RunnerScene extends Phaser.Scene {
       const color = isHigh ? 0xff0055 : 0xffaa00;
 
       const obs = this.add.rectangle(700, y, 25, h, color);
-      this.physics.add.existing(obs, true); // Static body but we move it manually or via velocity
-      (obs.body as Phaser.Physics.Arcade.Body).setVelocityX(-this.speed);
+      this.physics.add.existing(obs, false); // Dynamic body so it can move via velocity!
+      const body = obs.body as Phaser.Physics.Arcade.Body;
+      body.setAllowGravity(false);
+      body.setImmovable(true);
+      body.setVelocityX(-this.speed);
       
       this.obstacles.add(obs);
   }
