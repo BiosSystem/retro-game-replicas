@@ -1,0 +1,22 @@
+{
+  "name": "retro-arcade-launcher",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A beautiful, lightning-fast Open Source Retro Arcade Launcher, crafted with passion by BiosSystem",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/api": "^2.11.0",
+    "@tauri-apps/cli": "^2.11.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.12"
+  },
+  "dependencies": {
+    "phaser": "^4.1.0"
+  }
+}
