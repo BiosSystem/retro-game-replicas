@@ -11,6 +11,9 @@ export default class CyberScene extends Phaser.Scene {
   private scoreText!: Phaser.GameObjects.Text;
   private isOverclocked = false;
   private overclockTimer = 0;
+  private playerSpeed = 180;
+  private ghostSpeed = 120;
+  private difficulty = 'NORMAL';
   private map: number[][] = [
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
     [1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
@@ -38,7 +41,15 @@ export default class CyberScene extends Phaser.Scene {
     super('CyberScene');
   }
 
-  create() {
+  create(data: any) {
+    this.difficulty = data?.difficulty || 'NORMAL';
+    switch (this.difficulty) {
+      case 'EASY': this.playerSpeed = 200; this.ghostSpeed = 80; break;
+      case 'NORMAL': this.playerSpeed = 180; this.ghostSpeed = 120; break;
+      case 'HARD': this.playerSpeed = 180; this.ghostSpeed = 160; break;
+      case 'EXPERT': this.playerSpeed = 200; this.ghostSpeed = 210; break;
+    }
+
     this.score = 0;
     this.isOverclocked = false;
     
@@ -46,6 +57,14 @@ export default class CyberScene extends Phaser.Scene {
     this.add.text(320, 20, 'CYBER CHASM: DATA RUNNER', { fontFamily: 'Courier', fontSize: '22px', color: '#00ffcc', fontStyle: 'bold' }).setOrigin(0.5);
     this.scoreText = this.add.text(20, 20, 'SCORE: 0', { fontFamily: 'Courier', fontSize: '18px', color: '#ffffff' });
     this.add.text(320, 465, 'ARROWS: NAVIGATE | ESC: LOBBY', { fontFamily: 'Courier', fontSize: '12px', color: '#aaaaaa' }).setOrigin(0.5);
+
+    const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
+    this.add.text(630, 20, `DIFF: ${this.difficulty}`, {
+      fontFamily: 'Courier',
+      fontSize: '16px',
+      color: diffColors[this.difficulty] || '#00ff00',
+      fontStyle: 'bold'
+    }).setOrigin(1, 0);
 
     this.dots = this.add.group();
     this.powerUps = this.add.group();
@@ -97,10 +116,10 @@ export default class CyberScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.ghosts, (_p, g: any) => this.handleGhostCollision(g));
 
     // Input
-    this.input.keyboard?.on('keydown-UP', () => this.setVel(0, -180));
-    this.input.keyboard?.on('keydown-DOWN', () => this.setVel(0, 180));
-    this.input.keyboard?.on('keydown-LEFT', () => this.setVel(-180, 0));
-    this.input.keyboard?.on('keydown-RIGHT', () => this.setVel(180, 0));
+    this.input.keyboard?.on('keydown-UP', () => this.setVel(0, -this.playerSpeed));
+    this.input.keyboard?.on('keydown-DOWN', () => this.setVel(0, this.playerSpeed));
+    this.input.keyboard?.on('keydown-LEFT', () => this.setVel(-this.playerSpeed, 0));
+    this.input.keyboard?.on('keydown-RIGHT', () => this.setVel(this.playerSpeed, 0));
     this.input.keyboard?.on('keydown-ESC', () => this.scene.start('LobbyScene'));
   }
 
@@ -110,7 +129,7 @@ export default class CyberScene extends Phaser.Scene {
       const body = g.body as Phaser.Physics.Arcade.Body;
       body.setCollideWorldBounds(true);
       body.setBounce(1);
-      body.setVelocity(Phaser.Math.Between(0, 1) ? 120 : -120, 0);
+      body.setVelocity(Phaser.Math.Between(0, 1) ? this.ghostSpeed : -this.ghostSpeed, 0);
       this.ghosts.add(g);
   }
 
@@ -158,7 +177,7 @@ export default class CyberScene extends Phaser.Scene {
       this.ghosts.getChildren().forEach((g: any) => {
           const body = g.body as Phaser.Physics.Arcade.Body;
           if (body.blocked.left || body.blocked.right || body.blocked.up || body.blocked.down) {
-              const dirs = [{x: 120, y:0}, {x: -120, y:0}, {x: 0, y:120}, {x: 0, y:-120}];
+              const dirs = [{x: this.ghostSpeed, y:0}, {x: -this.ghostSpeed, y:0}, {x: 0, y:this.ghostSpeed}, {x: 0, y:-this.ghostSpeed}];
               const d = dirs[Phaser.Math.Between(0, 3)];
               body.setVelocity(d.x, d.y);
           }
@@ -170,6 +189,6 @@ export default class CyberScene extends Phaser.Scene {
       this.cameras.main.shake(500, 0.03);
       const banner = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.85).setInteractive();
       this.add.text(320, 240, `SYSTEM OVERLOAD\nFINAL SCORE: ${this.score}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff0055', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.on('pointerdown', () => this.scene.restart());
+      banner.on('pointerdown', () => this.scene.restart({ difficulty: this.difficulty }));
   }
 }

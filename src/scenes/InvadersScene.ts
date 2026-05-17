@@ -8,15 +8,36 @@ export default class InvadersScene extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private score = 0;
   private scoreText!: Phaser.GameObjects.Text;
+  private shootDelay = 1000;
+  private alienBulletSpeed = 200;
+  private alienWobble = 2;
+  private shootEvent!: Phaser.Time.TimerEvent;
+  private difficulty = 'NORMAL';
 
   constructor() {
     super('InvadersScene');
   }
 
-  create() {
+  create(data: any) {
+    this.difficulty = data?.difficulty || 'NORMAL';
+    switch (this.difficulty) {
+      case 'EASY': this.shootDelay = 1500; this.alienBulletSpeed = 150; this.alienWobble = 1.5; break;
+      case 'NORMAL': this.shootDelay = 1000; this.alienBulletSpeed = 200; this.alienWobble = 2; break;
+      case 'HARD': this.shootDelay = 600; this.alienBulletSpeed = 300; this.alienWobble = 3.5; break;
+      case 'EXPERT': this.shootDelay = 350; this.alienBulletSpeed = 450; this.alienWobble = 5.5; break;
+    }
+
     this.score = 0;
     this.add.text(320, 20, 'SPACE DEFENDERS - ARROWS TO MOVE - SPACE TO SHOOT - ESC TO LOBBY', { fontSize: '10px', color: '#00ff00' }).setOrigin(0.5);
     this.scoreText = this.add.text(10, 10, 'SCORE: 0', { fontSize: '20px', color: '#ffffff' });
+
+    const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
+    this.add.text(630, 10, `DIFF: ${this.difficulty}`, {
+      fontFamily: 'Courier',
+      fontSize: '16px',
+      color: diffColors[this.difficulty] || '#00ff00',
+      fontStyle: 'bold'
+    }).setOrigin(1, 0);
 
     // Generate textures once if missing
     if (!this.textures.exists('player')) {
@@ -69,9 +90,12 @@ export default class InvadersScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-ESC', () => { this.scene.start('LobbyScene'); });
 
     this.physics.add.overlap(this.bullets, this.aliens, this.hitAlien as any, undefined, this);
-    this.physics.add.overlap(this.player, this.alienBullets, () => { this.scene.restart(); }, undefined, this);
+    this.physics.add.overlap(this.player, this.alienBullets, () => { 
+        if (this.shootEvent) this.shootEvent.remove(); 
+        this.scene.restart({ difficulty: this.difficulty }); 
+    }, undefined, this);
 
-    this.time.addEvent({ delay: 1000, callback: this.alienShoot, callbackScope: this, loop: true });
+    this.shootEvent = this.time.addEvent({ delay: this.shootDelay, callback: this.alienShoot, callbackScope: this, loop: true });
   }
 
   fireBullet() {
@@ -83,7 +107,7 @@ export default class InvadersScene extends Phaser.Scene {
     const alien = this.aliens.getChildren()[Phaser.Math.Between(0, this.aliens.getLength() - 1)] as any;
     if (alien) {
       const b = this.alienBullets.create(alien.x, alien.y + 10, 'alien_bullet');
-      b.setVelocityY(200);
+      b.setVelocityY(this.alienBulletSpeed);
     }
   }
 
@@ -101,11 +125,14 @@ export default class InvadersScene extends Phaser.Scene {
     else this.player.setVelocityX(0);
 
     this.aliens.getChildren().forEach((a: any) => {
-      a.x += Math.sin(this.time.now / 1000) * 2;
+      a.x += Math.sin(this.time.now / 1000) * this.alienWobble;
       // CRITICAL: Update physics body after modifying X directly!
       a.body.updateFromGameObject();
     });
 
-    if (this.aliens.getLength() === 0) this.scene.restart();
+    if (this.aliens.getLength() === 0) {
+        if (this.shootEvent) this.shootEvent.remove();
+        this.scene.restart({ difficulty: this.difficulty });
+    }
   }
 }

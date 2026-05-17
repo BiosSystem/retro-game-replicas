@@ -10,12 +10,22 @@ export default class FroggerScene extends Phaser.Scene {
   private scoreText!: Phaser.GameObjects.Text;
   private isMoving = false;
   private onLog: any = null;
+  private speedMult = 1.0;
+  private difficulty = 'NORMAL';
 
   constructor() {
     super('FroggerScene');
   }
 
-  create() {
+  create(data: any) {
+    this.difficulty = data?.difficulty || 'NORMAL';
+    switch (this.difficulty) {
+      case 'EASY': this.speedMult = 0.7; break;
+      case 'NORMAL': this.speedMult = 1.0; break;
+      case 'HARD': this.speedMult = 1.4; break;
+      case 'EXPERT': this.speedMult = 2.0; break;
+    }
+
     this.score = 0;
     this.isMoving = false;
     this.onLog = null;
@@ -34,6 +44,14 @@ export default class FroggerScene extends Phaser.Scene {
     this.add.text(320, 16, 'FROGGIE CROSSER', { fontFamily: 'Courier', fontSize: '20px', color: '#00ffcc', fontStyle: 'bold' }).setOrigin(0.5);
     this.scoreText = this.add.text(20, 16, 'SCORE: 0', { fontFamily: 'Courier', fontSize: '18px', color: '#ffffff' });
     this.add.text(20, 460, 'ARROWS: MOVE | ESC: LOBBY', { fontFamily: 'Courier', fontSize: '14px', color: '#aaaaaa' });
+
+    const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
+    this.add.text(630, 16, `DIFF: ${this.difficulty}`, {
+      fontFamily: 'Courier',
+      fontSize: '16px',
+      color: diffColors[this.difficulty] || '#00ff00',
+      fontStyle: 'bold'
+    }).setOrigin(1, 0);
 
     // Groups
     this.cars = this.physics.add.group();
@@ -90,7 +108,7 @@ export default class FroggerScene extends Phaser.Scene {
           for (let i = 0; i < 3; i++) {
               const car = this.add.rectangle(i * 250, l.y, 40, 20, l.color);
               this.physics.add.existing(car);
-              (car.body as Phaser.Physics.Arcade.Body).setVelocityX(l.speed);
+              (car.body as Phaser.Physics.Arcade.Body).setVelocityX(l.speed * this.speedMult);
               (car.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
               this.cars.add(car);
           }
@@ -112,7 +130,7 @@ export default class FroggerScene extends Phaser.Scene {
               const log = this.add.rectangle(i * 280, l.y, l.w, 22, 0x885533);
               log.setStrokeStyle(1, 0xaa7755);
               this.physics.add.existing(log);
-              (log.body as Phaser.Physics.Arcade.Body).setVelocityX(l.speed);
+              (log.body as Phaser.Physics.Arcade.Body).setVelocityX(l.speed * this.speedMult);
               (log.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
               this.logs.add(log);
           }
@@ -172,6 +190,6 @@ export default class FroggerScene extends Phaser.Scene {
       
       const banner = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.85).setInteractive();
       this.add.text(320, 240, `${reason}\nFINAL SCORE: ${this.score}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff0055', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.on('pointerdown', () => this.scene.restart());
+      banner.on('pointerdown', () => this.scene.restart({ difficulty: this.difficulty }));
   }
 }

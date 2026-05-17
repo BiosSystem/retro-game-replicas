@@ -5,18 +5,29 @@ export default class RunnerScene extends Phaser.Scene {
   private obstacles!: Phaser.Physics.Arcade.Group;
   private score = 0;
   private scoreText!: Phaser.GameObjects.Text;
+  private baseSpeed = 300;
+  private speedRamp = 0.005;
   private speed = 300;
   private spawnTimer = 0;
   private bg1!: Phaser.GameObjects.TileSprite;
   private bg2!: Phaser.GameObjects.TileSprite;
+  private difficulty = 'NORMAL';
 
   constructor() {
     super('RunnerScene');
   }
 
-  create() {
+  create(data: any) {
+    this.difficulty = data?.difficulty || 'NORMAL';
+    switch (this.difficulty) {
+      case 'EASY': this.baseSpeed = 220; this.speedRamp = 0.002; break;
+      case 'NORMAL': this.baseSpeed = 300; this.speedRamp = 0.005; break;
+      case 'HARD': this.baseSpeed = 420; this.speedRamp = 0.01; break;
+      case 'EXPERT': this.baseSpeed = 550; this.speedRamp = 0.02; break;
+    }
+
     this.score = 0;
-    this.speed = 300;
+    this.speed = this.baseSpeed;
     this.spawnTimer = 0;
 
     // Create textures if missing
@@ -45,6 +56,14 @@ export default class RunnerScene extends Phaser.Scene {
     this.add.text(320, 20, 'PIXEL RUNNER', { fontFamily: 'Courier', fontSize: '24px', color: '#00ffcc', fontStyle: 'bold' }).setOrigin(0.5);
     this.scoreText = this.add.text(20, 20, 'SCORE: 0', { fontFamily: 'Courier', fontSize: '20px', color: '#ffffff' });
     this.add.text(20, 50, 'UP / SPACE: JUMP | DOWN: DUCK | ESC: LOBBY', { fontFamily: 'Courier', fontSize: '14px', color: '#aaaaaa' });
+
+    const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
+    this.add.text(630, 20, `DIFF: ${this.difficulty}`, {
+      fontFamily: 'Courier',
+      fontSize: '16px',
+      color: diffColors[this.difficulty] || '#00ff00',
+      fontStyle: 'bold'
+    }).setOrigin(1, 0);
 
     // Collisions
     this.physics.add.collider(this.player, ground);
@@ -85,7 +104,7 @@ export default class RunnerScene extends Phaser.Scene {
 
       this.score += delta * 0.01 * (this.speed / 300);
       this.scoreText.setText('SCORE: ' + Math.floor(this.score));
-      this.speed += delta * 0.005; // Speed ramp
+      this.speed += delta * this.speedRamp; // Speed ramp
 
       this.spawnTimer += delta;
       if (this.spawnTimer > Math.max(800, 2000 - this.speed)) {
@@ -120,6 +139,6 @@ export default class RunnerScene extends Phaser.Scene {
       this.cameras.main.shake(300, 0.02);
       const banner = this.add.rectangle(320, 240, 640, 100, 0x000000, 0.8);
       this.add.text(320, 240, `GAME OVER\nFINAL SCORE: ${Math.floor(this.score)}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff0055', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.setInteractive().on('pointerdown', () => this.scene.restart());
+      banner.setInteractive().on('pointerdown', () => this.scene.restart({ difficulty: this.difficulty }));
   }
 }
