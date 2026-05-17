@@ -17,12 +17,22 @@ export default class SnakeScene extends Phaser.Scene {
   private gameOver!: boolean;
   private graphics!: Phaser.GameObjects.Graphics;
   private gameOverText!: Phaser.GameObjects.Text;
+  private moveInterval = 100;
+  private difficulty = 'NORMAL';
 
   constructor() {
     super('SnakeScene');
   }
 
-  create() {
+  create(data: any) {
+    this.difficulty = data?.difficulty || 'NORMAL';
+    switch (this.difficulty) {
+      case 'EASY': this.moveInterval = 150; break;
+      case 'NORMAL': this.moveInterval = 100; break;
+      case 'HARD': this.moveInterval = 65; break;
+      case 'EXPERT': this.moveInterval = 40; break;
+    }
+
     this.snake = [new Phaser.Math.Vector2(10, 10), new Phaser.Math.Vector2(9, 10)];
     this.direction = 'RIGHT';
     this.nextDirection = 'RIGHT';
@@ -40,6 +50,14 @@ export default class SnakeScene extends Phaser.Scene {
       color: '#00ff00',
       fontStyle: 'bold'
     }).setDepth(10);
+
+    const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
+    this.add.text(630, 10, `DIFF: ${this.difficulty}`, {
+      fontFamily: 'Courier',
+      fontSize: '20px',
+      color: diffColors[this.difficulty] || '#00ff00',
+      fontStyle: 'bold'
+    }).setOrigin(1, 0).setDepth(10);
 
     this.gameOverText = this.add.text(320, 240, 'GAME OVER\nPRESS SPACE TO RESTART', {
       fontFamily: 'Courier',
@@ -71,14 +89,13 @@ export default class SnakeScene extends Phaser.Scene {
   update(_time: number, delta: number) {
     if (this.gameOver) {
       if (this.input.keyboard?.checkDown(this.input.keyboard.addKey('SPACE'), 250)) {
-        this.scene.restart();
+        this.scene.restart({ difficulty: this.difficulty });
       }
       return;
     }
 
     this.moveTimer += delta;
-    // Move every 100ms
-    if (this.moveTimer > 100) {
+    if (this.moveTimer > this.moveInterval) {
       this.moveTimer = 0;
       this.moveSnake();
       this.draw();

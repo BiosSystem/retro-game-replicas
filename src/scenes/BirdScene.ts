@@ -6,13 +6,25 @@ export default class BirdScene extends Phaser.Scene {
   private score = 0;
   private scoreText!: Phaser.GameObjects.Text;
   private timer = 0;
+  private pipeGap = 140;
+  private pipeSpeed = 180;
+  private spawnInterval = 1600;
   private particles!: Phaser.GameObjects.Particles.ParticleEmitter;
+  private difficulty = 'NORMAL';
 
   constructor() {
     super('BirdScene');
   }
 
-  create() {
+  create(data: any) {
+    this.difficulty = data?.difficulty || 'NORMAL';
+    switch (this.difficulty) {
+      case 'EASY': this.pipeGap = 180; this.pipeSpeed = 140; this.spawnInterval = 2000; break;
+      case 'NORMAL': this.pipeGap = 140; this.pipeSpeed = 180; this.spawnInterval = 1600; break;
+      case 'HARD': this.pipeGap = 110; this.pipeSpeed = 240; this.spawnInterval = 1200; break;
+      case 'EXPERT': this.pipeGap = 85; this.pipeSpeed = 320; this.spawnInterval = 900; break;
+    }
+
     this.score = 0;
     this.timer = 0;
 
@@ -24,6 +36,14 @@ export default class BirdScene extends Phaser.Scene {
     this.add.text(320, 20, 'BRAVE BIRD: NOCTURNAL', { fontFamily: 'Courier', fontSize: '24px', color: '#ffff00', fontStyle: 'bold' }).setOrigin(0.5);
     this.scoreText = this.add.text(320, 100, '0', { fontFamily: 'Courier', fontSize: '80px', color: '#ffffff' }).setOrigin(0.5).setAlpha(0.2);
     this.add.text(20, 450, 'SPACE / CLICK: FLAP | ESC: LOBBY', { fontFamily: 'Courier', fontSize: '14px', color: '#aaaaaa' });
+
+    const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
+    this.add.text(630, 20, `DIFF: ${this.difficulty}`, {
+      fontFamily: 'Courier',
+      fontSize: '16px',
+      color: diffColors[this.difficulty] || '#00ff00',
+      fontStyle: 'bold'
+    }).setOrigin(1, 0);
 
     // Bird
     this.bird = this.add.rectangle(150, 240, 24, 24, 0xffff00);
@@ -72,7 +92,7 @@ export default class BirdScene extends Phaser.Scene {
 
   update(_time: number, delta: number) {
       this.timer += delta;
-      if (this.timer > 1600) {
+      if (this.timer > this.spawnInterval) {
           this.timer = 0;
           this.spawnPipes();
       }
@@ -99,7 +119,7 @@ export default class BirdScene extends Phaser.Scene {
   }
 
   spawnPipes() {
-      const gap = 140;
+      const gap = this.pipeGap;
       const pos = Phaser.Math.Between(100, 350);
 
       const top = this.add.rectangle(740, pos - gap/2 - 240, 60, 480, 0x33aa33);
@@ -113,12 +133,12 @@ export default class BirdScene extends Phaser.Scene {
       this.physics.add.existing(bot);
 
       const topBody = top.body as Phaser.Physics.Arcade.Body;
-      topBody.setVelocityX(-180);
+      topBody.setVelocityX(-this.pipeSpeed);
       topBody.setAllowGravity(false);
       topBody.setImmovable(true); // CRITICAL: Prevent bird from pushing pipe!
 
       const botBody = bot.body as Phaser.Physics.Arcade.Body;
-      botBody.setVelocityX(-180);
+      botBody.setVelocityX(-this.pipeSpeed);
       botBody.setAllowGravity(false);
       botBody.setImmovable(true); // CRITICAL: Prevent bird from pushing pipe!
 
@@ -133,6 +153,6 @@ export default class BirdScene extends Phaser.Scene {
       
       const banner = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.85).setInteractive();
       this.add.text(320, 240, `FLIGHT TERMINATED\nSCORE: ${Math.floor(this.score)}\nCLICK TO REBOOT`, { fontFamily: 'Courier', fontSize: '28px', color: '#ffff00', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.on('pointerdown', () => this.scene.restart());
+      banner.on('pointerdown', () => this.scene.restart({ difficulty: this.difficulty }));
   }
 }

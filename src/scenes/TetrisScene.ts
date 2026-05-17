@@ -10,19 +10,38 @@ export default class TetrisScene extends Phaser.Scene {
   private timer = 0;
   private score = 0;
   private scoreText!: Phaser.GameObjects.Text;
+  private baseInterval = 800;
   private dropInterval = 800;
   private particles!: Phaser.GameObjects.Particles.ParticleEmitter;
   private graphics!: Phaser.GameObjects.Graphics;
+  private difficulty = 'NORMAL';
 
   constructor() {
     super('TetrisScene');
   }
 
-  create() {
+  create(data: any) {
+    this.difficulty = data?.difficulty || 'NORMAL';
+    switch (this.difficulty) {
+      case 'EASY': this.baseInterval = 1000; break;
+      case 'NORMAL': this.baseInterval = 800; break;
+      case 'HARD': this.baseInterval = 450; break;
+      case 'EXPERT': this.baseInterval = 220; break;
+    }
+    this.dropInterval = this.baseInterval;
+
     // UI
     this.add.text(320, 20, 'TETRIS: PULSE', { fontFamily: 'Courier', fontSize: '24px', color: '#00ffff' }).setOrigin(0.5);
     this.scoreText = this.add.text(450, 100, 'SCORE: 0', { fontFamily: 'Courier', fontSize: '20px', color: '#ffffff' });
     this.add.text(450, 140, 'ARROWS: MOVE\nUP: ROTATE\nSPACE: DROP\nESC: LOBBY', { fontFamily: 'Courier', fontSize: '14px', color: '#aaaaaa' });
+
+    const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
+    this.add.text(630, 20, `DIFF: ${this.difficulty}`, {
+      fontFamily: 'Courier',
+      fontSize: '16px',
+      color: diffColors[this.difficulty] || '#00ff00',
+      fontStyle: 'bold'
+    }).setOrigin(1, 0);
 
     this.graphics = this.add.graphics();
 
@@ -75,7 +94,7 @@ export default class TetrisScene extends Phaser.Scene {
     };
     if (this.checkCollision(0, 0)) {
         this.cameras.main.shake(500, 0.02);
-        this.time.delayedCall(500, () => this.scene.restart());
+        this.time.delayedCall(500, () => this.scene.restart({ difficulty: this.difficulty }));
     }
   }
 
@@ -150,7 +169,7 @@ export default class TetrisScene extends Phaser.Scene {
     if (linesCleared > 0) {
         this.score += [0, 100, 300, 500, 800][linesCleared];
         this.scoreText.setText('SCORE: ' + this.score);
-        this.dropInterval = Math.max(100, 800 - (this.score / 10));
+        this.dropInterval = Math.max(100, this.baseInterval - (this.score / 10));
         this.cameras.main.flash(200, 255, 255, 255, false);
     }
   }

@@ -5,13 +5,32 @@ export default class AsteroidsScene extends Phaser.Scene {
   private asteroids!: Phaser.Physics.Arcade.Group;
   private bullets!: Phaser.Physics.Arcade.Group;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  private asteroidCount = 5;
+  private maxSpeed = 100;
+  private difficulty = 'NORMAL';
 
   constructor() {
     super('AsteroidsScene');
   }
 
-  create() {
+  create(data: any) {
+    this.difficulty = data?.difficulty || 'NORMAL';
+    switch (this.difficulty) {
+      case 'EASY': this.asteroidCount = 3; this.maxSpeed = 60; break;
+      case 'NORMAL': this.asteroidCount = 5; this.maxSpeed = 110; break;
+      case 'HARD': this.asteroidCount = 8; this.maxSpeed = 180; break;
+      case 'EXPERT': this.asteroidCount = 12; this.maxSpeed = 260; break;
+    }
+
     this.add.text(320, 20, 'ASTRO DRIFT - ARROWS TO MOVE - SPACE TO SHOOT - ESC TO LOBBY', { fontSize: '12px', color: '#00ff00' }).setOrigin(0.5);
+
+    const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
+    this.add.text(630, 10, `DIFF: ${this.difficulty}`, {
+      fontFamily: 'Courier',
+      fontSize: '16px',
+      color: diffColors[this.difficulty] || '#00ff00',
+      fontStyle: 'bold'
+    }).setOrigin(1, 0);
 
     if (!this.textures.exists('ship')) {
       const graphics = this.add.graphics();
@@ -46,12 +65,12 @@ export default class AsteroidsScene extends Phaser.Scene {
     this.asteroids = this.physics.add.group();
     this.bullets = this.physics.add.group();
 
-    for(let i=0; i<5; i++) {
-        this.spawnAsteroid();
+    for (let i = 0; i < this.asteroidCount; i++) {
+      this.spawnAsteroid();
     }
 
     this.physics.add.collider(this.bullets, this.asteroids, this.hitAsteroid as any, undefined, this);
-    this.physics.add.collider(this.ship, this.asteroids, () => { this.scene.restart(); }, undefined, this);
+    this.physics.add.collider(this.ship, this.asteroids, () => { this.scene.restart({ difficulty: this.difficulty }); }, undefined, this);
 
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.input.keyboard?.on('keydown-SPACE', () => { this.fireBullet(); });
@@ -62,7 +81,7 @@ export default class AsteroidsScene extends Phaser.Scene {
     const x = Phaser.Math.Between(0, 640);
     const y = Phaser.Math.Between(0, 480);
     const asteroid = this.asteroids.create(x, y, 'asteroid');
-    asteroid.setVelocity(Phaser.Math.Between(-100, 100), Phaser.Math.Between(-100, 100));
+    asteroid.setVelocity(Phaser.Math.Between(-this.maxSpeed, this.maxSpeed), Phaser.Math.Between(-this.maxSpeed, this.maxSpeed));
     asteroid.setBounce(1, 1);
   }
 

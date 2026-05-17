@@ -3,26 +3,35 @@ import Phaser from 'phaser';
 const TILE_SIZE = 32;
 const COLS = 12;
 const ROWS = 10;
-const MINES_COUNT = 15;
 
 export default class MinesweeperScene extends Phaser.Scene {
   private grid: any[][] = [];
   private gameOver = false;
   private firstClick = true;
-  private flagsCount = MINES_COUNT;
+  private flagsCount = 15;
+  private totalMines = 15;
   private timerText!: Phaser.GameObjects.Text;
   private flagsText!: Phaser.GameObjects.Text;
   private timeElapsed = 0;
   private clockEvent!: Phaser.Time.TimerEvent;
+  private difficulty = 'NORMAL';
 
   constructor() {
     super('MinesweeperScene');
   }
 
-  create() {
+  create(data: any) {
+    this.difficulty = data?.difficulty || 'NORMAL';
+    switch (this.difficulty) {
+      case 'EASY': this.totalMines = 8; break;
+      case 'NORMAL': this.totalMines = 15; break;
+      case 'HARD': this.totalMines = 25; break;
+      case 'EXPERT': this.totalMines = 35; break;
+    }
+
     this.gameOver = false;
     this.firstClick = true;
-    this.flagsCount = MINES_COUNT;
+    this.flagsCount = this.totalMines;
     this.timeElapsed = 0;
 
     // UI
@@ -30,6 +39,14 @@ export default class MinesweeperScene extends Phaser.Scene {
     this.flagsText = this.add.text(140, 60, `FLAGS: ${this.flagsCount}`, { fontFamily: 'Courier', fontSize: '18px', color: '#ff0055' });
     this.timerText = this.add.text(420, 60, 'TIME: 0s', { fontFamily: 'Courier', fontSize: '18px', color: '#00ffcc' });
     this.add.text(320, 440, 'LEFT CLICK: REVEAL | RIGHT CLICK / SHIFT+CLICK: FLAG | ESC: LOBBY', { fontFamily: 'Courier', fontSize: '12px', color: '#aaaaaa' }).setOrigin(0.5);
+
+    const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
+    this.add.text(630, 20, `DIFF: ${this.difficulty}`, {
+      fontFamily: 'Courier',
+      fontSize: '16px',
+      color: diffColors[this.difficulty] || '#00ff00',
+      fontStyle: 'bold'
+    }).setOrigin(1, 0);
 
     this.clockEvent = this.time.addEvent({
         delay: 1000,
@@ -82,7 +99,7 @@ export default class MinesweeperScene extends Phaser.Scene {
 
   placeMines(skipR: number, skipC: number) {
       let placed = 0;
-      while (placed < MINES_COUNT) {
+      while (placed < this.totalMines) {
           const r = Phaser.Math.Between(0, ROWS - 1);
           const c = Phaser.Math.Between(0, COLS - 1);
           if ((r === skipR && c === skipC) || this.grid[r][c].mine) continue;
@@ -180,7 +197,7 @@ export default class MinesweeperScene extends Phaser.Scene {
       const banner = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.85).setInteractive();
       this.add.text(320, 240, `${msg}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: color, align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
 
-      banner.on('pointerdown', () => this.scene.restart());
+      banner.on('pointerdown', () => this.scene.restart({ difficulty: this.difficulty }));
       if (!win) this.cameras.main.shake(500, 0.03);
   }
 }
