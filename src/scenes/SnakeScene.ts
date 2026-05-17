@@ -15,9 +15,11 @@ export default class SnakeScene extends Phaser.Scene {
   private scoreText!: Phaser.GameObjects.Text;
   private moveTimer!: number;
   private gameOver!: boolean;
+  private graphics!: Phaser.GameObjects.Graphics;
+  private gameOverText!: Phaser.GameObjects.Text;
 
   constructor() {
-    super('GameScene');
+    super('SnakeScene');
   }
 
   create() {
@@ -28,6 +30,8 @@ export default class SnakeScene extends Phaser.Scene {
     this.moveTimer = 0;
     this.gameOver = false;
 
+    this.graphics = this.add.graphics();
+
     this.placeFood();
 
     this.scoreText = this.add.text(10, 10, 'SCORE: 0', {
@@ -36,6 +40,14 @@ export default class SnakeScene extends Phaser.Scene {
       color: '#00ff00',
       fontStyle: 'bold'
     }).setDepth(10);
+
+    this.gameOverText = this.add.text(320, 240, 'GAME OVER\nPRESS SPACE TO RESTART', {
+      fontFamily: 'Courier',
+      fontSize: '32px',
+      color: '#ff0000',
+      align: 'center',
+      fontStyle: 'bold'
+    }).setOrigin(0.5).setDepth(10).setVisible(false);
 
     // Input
     this.input.keyboard?.on('keydown-ESC', () => { this.scene.start('LobbyScene'); });
@@ -110,34 +122,21 @@ export default class SnakeScene extends Phaser.Scene {
 
   triggerGameOver() {
     this.gameOver = true;
-    this.add.text(320, 240, 'GAME OVER\nPRESS SPACE TO RESTART', {
-      fontFamily: 'Courier',
-      fontSize: '32px',
-      color: '#ff0000',
-      align: 'center',
-      fontStyle: 'bold'
-    }).setOrigin(0.5).setDepth(10);
+    this.gameOverText.setVisible(true);
   }
 
   draw() {
-    this.children.removeAll(true);
-    
-    // Add text back since we cleared all
-    this.add.existing(this.scoreText);
-    if (this.gameOver) this.triggerGameOver();
+    this.graphics.clear();
 
     // Draw snake
-    const graphics = this.add.graphics();
-    graphics.fillStyle(0x00ff00, 1);
     this.snake.forEach((segment, index) => {
-      // Make head slightly different color
-      if (index === 0) graphics.fillStyle(0x00cc00, 1);
-      else graphics.fillStyle(0x00ff00, 1);
-      graphics.fillRect(segment.x * TILE_SIZE, segment.y * TILE_SIZE, TILE_SIZE - 1, TILE_SIZE - 1);
+      if (index === 0) this.graphics.fillStyle(0x00cc00, 1);
+      else this.graphics.fillStyle(0x00ff00, 1);
+      this.graphics.fillRect(segment.x * TILE_SIZE, segment.y * TILE_SIZE, TILE_SIZE - 1, TILE_SIZE - 1);
     });
 
     // Draw food
-    graphics.fillStyle(0xff0000, 1);
-    graphics.fillRect(this.food.x * TILE_SIZE, this.food.y * TILE_SIZE, TILE_SIZE - 1, TILE_SIZE - 1);
+    this.graphics.fillStyle(0xff0000, 1);
+    this.graphics.fillRect(this.food.x * TILE_SIZE, this.food.y * TILE_SIZE, TILE_SIZE - 1, TILE_SIZE - 1);
   }
 }

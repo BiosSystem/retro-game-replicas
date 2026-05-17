@@ -68,11 +68,11 @@ export default class CyberScene extends Phaser.Scene {
         } else {
             if (Math.random() < 0.05) {
                 const pu = this.add.circle(x, y, 6, 0xff00ff);
-                this.physics.add.existing(pu);
+                this.physics.add.existing(pu, true); // CRITICAL: Static body!
                 this.powerUps.add(pu);
             } else {
                 const dot = this.add.circle(x, y, 3, 0x00ffcc, 0.6);
-                this.physics.add.existing(dot);
+                this.physics.add.existing(dot, true); // CRITICAL: Static body!
                 this.dots.add(dot);
             }
         }
@@ -168,8 +168,8 @@ export default class CyberScene extends Phaser.Scene {
   endGame() {
       this.physics.pause();
       this.cameras.main.shake(500, 0.03);
-      const banner = this.add.rectangle(320, 240, 640, 120, 0x000000, 0.8);
+      const banner = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.85).setInteractive();
       this.add.text(320, 240, `SYSTEM OVERLOAD\nFINAL SCORE: ${this.score}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff0055', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.setInteractive().on('pointerdown', () => this.scene.restart());
+      banner.on('pointerdown', () => this.scene.restart());
   }
 }
