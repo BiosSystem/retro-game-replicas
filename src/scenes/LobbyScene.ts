@@ -60,6 +60,10 @@ export default class LobbyScene extends Phaser.Scene {
     this.secretBuffer = '';
     this.input.keyboard?.removeAllListeners();
 
+    // Reset gamepad flags
+    this.gamepadConnected = false;
+    this.padLastState = { up: false, down: false, button: false, back: false };
+
     this.buildStarfield();
     this.buildScanlines();
     this.buildHeader();
@@ -67,7 +71,41 @@ export default class LobbyScene extends Phaser.Scene {
     this.buildFooter();
     this.buildDiffModal();
     this.buildBiosFlash();
+    this.buildCrtShader();
     this.bindKeys();
+    this.bindGamepad();
+  }
+
+  private gamepadConnected = false;
+  private padLastState = { up: false, down: false, button: false, back: false };
+  private crtPipeline: any;
+  private isCrtEnabled = false;
+
+  private buildCrtShader() {
+    // We'll apply built-in Phaser FX for the CRT look
+    this.isCrtEnabled = localStorage.getItem('arcade_crt') === 'true';
+    if (this.isCrtEnabled) {
+      this.applyCrt();
+    }
+  }
+
+  private applyCrt() {
+    this.cameras.main.postFX.clear();
+    const barrel = this.cameras.main.postFX.addBarrel(1.02);
+    const vignette = this.cameras.main.postFX.addVignette(0.5, 0.5, 0.7);
+    const color = this.cameras.main.postFX.addColorMatrix();
+    color.sepia();
+    color.saturate(2);
+  }
+
+  private toggleCrt() {
+    this.isCrtEnabled = !this.isCrtEnabled;
+    localStorage.setItem('arcade_crt', this.isCrtEnabled ? 'true' : 'false');
+    if (this.isCrtEnabled) {
+      this.applyCrt();
+    } else {
+      this.cameras.main.postFX.clear();
+    }
   }
 
   private buildStarfield() {
@@ -133,6 +171,13 @@ export default class LobbyScene extends Phaser.Scene {
         fontSize: fsize,
         color,
       }).setOrigin(0.5);
+      
+      const hs = localStorage.getItem('arcade_score_' + game.scene + '_EASY') || '0';
+      const scoreItem = this.add.text(490, y, `HI: ${hs}`, {
+        fontFamily: "'Share Tech Mono', Courier",
+        fontSize: '14px',
+        color: PALETTE.muted,
+      }).setOrigin(0, 0.5);
 
       if (isSelected) {
         item.setScale(1.06);
@@ -141,6 +186,7 @@ export default class LobbyScene extends Phaser.Scene {
           fontSize: '18px',
           color: PALETTE.primary,
         }).setOrigin(0.5);
+        scoreItem.setColor(PALETTE.accent);
       }
 
       this.gameItems.push(item);
@@ -225,12 +271,48 @@ export default class LobbyScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-ESC',   () => this.handleEsc());
 
     this.input.keyboard?.on('keydown', (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'c') {
+        this.toggleCrt();
+        return;
+      }
+
       this.secretBuffer = (this.secretBuffer + e.key.toUpperCase()).slice(-10);
       if (this.secretBuffer.includes('BIOS')) {
         this.secretBuffer = '';
         this.triggerBiosEgg();
       }
     });
+  }
+
+  private bindGamepad() {
+    this.input.gamepad?.once('connected', () => {
+      this.gamepadConnected = true;
+      this.add.text(320, 90, '🎮 GAMEPAD CONNECTED', {
+        fontFamily: "'Share Tech Mono', Courier",
+        fontSize: '14px',
+        color: PALETTE.primary,
+        fontStyle: 'bold',
+      }).setOrigin(0.5).setAlpha(0.8);
+    });
+  }
+
+  update() {
+    if (this.gamepadConnected && this.input.gamepad && this.input.gamepad.total > 0) {
+      const pad = this.input.gamepad.getPad(0);
+      if (!pad) return;
+
+      const up = pad.up || pad.leftStick.y < -0.5;
+      const down = pad.down || pad.leftStick.y > 0.5;
+      const button = pad.A || pad.B || pad.X || pad.Y;
+      const back = pad.B || pad.L1;
+
+      if (up && !this.padLastState.up) this.handleUp();
+      if (down && !this.padLastState.down) this.handleDown();
+      if (button && !this.padLastState.button) this.handleSpace();
+      if (back && !this.padLastState.back) this.handleEsc();
+
+      this.padLastState = { up, down, button, back };
+    }
   }
 
   private triggerBiosEgg() {
