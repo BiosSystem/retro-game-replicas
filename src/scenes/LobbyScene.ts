@@ -90,9 +90,13 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   private applyCrt() {
+    // @ts-ignore
     this.cameras.main.postFX.clear();
+    // @ts-ignore
     const barrel = this.cameras.main.postFX.addBarrel(1.02);
+    // @ts-ignore
     const vignette = this.cameras.main.postFX.addVignette(0.5, 0.5, 0.7);
+    // @ts-ignore
     const color = this.cameras.main.postFX.addColorMatrix();
     color.sepia();
     color.saturate(2);
@@ -104,6 +108,7 @@ export default class LobbyScene extends Phaser.Scene {
     if (this.isCrtEnabled) {
       this.applyCrt();
     } else {
+      // @ts-ignore
       this.cameras.main.postFX.clear();
     }
   }
@@ -303,8 +308,8 @@ export default class LobbyScene extends Phaser.Scene {
 
       const up = pad.up || pad.leftStick.y < -0.5;
       const down = pad.down || pad.leftStick.y > 0.5;
-      const button = pad.A || pad.B || pad.X || pad.Y;
-      const back = pad.B || pad.L1;
+      const button = !!(pad.A || pad.B || pad.X || pad.Y);
+      const back = !!(pad.B || pad.L1);
 
       if (up && !this.padLastState.up) this.handleUp();
       if (down && !this.padLastState.down) this.handleDown();
