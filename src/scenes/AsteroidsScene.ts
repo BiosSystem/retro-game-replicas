@@ -22,6 +22,9 @@ export default class AsteroidsScene extends Phaser.Scene {
       case 'EXPERT': this.asteroidCount = 12; this.maxSpeed = 260; break;
     }
 
+    // Add neon grid background
+    this.add.grid(320, 240, 640, 480, 40, 40, 0x000000, 0, 0x00ff00, 0.05);
+
     this.add.text(320, 20, 'ASTRO DRIFT - ARROWS TO MOVE - SPACE TO SHOOT - ESC TO LOBBY', { fontSize: '12px', color: '#00ff00' }).setOrigin(0.5);
 
     const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
@@ -42,8 +45,16 @@ export default class AsteroidsScene extends Phaser.Scene {
 
     if (!this.textures.exists('asteroid')) {
       const graphics = this.add.graphics();
-      graphics.lineStyle(2, 0xffffff);
-      graphics.strokeCircle(20, 20, 18);
+      graphics.lineStyle(2, 0x00ffff);
+      const points = [];
+      const numPoints = 10;
+      const radius = 16;
+      for (let i = 0; i < numPoints; i++) {
+        const angle = (i / numPoints) * Math.PI * 2;
+        const r = radius + (i % 2 === 0 ? 3 : -3);
+        points.push({ x: 20 + Math.cos(angle) * r, y: 20 + Math.sin(angle) * r });
+      }
+      graphics.strokePoints(points, true);
       graphics.generateTexture('asteroid', 40, 40);
       graphics.destroy();
     }
