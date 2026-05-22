@@ -52,7 +52,7 @@ export default class AsteroidsScene extends Phaser.Scene {
       for (let i = 0; i < numPoints; i++) {
         const angle = (i / numPoints) * Math.PI * 2;
         const r = radius + (i % 2 === 0 ? 3 : -3);
-        points.push({ x: 20 + Math.cos(angle) * r, y: 20 + Math.sin(angle) * r });
+        points.push(new Phaser.Math.Vector2(20 + Math.cos(angle) * r, 20 + Math.sin(angle) * r));
       }
       graphics.strokePoints(points, true);
       graphics.generateTexture('asteroid', 40, 40);
