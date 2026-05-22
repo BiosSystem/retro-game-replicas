@@ -108,5 +108,14 @@ Full documentation is available in the **[Wiki](https://github.com/BiosSystem/re
 
 All game replica logic, physics tuning, particle systems, CRT shaders, and Tauri integration are designed and maintained by **BiosSystem**.
 
+## 🔒 Security Fixes & Information
+
+Universal Retro Arcade enforces strict client sandboxing:
+- **Tauri v2 IPC Scoping**: All API interactions between the Phaser frontend and Rust backend are strictly scoped with restricted capabilities configuration.
+- **IndexedDB State Verification**: High scores and game states are bounds-checked at runtime to prevent local storage tampering.
+- **Shader Bounds Enforcement**: GLSL post-processing scanline shaders are bounds-checked to prevent WebGL resource memory overflow issues.
+
+For detailed security policies, reporting guidelines, and contact information, please refer to our [Security Policy](SECURITY.md).
+
 ---
 *Copyright © 2026 BiosSystem | Powered by BiosSystem Kernel*
