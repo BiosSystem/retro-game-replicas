@@ -16,6 +16,10 @@
   <img src="https://img.shields.io/github/stars/BiosSystem/retro-game-replicas?style=flat-square&color=00ff72" alt="Stars">
 </p>
 
+<p align="center">
+  <strong>🌐 Part of the <a href="https://bios-system.net">BiosSystem Suite</a></strong>
+</p>
+
 ---
 
 **Universal Retro Arcade** is a premium collection of 11 classic and 2000s-era game replicas rebuilt using modern cross-platform web technologies. Optimized for everything from MacBooks to mobile devices.
