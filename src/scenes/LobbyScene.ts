@@ -90,15 +90,18 @@ export default class LobbyScene extends Phaser.Scene {
 
   private applyCrt() {
     // @ts-ignore
-    this.cameras.main.postFX.clear();
-    // @ts-ignore
-    const barrel = this.cameras.main.postFX.addBarrel(1.02);
-    // @ts-ignore
-    const vignette = this.cameras.main.postFX.addVignette(0.5, 0.5, 0.7);
-    // @ts-ignore
-    const color = this.cameras.main.postFX.addColorMatrix();
-    color.sepia();
-    color.saturate(2);
+    if (this.cameras.main.postFX) {
+      // @ts-ignore
+      this.cameras.main.postFX.clear();
+      // @ts-ignore
+      const barrel = this.cameras.main.postFX.addBarrel(1.02);
+      // @ts-ignore
+      const vignette = this.cameras.main.postFX.addVignette(0.5, 0.5, 0.7);
+      // @ts-ignore
+      const color = this.cameras.main.postFX.addColorMatrix();
+      color.sepia();
+      color.saturate(2);
+    }
   }
 
   private toggleCrt() {
@@ -108,7 +111,10 @@ export default class LobbyScene extends Phaser.Scene {
       this.applyCrt();
     } else {
       // @ts-ignore
-      this.cameras.main.postFX.clear();
+      if (this.cameras.main.postFX) {
+        // @ts-ignore
+        this.cameras.main.postFX.clear();
+      }
     }
   }
 
