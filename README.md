@@ -21,7 +21,28 @@
 **Universal Retro Arcade** is a premium collection of 11 classic and 2000s-era game replicas rebuilt using modern cross-platform web technologies. Optimized for everything from MacBooks to mobile devices.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/BiosSystem/retro-game-replicas/master/docs/images/lobby.png" width="800" alt="Retro Arcade Lobby" />
+  <h3>🎮 Retro Arcade Launcher Lobby</h3>
+  <img src="https://raw.githubusercontent.com/BiosSystem/retro-game-replicas/master/docs/images/retro_lobby.png" width="800" alt="Retro Arcade Lobby" />
+</p>
+
+<p align="center">
+  <h3>📺 GLSL CRT Scanline Shader</h3>
+  <img src="https://raw.githubusercontent.com/BiosSystem/retro-game-replicas/master/docs/images/retro_crt_shader.png" width="800" alt="GLSL CRT Shader" />
+</p>
+
+<p align="center">
+  <h3>🧩 Tetris Replica Gameplay</h3>
+  <img src="https://raw.githubusercontent.com/BiosSystem/retro-game-replicas/master/docs/images/retro_tetris.png" width="800" alt="Tetris Replica Gameplay" />
+</p>
+
+<p align="center">
+  <h3>🚀 Asteroids Replica Gameplay</h3>
+  <img src="https://raw.githubusercontent.com/BiosSystem/retro-game-replicas/master/docs/images/retro_asteroids.png" width="800" alt="Asteroids Replica Gameplay" />
+</p>
+
+<p align="center">
+  <h3>🌌 Cyber Chasm Replica Gameplay</h3>
+  <img src="https://raw.githubusercontent.com/BiosSystem/retro-game-replicas/master/docs/images/retro_cyber.png" width="800" alt="Cyber Chasm Replica Gameplay" />
 </p>
 
 ## ✨ Why It's Unique
