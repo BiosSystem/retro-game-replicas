@@ -89,18 +89,14 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   private applyCrt() {
-    // @ts-ignore
-    if (this.cameras.main.postFX) {
-      // @ts-ignore
-      this.cameras.main.postFX.clear();
-      // @ts-ignore
-      const barrel = this.cameras.main.postFX.addBarrel(1.02);
-      // @ts-ignore
-      const vignette = this.cameras.main.postFX.addVignette(0.5, 0.5, 0.7);
-      // @ts-ignore
-      const color = this.cameras.main.postFX.addColorMatrix();
-      color.sepia();
-      color.saturate(2);
+    const filters = this.cameras.main.filters.internal;
+    filters.clear();
+    filters.addBarrel(1.02);
+    filters.addVignette(0.5, 0.5, 0.7);
+    const color = filters.addColorMatrix();
+    if (color && color.colorMatrix) {
+      color.colorMatrix.sepia();
+      color.colorMatrix.saturate(2);
     }
   }
 
@@ -110,13 +106,10 @@ export default class LobbyScene extends Phaser.Scene {
     if (this.isCrtEnabled) {
       this.applyCrt();
     } else {
-      // @ts-ignore
-      if (this.cameras.main.postFX) {
-        // @ts-ignore
-        this.cameras.main.postFX.clear();
-      }
+      this.cameras.main.filters.internal.clear();
     }
   }
+
 
   private buildStarfield() {
     this.starGfx = this.add.graphics();
