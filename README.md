@@ -26,27 +26,27 @@
 
 <p align="center">
   <h3>🎮 Retro Arcade Launcher Lobby</h3>
-  <img src="https://raw.githubusercontent.com/BiosSystem/retro-game-replicas/master/docs/images/retro_lobby.png" width="800" alt="Retro Arcade Lobby" />
+  <img src="docs/images/retro_lobby.png" width="800" alt="Retro Arcade Lobby" />
 </p>
 
 <p align="center">
   <h3>📺 GLSL CRT Scanline Shader</h3>
-  <img src="https://raw.githubusercontent.com/BiosSystem/retro-game-replicas/master/docs/images/retro_crt_shader.png" width="800" alt="GLSL CRT Shader" />
+  <img src="docs/images/retro_crt_shader.png" width="800" alt="GLSL CRT Shader" />
 </p>
 
 <p align="center">
   <h3>🧩 Tetris Replica Gameplay</h3>
-  <img src="https://raw.githubusercontent.com/BiosSystem/retro-game-replicas/master/docs/images/retro_tetris.png" width="800" alt="Tetris Replica Gameplay" />
+  <img src="docs/images/retro_tetris.png" width="800" alt="Tetris Replica Gameplay" />
 </p>
 
 <p align="center">
   <h3>🚀 Asteroids Replica Gameplay</h3>
-  <img src="https://raw.githubusercontent.com/BiosSystem/retro-game-replicas/master/docs/images/retro_asteroids.png" width="800" alt="Asteroids Replica Gameplay" />
+  <img src="docs/images/retro_asteroids.png" width="800" alt="Asteroids Replica Gameplay" />
 </p>
 
 <p align="center">
   <h3>🌌 Cyber Chasm Replica Gameplay</h3>
-  <img src="https://raw.githubusercontent.com/BiosSystem/retro-game-replicas/master/docs/images/retro_cyber.png" width="800" alt="Cyber Chasm Replica Gameplay" />
+  <img src="docs/images/retro_cyber.png" width="800" alt="Cyber Chasm Replica Gameplay" />
 </p>
 
 ## ✨ Why It's Unique
