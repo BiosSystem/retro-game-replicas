@@ -19,7 +19,7 @@ Only the active release branch and tagged desktop/mobile binaries under the Bios
 
 If you discover a security vulnerability, please report it immediately. Do not open public issues on GitHub.
 
-* **Email**: Send detailed vulnerability reports to `security@bios_system.io`.
+* **Email**: Send detailed vulnerability reports to `security@bios-system.net`.
 * **Response SLA**:
   * **Acknowledgement**: Within 24 hours.
   * **Remediation Plan**: Within 3 business days.
