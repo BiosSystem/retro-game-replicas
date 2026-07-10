@@ -10,13 +10,13 @@ BiosSystem - https://github.com/BiosSystem
 
 ### Purpose
 
-A collection of classic arcade game replicas built with TypeScript + Phaser 3, packaged as a cross-platform desktop app via Tauri v2.
+A collection of classic arcade game replicas built with TypeScript + Phaser 4, packaged as a cross-platform desktop app via Tauri v2.
 
 ### Stack
 
 | Component | Technology |
 |---|---|
-| Game Engine | Phaser 3 + TypeScript |
+| Game Engine | Phaser 4 + TypeScript |
 | Desktop Shell | Tauri v2 |
 | CI Build | GitHub Actions: Tauri matrix (Windows, macOS, Ubuntu) |
 
