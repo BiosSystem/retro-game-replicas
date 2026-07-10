@@ -174,7 +174,7 @@ The compiled output will appear in `src-tauri/target/release/bundle/`.
 
 ## 📖 Documentation
 
-Full documentation is available in the **[Wiki](https://github.com/BiosSystem/retro-game-replicas/wiki)**.
+Comprehensive documentation is available in the **[Wiki](https://github.com/BiosSystem/retro-game-replicas/wiki)**.
 
 ## 🙏 Credits & Maintenance
 
