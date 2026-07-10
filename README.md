@@ -20,7 +20,7 @@
   <strong>🌐 Part of the <a href="https://bios-system.net">BiosSystem Suite</a></strong>
 </p>
 
-**Universal Retro Arcade** is a premium collection of 11 classic and 2000s-era game replicas rebuilt using modern cross-platform web technologies. Optimized for everything from MacBooks to mobile devices.
+**Universal Retro Arcade** is a premium, open-source collection of 11 classic and 2000s-era game replicas rebuilt using modern cross-platform web technologies. Optimized for everything from MacBooks to mobile devices.
 
 <p align="center">
   <h3>🎮 Retro Arcade Launcher Lobby</h3>
