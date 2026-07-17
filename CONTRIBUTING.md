@@ -41,3 +41,5 @@ npm run tauri dev
 # Production build
 npm run tauri build
 ```
+
+<!-- formatting tweak -->
