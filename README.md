@@ -191,3 +191,5 @@ Universal Retro Arcade enforces strict client sandboxing:
 For detailed security policies and reporting guidelines, refer to our [Security Policy](SECURITY.md).
 
 *Copyright © 2026 BiosSystem | Powered by BiosSystem Kernel*
+
+<!-- formatting fix -->
