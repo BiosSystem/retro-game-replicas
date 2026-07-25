@@ -172,9 +172,9 @@ The compiled output will appear in `src-tauri/target/release/bundle/`.
 | Flappy Bird | Endless | Space | A Button |
 | Cyber Chasm | Platformer | WASD | Left Stick |
 
-## 📖 Documentation
+## 📖 Developer Wiki
 
-Comprehensive documentation is available in the **[Wiki](https://github.com/BiosSystem/retro-game-replicas/wiki)**.
+Deep technical guides and step-by-step developer documentation live in the **[Developer Wiki](docs/Home.md)**.
 
 ## 🙏 Credits & Maintenance
 
@@ -191,5 +191,3 @@ Universal Retro Arcade enforces strict client sandboxing:
 For detailed security policies and reporting guidelines, refer to our [Security Policy](SECURITY.md).
 
 *Copyright © 2026 BiosSystem | Powered by BiosSystem Kernel*
-
-<!-- formatting fix -->
