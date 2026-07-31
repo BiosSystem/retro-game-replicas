@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { InputManager } from '../engine/InputManager';
+import { AudioEngine } from '../engine/AudioEngine';
 
 export default class PongScene extends Phaser.Scene {
   private paddle1!: Phaser.GameObjects.Rectangle;
@@ -61,13 +63,15 @@ export default class PongScene extends Phaser.Scene {
     const ballBody = ball.body as Phaser.Physics.Arcade.Body;
     ballBody.setVelocity(ballBody.velocity.x * 1.05, ballBody.velocity.y * 1.05);
     this.cameras.main.shake(100, 0.005);
+    AudioEngine.playTone(400, 'square', 0.1);
   }
 
-  update() {
-    const cursors = this.input.keyboard?.createCursorKeys();
+  update(_time: number, delta: number) {
+    InputManager.update();
+    const dtAdjust = delta / 16.666;
 
-    if (cursors?.up.isDown) this.paddle1.y -= this.playerSpeed;
-    if (cursors?.down.isDown) this.paddle1.y += this.playerSpeed;
+    if (InputManager.isDown('ArrowUp')) this.paddle1.y -= this.playerSpeed * dtAdjust;
+    if (InputManager.isDown('ArrowDown')) this.paddle1.y += this.playerSpeed * dtAdjust;
 
     if (this.ball.y > this.paddle2.y + 10) this.paddle2.y += this.aiSpeed;
     else if (this.ball.y < this.paddle2.y - 10) this.paddle2.y -= this.aiSpeed;
@@ -87,6 +91,8 @@ export default class PongScene extends Phaser.Scene {
     if (winner === 1) this.score1++;
     else this.score2++;
     
+    AudioEngine.playTone(800, 'sawtooth', 0.3);
+
     this.scoreText.setText(`${this.score1} - ${this.score2}`);
     this.ball.setPosition(320, 240);
     const ballBody = this.ball.body as Phaser.Physics.Arcade.Body;

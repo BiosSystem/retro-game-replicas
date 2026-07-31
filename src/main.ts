@@ -12,6 +12,8 @@ import MinesweeperScene from './scenes/MinesweeperScene';
 import RunnerScene from './scenes/RunnerScene';
 import BirdScene from './scenes/BirdScene';
 import CyberScene from './scenes/CyberScene';
+import { InputManager } from './engine/InputManager';
+import { AudioEngine } from './engine/AudioEngine';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -24,6 +26,10 @@ const config: Phaser.Types.Core.GameConfig = {
   },
   backgroundColor: '#0a0a0a',
   pixelArt: true,
+  fps: {
+    target: 60,
+    forceSetTimeOut: true,
+  },
   physics: {
     default: 'arcade',
     arcade: {
@@ -49,3 +55,8 @@ const config: Phaser.Types.Core.GameConfig = {
 const game = new Phaser.Game(config);
 (window as any).game = game;
 
+// Initialize custom engines
+InputManager.initialize();
+window.addEventListener('click', () => {
+  AudioEngine.initialize();
+}, { once: true });

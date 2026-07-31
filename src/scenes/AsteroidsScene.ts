@@ -1,11 +1,11 @@
 import Phaser from 'phaser';
+import { InputManager } from '../engine/InputManager';
 
 export default class AsteroidsScene extends Phaser.Scene {
   private ship!: Phaser.Physics.Arcade.Image;
   private asteroids!: Phaser.Physics.Arcade.Group;
   private bullets!: Phaser.Physics.Arcade.Group;
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private asteroidCount = 5;
+    private asteroidCount = 5;
   private maxSpeed = 100;
   private difficulty = 'NORMAL';
 
@@ -83,8 +83,7 @@ export default class AsteroidsScene extends Phaser.Scene {
     this.physics.add.collider(this.bullets, this.asteroids, this.hitAsteroid as any, undefined, this);
     this.physics.add.collider(this.ship, this.asteroids, () => { this.scene.restart({ difficulty: this.difficulty }); }, undefined, this);
 
-    this.cursors = this.input.keyboard!.createCursorKeys();
-    this.input.keyboard?.on('keydown-SPACE', () => { this.fireBullet(); });
+        this.input.keyboard?.on('keydown-SPACE', () => { this.fireBullet(); });
     this.input.keyboard?.on('keydown-ESC', () => { this.scene.start('LobbyScene'); });
   }
 
@@ -114,11 +113,11 @@ export default class AsteroidsScene extends Phaser.Scene {
     this.physics.world.wrap(this.asteroids, 20);
     this.physics.world.wrap(this.bullets, 2);
 
-    if (this.cursors.left.isDown) this.ship.setAngularVelocity(-200);
-    else if (this.cursors.right.isDown) this.ship.setAngularVelocity(200);
+    if (InputManager.isDown('ArrowLeft')) this.ship.setAngularVelocity(-200);
+    else if (InputManager.isDown('ArrowRight')) this.ship.setAngularVelocity(200);
     else this.ship.setAngularVelocity(0);
 
-    if (this.cursors.up.isDown) {
+    if (InputManager.isDown('ArrowUp')) {
         this.physics.velocityFromRotation(this.ship.rotation - Math.PI / 2, 200, (this.ship.body as Phaser.Physics.Arcade.Body).acceleration);
     } else {
         this.ship.setAcceleration(0);
