@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local AI & Private Brain Logs
+docs/local/
+.claude/
+Claude_Brain/
+*.brain.md
+ACTIVE_TASKS.md

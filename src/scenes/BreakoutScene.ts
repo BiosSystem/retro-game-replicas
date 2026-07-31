@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { InputManager } from '../engine/InputManager';
 
 export default class BreakoutScene extends Phaser.Scene {
   private paddle!: Phaser.Physics.Arcade.Image;
@@ -118,9 +119,9 @@ export default class BreakoutScene extends Phaser.Scene {
   }
 
   update() {
-    const cursors = this.input.keyboard?.createCursorKeys();
-    if (cursors?.left.isDown) this.paddle.setVelocityX(-this.paddleSpeed);
-    else if (cursors?.right.isDown) this.paddle.setVelocityX(this.paddleSpeed);
+    InputManager.update();
+    if (InputManager.isDown('ArrowLeft')) this.paddle.setVelocityX(-this.paddleSpeed);
+    else if (InputManager.isDown('ArrowRight')) this.paddle.setVelocityX(this.paddleSpeed);
     else this.paddle.setVelocityX(0);
 
     if (this.ball.y > 480) {
