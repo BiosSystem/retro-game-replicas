@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SaveManager } from '../engine/SaveManager';
 
 const TILE_SIZE = 16;
 const COLS = 40; // 640 / 16
@@ -89,7 +90,8 @@ export default class SnakeScene extends Phaser.Scene {
   update(_time: number, delta: number) {
     if (this.gameOver) {
       if (this.input.keyboard?.checkDown(this.input.keyboard.addKey('SPACE'), 250)) {
-        this.scene.restart({ difficulty: this.difficulty });
+        SaveManager.submitScore('SnakeScene', this.difficulty, this.score);
+      this.scene.restart({ difficulty: this.difficulty });
       }
       return;
     }

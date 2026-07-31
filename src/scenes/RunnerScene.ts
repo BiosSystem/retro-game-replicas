@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { SaveManager } from '../engine/SaveManager';
+import { VFXManager } from '../engine/VFXManager';
 
 export default class RunnerScene extends Phaser.Scene {
   private player!: Phaser.GameObjects.Rectangle;
@@ -81,7 +83,7 @@ export default class RunnerScene extends Phaser.Scene {
       const body = this.player.body as Phaser.Physics.Arcade.Body;
       if (body.touching.down) {
           body.setVelocityY(-650);
-          this.cameras.main.shake(100, 0.001);
+          VFXManager.screenShake(this, 0.001, 100);
       }
   }
 
@@ -136,9 +138,10 @@ export default class RunnerScene extends Phaser.Scene {
 
   endGame() {
       this.physics.pause();
-      this.cameras.main.shake(300, 0.02);
+      VFXManager.screenShake(this, 0.02, 300);
       const banner = this.add.rectangle(320, 240, 640, 100, 0x000000, 0.8);
       this.add.text(320, 240, `GAME OVER\nFINAL SCORE: ${Math.floor(this.score)}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff0055', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.setInteractive().on('pointerdown', () => this.scene.restart({ difficulty: this.difficulty }));
+      banner.setInteractive().on('pointerdown', () => { SaveManager.submitScore('RunnerScene', this.difficulty, this.score);
+      this.scene.restart({ difficulty: this.difficulty }); });
   }
 }

@@ -55,8 +55,11 @@ const config: Phaser.Types.Core.GameConfig = {
 const game = new Phaser.Game(config);
 (window as any).game = game;
 
+import { SaveManager } from './engine/SaveManager';
+
 // Initialize custom engines
 InputManager.initialize();
+SaveManager.initialize();
 window.addEventListener('click', () => {
   AudioEngine.initialize();
 }, { once: true });
