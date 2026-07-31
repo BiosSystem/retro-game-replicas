@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { VFXManager } from '../engine/VFXManager';
 
 const TILE_SIZE = 32;
 const COLS = 12;
@@ -198,6 +199,6 @@ export default class MinesweeperScene extends Phaser.Scene {
       this.add.text(320, 240, `${msg}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: color, align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
 
       banner.on('pointerdown', () => this.scene.restart({ difficulty: this.difficulty }));
-      if (!win) this.cameras.main.shake(500, 0.03);
+      if (!win) VFXManager.screenShake(this, 0.03, 500);
   }
 }

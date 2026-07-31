@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
+import { SaveManager } from '../engine/SaveManager';
 import { InputManager } from '../engine/InputManager';
+import { VFXManager } from '../engine/VFXManager';
 
 export default class BreakoutScene extends Phaser.Scene {
   private paddle!: Phaser.Physics.Arcade.Image;
@@ -91,6 +93,16 @@ export default class BreakoutScene extends Phaser.Scene {
     this.physics.add.collider(this.ball, this.bricks, this.hitBrick as any, undefined, this);
 
     this.input.keyboard?.on('keydown-ESC', () => { this.scene.start('LobbyScene'); });
+
+    // DDA Scaling
+    this.time.addEvent({
+      delay: 15000,
+      loop: true,
+      callback: () => {
+        this.ballSpeed *= 1.05;
+        this.paddleSpeed *= 1.02; // Player gets slightly faster too
+      }
+    });
   }
 
   hitPaddle(ball: Phaser.Physics.Arcade.Image, paddle: Phaser.Physics.Arcade.Image) {
@@ -104,16 +116,21 @@ export default class BreakoutScene extends Phaser.Scene {
     } else {
       ball.setVelocityX(2 + Math.random() * 8);
     }
-    this.cameras.main.shake(100, 0.002);
+    VFXManager.screenShake(this, 0.002, 100);
+    VFXManager.playHit(this, ball.x, ball.y, 0xffffff);
   }
 
   hitBrick(_ball: any, brick: any) {
+    VFXManager.playExplosion(this, brick.x, brick.y, 0xffffff);
+    VFXManager.floatingText(this, brick.x, brick.y, '10', '#ffffff');
+    VFXManager.screenShake(this, 0.005, 100);
+
     brick.disableBody(true, true);
     this.score += 10;
     this.scoreText.setText('SCORE: ' + this.score);
-    this.cameras.main.shake(100, 0.005);
     
     if (this.bricks.countActive() === 0) {
+      SaveManager.submitScore('BreakoutScene', this.difficulty, this.score);
       this.scene.restart({ difficulty: this.difficulty });
     }
   }
@@ -125,6 +142,7 @@ export default class BreakoutScene extends Phaser.Scene {
     else this.paddle.setVelocityX(0);
 
     if (this.ball.y > 480) {
+      SaveManager.submitScore('BreakoutScene', this.difficulty, this.score);
       this.scene.restart({ difficulty: this.difficulty });
     }
   }

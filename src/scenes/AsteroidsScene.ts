@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { InputManager } from '../engine/InputManager';
+import { VFXManager } from '../engine/VFXManager';
 
 export default class AsteroidsScene extends Phaser.Scene {
   private ship!: Phaser.Physics.Arcade.Image;
@@ -85,6 +86,16 @@ export default class AsteroidsScene extends Phaser.Scene {
 
         this.input.keyboard?.on('keydown-SPACE', () => { this.fireBullet(); });
     this.input.keyboard?.on('keydown-ESC', () => { this.scene.start('LobbyScene'); });
+
+    // DDA Scaling
+    this.time.addEvent({
+      delay: 20000,
+      loop: true,
+      callback: () => {
+        this.maxSpeed *= 1.15;
+        this.spawnAsteroid(); // spawn an extra one over time
+      }
+    });
   }
 
   spawnAsteroid() {
@@ -102,10 +113,14 @@ export default class AsteroidsScene extends Phaser.Scene {
   }
 
   hitAsteroid(bullet: Phaser.GameObjects.GameObject, asteroid: Phaser.GameObjects.GameObject) {
+    const ast = asteroid as Phaser.Physics.Arcade.Sprite;
+    VFXManager.playExplosion(this, ast.x, ast.y, 0x00ffff);
+    VFXManager.screenShake(this, 0.015, 100);
+    VFXManager.floatingText(this, ast.x, ast.y, '100', '#00ffff');
+    
     bullet.destroy();
     asteroid.destroy();
     this.spawnAsteroid();
-    this.cameras.main.shake(100, 0.01);
   }
 
   update() {

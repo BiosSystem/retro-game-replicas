@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { InputManager } from '../engine/InputManager';
 import { AudioEngine } from '../engine/AudioEngine';
-
+import { VFXManager } from '../engine/VFXManager';
 export default class PongScene extends Phaser.Scene {
   private paddle1!: Phaser.GameObjects.Rectangle;
   private paddle2!: Phaser.GameObjects.Rectangle;
@@ -57,12 +57,23 @@ export default class PongScene extends Phaser.Scene {
     this.physics.add.collider(this.ball, this.paddle2, this.hitPaddle as any, undefined, this);
 
     this.input.keyboard?.on('keydown-ESC', () => { this.scene.start('LobbyScene'); });
+
+    // DDA Scaling
+    this.time.addEvent({
+      delay: 15000,
+      loop: true,
+      callback: () => {
+        this.baseSpeed *= 1.05;
+        this.aiSpeed *= 1.05;
+      }
+    });
   }
 
   hitPaddle(ball: Phaser.GameObjects.Arc, _paddle: Phaser.GameObjects.Rectangle) {
     const ballBody = ball.body as Phaser.Physics.Arcade.Body;
     ballBody.setVelocity(ballBody.velocity.x * 1.05, ballBody.velocity.y * 1.05);
-    this.cameras.main.shake(100, 0.005);
+    VFXManager.screenShake(this, 0.005, 100);
+    VFXManager.playHit(this, ball.x, ball.y, 0x00ffcc);
     AudioEngine.playTone(400, 'square', 0.1);
   }
 

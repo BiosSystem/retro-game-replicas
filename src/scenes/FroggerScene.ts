@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { SaveManager } from '../engine/SaveManager';
+import { VFXManager } from '../engine/VFXManager';
 
 const TILE = 32;
 
@@ -186,10 +188,11 @@ export default class FroggerScene extends Phaser.Scene {
 
   endGame(reason: string) {
       this.physics.pause();
-      this.cameras.main.shake(300, 0.02);
+      VFXManager.screenShake(this, 0.02, 300);
       
       const banner = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.85).setInteractive();
       this.add.text(320, 240, `${reason}\nFINAL SCORE: ${this.score}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff0055', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.on('pointerdown', () => this.scene.restart({ difficulty: this.difficulty }));
+      banner.on('pointerdown', () => { SaveManager.submitScore('FroggerScene', this.difficulty, this.score);
+      this.scene.restart({ difficulty: this.difficulty }); });
   }
 }

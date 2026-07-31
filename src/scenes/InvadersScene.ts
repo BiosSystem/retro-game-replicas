@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { SaveManager } from '../engine/SaveManager';
+import { VFXManager } from '../engine/VFXManager';
 import { InputManager } from '../engine/InputManager';
 
 export default class InvadersScene extends Phaser.Scene {
@@ -91,7 +93,8 @@ export default class InvadersScene extends Phaser.Scene {
     this.physics.add.overlap(this.bullets, this.aliens, this.hitAlien as any, undefined, this);
     this.physics.add.overlap(this.player, this.alienBullets, () => { 
         if (this.shootEvent) this.shootEvent.remove(); 
-        this.scene.restart({ difficulty: this.difficulty }); 
+        SaveManager.submitScore('InvadersScene', this.difficulty, this.score);
+      this.scene.restart({ difficulty: this.difficulty }); 
     }, undefined, this);
 
     this.shootEvent = this.time.addEvent({ delay: this.shootDelay, callback: this.alienShoot, callbackScope: this, loop: true });
@@ -115,7 +118,7 @@ export default class InvadersScene extends Phaser.Scene {
     alien.destroy();
     this.score += 20;
     this.scoreText.setText('SCORE: ' + this.score);
-    this.cameras.main.shake(100, 0.005);
+    VFXManager.screenShake(this, 0.005, 100);
   }
 
   update() {
@@ -131,7 +134,8 @@ export default class InvadersScene extends Phaser.Scene {
 
     if (this.aliens.getLength() === 0) {
         if (this.shootEvent) this.shootEvent.remove();
-        this.scene.restart({ difficulty: this.difficulty });
+        SaveManager.submitScore('InvadersScene', this.difficulty, this.score);
+      this.scene.restart({ difficulty: this.difficulty });
     }
   }
 }
