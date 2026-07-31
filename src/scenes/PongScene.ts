@@ -56,7 +56,10 @@ export default class PongScene extends Phaser.Scene {
     this.physics.add.collider(this.ball, this.paddle1, this.hitPaddle as any, undefined, this);
     this.physics.add.collider(this.ball, this.paddle2, this.hitPaddle as any, undefined, this);
 
-    this.input.keyboard?.on('keydown-ESC', () => { this.scene.start('LobbyScene'); });
+    this.input.keyboard?.on('keydown-ESC', () => {
+      this.scene.pause();
+      this.scene.launch('PauseScene', { scene: this.scene.key });
+    });
 
     // DDA Scaling
     this.time.addEvent({

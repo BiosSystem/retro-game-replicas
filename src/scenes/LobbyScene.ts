@@ -176,13 +176,14 @@ export default class LobbyScene extends Phaser.Scene {
       }).setOrigin(0.5);
       
       // Show highest score across normal/hard for display
-      const hs = Math.max(
-          SaveManager.getHighScore(game.scene, 'NORMAL'),
-          SaveManager.getHighScore(game.scene, 'HARD'),
-          SaveManager.getHighScore(game.scene, 'EXPERT'),
-          SaveManager.getHighScore(game.scene, 'EASY')
-      );
-      const scoreItem = this.add.text(490, y, `HI: ${hs}`, {
+      let maxData = SaveManager.getHighScoreData(game.scene, 'NORMAL');
+      const diffs = ['HARD', 'EXPERT', 'EASY'];
+      for (const d of diffs) {
+          const dt = SaveManager.getHighScoreData(game.scene, d);
+          if (dt.score > maxData.score) maxData = dt;
+      }
+      
+      const scoreItem = this.add.text(490, y, `HI: ${maxData.score} [${maxData.name}]`, {
         fontFamily: "'Share Tech Mono', Courier",
         fontSize: '14px',
         color: PALETTE.muted,

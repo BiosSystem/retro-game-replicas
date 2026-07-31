@@ -12,6 +12,9 @@ import MinesweeperScene from './scenes/MinesweeperScene';
 import RunnerScene from './scenes/RunnerScene';
 import BirdScene from './scenes/BirdScene';
 import CyberScene from './scenes/CyberScene';
+import PauseScene from './scenes/PauseScene';
+import NameEntryScene from './scenes/NameEntryScene';
+
 import { InputManager } from './engine/InputManager';
 import { AudioEngine } from './engine/AudioEngine';
 
@@ -48,7 +51,9 @@ const config: Phaser.Types.Core.GameConfig = {
     MinesweeperScene, 
     RunnerScene, 
     BirdScene,
-    CyberScene
+    CyberScene,
+    PauseScene,
+    NameEntryScene
   ]
 };
 

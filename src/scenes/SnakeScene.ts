@@ -69,7 +69,10 @@ export default class SnakeScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(10).setVisible(false);
 
     // Input
-    this.input.keyboard?.on('keydown-ESC', () => { this.scene.start('LobbyScene'); });
+    this.input.keyboard?.on('keydown-ESC', () => {
+      this.scene.pause();
+      this.scene.launch('PauseScene', { scene: this.scene.key });
+    });
     this.input.keyboard?.on('keydown-UP', () => { if (this.direction !== 'DOWN') this.nextDirection = 'UP'; });
     this.input.keyboard?.on('keydown-DOWN', () => { if (this.direction !== 'UP') this.nextDirection = 'DOWN'; });
     this.input.keyboard?.on('keydown-LEFT', () => { if (this.direction !== 'RIGHT') this.nextDirection = 'LEFT'; });
@@ -90,8 +93,13 @@ export default class SnakeScene extends Phaser.Scene {
   update(_time: number, delta: number) {
     if (this.gameOver) {
       if (this.input.keyboard?.checkDown(this.input.keyboard.addKey('SPACE'), 250)) {
-        SaveManager.submitScore('SnakeScene', this.difficulty, this.score);
+        if (SaveManager.isHighScore('SnakeScene', this.difficulty, this.score)) {
+      this.scene.pause();
+      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: this.difficulty, score: this.score });
+    } else {
+      SaveManager.submitScore('SnakeScene', this.difficulty, this.score);
       this.scene.restart({ difficulty: this.difficulty });
+    }
       }
       return;
     }

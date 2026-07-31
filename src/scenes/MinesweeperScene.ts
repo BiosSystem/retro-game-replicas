@@ -60,7 +60,10 @@ export default class MinesweeperScene extends Phaser.Scene {
     // Disable context menu for right click
     this.input.mouse?.disableContextMenu();
 
-    this.input.keyboard?.on('keydown-ESC', () => { this.scene.start('LobbyScene'); });
+    this.input.keyboard?.on('keydown-ESC', () => {
+      this.scene.pause();
+      this.scene.launch('PauseScene', { scene: this.scene.key });
+    });
   }
 
   initGrid() {
