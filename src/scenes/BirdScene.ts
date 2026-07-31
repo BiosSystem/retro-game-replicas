@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { SaveManager } from '../engine/SaveManager';
+import { VFXManager } from '../engine/VFXManager';
 
 export default class BirdScene extends Phaser.Scene {
   private bird!: Phaser.GameObjects.Rectangle;
@@ -112,7 +114,7 @@ export default class BirdScene extends Phaser.Scene {
               this.score += 0.5; // Gate is 2 pipes
               this.scoreText.setText(Math.floor(this.score).toString());
               if (Math.floor(this.score) % 1 === 0) {
-                  this.cameras.main.shake(100, 0.001);
+                  VFXManager.screenShake(this, 0.001, 100);
               }
           }
       });
@@ -148,11 +150,12 @@ export default class BirdScene extends Phaser.Scene {
 
   endGame() {
       this.physics.pause();
-      this.cameras.main.shake(400, 0.03);
+      VFXManager.screenShake(this, 0.03, 400);
       this.bird.setFillStyle(0xff0000);
       
       const banner = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.85).setInteractive();
       this.add.text(320, 240, `FLIGHT TERMINATED\nSCORE: ${Math.floor(this.score)}\nCLICK TO REBOOT`, { fontFamily: 'Courier', fontSize: '28px', color: '#ffff00', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.on('pointerdown', () => this.scene.restart({ difficulty: this.difficulty }));
+      banner.on('pointerdown', () => { SaveManager.submitScore('BirdScene', this.difficulty, this.score);
+      this.scene.restart({ difficulty: this.difficulty }); });
   }
 }

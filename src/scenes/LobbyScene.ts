@@ -3,7 +3,7 @@
  * Universal Retro Arcade | https://github.com/BiosSystem/retro-game-replicas
  */
 import Phaser from 'phaser';
-
+import { SaveManager } from '../engine/SaveManager';
 type MenuMode = 'GAME_SELECT' | 'DIFFICULTY_SELECT';
 
 const PALETTE = {
@@ -175,7 +175,13 @@ export default class LobbyScene extends Phaser.Scene {
         color,
       }).setOrigin(0.5);
       
-      const hs = localStorage.getItem('arcade_score_' + game.scene + '_EASY') || '0';
+      // Show highest score across normal/hard for display
+      const hs = Math.max(
+          SaveManager.getHighScore(game.scene, 'NORMAL'),
+          SaveManager.getHighScore(game.scene, 'HARD'),
+          SaveManager.getHighScore(game.scene, 'EXPERT'),
+          SaveManager.getHighScore(game.scene, 'EASY')
+      );
       const scoreItem = this.add.text(490, y, `HI: ${hs}`, {
         fontFamily: "'Share Tech Mono', Courier",
         fontSize: '14px',

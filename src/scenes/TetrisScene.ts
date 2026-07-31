@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { SaveManager } from '../engine/SaveManager';
+import { VFXManager } from '../engine/VFXManager';
 
 const COLS = 10;
 const ROWS = 20;
@@ -93,8 +95,9 @@ export default class TetrisScene extends Phaser.Scene {
       color: pick.c
     };
     if (this.checkCollision(0, 0)) {
-        this.cameras.main.shake(500, 0.02);
-        this.time.delayedCall(500, () => this.scene.restart({ difficulty: this.difficulty }));
+        VFXManager.screenShake(this, 0.02, 500);
+        this.time.delayedCall(500, () => { SaveManager.submitScore('TetrisScene', this.difficulty, this.score);
+      this.scene.restart({ difficulty: this.difficulty }); });
     }
   }
 
@@ -147,7 +150,7 @@ export default class TetrisScene extends Phaser.Scene {
     }
     this.clearLines();
     this.spawnPiece();
-    this.cameras.main.shake(100, 0.002);
+    VFXManager.screenShake(this, 0.002, 100);
   }
 
   clearLines() {
