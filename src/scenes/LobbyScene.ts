@@ -4,6 +4,7 @@
  */
 import Phaser from 'phaser';
 import { SaveManager } from '../engine/SaveManager';
+import { AchievementManager } from '../engine/AchievementManager';
 type MenuMode = 'GAME_SELECT' | 'DIFFICULTY_SELECT';
 
 const PALETTE = {
@@ -204,7 +205,7 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   private buildFooter() {
-    this.add.text(320, 458, '↑↓  NAVIGATE     SPACE  SELECT     ESC  BACK', {
+    this.add.text(320, 458, '↑↓ NAVIGATE   SPACE SELECT   S SETTINGS   A ACHIEVEMENTS', {
       fontFamily: "'Share Tech Mono', Courier",
       fontSize: '11px',
       color: PALETTE.muted,
@@ -279,6 +280,12 @@ export default class LobbyScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-SPACE', () => this.handleSpace());
     this.input.keyboard?.on('keydown-ENTER', () => this.handleSpace());
     this.input.keyboard?.on('keydown-ESC',   () => this.handleEsc());
+    this.input.keyboard?.on('keydown-S',     () => {
+        if (this.mode !== 'DIFFICULTY_SELECT') this.scene.launch('SettingsScene', { scene: this.scene.key });
+    });
+    this.input.keyboard?.on('keydown-A',     () => {
+        if (this.mode !== 'DIFFICULTY_SELECT') this.scene.launch('AchievementsScene');
+    });
 
     this.input.keyboard?.on('keydown', (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'c') {
@@ -350,7 +357,10 @@ export default class LobbyScene extends Phaser.Scene {
       const game = this.games[this.selectedGameIndex];
       const diff = this.difficulties[this.selectedDiffIndex];
       this.cameras.main.fade(200, 0, 0, 0);
-      this.time.delayedCall(200, () => this.scene.start(game.scene, { difficulty: diff.id }));
+      this.time.delayedCall(200, () => {
+          AchievementManager.recordPlay(game.scene);
+          this.scene.start(game.scene, { difficulty: diff.id });
+      });
     }
   }
 

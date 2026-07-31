@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 
 export default class PauseScene extends Phaser.Scene {
     private sourceScene!: string;
-    private options = ['RESUME', 'RESTART', 'QUIT'];
+    private options = ['RESUME', 'RESTART', 'SETTINGS', 'QUIT'];
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
 
@@ -73,9 +73,16 @@ export default class PauseScene extends Phaser.Scene {
             case 1:
                 this.scene.stop('PauseScene');
                 const src = this.scene.get(this.sourceScene);
-                src.scene.restart();
+                if (src) {
+                    // Need to cleanly restart physics
+                    src.scene.restart();
+                }
                 break;
             case 2:
+                // Launch settings over the pause menu
+                this.scene.launch('SettingsScene', { scene: 'PauseScene' });
+                break;
+            case 3:
                 this.scene.stop('PauseScene');
                 this.scene.stop(this.sourceScene);
                 this.scene.start('LobbyScene');

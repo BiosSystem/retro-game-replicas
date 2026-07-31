@@ -2,6 +2,7 @@ export interface ScoreData {
     score: number;
     name: string;
 }
+import { AchievementManager } from './AchievementManager';
 
 export class SaveManager {
     private static STORAGE_KEY_V1 = 'bios_arcade_saves_v1';
@@ -54,6 +55,8 @@ export class SaveManager {
     }
 
     public static submitScore(game: string, difficulty: string, score: number, name: string = 'AAA'): boolean {
+        AchievementManager.recordScore(score);
+
         if (!this.data[game]) {
             this.data[game] = {};
         }

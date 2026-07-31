@@ -14,6 +14,8 @@ import BirdScene from './scenes/BirdScene';
 import CyberScene from './scenes/CyberScene';
 import PauseScene from './scenes/PauseScene';
 import NameEntryScene from './scenes/NameEntryScene';
+import SettingsScene from './scenes/SettingsScene';
+import AchievementsScene from './scenes/AchievementsScene';
 
 import { InputManager } from './engine/InputManager';
 import { AudioEngine } from './engine/AudioEngine';
@@ -53,7 +55,9 @@ const config: Phaser.Types.Core.GameConfig = {
     BirdScene,
     CyberScene,
     PauseScene,
-    NameEntryScene
+    NameEntryScene,
+    SettingsScene,
+    AchievementsScene
   ]
 };
 
