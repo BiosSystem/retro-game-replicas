@@ -1,12 +1,12 @@
 import Phaser from 'phaser';
+import { InputManager } from '../engine/InputManager';
 
 export default class InvadersScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Image;
   private aliens!: Phaser.Physics.Arcade.Group;
   private bullets!: Phaser.Physics.Arcade.Group;
   private alienBullets!: Phaser.Physics.Arcade.Group;
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private score = 0;
+    private score = 0;
   private scoreText!: Phaser.GameObjects.Text;
   private shootDelay = 1000;
   private alienBulletSpeed = 200;
@@ -85,8 +85,7 @@ export default class InvadersScene extends Phaser.Scene {
       }
     }
 
-    this.cursors = this.input.keyboard!.createCursorKeys();
-    this.input.keyboard?.on('keydown-SPACE', () => { this.fireBullet(); });
+        this.input.keyboard?.on('keydown-SPACE', () => { this.fireBullet(); });
     this.input.keyboard?.on('keydown-ESC', () => { this.scene.start('LobbyScene'); });
 
     this.physics.add.overlap(this.bullets, this.aliens, this.hitAlien as any, undefined, this);
@@ -120,8 +119,8 @@ export default class InvadersScene extends Phaser.Scene {
   }
 
   update() {
-    if (this.cursors.left.isDown) this.player.setVelocityX(-300);
-    else if (this.cursors.right.isDown) this.player.setVelocityX(300);
+    if (InputManager.isDown('ArrowLeft')) this.player.setVelocityX(-300);
+    else if (InputManager.isDown('ArrowRight')) this.player.setVelocityX(300);
     else this.player.setVelocityX(0);
 
     this.aliens.getChildren().forEach((a: any) => {

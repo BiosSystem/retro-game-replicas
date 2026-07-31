@@ -5,10 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v1.1.0] - Planned
 
-### Changed
-- Replaced all em dashes with hyphens in `README.md` and `CREDITS.md` for cross-platform doc consistency.
+### Added
+- Core Engine Refactor: Frame-rate independent delta-time clock lock (60Hz/120Hz/144Hz support).
+- Modular `InputManager` supporting Keyboard, Virtual Touch Controls, and Gamepad API.
+
+## [v1.0.0] - Baseline
 
 ### Added
 - Completed implementation for all 11 premium game replicas.
@@ -24,3 +27,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rebranded project to **Universal Retro Arcade Launcher** in `package.json` and Tauri configuration.
 - Upgraded the `README.md` to reflect the full 11-game suite with documentation.
 - Removed all local, hardcoded absolute system paths to ensure professional cross-platform compilation.
+- Replaced all em dashes with hyphens in `README.md` and `CREDITS.md` for cross-platform doc consistency.
