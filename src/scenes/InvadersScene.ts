@@ -88,13 +88,21 @@ export default class InvadersScene extends Phaser.Scene {
     }
 
         this.input.keyboard?.on('keydown-SPACE', () => { this.fireBullet(); });
-    this.input.keyboard?.on('keydown-ESC', () => { this.scene.start('LobbyScene'); });
+    this.input.keyboard?.on('keydown-ESC', () => {
+      this.scene.pause();
+      this.scene.launch('PauseScene', { scene: this.scene.key });
+    });
 
     this.physics.add.overlap(this.bullets, this.aliens, this.hitAlien as any, undefined, this);
     this.physics.add.overlap(this.player, this.alienBullets, () => { 
         if (this.shootEvent) this.shootEvent.remove(); 
-        SaveManager.submitScore('InvadersScene', this.difficulty, this.score);
-      this.scene.restart({ difficulty: this.difficulty }); 
+        if (SaveManager.isHighScore('InvadersScene', this.difficulty, this.score)) {
+      this.scene.pause();
+      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: this.difficulty, score: this.score });
+    } else {
+      SaveManager.submitScore('InvadersScene', this.difficulty, this.score);
+      this.scene.restart({ difficulty: this.difficulty });
+    } 
     }, undefined, this);
 
     this.shootEvent = this.time.addEvent({ delay: this.shootDelay, callback: this.alienShoot, callbackScope: this, loop: true });
@@ -134,8 +142,13 @@ export default class InvadersScene extends Phaser.Scene {
 
     if (this.aliens.getLength() === 0) {
         if (this.shootEvent) this.shootEvent.remove();
-        SaveManager.submitScore('InvadersScene', this.difficulty, this.score);
+        if (SaveManager.isHighScore('InvadersScene', this.difficulty, this.score)) {
+      this.scene.pause();
+      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: this.difficulty, score: this.score });
+    } else {
+      SaveManager.submitScore('InvadersScene', this.difficulty, this.score);
       this.scene.restart({ difficulty: this.difficulty });
+    }
     }
   }
 }

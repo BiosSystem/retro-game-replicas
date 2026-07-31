@@ -122,7 +122,10 @@ export default class CyberScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-DOWN', () => this.setVel(0, this.playerSpeed));
     this.input.keyboard?.on('keydown-LEFT', () => this.setVel(-this.playerSpeed, 0));
     this.input.keyboard?.on('keydown-RIGHT', () => this.setVel(this.playerSpeed, 0));
-    this.input.keyboard?.on('keydown-ESC', () => this.scene.start('LobbyScene'));
+    this.input.keyboard?.on('keydown-ESC', () => {
+      this.scene.pause();
+      this.scene.launch('PauseScene', { scene: this.scene.key });
+    });
   }
 
   spawnGhost(x: number, y: number, color: number) {
@@ -191,7 +194,12 @@ export default class CyberScene extends Phaser.Scene {
       VFXManager.screenShake(this, 0.03, 500);
       const banner = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.85).setInteractive();
       this.add.text(320, 240, `SYSTEM OVERLOAD\nFINAL SCORE: ${this.score}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff0055', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.on('pointerdown', () => { SaveManager.submitScore('CyberScene', this.difficulty, this.score);
-      this.scene.restart({ difficulty: this.difficulty }); });
+      banner.on('pointerdown', () => { if (SaveManager.isHighScore('CyberScene', this.difficulty, this.score)) {
+      this.scene.pause();
+      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: this.difficulty, score: this.score });
+    } else {
+      SaveManager.submitScore('CyberScene', this.difficulty, this.score);
+      this.scene.restart({ difficulty: this.difficulty });
+    } });
   }
 }

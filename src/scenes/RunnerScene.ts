@@ -76,7 +76,10 @@ export default class RunnerScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-UP', () => this.jump());
     this.input.keyboard?.on('keydown-DOWN', () => this.duck(true));
     this.input.keyboard?.on('keyup-DOWN', () => this.duck(false));
-    this.input.keyboard?.on('keydown-ESC', () => this.scene.start('LobbyScene'));
+    this.input.keyboard?.on('keydown-ESC', () => {
+      this.scene.pause();
+      this.scene.launch('PauseScene', { scene: this.scene.key });
+    });
   }
 
   jump() {
@@ -141,7 +144,12 @@ export default class RunnerScene extends Phaser.Scene {
       VFXManager.screenShake(this, 0.02, 300);
       const banner = this.add.rectangle(320, 240, 640, 100, 0x000000, 0.8);
       this.add.text(320, 240, `GAME OVER\nFINAL SCORE: ${Math.floor(this.score)}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff0055', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.setInteractive().on('pointerdown', () => { SaveManager.submitScore('RunnerScene', this.difficulty, this.score);
-      this.scene.restart({ difficulty: this.difficulty }); });
+      banner.setInteractive().on('pointerdown', () => { if (SaveManager.isHighScore('RunnerScene', this.difficulty, this.score)) {
+      this.scene.pause();
+      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: this.difficulty, score: this.score });
+    } else {
+      SaveManager.submitScore('RunnerScene', this.difficulty, this.score);
+      this.scene.restart({ difficulty: this.difficulty });
+    } });
   }
 }

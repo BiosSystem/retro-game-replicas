@@ -72,7 +72,10 @@ export default class FroggerScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-DOWN', () => this.move(0, TILE));
     this.input.keyboard?.on('keydown-LEFT', () => this.move(-TILE, 0));
     this.input.keyboard?.on('keydown-RIGHT', () => this.move(TILE, 0));
-    this.input.keyboard?.on('keydown-ESC', () => this.scene.start('LobbyScene'));
+    this.input.keyboard?.on('keydown-ESC', () => {
+      this.scene.pause();
+      this.scene.launch('PauseScene', { scene: this.scene.key });
+    });
   }
 
   move(dx: number, dy: number) {
@@ -192,7 +195,12 @@ export default class FroggerScene extends Phaser.Scene {
       
       const banner = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.85).setInteractive();
       this.add.text(320, 240, `${reason}\nFINAL SCORE: ${this.score}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff0055', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.on('pointerdown', () => { SaveManager.submitScore('FroggerScene', this.difficulty, this.score);
-      this.scene.restart({ difficulty: this.difficulty }); });
+      banner.on('pointerdown', () => { if (SaveManager.isHighScore('FroggerScene', this.difficulty, this.score)) {
+      this.scene.pause();
+      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: this.difficulty, score: this.score });
+    } else {
+      SaveManager.submitScore('FroggerScene', this.difficulty, this.score);
+      this.scene.restart({ difficulty: this.difficulty });
+    } });
   }
 }

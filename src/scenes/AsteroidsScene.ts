@@ -85,7 +85,10 @@ export default class AsteroidsScene extends Phaser.Scene {
     this.physics.add.collider(this.ship, this.asteroids, () => { this.scene.restart({ difficulty: this.difficulty }); }, undefined, this);
 
         this.input.keyboard?.on('keydown-SPACE', () => { this.fireBullet(); });
-    this.input.keyboard?.on('keydown-ESC', () => { this.scene.start('LobbyScene'); });
+    this.input.keyboard?.on('keydown-ESC', () => {
+      this.scene.pause();
+      this.scene.launch('PauseScene', { scene: this.scene.key });
+    });
 
     // DDA Scaling
     this.time.addEvent({
