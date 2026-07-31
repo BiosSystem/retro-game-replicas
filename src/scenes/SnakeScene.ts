@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { SaveManager } from '../engine/SaveManager';
+import { AudioEngine } from '../engine/AudioEngine';
 
 const TILE_SIZE = 16;
 const COLS = 40; // 640 / 16
@@ -77,6 +78,10 @@ export default class SnakeScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-DOWN', () => { if (this.direction !== 'UP') this.nextDirection = 'DOWN'; });
     this.input.keyboard?.on('keydown-LEFT', () => { if (this.direction !== 'RIGHT') this.nextDirection = 'LEFT'; });
     this.input.keyboard?.on('keydown-RIGHT', () => { if (this.direction !== 'LEFT') this.nextDirection = 'RIGHT'; });
+
+    // Energetic baseline
+    const track = [110, 0, 110, 0, 146.83, 0, 110, 0, 98, 0, 110, 0, 146.83, 0, 0, 0];
+    AudioEngine.playBGM(track, 100, 'triangle');
   }
 
   placeFood() {
