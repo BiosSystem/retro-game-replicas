@@ -92,7 +92,10 @@ export default class BreakoutScene extends Phaser.Scene {
     this.physics.add.collider(this.ball, this.paddle, this.hitPaddle as any, undefined, this);
     this.physics.add.collider(this.ball, this.bricks, this.hitBrick as any, undefined, this);
 
-    this.input.keyboard?.on('keydown-ESC', () => { this.scene.start('LobbyScene'); });
+    this.input.keyboard?.on('keydown-ESC', () => {
+      this.scene.pause();
+      this.scene.launch('PauseScene', { scene: this.scene.key });
+    });
 
     // DDA Scaling
     this.time.addEvent({
@@ -130,8 +133,13 @@ export default class BreakoutScene extends Phaser.Scene {
     this.scoreText.setText('SCORE: ' + this.score);
     
     if (this.bricks.countActive() === 0) {
+      if (SaveManager.isHighScore('BreakoutScene', this.difficulty, this.score)) {
+      this.scene.pause();
+      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: this.difficulty, score: this.score });
+    } else {
       SaveManager.submitScore('BreakoutScene', this.difficulty, this.score);
       this.scene.restart({ difficulty: this.difficulty });
+    }
     }
   }
 
@@ -142,8 +150,13 @@ export default class BreakoutScene extends Phaser.Scene {
     else this.paddle.setVelocityX(0);
 
     if (this.ball.y > 480) {
+      if (SaveManager.isHighScore('BreakoutScene', this.difficulty, this.score)) {
+      this.scene.pause();
+      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: this.difficulty, score: this.score });
+    } else {
       SaveManager.submitScore('BreakoutScene', this.difficulty, this.score);
       this.scene.restart({ difficulty: this.difficulty });
+    }
     }
   }
 }

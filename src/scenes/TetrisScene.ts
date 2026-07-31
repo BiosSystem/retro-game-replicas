@@ -75,7 +75,10 @@ export default class TetrisScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-DOWN', () => this.movePiece(0, 1));
     this.input.keyboard?.on('keydown-UP', () => this.rotatePiece());
     this.input.keyboard?.on('keydown-SPACE', () => this.hardDrop());
-    this.input.keyboard?.on('keydown-ESC', () => this.scene.start('LobbyScene'));
+    this.input.keyboard?.on('keydown-ESC', () => {
+      this.scene.pause();
+      this.scene.launch('PauseScene', { scene: this.scene.key });
+    });
   }
 
   spawnPiece() {
@@ -96,8 +99,13 @@ export default class TetrisScene extends Phaser.Scene {
     };
     if (this.checkCollision(0, 0)) {
         VFXManager.screenShake(this, 0.02, 500);
-        this.time.delayedCall(500, () => { SaveManager.submitScore('TetrisScene', this.difficulty, this.score);
-      this.scene.restart({ difficulty: this.difficulty }); });
+        this.time.delayedCall(500, () => { if (SaveManager.isHighScore('TetrisScene', this.difficulty, this.score)) {
+      this.scene.pause();
+      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: this.difficulty, score: this.score });
+    } else {
+      SaveManager.submitScore('TetrisScene', this.difficulty, this.score);
+      this.scene.restart({ difficulty: this.difficulty });
+    } });
     }
   }
 
