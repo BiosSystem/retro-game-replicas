@@ -130,8 +130,8 @@ export default class InvadersScene extends Phaser.Scene {
   }
 
   update() {
-    if (InputManager.isDown('ArrowLeft')) this.player.setVelocityX(-300);
-    else if (InputManager.isDown('ArrowRight')) this.player.setVelocityX(300);
+    if (InputManager.isP1Down('LEFT')) this.player.setVelocityX(-300);
+    else if (InputManager.isP1Down('RIGHT')) this.player.setVelocityX(300);
     else this.player.setVelocityX(0);
 
     this.aliens.getChildren().forEach((a: any) => {

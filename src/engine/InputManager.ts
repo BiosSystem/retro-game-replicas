@@ -1,6 +1,7 @@
 export class InputManager {
     private static keys: Set<string> = new Set();
-    private static gamepadState: Record<string, boolean> = {};
+    private static gamepadState: Record<number, Record<string, boolean>> = {};
+    private static connectedPads: Set<number> = new Set();
 
     public static initialize() {
         window.addEventListener('keydown', (e) => {
@@ -11,7 +12,49 @@ export class InputManager {
             this.keys.delete(e.code);
         });
 
+        window.addEventListener('gamepadconnected', (e: any) => {
+            const gp = e.gamepad;
+            this.connectedPads.add(gp.index);
+            this.gamepadState[gp.index] = {};
+            this.updateIndicator();
+            console.log(`Gamepad connected: ${gp.id}`);
+        });
+
+        window.addEventListener('gamepaddisconnected', (e: any) => {
+            const gp = e.gamepad;
+            this.connectedPads.delete(gp.index);
+            delete this.gamepadState[gp.index];
+            this.updateIndicator();
+            console.log(`Gamepad disconnected: ${gp.id}`);
+        });
+
         this.checkAndInjectVirtualPad();
+        this.injectIndicator();
+    }
+
+    private static injectIndicator() {
+        const container = document.createElement('div');
+        container.id = 'gamepad-indicator';
+        container.style.position = 'absolute';
+        container.style.top = '10px';
+        container.style.right = '10px';
+        container.style.color = '#00ffcc';
+        container.style.fontFamily = 'monospace';
+        container.style.zIndex = '9999';
+        container.style.display = 'none';
+        container.innerHTML = '🎮 P1 Connected';
+        document.body.appendChild(container);
+    }
+
+    private static updateIndicator() {
+        const el = document.getElementById('gamepad-indicator');
+        if (!el) return;
+        if (this.connectedPads.size > 0) {
+            el.style.display = 'block';
+            el.innerHTML = `🎮 ${this.connectedPads.size} Gamepad(s) Connected`;
+        } else {
+            el.style.display = 'none';
+        }
     }
 
     private static checkAndInjectVirtualPad() {
@@ -67,30 +110,61 @@ export class InputManager {
     }
 
     public static update() {
-        // Poll gamepad API
-        this.gamepadState = {};
         const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
         for (let i = 0; i < gamepads.length; i++) {
             const gp = gamepads[i];
             if (!gp) continue;
-
-            // Simple mapping for standard gamepads
-            if (gp.buttons[12]?.pressed) this.gamepadState['ArrowUp'] = true;
-            if (gp.buttons[13]?.pressed) this.gamepadState['ArrowDown'] = true;
-            if (gp.buttons[14]?.pressed) this.gamepadState['ArrowLeft'] = true;
-            if (gp.buttons[15]?.pressed) this.gamepadState['ArrowRight'] = true;
-            if (gp.buttons[0]?.pressed) this.gamepadState['Space'] = true; // A button
             
-            // Analog stick deadzone
-            if (gp.axes[1] < -0.5) this.gamepadState['ArrowUp'] = true;
-            if (gp.axes[1] > 0.5) this.gamepadState['ArrowDown'] = true;
-            if (gp.axes[0] < -0.5) this.gamepadState['ArrowLeft'] = true;
-            if (gp.axes[0] > 0.5) this.gamepadState['ArrowRight'] = true;
+            if (!this.gamepadState[i]) this.gamepadState[i] = {};
+            const state = this.gamepadState[i];
+
+            state['UP'] = !!(gp.buttons[12]?.pressed || (gp.axes[1] !== undefined && gp.axes[1] < -0.5));
+            state['DOWN'] = !!(gp.buttons[13]?.pressed || (gp.axes[1] !== undefined && gp.axes[1] > 0.5));
+            state['LEFT'] = !!(gp.buttons[14]?.pressed || (gp.axes[0] !== undefined && gp.axes[0] < -0.5));
+            state['RIGHT'] = !!(gp.buttons[15]?.pressed || (gp.axes[0] !== undefined && gp.axes[0] > 0.5));
+            state['FIRE'] = !!(gp.buttons[0]?.pressed || gp.buttons[1]?.pressed || gp.buttons[2]?.pressed || gp.buttons[3]?.pressed);
         }
     }
 
     public static isDown(code: string): boolean {
-        return this.keys.has(code) || !!this.gamepadState[code];
+        let isPressed = this.keys.has(code);
+        
+        const p1State = this.gamepadState[0];
+        if (p1State) {
+            if (code === 'ArrowUp' || code === 'KeyW') isPressed = isPressed || !!p1State['UP'];
+            if (code === 'ArrowDown' || code === 'KeyS') isPressed = isPressed || !!p1State['DOWN'];
+            if (code === 'ArrowLeft' || code === 'KeyA') isPressed = isPressed || !!p1State['LEFT'];
+            if (code === 'ArrowRight' || code === 'KeyD') isPressed = isPressed || !!p1State['RIGHT'];
+            if (code === 'Space') isPressed = isPressed || !!p1State['FIRE'];
+        }
+        
+        return isPressed;
+    }
+
+    public static isP1Down(action: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FIRE'): boolean {
+        const keys: Record<string, string[]> = {
+            'UP': ['ArrowUp', 'KeyW'],
+            'DOWN': ['ArrowDown', 'KeyS'],
+            'LEFT': ['ArrowLeft', 'KeyA'],
+            'RIGHT': ['ArrowRight', 'KeyD'],
+            'FIRE': ['Space']
+        };
+        let pressed = keys[action].some(k => this.keys.has(k));
+        if (this.gamepadState[0] && this.gamepadState[0][action]) pressed = true;
+        return pressed;
+    }
+
+    public static isP2Down(action: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FIRE'): boolean {
+        const keys: Record<string, string[]> = {
+            'UP': ['KeyI'],
+            'DOWN': ['KeyK'],
+            'LEFT': ['KeyJ'],
+            'RIGHT': ['KeyL'],
+            'FIRE': ['Enter']
+        };
+        let pressed = keys[action].some(k => this.keys.has(k));
+        if (this.gamepadState[1] && this.gamepadState[1][action]) pressed = true;
+        return pressed;
     }
 
     public static simulateTouch(code: string, isDown: boolean) {

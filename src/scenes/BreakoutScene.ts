@@ -145,8 +145,8 @@ export default class BreakoutScene extends Phaser.Scene {
 
   update() {
     InputManager.update();
-    if (InputManager.isDown('ArrowLeft')) this.paddle.setVelocityX(-this.paddleSpeed);
-    else if (InputManager.isDown('ArrowRight')) this.paddle.setVelocityX(this.paddleSpeed);
+    if (InputManager.isP1Down('LEFT')) this.paddle.setVelocityX(-this.paddleSpeed);
+    else if (InputManager.isP1Down('RIGHT')) this.paddle.setVelocityX(this.paddleSpeed);
     else this.paddle.setVelocityX(0);
 
     if (this.ball.y > 480) {
