@@ -131,11 +131,11 @@ export default class AsteroidsScene extends Phaser.Scene {
     this.physics.world.wrap(this.asteroids, 20);
     this.physics.world.wrap(this.bullets, 2);
 
-    if (InputManager.isDown('ArrowLeft')) this.ship.setAngularVelocity(-200);
-    else if (InputManager.isDown('ArrowRight')) this.ship.setAngularVelocity(200);
+    if (InputManager.isP1Down('LEFT')) this.ship.setAngularVelocity(-200);
+    else if (InputManager.isP1Down('RIGHT')) this.ship.setAngularVelocity(200);
     else this.ship.setAngularVelocity(0);
 
-    if (InputManager.isDown('ArrowUp')) {
+    if (InputManager.isP1Down('UP')) {
         this.physics.velocityFromRotation(this.ship.rotation - Math.PI / 2, 200, (this.ship.body as Phaser.Physics.Arcade.Body).acceleration);
     } else {
         this.ship.setAcceleration(0);

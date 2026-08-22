@@ -84,11 +84,17 @@ export default class PongScene extends Phaser.Scene {
     InputManager.update();
     const dtAdjust = delta / 16.666;
 
-    if (InputManager.isDown('ArrowUp')) this.paddle1.y -= this.playerSpeed * dtAdjust;
-    if (InputManager.isDown('ArrowDown')) this.paddle1.y += this.playerSpeed * dtAdjust;
+    if (InputManager.isP1Down('UP')) this.paddle1.y -= this.playerSpeed * dtAdjust;
+    if (InputManager.isP1Down('DOWN')) this.paddle1.y += this.playerSpeed * dtAdjust;
 
-    if (this.ball.y > this.paddle2.y + 10) this.paddle2.y += this.aiSpeed;
-    else if (this.ball.y < this.paddle2.y - 10) this.paddle2.y -= this.aiSpeed;
+    let p2Active = false;
+    if (InputManager.isP2Down('UP')) { this.paddle2.y -= this.playerSpeed * dtAdjust; p2Active = true; }
+    if (InputManager.isP2Down('DOWN')) { this.paddle2.y += this.playerSpeed * dtAdjust; p2Active = true; }
+    
+    if (!p2Active) {
+        if (this.ball.y > this.paddle2.y + 10) this.paddle2.y += this.aiSpeed;
+        else if (this.ball.y < this.paddle2.y - 10) this.paddle2.y -= this.aiSpeed;
+    }
 
     this.paddle1.y = Phaser.Math.Clamp(this.paddle1.y, 40, 440);
     this.paddle2.y = Phaser.Math.Clamp(this.paddle2.y, 40, 440);

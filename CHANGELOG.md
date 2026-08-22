@@ -1,3 +1,8 @@
+## [Unreleased] - 2026-08-22
+### Added
+- Native HTML5 Gamepad API integration for Player 1 and Player 2 local co-op.
+- In-game UI overlay for controller connection status.
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
