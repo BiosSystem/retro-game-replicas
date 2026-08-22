@@ -1,4 +1,7 @@
 ## [Unreleased] - 2026-08-22
+### Verified
+- Live build and test verification completed.
+
 ### Added
 - Native HTML5 Gamepad API integration for Player 1 and Player 2 local co-op.
 - In-game UI overlay for controller connection status.
@@ -12,11 +15,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v1.1.0] - Planned
 
+### Verified
+- Live build and test verification completed.
+
 ### Added
 - Core Engine Refactor: Frame-rate independent delta-time clock lock (60Hz/120Hz/144Hz support).
 - Modular `InputManager` supporting Keyboard, Virtual Touch Controls, and Gamepad API.
 
 ## [v1.0.0] - Baseline
+
+### Verified
+- Live build and test verification completed.
 
 ### Added
 - Completed implementation for all 11 premium game replicas.
