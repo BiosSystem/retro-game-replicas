@@ -1,112 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body, html {
-  width: 100vw;
-  height: 100vh;
-  background: radial-gradient(ellipse at center, #0d0d1a 0%, #000005 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  font-family: 'Share Tech Mono', 'Courier New', monospace;
-}
-
-#app {
-  position: relative;
-  width: 95vw;
-  height: 95vh;
-  max-width: 1280px;
-  max-height: 960px;
-  aspect-ratio: 4 / 3;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 4px;
-  box-shadow:
-    0 0 0 1px rgba(0, 255, 100, 0.15),
-    0 0 60px rgba(0, 255, 100, 0.08),
-    0 0 120px rgba(0, 0, 255, 0.05);
-}
-
-/* CRT Scanline + RGB shift overlay */
-#app::after {
-  content: "";
-  display: block;
-  position: absolute;
-  inset: 0;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 0, 0, 0.18) 2px,
-      rgba(0, 0, 0, 0.18) 4px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(255, 0, 0, 0.04),
-      rgba(0, 255, 0, 0.015),
-      rgba(0, 0, 255, 0.04)
-    );
-  background-size: 100% 4px, 3px 100%;
-  z-index: 10;
-  pointer-events: none;
-  border-radius: 4px;
-  animation: scanRoll 12s linear infinite;
-}
-
-/* CRT flicker */
-#app::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 11;
-  pointer-events: none;
-  background: transparent;
-  animation: flicker 0.15s infinite;
-  border-radius: 4px;
-}
-
-/* Ambient glow pulse on the canvas border */
-canvas {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  display: block;
-  image-rendering: pixelated;
-  border-radius: 4px;
-  animation: ambientGlow 4s ease-in-out infinite alternate;
-}
-
-@keyframes scanRoll {
-  0%   { background-position: 0 0, 0 0; }
-  100% { background-position: 0 -200px, 0 0; }
-}
-
-@keyframes flicker {
-  0%   { opacity: 1; }
-  92%  { opacity: 1; }
-  93%  { opacity: 0.97; }
-  94%  { opacity: 1; }
-  96%  { opacity: 0.98; }
-  100% { opacity: 1; }
-}
-
-@keyframes ambientGlow {
-  from {
-    box-shadow:
-      0 0 8px rgba(0, 255, 80, 0.2),
-      0 0 20px rgba(0, 255, 80, 0.08);
-  }
-  to {
-    box-shadow:
-      0 0 18px rgba(0, 255, 80, 0.35),
-      0 0 40px rgba(0, 255, 80, 0.12);
-  }
-}
+:root { color-scheme: dark; font-family: "Cascadia Mono", "IBM Plex Mono", "Courier New", monospace; background: #020407; }
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+body { min-width: 320px; min-height: 100vh; overflow: hidden; background: radial-gradient(circle at 50% 20%, rgba(0,255,204,.1), transparent 35%), linear-gradient(135deg, #020407, #080312 55%, #020407); color: #d9fff2; }
+body::before { content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .25; background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px); background-size: 24px 24px; }
+.arcade-cabinet { width: min(96vw, 1120px); height: 100vh; margin: auto; display: grid; grid-template-rows: minmax(58px, 10vh) minmax(0, 1fr) minmax(64px, 11vh); filter: drop-shadow(0 0 40px rgba(0,255,174,.12)); }
+.cabinet-marquee, .cabinet-console { display: grid; align-items: center; border-inline: 1px solid #174b42; background: linear-gradient(180deg, #111923, #080c12); }
+.cabinet-marquee { grid-template-columns: 1fr auto 1fr; padding: 0 clamp(12px, 3vw, 32px); border-bottom: 2px solid #00ffae; box-shadow: inset 0 -10px 28px rgba(0,255,174,.05); }
+.cabinet-marquee strong { color: #f4fffb; font-size: clamp(17px, 2.4vw, 30px); letter-spacing: .16em; text-shadow: 0 0 16px #00ffae; }
+.marquee-kicker, .marquee-status { color: #5f9c8e; font-size: clamp(8px, 1vw, 11px); letter-spacing: .14em; }
+.marquee-status { justify-self: end; color: #00ffae; }
+.marquee-status i { display: inline-block; width: 7px; height: 7px; margin-right: 7px; border-radius: 50%; background: #00ffae; box-shadow: 0 0 10px #00ffae; }
+.cabinet-screen { min-height: 0; padding: clamp(10px, 2vh, 22px) clamp(12px, 3vw, 36px); background: linear-gradient(90deg, #070a0f, #151c24 8%, #080b10 50%, #151c24 92%, #070a0f); border-inline: 1px solid #174b42; }
+.screen-bezel { width: 100%; height: 100%; padding: clamp(7px, 1.2vw, 14px); border: 2px solid #283743; border-radius: 18px; background: #010203; box-shadow: inset 0 0 35px #000, 0 0 0 1px #000; }
+#app { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 10px; background: #000; }
+#app::after { content: ""; position: absolute; inset: 0; z-index: 10; pointer-events: none; border-radius: 10px; box-shadow: inset 0 0 40px rgba(0,0,0,.75); }
+.crt-enabled #app::after { background: repeating-linear-gradient(0deg, transparent 0 2px, rgba(0,0,0,.22) 2px 4px), linear-gradient(90deg, rgba(255,0,0,.035), rgba(0,255,0,.012), rgba(0,0,255,.035)); animation: scan-roll 12s linear infinite; }
+canvas { max-width: 100%; max-height: 100%; display: block; image-rendering: pixelated; image-rendering: crisp-edges; }
+.cabinet-console { grid-template-columns: 1fr 1fr auto 1fr 1fr; gap: 20px; padding: 0 clamp(16px, 4vw, 44px); border-top: 2px solid #172a31; }
+.console-stat { display: flex; flex-direction: column; gap: 5px; }
+.console-stat span { color: #55756f; font-size: 9px; letter-spacing: .2em; }
+.console-stat b { color: #00ffae; font-size: 12px; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
+.console-stat-right { text-align: right; }
+.console-brand { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid #00ffae; transform: rotate(45deg); color: #00ffae; box-shadow: 0 0 18px rgba(0,255,174,.2); }
+@keyframes scan-roll { to { background-position: 0 -200px, 0 0; } }
+.motion-reduced * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+@media (prefers-reduced-motion: reduce) { * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; } }
+@media (max-width: 700px) { .arcade-cabinet { width: 100vw; } .marquee-kicker { display: none; } .cabinet-marquee { grid-template-columns: 1fr auto; } .cabinet-marquee strong { justify-self: start; } .cabinet-console { grid-template-columns: 1fr auto 1fr; } .cabinet-console .console-stat:nth-child(2), .cabinet-console .console-stat:nth-child(4) { display: none; } }

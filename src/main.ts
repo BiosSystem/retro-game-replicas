@@ -19,6 +19,7 @@ import AchievementsScene from './scenes/AchievementsScene';
 
 import { InputManager } from './engine/InputManager';
 import { AudioEngine } from './engine/AudioEngine';
+import { ArcadeRuntime } from './engine/ArcadeRuntime';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -33,7 +34,6 @@ const config: Phaser.Types.Core.GameConfig = {
   pixelArt: true,
   fps: {
     target: 60,
-    forceSetTimeOut: true,
   },
   physics: {
     default: 'arcade',
@@ -63,6 +63,7 @@ const config: Phaser.Types.Core.GameConfig = {
 
 const game = new Phaser.Game(config);
 (window as any).game = game;
+new ArcadeRuntime(game);
 
 import { SaveManager } from './engine/SaveManager';
 

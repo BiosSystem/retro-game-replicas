@@ -3,10 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Retro Snake</title>
+    <meta name="theme-color" content="#05080d" />
+    <title>Universal Retro Arcade</title>
   </head>
   <body>
-    <div id="app"></div>
+    <main class="arcade-cabinet" aria-label="Universal Retro Arcade cabinet">
+      <header class="cabinet-marquee">
+        <span class="marquee-kicker">BIOSSYSTEM // ARCADE CORE</span>
+        <strong>UNIVERSAL RETRO ARCADE</strong>
+        <span class="marquee-status"><i aria-hidden="true"></i> SYSTEM READY</span>
+      </header>
+      <section class="cabinet-screen" aria-label="Game display">
+        <div class="screen-bezel"><div id="app"></div></div>
+      </section>
+      <footer class="cabinet-console">
+        <div class="console-stat"><span>ENGINE</span><b>PHASER 4</b></div>
+        <div class="console-stat"><span>FRAME</span><b id="runtime-fps">-- FPS</b></div>
+        <div class="console-brand" aria-hidden="true">B</div>
+        <div class="console-stat console-stat-right"><span>INPUT</span><b id="runtime-input">KEYBOARD</b></div>
+        <div class="console-stat console-stat-right"><span>STATE</span><b id="runtime-state">ACTIVE</b></div>
+      </footer>
+    </main>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

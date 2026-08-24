@@ -3,7 +3,7 @@ import { AudioEngine } from '../engine/AudioEngine';
 
 export default class SettingsScene extends Phaser.Scene {
     private sourceScene!: string;
-    private options = ['RESUME', 'TOGGLE CRT', 'VOLUME +10%', 'VOLUME -10%', 'WIPE SAVE DATA'];
+    private options = ['RESUME', 'TOGGLE CRT', 'REDUCE MOTION', 'VOLUME +10%', 'VOLUME -10%', 'WIPE SAVE DATA'];
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
 
@@ -80,8 +80,11 @@ export default class SettingsScene extends Phaser.Scene {
         } else if (opt === 'TOGGLE CRT') {
             const isEnabled = localStorage.getItem('arcade_crt') === 'true';
             localStorage.setItem('arcade_crt', isEnabled ? 'false' : 'true');
-            // If lobby is active, we should trigger a refresh or let the player reboot the game to see changes.
-            // For now, it will apply on the next game load.
+            window.dispatchEvent(new Event('arcade-settings-change'));
+        } else if (opt === 'REDUCE MOTION') {
+            const isEnabled = localStorage.getItem('arcade_reduced_motion') === 'true';
+            localStorage.setItem('arcade_reduced_motion', isEnabled ? 'false' : 'true');
+            window.dispatchEvent(new Event('arcade-settings-change'));
         } else if (opt === 'VOLUME +10%') {
             const vol = Math.min(1.0, parseFloat(localStorage.getItem('retro_master_volume') || '0.5') + 0.1);
             AudioEngine.setVolume(vol);

@@ -1,6 +1,13 @@
-## [Unreleased] - 2026-08-22
+## [Unreleased] - 2026-08-24
+### Changed
+- Wrap the game viewport in a responsive arcade cabinet with a marquee, bezel, console rails, and live frame, input, and runtime indicators.
+- Restore requestAnimationFrame scheduling and suspend the Phaser loop while the document is hidden.
+- Apply CRT and reduced-motion preferences immediately from the settings overlay.
+- Remove the external Google Fonts runtime dependency and use local system monospace fonts.
+
 ### Verified
-- Live build and test verification completed.
+- Pass TypeScript compilation and the Vite production build.
+- Confirm the generated production bundle contains 28 transformed modules with no build errors.
 
 ### Added
 - Native HTML5 Gamepad API integration for Player 1 and Player 2 local co-op.

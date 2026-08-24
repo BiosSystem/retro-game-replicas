@@ -147,7 +147,7 @@ export default class LobbyScene extends Phaser.Scene {
       fontStyle: 'bold',
     }).setOrigin(0.5);
 
-    this.add.text(320, 66, 'BIOSYSTEM ENGINE — SELECT YOUR GAME', {
+    this.add.text(320, 66, 'BIOSYSTEM ENGINE - SELECT YOUR GAME', {
       fontFamily: "'Share Tech Mono', Courier",
       fontSize: '13px',
       color: PALETTE.dim,
@@ -262,7 +262,7 @@ export default class LobbyScene extends Phaser.Scene {
 
   private buildBiosFlash() {
     this.biosFlash = this.add.text(320, 240,
-      '⚡ BIOSYSTEM KERNEL ⚡\nTauri Quantum Core v2.0 — Active',
+      '⚡ BIOSYSTEM KERNEL ⚡\nTauri Quantum Core v2.0 - Active',
       {
         fontFamily: "'Share Tech Mono', Courier",
         fontSize: '18px',

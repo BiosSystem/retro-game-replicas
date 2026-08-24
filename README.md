@@ -31,8 +31,11 @@ Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLS
 - **11 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, and Cyber Chasm.
 - **Hardware Gamepad Support** - Plug-and-play support for Xbox and PlayStation controllers via the HTML5 Gamepad API.
 - **Hardware-Accelerated Post-FX** - Toggle GLSL CRT scanlines, chromatic aberration, and barrel distortion (`Ctrl+Shift+C`).
+- **Arcade Cabinet Interface** - Scale the 640x480 playfield inside a responsive marquee, bezel, and live runtime console.
+- **Power-Aware Runtime** - Suspend rendering in hidden tabs and resume without advancing game simulation.
+- **Accessible Motion Controls** - Disable cabinet animation from Settings or the operating system reduced-motion preference.
 - **Cross-Platform Native** - Less than 15MB binary size for desktop (macOS, Windows), with native Android APK support.
-- **Self-Contained Architecture** - Zero external ROMs. High-score tracking via IndexedDB.
+- **Self-Contained Architecture** - Load zero external ROMs or web fonts and persist high scores locally.
 
 ## ⚡ Quick Start
 
