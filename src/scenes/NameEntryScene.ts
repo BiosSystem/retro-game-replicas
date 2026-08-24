@@ -5,6 +5,7 @@ export default class NameEntryScene extends Phaser.Scene {
     private sourceScene!: string;
     private score!: number;
     private difficulty!: string;
+    private restartData: Record<string, unknown> = {};
     
     private initials: string[] = ['A', 'A', 'A'];
     private currentIndex = 0;
@@ -20,6 +21,7 @@ export default class NameEntryScene extends Phaser.Scene {
         this.sourceScene = data.scene;
         this.score = data.score;
         this.difficulty = data.difficulty;
+        this.restartData = data.restartData ?? { difficulty: data.difficulty };
     }
 
     create() {
@@ -115,7 +117,7 @@ export default class NameEntryScene extends Phaser.Scene {
             // Restart the game scene
             const src = this.scene.get(this.sourceScene);
             if (src) {
-                src.scene.restart({ difficulty: this.difficulty });
+                src.scene.restart(this.restartData);
             } else {
                 this.scene.start('LobbyScene');
             }

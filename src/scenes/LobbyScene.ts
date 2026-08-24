@@ -6,8 +6,10 @@ import Phaser from 'phaser';
 import { SaveManager } from '../engine/SaveManager';
 import { AchievementManager } from '../engine/AchievementManager';
 import { AudioEngine } from '../engine/AudioEngine';
+import { InputManager } from '../engine/InputManager';
 import { AttractController, CreditLedger } from '../ui/menu/ArcadeSession';
 import { mountGameScene } from '../ui/menu/SceneLifecycle';
+import type { ArcadeMode } from '../multiplayer/CoopSession';
 type MenuMode = 'GAME_SELECT' | 'DIFFICULTY_SELECT';
 
 const PALETTE = {
@@ -61,6 +63,8 @@ export default class LobbyScene extends Phaser.Scene {
   private previewGfx!: Phaser.GameObjects.Graphics;
   private nextAttractCycle = 0;
   private selectionCursor!: Phaser.GameObjects.Text;
+  private arcadeMode: ArcadeMode = 'SOLO';
+  private modeText!: Phaser.GameObjects.Text;
 
   constructor() { super('LobbyScene'); }
 
@@ -87,6 +91,8 @@ export default class LobbyScene extends Phaser.Scene {
     this.buildBiosFlash();
     this.buildCoinOp();
     this.buildPreview();
+    this.modeText = this.add.text(616, 420, '', { fontFamily: 'Courier', fontSize: '12px', color: PALETTE.warn }).setOrigin(1, 0.5);
+    this.updateModeText();
     this.buildCrtShader();
     this.bindKeys();
     this.bindGamepad();
@@ -221,7 +227,7 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   private buildFooter() {
-    this.add.text(320, 458, 'UP/DOWN MOVE  SPACE SELECT  C COIN  F FREE PLAY  S SETTINGS', {
+    this.add.text(320, 458, 'UP/DOWN MOVE  SPACE SELECT  M MODE  C COIN  S SETTINGS', {
       fontFamily: "'Share Tech Mono', Courier",
       fontSize: '11px',
       color: PALETTE.muted,
@@ -332,6 +338,11 @@ export default class LobbyScene extends Phaser.Scene {
     });
     this.input.keyboard?.on('keydown-C', () => { this.registerActivity(); this.credits.insertCoin(); this.updateCreditText(); AudioEngine.playEffect('COIN'); });
     this.input.keyboard?.on('keydown-F', () => { this.registerActivity(); this.credits.toggleFreePlay(); this.updateCreditText(); AudioEngine.playEffect('POWER_UP'); });
+    this.input.keyboard?.on('keydown-M', () => {
+      const modes: ArcadeMode[] = ['SOLO', 'COOP', 'VERSUS'];
+      this.arcadeMode = modes[(modes.indexOf(this.arcadeMode) + 1) % modes.length];
+      this.updateModeText(); AudioEngine.playEffect('POWER_UP');
+    });
 
     this.input.keyboard?.on('keydown', (e: KeyboardEvent) => {
       this.registerActivity();
@@ -420,6 +431,7 @@ export default class LobbyScene extends Phaser.Scene {
       const diff = this.difficulties[this.selectedDiffIndex];
       this.cameras.main.fade(200, 0, 0, 0);
       this.time.delayedCall(200, async () => {
+          InputManager.configureArcadeMode(this.arcadeMode, ['AsteroidsScene', 'RunnerScene', 'PongScene'].includes(game.scene));
           AchievementManager.recordPlay(game.scene);
           if (game.scene === 'InvadersScene') AudioEngine.playTrack('space');
           else if (game.scene === 'RunnerScene') AudioEngine.playTrack('sprint');
@@ -429,7 +441,7 @@ export default class LobbyScene extends Phaser.Scene {
             has: key => Boolean(this.scene.manager.keys[key]),
             add: (key, SceneClass) => this.scene.add(key, SceneClass, false),
             start: (key, sceneData) => this.scene.start(key, sceneData),
-          }, game.scene, { difficulty: diff.id });
+          }, game.scene, { difficulty: diff.id, mode: this.arcadeMode });
       });
     }
   }
@@ -474,4 +486,6 @@ export default class LobbyScene extends Phaser.Scene {
     this.attract.registerInput(this.time.now);
     this.nextAttractCycle = this.time.now + 30_000;
   }
+
+  private updateModeText() { this.modeText?.setText(`MODE ${this.arcadeMode}`); }
 }

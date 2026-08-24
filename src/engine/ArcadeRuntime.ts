@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { PreferenceStore } from './PreferenceStore';
+import { AdaptiveQualityController } from '../graphics/PooledParticleSystem';
+import { InputManager } from './InputManager';
 
 export class ArcadeRuntime {
   private readonly game: Phaser.Game;
@@ -7,6 +9,7 @@ export class ArcadeRuntime {
   private sampleStarted = performance.now();
   private frameRequest = 0;
   private startPressed = false;
+  private readonly quality = new AdaptiveQualityController();
 
   constructor(game: Phaser.Game) {
     this.game = game;
@@ -18,11 +21,16 @@ export class ArcadeRuntime {
   }
 
   private measureFrames = (time: number) => {
+    InputManager.update();
     this.pollGamepadPause();
     this.frameCount += 1;
     const elapsed = time - this.sampleStarted;
     if (elapsed >= 1000) {
-      this.setText('runtime-fps', `${Math.round((this.frameCount * 1000) / elapsed)} FPS`);
+      const fps = Math.round((this.frameCount * 1000) / elapsed);
+      const tier = this.quality.sample(fps);
+      this.setText('runtime-fps', `${fps} FPS`);
+      document.documentElement.dataset.quality = tier.toLowerCase();
+      document.documentElement.style.setProperty('--adaptive-resolution', this.quality.resolutionScale.toString());
       this.frameCount = 0;
       this.sampleStarted = time;
     }

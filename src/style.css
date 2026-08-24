@@ -41,3 +41,7 @@ canvas { max-width: 100%; max-height: 100%; display: block; image-rendering: pix
 [data-cabinet-theme="amber"] .cabinet-screen { background: radial-gradient(circle, #251a05, #080500 72%); border-color: #ff9d00; }
 [data-cabinet-theme="amber"] .cabinet-marquee { border-bottom-color: #ffc04c; }
 [data-cabinet-theme="amber"] .console-stat b, [data-cabinet-theme="amber"] .marquee-status { color: #ffc04c; }
+.impact-chromatic canvas { filter: drop-shadow(3px 0 #ff0055) drop-shadow(-3px 0 #00ffff); }
+[data-quality="medium"] #app::after { opacity: .75; }
+[data-quality="low"] #app::after { display: none; }
+[data-quality="low"] canvas { filter: none !important; }

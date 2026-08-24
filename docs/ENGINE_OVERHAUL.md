@@ -64,6 +64,37 @@ Set the Vite warning ceiling to 1.5 MB for the known Phaser runtime. Keep every 
 
 Reference: [Vite production build guidance](https://vite.dev/guide/build)
 
+## Local multiplayer
+
+Poll keyboard and gamepads once per animation frame through `MultiInput`. Bind P1 to WASD plus Space and P2 to arrows plus Enter. Sort connected gamepads by browser index and assign the first two live devices to player slots. Reassign immediately after disconnect without retaining a dead slot.
+
+Use `CoopSession` for independent lives, player-attributed scores, shared totals, and an alternating-player cooperative multiplier. Use minimum-axis collision separation for custom player bodies and Phaser colliders for scene entities.
+
+Pass Solo, Co-op, or Versus through every scene launch. Implement bespoke dual entities in Neon Vector Asteroids and Pixel Runner. Keep Neon Pong's existing two-paddle competitive rules. Route both players into every remaining single-avatar replica through shared co-op controls or alternating 15-second versus relay turns. Show the active relay player in the cabinet status indicator and bypass relay routing for native dual-player scenes.
+
+## Infinite procedural stages
+
+Generate each stage from one campaign seed combined with the stage number. Use xorshift output for repeatable lanes, offsets, speeds, and hazard types. Grow density with the square root of stage number and speed with a logarithmic curve. Clamp hazards to 80 and spawn intervals to 220 ms so stage 10,000 stays finite.
+
+Spawn a boss every fifth stage. Enable random high-tier modifiers from stage four onward:
+
+- Low Gravity reduces Pixel Runner gravity.
+- Fast Bullets accelerates Neon Vector UFO fire.
+- Inverted Controls reverses steering or jump and duck intent.
+
+## Pooled rendering and adaptive effects
+
+Allocate particle position, velocity, life, size, and color storage once in typed arrays. Reuse slots through a ring cursor. Clamp updates after stalls, batch every active particle into one Phaser Graphics object, and remove the update listener on scene shutdown.
+
+Sample six one-second FPS windows. Keep full effects at 54 FPS or higher, reduce particle bursts and scanline opacity between 42 and 53 FPS, and disable scanlines and chromatic filters below 42 FPS. Expose 1.0, 0.85, and 0.7 render-scale recommendations for offscreen surfaces without changing the fixed 640x480 game coordinate system.
+
+Stress results on the development workstation:
+
+- Update 10,000 simultaneous particles at 1,219.1 ops/s with a 0.82 ms mean.
+- Insert 5,000 spatial bodies and perform 500 queries at 578.0 ops/s with a 1.73 ms mean.
+- Complete 32 tests across 12 files.
+- Build 45 modules with a 2.88 kB initial entry and no Vite warning.
+
 ## Progression and persistence
 
 Use `ProgressionDirector` for stage counters, combo expiry, score multipliers, power-up thresholds, and enemy behavior selection. Space Defenders selects patrol, chase, or barrage fire based on stage and distance. Clear a wave to advance without resetting the score.

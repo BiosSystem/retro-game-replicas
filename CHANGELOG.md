@@ -1,5 +1,14 @@
 ## [Unreleased] - 2026-08-24
 ### Changed
+- Add a shared local multiplayer engine with P1 WASD and Space, P2 arrows and Enter, two hot-plug gamepad slots, cooperative combo scoring, independent lives, and collision separation math.
+- Add Solo, Co-op, and Versus selection to the cabinet lobby and pass the selected mode through every lazy game launch.
+- Route both players through every replica with shared co-op control or timed versus relay turns when a bespoke dual-player ruleset is unavailable.
+- Add two-ship co-op and versus defense to Neon Vector Asteroids with independent lives, shared shields, player-attributed scoring, and dual firing controls.
+- Add two-runner Pixel Runner racing with player collision, versus winner resolution, dual keyboard and gamepad control, and mode-specific score ledgers.
+- Add deterministic infinite stage generation with seeded hazards, logarithmic difficulty curves, five-stage boss cadence, low gravity, fast bullets, and inverted controls.
+- Replace per-impact Phaser emitters with one 4,096-slot typed-array particle pool per active scene.
+- Add chromatic impact response and adaptive particle, scanline, and filter budgets after sustained medium or low frame rates.
+- Preserve the split build at a 2.88 kB initial entry while adding multiplayer, generator, and particle modules.
 - Add a four-voice programmable tracker with pulse lead, chord arpeggiator, triangle bass, synthesized percussion, 25 ms lookahead scheduling, channel mixing, cross-fades, and focus suspension.
 - Compose Arcade Plaza, Deep Space Recon, Cyber Sprint, and Hyper Vector as code-defined looping tracks with zero audio assets.
 - Add a first-session BIOS POST, persistent coin credits, free play, animated attract previews, game records, and credit-gated launches to the arcade lobby.
@@ -23,6 +32,10 @@
 - Remove the external Google Fonts runtime dependency and use local system monospace fonts.
 
 ### Verified
+- Pass 32 unit and integration tests across 12 files.
+- Update 10,000 simultaneous pooled particles at 1,219.1 operations per second with a 0.82 ms mean.
+- Process 5,000 spatial bodies and 500 regional queries at 578.0 operations per second with a 1.73 ms mean.
+- Build 45 transformed modules with no Vite chunk warning.
 - Pass 22 unit and integration tests across 9 files.
 - Build 40 transformed modules with a 2.83 kB initial entry and no Vite chunk warning.
 - Process the spatial benchmark at 616.9 operations per second with a 1.62 ms mean.

@@ -3,10 +3,15 @@ import { SaveManager } from '../engine/SaveManager';
 import { VFXManager } from '../engine/VFXManager';
 import { AudioEngine } from '../engine/AudioEngine';
 import { SpriteStateMachine } from '../engine/SpriteStateMachine';
+import { InputManager } from '../engine/InputManager';
+import type { ArcadeMode } from '../multiplayer/CoopSession';
+import { ProceduralStageGenerator, type StageDefinition } from '../generators/ProceduralStageGenerator';
 
 export default class RunnerScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
   private animator!: SpriteStateMachine;
+  private player2: Phaser.Physics.Arcade.Sprite | null = null;
+  private animator2: SpriteStateMachine | null = null;
   private obstacles!: Phaser.Physics.Arcade.Group;
   private score = 0;
   private scoreText!: Phaser.GameObjects.Text;
@@ -17,13 +22,20 @@ export default class RunnerScene extends Phaser.Scene {
   private bg1!: Phaser.GameObjects.TileSprite;
   private bg2!: Phaser.GameObjects.TileSprite;
   private difficulty = 'NORMAL';
+  private mode: ArcadeMode = 'SOLO';
+  private generator = new ProceduralStageGenerator(0x52554e);
+  private stageDefinition!: StageDefinition;
+  private stage = 1;
+  private jumpHeld = { 1: false, 2: false };
+  private finished = false;
 
   constructor() {
     super('RunnerScene');
   }
 
-  create(data: any) {
+  create(data: { difficulty?: string; mode?: ArcadeMode }) {
     this.difficulty = data?.difficulty || 'NORMAL';
+    this.mode = data?.mode ?? 'SOLO';
     switch (this.difficulty) {
       case 'EASY': this.baseSpeed = 220; this.speedRamp = 0.002; break;
       case 'NORMAL': this.baseSpeed = 300; this.speedRamp = 0.005; break;
@@ -34,6 +46,9 @@ export default class RunnerScene extends Phaser.Scene {
     this.score = 0;
     this.speed = this.baseSpeed;
     this.spawnTimer = 0;
+    this.stage = 1;
+    this.stageDefinition = this.generator.generate(1);
+    this.finished = false;
 
     // Create textures if missing
     if (!this.textures.exists('bg_city')) {
@@ -52,19 +67,20 @@ export default class RunnerScene extends Phaser.Scene {
 
     this.createRunnerTextures();
     this.player = this.physics.add.sprite(100, 380, 'runner-idle');
-    this.animator = new SpriteStateMachine({
-      run: { frames: ['runner-run-1', 'runner-run-2'], frameRate: 10, hitbox: { width: 24, height: 46, offsetX: 4, offsetY: 2 } },
-      jump: { frames: ['runner-jump'], frameRate: 1, loop: false, hitbox: { width: 22, height: 40, offsetX: 5, offsetY: 5 }, emitOnEnter: 'jump-dust' },
-      duck: { frames: ['runner-duck'], frameRate: 1, loop: false, hitbox: { width: 30, height: 24, offsetX: 1, offsetY: 24 } },
-    }, 'run');
+    this.animator = this.createAnimator();
     (this.player.body as Phaser.Physics.Arcade.Body).setGravityY(1500);
+    if (this.mode !== 'SOLO') {
+      this.player2 = this.physics.add.sprite(145, 380, 'runner-idle').setTint(0xffff00);
+      this.animator2 = this.createAnimator();
+      (this.player2.body as Phaser.Physics.Arcade.Body).setGravityY(1500);
+    } else { this.player2 = null; this.animator2 = null; }
 
     this.obstacles = this.physics.add.group();
 
     // UI
     this.add.text(320, 20, 'PIXEL RUNNER', { fontFamily: 'Courier', fontSize: '24px', color: '#00ffcc', fontStyle: 'bold' }).setOrigin(0.5);
     this.scoreText = this.add.text(20, 20, 'SCORE: 0', { fontFamily: 'Courier', fontSize: '20px', color: '#ffffff' });
-    this.add.text(20, 50, 'UP / SPACE: JUMP | DOWN: DUCK | ESC: LOBBY', { fontFamily: 'Courier', fontSize: '14px', color: '#aaaaaa' });
+    this.add.text(20, 50, `${this.mode}  P1 WASD+SPACE  P2 ARROWS+ENTER`, { fontFamily: 'Courier', fontSize: '13px', color: '#aaaaaa' });
 
     const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
     this.add.text(630, 20, `DIFF: ${this.difficulty}`, {
@@ -76,58 +92,57 @@ export default class RunnerScene extends Phaser.Scene {
 
     // Collisions
     this.physics.add.collider(this.player, ground);
-    this.physics.add.collider(this.player, this.obstacles, () => this.endGame());
+    this.physics.add.collider(this.player, this.obstacles, () => this.endGame(1));
+    if (this.player2) {
+      this.physics.add.collider(this.player2, ground);
+      this.physics.add.collider(this.player2, this.obstacles, () => this.endGame(2));
+      this.physics.add.collider(this.player, this.player2);
+    }
 
     // Input
-    this.input.keyboard?.on('keydown-SPACE', () => this.jump());
-    this.input.keyboard?.on('keydown-UP', () => this.jump());
-    this.input.keyboard?.on('keydown-DOWN', () => this.duck(true));
-    this.input.keyboard?.on('keyup-DOWN', () => this.duck(false));
     this.input.keyboard?.on('keydown-ESC', () => {
       this.scene.pause();
       this.scene.launch('PauseScene', { scene: this.scene.key });
     });
   }
 
-  jump() {
-      const body = this.player.body as Phaser.Physics.Arcade.Body;
+  jump(player = this.player, animator = this.animator) {
+      const body = player.body as Phaser.Physics.Arcade.Body;
       if (body.touching.down) {
           body.setVelocityY(-650);
           VFXManager.screenShake(this, 0.001, 100);
-          this.animator.setState('jump');
+          animator.setState('jump');
           AudioEngine.playEffect('POWER_UP');
       }
   }
 
-  duck(down: boolean) {
-      const body = this.player.body as Phaser.Physics.Arcade.Body;
+  duck(down: boolean, player = this.player, animator = this.animator) {
+      const body = player.body as Phaser.Physics.Arcade.Body;
       if (down) {
-          this.animator.setState('duck');
+          animator.setState('duck');
           if (!body.touching.down) body.setVelocityY(800); // Fast fall
       } else {
-          this.animator.setState(body.touching.down ? 'run' : 'jump');
+          animator.setState(body.touching.down ? 'run' : 'jump');
       }
   }
 
   update(_time: number, delta: number) {
-      const body = this.player.body as Phaser.Physics.Arcade.Body;
-      if (!body.touching.down) this.animator.setState('jump');
-      else if (this.animator.getState() === 'jump') this.animator.setState('run');
-      const animation = this.animator.update(delta);
-      this.player.setTexture(animation.frame);
-      body.setSize(animation.hitbox.width, animation.hitbox.height).setOffset(animation.hitbox.offsetX, animation.hitbox.offsetY);
-      if (animation.event) VFXManager.playHit(this, this.player.x - 10, this.player.y + 20, 0x00ffcc);
+      if (this.finished) return;
+      this.updateRunner(this.player, this.animator, 1, delta);
+      if (this.player2?.active && this.animator2) this.updateRunner(this.player2, this.animator2, 2, delta);
 
       // Scroll BG
       this.bg1.tilePositionX += delta * 0.05 * (this.speed / 300);
       this.bg2.tilePositionX += delta * 0.1 * (this.speed / 300);
 
       this.score += delta * 0.01 * (this.speed / 300);
-      this.scoreText.setText('SCORE: ' + Math.floor(this.score));
+      const nextStage = Math.floor(this.score / 300) + 1;
+      if (nextStage !== this.stage) { this.stage = nextStage; this.stageDefinition = this.generator.generate(this.stage); AudioEngine.playEffect('STAGE_CLEAR'); }
+      this.scoreText.setText(`SCORE ${Math.floor(this.score)}  STAGE ${this.stage}  ${this.stageDefinition.modifier}`);
       this.speed += delta * this.speedRamp; // Speed ramp
 
       this.spawnTimer += delta;
-      if (this.spawnTimer > Math.max(800, 2000 - this.speed)) {
+      if (this.spawnTimer > this.stageDefinition.spawnIntervalMs) {
           this.spawnTimer = 0;
           this.spawnObstacle();
       }
@@ -139,34 +154,65 @@ export default class RunnerScene extends Phaser.Scene {
   }
 
   spawnObstacle() {
-      const isHigh = Phaser.Math.Between(0, 1) === 1;
+      const hazard = this.stageDefinition.hazards[Math.floor(this.score) % this.stageDefinition.hazards.length];
+      const isHigh = hazard.kind === 'FLYER';
       const y = isHigh ? 330 : 385;
       const h = isHigh ? 20 : 30;
       const color = isHigh ? 0xff0055 : 0xffaa00;
 
-      const obs = this.add.rectangle(700, y, 25, h, color);
+      const obs = this.add.rectangle(700, y, this.stageDefinition.boss ? 55 : 25, this.stageDefinition.boss ? h * 1.6 : h, color);
       this.physics.add.existing(obs, false); // Dynamic body so it can move via velocity!
       const body = obs.body as Phaser.Physics.Arcade.Body;
       body.setAllowGravity(false);
       body.setImmovable(true);
-      body.setVelocityX(-this.speed);
+      body.setVelocityX(-this.speed * hazard.speed);
       
       this.obstacles.add(obs);
   }
 
-  endGame() {
+  endGame(loser: 1 | 2 = 1) {
+      if (this.finished) return;
+      this.finished = true;
       this.physics.pause();
       VFXManager.screenShake(this, 0.02, 300);
       AudioEngine.playEffect('EXPLOSION');
       const banner = this.add.rectangle(320, 240, 640, 100, 0x000000, 0.8);
-      this.add.text(320, 240, `GAME OVER\nFINAL SCORE: ${Math.floor(this.score)}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff0055', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.setInteractive().on('pointerdown', () => { if (SaveManager.isHighScore('RunnerScene', this.difficulty, this.score)) {
+      const result = this.mode === 'VERSUS' ? `PLAYER ${loser === 1 ? 2 : 1} WINS` : 'RUN TERMINATED';
+      const scoreKey = `${this.difficulty}-${this.mode}`;
+      this.add.text(320, 240, `${result}\nFINAL SCORE: ${Math.floor(this.score)}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff0055', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
+      banner.setInteractive().on('pointerdown', () => { if (SaveManager.isHighScore('RunnerScene', scoreKey, this.score)) {
       this.scene.pause();
-      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: this.difficulty, score: this.score });
+      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: scoreKey, score: this.score, restartData: { difficulty: this.difficulty, mode: this.mode } });
     } else {
-      SaveManager.submitScore('RunnerScene', this.difficulty, this.score);
-      this.scene.restart({ difficulty: this.difficulty });
+      SaveManager.submitScore('RunnerScene', scoreKey, this.score);
+      this.scene.restart({ difficulty: this.difficulty, mode: this.mode });
     } });
+  }
+
+  private updateRunner(player: Phaser.Physics.Arcade.Sprite, animator: SpriteStateMachine, playerId: 1 | 2, delta: number) {
+      const body = player.body as Phaser.Physics.Arcade.Body;
+      const upRaw = playerId === 1 ? InputManager.isP1Down('UP') || InputManager.isP1Down('FIRE') : InputManager.isP2Down('UP') || InputManager.isP2Down('FIRE');
+      const downRaw = playerId === 1 ? InputManager.isP1Down('DOWN') : InputManager.isP2Down('DOWN');
+      const inverted = this.stageDefinition.modifier === 'INVERTED_CONTROLS';
+      const jump = inverted ? downRaw : upRaw;
+      const duck = inverted ? upRaw : downRaw;
+      if (jump && !this.jumpHeld[playerId]) this.jump(player, animator);
+      this.jumpHeld[playerId] = jump;
+      if (duck) this.duck(true, player, animator); else if (animator.getState() === 'duck') this.duck(false, player, animator);
+      body.setGravityY(this.stageDefinition.modifier === 'LOW_GRAVITY' ? 850 : 1500);
+      if (!body.touching.down) animator.setState('jump'); else if (animator.getState() === 'jump') animator.setState('run');
+      const animation = animator.update(delta);
+      player.setTexture(animation.frame);
+      body.setSize(animation.hitbox.width, animation.hitbox.height).setOffset(animation.hitbox.offsetX, animation.hitbox.offsetY);
+      if (animation.event) VFXManager.playHit(this, player.x - 10, player.y + 20, playerId === 1 ? 0x00ffcc : 0xffff00);
+  }
+
+  private createAnimator() {
+      return new SpriteStateMachine({
+        run: { frames: ['runner-run-1', 'runner-run-2'], frameRate: 10, hitbox: { width: 24, height: 46, offsetX: 4, offsetY: 2 } },
+        jump: { frames: ['runner-jump'], frameRate: 1, loop: false, hitbox: { width: 22, height: 40, offsetX: 5, offsetY: 5 }, emitOnEnter: 'jump-dust' },
+        duck: { frames: ['runner-duck'], frameRate: 1, loop: false, hitbox: { width: 30, height: 24, offsetX: 1, offsetY: 24 } },
+      }, 'run');
   }
 
   private createRunnerTextures() {

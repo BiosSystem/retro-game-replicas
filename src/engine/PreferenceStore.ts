@@ -13,7 +13,7 @@ export interface ArcadePreferences {
 
 const DEFAULTS: ArcadePreferences = {
   theme: 'NEON',
-  bindings: { UP: ['ArrowUp', 'KeyW'], DOWN: ['ArrowDown', 'KeyS'], LEFT: ['ArrowLeft', 'KeyA'], RIGHT: ['ArrowRight', 'KeyD'], FIRE: ['Space'] },
+  bindings: { UP: ['KeyW'], DOWN: ['KeyS'], LEFT: ['KeyA'], RIGHT: ['KeyD'], FIRE: ['Space'] },
 };
 
 export class PreferenceStore {

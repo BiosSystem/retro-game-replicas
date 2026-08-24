@@ -1,23 +1,34 @@
 import { PreferenceStore, type ControlAction } from './PreferenceStore';
+import { MultiInput, type PlayerInputState } from '../multiplayer/MultiInput';
+import { ArcadeModeRouter } from '../multiplayer/ArcadeModeRouter';
+import type { ArcadeMode } from '../multiplayer/CoopSession';
 
 export class InputManager {
     private static keys: Set<string> = new Set();
     private static gamepadState: Record<number, Record<string, boolean>> = {};
     private static connectedPads: Set<number> = new Set();
     private static bindings: Record<ControlAction, string[]>;
+    private static multi = new MultiInput();
+    private static modeRouter = new ArcadeModeRouter();
+    private static playerState: Record<1 | 2, PlayerInputState> = {
+        1: { UP: false, DOWN: false, LEFT: false, RIGHT: false, FIRE: false },
+        2: { UP: false, DOWN: false, LEFT: false, RIGHT: false, FIRE: false }
+    };
 
     public static initialize() {
         this.refreshBindings();
         window.addEventListener('arcade-settings-change', () => this.refreshBindings());
         window.addEventListener('keydown', (e) => {
             this.keys.add(e.code);
+            this.multi.setKey(e.code, true);
         });
 
         window.addEventListener('keyup', (e) => {
             this.keys.delete(e.code);
+            this.multi.setKey(e.code, false);
         });
 
-        window.addEventListener('gamepadconnected', (e: any) => {
+        window.addEventListener('gamepadconnected', (e: GamepadEvent) => {
             const gp = e.gamepad;
             this.connectedPads.add(gp.index);
             this.gamepadState[gp.index] = {};
@@ -25,7 +36,7 @@ export class InputManager {
             console.log(`Gamepad connected: ${gp.id}`);
         });
 
-        window.addEventListener('gamepaddisconnected', (e: any) => {
+        window.addEventListener('gamepaddisconnected', (e: GamepadEvent) => {
             const gp = e.gamepad;
             this.connectedPads.delete(gp.index);
             delete this.gamepadState[gp.index];
@@ -54,9 +65,11 @@ export class InputManager {
     private static updateIndicator() {
         const el = document.getElementById('gamepad-indicator');
         if (!el) return;
-        if (this.connectedPads.size > 0) {
+        const status = this.modeRouter.getStatus();
+        if (this.connectedPads.size > 0 || status.mode !== 'SOLO') {
             el.style.display = 'block';
-            el.innerHTML = `🎮 ${this.connectedPads.size} Gamepad(s) Connected`;
+            const relay = status.mode === 'VERSUS' && !status.nativeDualControl ? ` | P${status.relayPlayer} TURN` : '';
+            el.textContent = `${status.mode}${relay} | ${this.connectedPads.size} PAD(S)`;
         } else {
             el.style.display = 'none';
         }
@@ -93,10 +106,10 @@ export class InputManager {
                 .action { width: 70px; height: 70px; border-radius: 50%; }
             </style>
             <div class="d-pad">
-                <div class="v-btn up" data-key="ArrowUp">W</div>
-                <div class="v-btn left" data-key="ArrowLeft">A</div>
-                <div class="v-btn right" data-key="ArrowRight">D</div>
-                <div class="v-btn down" data-key="ArrowDown">S</div>
+                <div class="v-btn up" data-key="KeyW">W</div>
+                <div class="v-btn left" data-key="KeyA">A</div>
+                <div class="v-btn right" data-key="KeyD">D</div>
+                <div class="v-btn down" data-key="KeyS">S</div>
             </div>
             <div class="action-pad">
                 <div class="v-btn action" data-key="Space">FIRE</div>
@@ -115,7 +128,17 @@ export class InputManager {
     }
 
     public static update() {
+        if (this.modeRouter.tick(performance.now())) this.updateIndicator();
         const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+        const snapshots = Array.from(gamepads).filter((pad): pad is Gamepad => Boolean(pad)).map(pad => ({
+            index: pad.index, connected: pad.connected, axes: Array.from(pad.axes), buttons: pad.buttons.map(button => button.pressed)
+        }));
+        const detected = new Set(snapshots.map(pad => pad.index));
+        if (detected.size !== this.connectedPads.size || [...detected].some(index => !this.connectedPads.has(index))) {
+            this.connectedPads = detected;
+            this.updateIndicator();
+        }
+        this.playerState = this.multi.poll(snapshots);
         for (let i = 0; i < gamepads.length; i++) {
             const gp = gamepads[i];
             if (!gp) continue;
@@ -147,22 +170,17 @@ export class InputManager {
     }
 
     public static isP1Down(action: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FIRE'): boolean {
-        let pressed = this.bindings[action].some(k => this.keys.has(k));
-        if (this.gamepadState[0] && this.gamepadState[0][action]) pressed = true;
-        return pressed;
+        const player1 = this.playerState[1][action] || this.bindings[action].some(k => this.keys.has(k));
+        return this.modeRouter.primary(action, player1, this.playerState[2][action]);
     }
 
     public static isP2Down(action: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FIRE'): boolean {
-        const keys: Record<string, string[]> = {
-            'UP': ['KeyI'],
-            'DOWN': ['KeyK'],
-            'LEFT': ['KeyJ'],
-            'RIGHT': ['KeyL'],
-            'FIRE': ['Enter']
-        };
-        let pressed = keys[action].some(k => this.keys.has(k));
-        if (this.gamepadState[1] && this.gamepadState[1][action]) pressed = true;
-        return pressed;
+        return this.playerState[2][action];
+    }
+
+    public static configureArcadeMode(mode: ArcadeMode, nativeDualControl = false) {
+        this.modeRouter.configure(mode, nativeDualControl, performance.now());
+        this.updateIndicator();
     }
 
     public static simulateTouch(code: string, isDown: boolean) {

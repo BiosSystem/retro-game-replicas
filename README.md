@@ -38,11 +38,16 @@ Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLS
 - **Procedural Chiptune Audio** - Synthesize laser, explosion, coin, power-up, stage-clear, and music signals with the Web Audio API.
 - **Four-Voice Tracker** - Sequence pulse lead, chord arpeggio, triangle bass, and noise percussion across four code-defined soundtracks.
 - **Coin-Op Attract Mode** - Run a BIOS self-test, accept persistent credits, enable free play, and cycle animated game previews after 30 seconds idle.
+- **Local Multiplayer Core** - Split P1 across WASD plus Space and P2 across arrows plus Enter, or hot-plug two gamepads at any time.
+- **Co-op and Versus Flagships** - Defend together in two-ship Neon Vector Asteroids, race two runners in Pixel Runner, or play head-to-head Neon Pong.
+- **Universal Multiplayer Routing** - Share controls in co-op or alternate 15-second versus relay turns in every single-avatar replica.
+- **Infinite Procedural Stages** - Generate deterministic hazards, bosses, speed curves, low gravity, fast bullets, and inverted-control rounds without level assets.
+- **Pooled Particle Rendering** - Reuse typed-array particle slots for explosions and sparks without per-burst emitter allocation.
 - **Neon Vector Asteroids** - Fracture procedural rocks, collect minerals, intercept scout UFOs, upgrade weapons, and carry shields through endless stages.
 - **Multi-Stage Combat** - Clear endless Space Defenders waves with combo multipliers, adaptive enemy fire, and shield drops.
 - **Persistent Arcade Ledger** - Keep the top ten scores for every game and difficulty with safe v2 migration.
 - **Cabinet Customization** - Switch among neon, classic woodgrain, cyber, and Amber phosphor themes and remap Player 1 fire control.
-- **Fast Initial Entry** - Load a 2.83 kB JavaScript entry, defer the Phaser runtime, and fetch each game scene only when selected.
+- **Fast Initial Entry** - Load a 2.88 kB JavaScript entry, defer the Phaser runtime, and fetch each game scene only when selected.
 - **Cross-Platform Native** - Less than 15MB binary size for desktop (macOS, Windows), with native Android APK support.
 - **Self-Contained Architecture** - Load zero external ROMs or web fonts and persist high scores locally.
 
