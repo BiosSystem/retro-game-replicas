@@ -6,6 +6,7 @@ export class ArcadeRuntime {
   private frameCount = 0;
   private sampleStarted = performance.now();
   private frameRequest = 0;
+  private startPressed = false;
 
   constructor(game: Phaser.Game) {
     this.game = game;
@@ -17,6 +18,7 @@ export class ArcadeRuntime {
   }
 
   private measureFrames = (time: number) => {
+    this.pollGamepadPause();
     this.frameCount += 1;
     const elapsed = time - this.sampleStarted;
     if (elapsed >= 1000) {
@@ -62,5 +64,14 @@ export class ArcadeRuntime {
   private setText(id: string, value: string) {
     const element = document.getElementById(id);
     if (element) element.textContent = value;
+  }
+
+  private pollGamepadPause() {
+    const pressed = Array.from(navigator.getGamepads?.() ?? []).some(pad => pad?.buttons[9]?.pressed);
+    if (pressed && !this.startPressed) {
+      const active = this.game.scene.getScenes(true).find(scene => !['LobbyScene', 'PauseScene', 'SettingsScene', 'NameEntryScene', 'AchievementsScene'].includes(scene.scene.key));
+      if (active && !this.game.scene.isActive('PauseScene')) { active.scene.pause(); active.scene.launch('PauseScene', { scene: active.scene.key }); }
+    }
+    this.startPressed = pressed;
   }
 }

@@ -1,5 +1,13 @@
 ## [Unreleased] - 2026-08-24
 ### Changed
+- Add a four-voice programmable tracker with pulse lead, chord arpeggiator, triangle bass, synthesized percussion, 25 ms lookahead scheduling, channel mixing, cross-fades, and focus suspension.
+- Compose Arcade Plaza, Deep Space Recon, Cyber Sprint, and Hyper Vector as code-defined looping tracks with zero audio assets.
+- Add a first-session BIOS POST, persistent coin credits, free play, animated attract previews, game records, and credit-gated launches to the arcade lobby.
+- Add live fire-key capture, separate BGM volume controls, Amber phosphor styling, and gamepad Start pause support.
+- Replace Astro Drift with Neon Vector Asteroids featuring three-tier fractures, mineral collection, predictive UFO fire, spread, laser, and EMP weapons, shields, stages, and vector particles.
+- Defer Phaser bootstrap and load all 11 game scenes through dynamic imports.
+- Split the initial JavaScript entry to 2.83 kB, the bootstrap to 26.07 kB, and game modules to 2.99-7.16 kB while isolating the cached Phaser runtime.
+- Remove the Vite large-chunk warning with an explicit 1.5 MB ceiling for the known deferred Phaser runtime.
 - Add deterministic sprite animation states with directional metadata, interpolated frame progress, per-state hitboxes, and action emission hooks.
 - Expand Space Defenders with endless stage progression, combo multipliers, patrol, chase, and barrage fire, shield power-ups, and procedural effects.
 - Replace the Pixel Runner rectangle with generated animated character frames and state-specific collision bodies.
@@ -15,6 +23,9 @@
 - Remove the external Google Fonts runtime dependency and use local system monospace fonts.
 
 ### Verified
+- Pass 22 unit and integration tests across 9 files.
+- Build 40 transformed modules with a 2.83 kB initial entry and no Vite chunk warning.
+- Process the spatial benchmark at 616.9 operations per second with a 1.62 ms mean.
 - Pass 11 unit tests across 5 test files.
 - Process 5,000 spatial bodies and 500 regional queries at 442.9 operations per second with a 2.26 ms mean on the development workstation.
 - Pass npm audit with zero known vulnerabilities.

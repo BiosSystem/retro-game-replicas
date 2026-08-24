@@ -36,9 +36,13 @@ Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLS
 - **Accessible Motion Controls** - Disable cabinet animation from Settings or the operating system reduced-motion preference.
 - **Animated Character Engine** - Drive generated pixel characters through deterministic run, jump, duck, and action states with tailored hitboxes.
 - **Procedural Chiptune Audio** - Synthesize laser, explosion, coin, power-up, stage-clear, and music signals with the Web Audio API.
+- **Four-Voice Tracker** - Sequence pulse lead, chord arpeggio, triangle bass, and noise percussion across four code-defined soundtracks.
+- **Coin-Op Attract Mode** - Run a BIOS self-test, accept persistent credits, enable free play, and cycle animated game previews after 30 seconds idle.
+- **Neon Vector Asteroids** - Fracture procedural rocks, collect minerals, intercept scout UFOs, upgrade weapons, and carry shields through endless stages.
 - **Multi-Stage Combat** - Clear endless Space Defenders waves with combo multipliers, adaptive enemy fire, and shield drops.
 - **Persistent Arcade Ledger** - Keep the top ten scores for every game and difficulty with safe v2 migration.
-- **Cabinet Customization** - Switch among neon, classic woodgrain, and cyber themes and select persistent Player 1 controls.
+- **Cabinet Customization** - Switch among neon, classic woodgrain, cyber, and Amber phosphor themes and remap Player 1 fire control.
+- **Fast Initial Entry** - Load a 2.83 kB JavaScript entry, defer the Phaser runtime, and fetch each game scene only when selected.
 - **Cross-Platform Native** - Less than 15MB binary size for desktop (macOS, Windows), with native Android APK support.
 - **Self-Contained Architecture** - Load zero external ROMs or web fonts and persist high scores locally.
 

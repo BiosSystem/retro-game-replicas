@@ -4,7 +4,7 @@ import { PreferenceStore, type CabinetTheme } from '../engine/PreferenceStore';
 
 export default class SettingsScene extends Phaser.Scene {
     private sourceScene!: string;
-    private options = ['RESUME', 'CABINET THEME', 'CONTROL SCHEME', 'TOGGLE CRT', 'REDUCE MOTION', 'VOLUME +10%', 'VOLUME -10%', 'WIPE SAVE DATA'];
+    private options = ['RESUME', 'CABINET THEME', 'REBIND FIRE', 'TOGGLE CRT', 'REDUCE MOTION', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
 
@@ -32,10 +32,10 @@ export default class SettingsScene extends Phaser.Scene {
         this.menuItems = [];
 
         this.options.forEach((opt, idx) => {
-            const y = 145 + (idx * 36);
+            const y = 128 + (idx * 31);
             const text = this.add.text(320, y, opt, {
                 fontFamily: "'Share Tech Mono', Courier",
-                fontSize: '24px',
+                fontSize: '20px',
                 color: '#ffffff'
             }).setOrigin(0.5);
             this.menuItems.push(text);
@@ -76,7 +76,7 @@ export default class SettingsScene extends Phaser.Scene {
     private getOptionLabel(option: string) {
         const preferences = new PreferenceStore(localStorage).load();
         if (option === 'CABINET THEME') return `${option}: ${preferences.theme}`;
-        if (option === 'CONTROL SCHEME') return `${option}: ${preferences.bindings.FIRE.includes('KeyZ') ? 'WASD + Z' : 'ARROWS'}`;
+        if (option === 'REBIND FIRE') return `${option}: ${preferences.bindings.FIRE[0]}`;
         if (option === 'TOGGLE CRT') return `${option}: ${localStorage.getItem('arcade_crt') === 'true' ? 'ON' : 'OFF'}`;
         if (option === 'REDUCE MOTION') return `${option}: ${localStorage.getItem('arcade_reduced_motion') === 'true' ? 'ON' : 'OFF'}`;
         return option;
@@ -90,22 +90,19 @@ export default class SettingsScene extends Phaser.Scene {
             this.closeSettings();
         } else if (opt === 'CABINET THEME') {
             const store = new PreferenceStore(localStorage);
-            const themes: CabinetTheme[] = ['NEON', 'CLASSIC', 'CYBER'];
+            const themes: CabinetTheme[] = ['NEON', 'CLASSIC', 'CYBER', 'AMBER'];
             const current = store.load().theme;
             store.setTheme(themes[(themes.indexOf(current) + 1) % themes.length]);
             window.dispatchEvent(new Event('arcade-settings-change'));
             this.updateMenu();
-        } else if (opt === 'CONTROL SCHEME') {
+        } else if (opt === 'REBIND FIRE') {
             const store = new PreferenceStore(localStorage);
-            const current = store.load().bindings;
-            const alternate = current.FIRE.includes('KeyZ');
-            store.setBinding('UP', alternate ? ['ArrowUp', 'KeyW'] : ['KeyW']);
-            store.setBinding('DOWN', alternate ? ['ArrowDown', 'KeyS'] : ['KeyS']);
-            store.setBinding('LEFT', alternate ? ['ArrowLeft', 'KeyA'] : ['KeyA']);
-            store.setBinding('RIGHT', alternate ? ['ArrowRight', 'KeyD'] : ['KeyD']);
-            store.setBinding('FIRE', alternate ? ['Space'] : ['KeyZ', 'Space']);
-            window.dispatchEvent(new Event('arcade-settings-change'));
-            this.updateMenu();
+            this.menuItems[this.selectedIndex].setText('PRESS A KEY');
+            this.input.keyboard?.once('keydown', (event: KeyboardEvent) => {
+                if (event.code !== 'Escape') store.setBinding('FIRE', [event.code]);
+                window.dispatchEvent(new Event('arcade-settings-change'));
+                this.updateMenu();
+            });
         } else if (opt === 'TOGGLE CRT') {
             const isEnabled = localStorage.getItem('arcade_crt') === 'true';
             localStorage.setItem('arcade_crt', isEnabled ? 'false' : 'true');
@@ -122,6 +119,12 @@ export default class SettingsScene extends Phaser.Scene {
         } else if (opt === 'VOLUME -10%') {
             const vol = Math.max(0.0, parseFloat(localStorage.getItem('retro_master_volume') || '0.5') - 0.1);
             AudioEngine.setVolume(vol);
+        } else if (opt === 'BGM +10%') {
+            const vol = Math.min(1, parseFloat(localStorage.getItem('retro_music_volume') || '0.55') + 0.1);
+            AudioEngine.setMusicVolume(vol);
+        } else if (opt === 'BGM -10%') {
+            const vol = Math.max(0, parseFloat(localStorage.getItem('retro_music_volume') || '0.55') - 0.1);
+            AudioEngine.setMusicVolume(vol);
         } else if (opt === 'WIPE SAVE DATA') {
             if (confirm('Are you sure you want to delete all leaderboards and settings?')) {
                 localStorage.clear();

@@ -1,4 +1,7 @@
 :root { color-scheme: dark; font-family: "Cascadia Mono", "IBM Plex Mono", "Courier New", monospace; background: #020407; }
+#bios-post { display: none; position: fixed; inset: 0; z-index: 20000; padding: clamp(24px, 8vw, 100px); background: #000; color: #00ff6e; text-shadow: 0 0 8px #00ff6e; }
+#bios-post.bios-post-visible { display: block; }
+#bios-post pre { font: 700 clamp(13px, 2vw, 20px)/1.8 "Cascadia Mono", monospace; white-space: pre-wrap; }
 *, *::before, *::after { box-sizing: border-box; }
 * { margin: 0; padding: 0; }
 body { min-width: 320px; min-height: 100vh; overflow: hidden; background: radial-gradient(circle at 50% 20%, rgba(0,255,204,.1), transparent 35%), linear-gradient(135deg, #020407, #080312 55%, #020407); color: #d9fff2; }
@@ -34,3 +37,7 @@ canvas { max-width: 100%; max-height: 100%; display: block; image-rendering: pix
 [data-cabinet-theme="cyber"] .cabinet-screen { background: linear-gradient(90deg, #090516, #241035 12%, #071320 50%, #241035 88%, #090516); border-color: #bd2cff; }
 [data-cabinet-theme="cyber"] .cabinet-marquee { border-bottom-color: #ff2ec4; }
 [data-cabinet-theme="cyber"] .console-stat b, [data-cabinet-theme="cyber"] .marquee-status { color: #ff2ec4; }
+[data-cabinet-theme="amber"] .cabinet-marquee, [data-cabinet-theme="amber"] .cabinet-console { background: linear-gradient(180deg, #241805, #0e0902); border-color: #ff9d00; }
+[data-cabinet-theme="amber"] .cabinet-screen { background: radial-gradient(circle, #251a05, #080500 72%); border-color: #ff9d00; }
+[data-cabinet-theme="amber"] .cabinet-marquee { border-bottom-color: #ffc04c; }
+[data-cabinet-theme="amber"] .console-stat b, [data-cabinet-theme="amber"] .marquee-status { color: #ffc04c; }

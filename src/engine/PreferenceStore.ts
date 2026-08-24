@@ -1,4 +1,4 @@
-export type CabinetTheme = 'NEON' | 'CLASSIC' | 'CYBER';
+export type CabinetTheme = 'NEON' | 'CLASSIC' | 'CYBER' | 'AMBER';
 export type ControlAction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FIRE';
 
 export interface StoragePort {
@@ -25,7 +25,7 @@ export class PreferenceStore {
   load(): ArcadePreferences {
     try {
       const parsed = JSON.parse(this.storage.getItem(this.key) ?? '{}') as Partial<ArcadePreferences>;
-      const theme = parsed.theme === 'CLASSIC' || parsed.theme === 'CYBER' ? parsed.theme : 'NEON';
+      const theme = parsed.theme === 'CLASSIC' || parsed.theme === 'CYBER' || parsed.theme === 'AMBER' ? parsed.theme : 'NEON';
       return { theme, bindings: this.sanitizeBindings(parsed.bindings) };
     } catch {
       return structuredClone(DEFAULTS);

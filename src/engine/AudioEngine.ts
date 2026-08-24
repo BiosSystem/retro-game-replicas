@@ -15,6 +15,9 @@ export class AudioEngine {
     private static bgmInterval: number | null = null;
     private static currentTrack: { track: number[], speedMs: number, type: OscillatorType } | null = null;
     private static noiseBuffer: AudioBuffer | null = null;
+    private static musicGain: GainNode | null = null;
+    private static sequencer: ChiptuneSequencer | null = null;
+    private static pendingTrack: keyof typeof TRACKS | null = null;
 
     public static initialize() {
         if (this.ctx) return;
@@ -33,7 +36,16 @@ export class AudioEngine {
         }
 
         this.masterGain.connect(this.ctx.destination);
+        this.musicGain = this.ctx.createGain();
+        this.musicGain.gain.value = Number(localStorage.getItem('retro_music_volume') ?? '0.55');
+        this.musicGain.connect(this.masterGain);
+        this.sequencer = new ChiptuneSequencer(new WebAudioTrackerBackend(this.ctx, this.musicGain));
+        if (this.pendingTrack) this.sequencer.play(TRACKS[this.pendingTrack]);
         this.noiseBuffer = this.createNoiseBuffer(this.ctx);
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) void this.sequencer?.suspend();
+            else void this.sequencer?.resume();
+        });
         
         if (this.currentTrack && !this.bgmInterval) {
             this.playBGM(this.currentTrack.track, this.currentTrack.speedMs, this.currentTrack.type);
@@ -41,10 +53,27 @@ export class AudioEngine {
     }
 
     public static setVolume(val: number) {
-        if (!this.masterGain) return;
-        this.masterGain.gain.value = val;
-        localStorage.setItem('retro_master_volume', val.toString());
+        const volume = Math.max(0, Math.min(1, val));
+        if (this.masterGain) this.masterGain.gain.value = volume;
+        localStorage.setItem('retro_master_volume', volume.toString());
     }
+
+    public static setMusicVolume(val: number) {
+        const volume = Math.max(0, Math.min(1, val));
+        if (this.musicGain && this.ctx) this.musicGain.gain.setTargetAtTime(volume, this.ctx.currentTime, 0.03);
+        localStorage.setItem('retro_music_volume', volume.toString());
+    }
+
+    public static playTrack(id: keyof typeof TRACKS) {
+        const track = TRACKS[id];
+        if (!track) return;
+        this.pendingTrack = id;
+        this.currentTrack = null;
+        this.stopBGM();
+        this.sequencer?.play(track);
+    }
+
+    public static stopTrack() { this.pendingTrack = null; this.sequencer?.stop(); }
 
     public static playTone(frequency: number, type: OscillatorType = 'square', duration: number = 0.1) {
         if (!this.ctx || !this.masterGain) return;
@@ -135,3 +164,5 @@ export class AudioEngine {
         }
     }
 }
+import { ChiptuneSequencer, WebAudioTrackerBackend } from '../audio/bgm/ChiptuneSequencer';
+import { TRACKS } from '../audio/bgm/tracks';

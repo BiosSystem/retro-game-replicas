@@ -5,6 +5,9 @@
 import Phaser from 'phaser';
 import { SaveManager } from '../engine/SaveManager';
 import { AchievementManager } from '../engine/AchievementManager';
+import { AudioEngine } from '../engine/AudioEngine';
+import { AttractController, CreditLedger } from '../ui/menu/ArcadeSession';
+import { mountGameScene } from '../ui/menu/SceneLifecycle';
 type MenuMode = 'GAME_SELECT' | 'DIFFICULTY_SELECT';
 
 const PALETTE = {
@@ -22,7 +25,7 @@ export default class LobbyScene extends Phaser.Scene {
   private games = [
     { name: 'SNAKE EVOLUTION',  scene: 'SnakeScene',       icon: '🐍' },
     { name: 'NEON PONG',        scene: 'PongScene',         icon: '🏓' },
-    { name: 'ASTRO DRIFT',      scene: 'AsteroidsScene',    icon: '🚀' },
+    { name: 'NEON VECTOR',      scene: 'AsteroidsScene',    icon: '🚀' },
     { name: 'BRICK BREAKER',    scene: 'BreakoutScene',     icon: '🧱' },
     { name: 'FROGGIE CROSSER',  scene: 'FroggerScene',      icon: '🐸' },
     { name: 'SPACE DEFENDERS',  scene: 'InvadersScene',     icon: '👾' },
@@ -51,6 +54,13 @@ export default class LobbyScene extends Phaser.Scene {
   private starGfx!: Phaser.GameObjects.Graphics;
   private biosFlash!: Phaser.GameObjects.Text;
   private secretBuffer = '';
+  private credits!: CreditLedger;
+  private attract!: AttractController;
+  private creditText!: Phaser.GameObjects.Text;
+  private attractText!: Phaser.GameObjects.Text;
+  private previewGfx!: Phaser.GameObjects.Graphics;
+  private nextAttractCycle = 0;
+  private selectionCursor!: Phaser.GameObjects.Text;
 
   constructor() { super('LobbyScene'); }
 
@@ -59,6 +69,9 @@ export default class LobbyScene extends Phaser.Scene {
     this.diffItems   = [];
     this.mode        = 'GAME_SELECT';
     this.secretBuffer = '';
+    this.credits = new CreditLedger(localStorage);
+    this.attract = new AttractController(30_000, this.time.now);
+    this.nextAttractCycle = this.time.now + 30_000;
     this.input.keyboard?.removeAllListeners();
 
     // Reset gamepad flags
@@ -72,9 +85,12 @@ export default class LobbyScene extends Phaser.Scene {
     this.buildFooter();
     this.buildDiffModal();
     this.buildBiosFlash();
+    this.buildCoinOp();
+    this.buildPreview();
     this.buildCrtShader();
     this.bindKeys();
     this.bindGamepad();
+    AudioEngine.playTrack('plaza');
   }
 
   private gamepadConnected = false;
@@ -192,7 +208,7 @@ export default class LobbyScene extends Phaser.Scene {
 
       if (isSelected) {
         item.setScale(1.06);
-        this.add.text(140, y, '▶', {
+        this.selectionCursor = this.add.text(140, y, '▶', {
           fontFamily: 'Courier',
           fontSize: '18px',
           color: PALETTE.primary,
@@ -205,12 +221,40 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   private buildFooter() {
-    this.add.text(320, 458, '↑↓ NAVIGATE   SPACE SELECT   S SETTINGS   A ACHIEVEMENTS', {
+    this.add.text(320, 458, 'UP/DOWN MOVE  SPACE SELECT  C COIN  F FREE PLAY  S SETTINGS', {
       fontFamily: "'Share Tech Mono', Courier",
       fontSize: '11px',
       color: PALETTE.muted,
       letterSpacing: 1,
     }).setOrigin(0.5);
+  }
+
+  private buildCoinOp() {
+    this.creditText = this.add.text(24, 438, '', { fontFamily: 'Courier', fontSize: '13px', color: PALETTE.warn }).setOrigin(0, 0.5);
+    this.attractText = this.add.text(616, 438, '', { fontFamily: 'Courier', fontSize: '12px', color: PALETTE.accent }).setOrigin(1, 0.5);
+    this.updateCreditText();
+  }
+
+  private buildPreview() {
+    this.previewGfx = this.add.graphics().setDepth(5);
+    this.drawPreview(0);
+  }
+
+  private drawPreview(phase: number) {
+    const x = 76;
+    const y = 275;
+    const pulse = Math.sin(phase * 0.006) * 5;
+    this.previewGfx.clear().lineStyle(1, 0x00ffcc, 0.45).strokeRoundedRect(24, 225, 104, 100, 4);
+    this.previewGfx.lineStyle(2, 0x00ff6e, 0.9);
+    const mode = this.selectedGameIndex % 3;
+    if (mode === 0) this.previewGfx.strokeTriangle(x, y - 16 + pulse, x - 13, y + 13, x + 13, y + 13);
+    else if (mode === 1) { this.previewGfx.strokeCircle(x, y, 18 + pulse * 0.2); this.previewGfx.lineBetween(42, y + pulse, 110, y - pulse); }
+    else { this.previewGfx.strokeRect(x - 18, y - 18, 36, 36); this.previewGfx.lineBetween(x - 24, y, x + 24, y); }
+  }
+
+  private updateCreditText() {
+    const state = this.credits.snapshot();
+    this.creditText?.setText(state.freePlay ? 'FREE PLAY' : `CREDITS ${state.credits.toString().padStart(2, '0')}`);
   }
 
   private buildDiffModal() {
@@ -286,8 +330,12 @@ export default class LobbyScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-A',     () => {
         if (this.mode !== 'DIFFICULTY_SELECT') this.scene.launch('AchievementsScene');
     });
+    this.input.keyboard?.on('keydown-C', () => { this.registerActivity(); this.credits.insertCoin(); this.updateCreditText(); AudioEngine.playEffect('COIN'); });
+    this.input.keyboard?.on('keydown-F', () => { this.registerActivity(); this.credits.toggleFreePlay(); this.updateCreditText(); AudioEngine.playEffect('POWER_UP'); });
 
     this.input.keyboard?.on('keydown', (e: KeyboardEvent) => {
+      this.registerActivity();
+      this.attractText.setText('');
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'c') {
         this.toggleCrt();
         return;
@@ -314,6 +362,14 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   update() {
+    this.drawPreview(this.time.now);
+    if (this.attract.isActive(this.time.now)) {
+      this.attractText.setText('ATTRACT MODE');
+      if (this.time.now >= this.nextAttractCycle) {
+        this.nextAttractCycle = this.time.now + 4000;
+        this.updateGameSelection(1);
+      }
+    }
     if (this.gamepadConnected && this.input.gamepad && this.input.gamepad.total > 0) {
       const pad = this.input.gamepad.getPad(0);
       if (!pad) return;
@@ -323,10 +379,10 @@ export default class LobbyScene extends Phaser.Scene {
       const button = !!(pad.A || pad.B || pad.X || pad.Y);
       const back = !!(pad.B || pad.L1);
 
-      if (up && !this.padLastState.up) this.handleUp();
-      if (down && !this.padLastState.down) this.handleDown();
-      if (button && !this.padLastState.button) this.handleSpace();
-      if (back && !this.padLastState.back) this.handleEsc();
+      if (up && !this.padLastState.up) { this.registerActivity(); this.handleUp(); }
+      if (down && !this.padLastState.down) { this.registerActivity(); this.handleDown(); }
+      if (button && !this.padLastState.button) { this.registerActivity(); this.handleSpace(); }
+      if (back && !this.padLastState.back) { this.registerActivity(); this.handleEsc(); }
 
       this.padLastState = { up, down, button, back };
     }
@@ -354,12 +410,26 @@ export default class LobbyScene extends Phaser.Scene {
       this.diffContainer.setVisible(true).setScale(0.88).setAlpha(0);
       this.tweens.add({ targets: this.diffContainer, scale: 1, alpha: 1, duration: 180, ease: 'Back.easeOut' });
     } else {
+      if (!this.credits.consume()) {
+        this.diffDescText.setText('INSERT COIN - PRESS C');
+        AudioEngine.playTone(120, 'square', 0.15);
+        return;
+      }
+      this.updateCreditText();
       const game = this.games[this.selectedGameIndex];
       const diff = this.difficulties[this.selectedDiffIndex];
       this.cameras.main.fade(200, 0, 0, 0);
-      this.time.delayedCall(200, () => {
+      this.time.delayedCall(200, async () => {
           AchievementManager.recordPlay(game.scene);
-          this.scene.start(game.scene, { difficulty: diff.id });
+          if (game.scene === 'InvadersScene') AudioEngine.playTrack('space');
+          else if (game.scene === 'RunnerScene') AudioEngine.playTrack('sprint');
+          else if (game.scene === 'AsteroidsScene') AudioEngine.playTrack('vector');
+          else AudioEngine.stopTrack();
+          await mountGameScene({
+            has: key => Boolean(this.scene.manager.keys[key]),
+            add: (key, SceneClass) => this.scene.add(key, SceneClass, false),
+            start: (key, sceneData) => this.scene.start(key, sceneData),
+          }, game.scene, { difficulty: diff.id });
       });
     }
   }
@@ -383,6 +453,7 @@ export default class LobbyScene extends Phaser.Scene {
 
     this.gameItems[prev].setColor(PALETTE.dim).setScale(1).setFontSize('18px');
     this.gameItems[this.selectedGameIndex].setColor(PALETTE.white).setScale(1.06).setFontSize('20px');
+    this.selectionCursor?.setY(132 + this.selectedGameIndex * 28);
 
     this.tweens.add({ targets: this.gameItems[this.selectedGameIndex], scale: 1.1, duration: 80, yoyo: true });
   }
@@ -397,5 +468,10 @@ export default class LobbyScene extends Phaser.Scene {
     this.diffDescText.setText(this.difficulties[this.selectedDiffIndex].desc);
 
     this.tweens.add({ targets: this.diffItems[this.selectedDiffIndex], scale: 1.14, duration: 80, yoyo: true });
+  }
+
+  private registerActivity() {
+    this.attract.registerInput(this.time.now);
+    this.nextAttractCycle = this.time.now + 30_000;
   }
 }
