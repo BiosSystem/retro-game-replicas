@@ -66,4 +66,4 @@ Universal Retro Arcade enforces strict client sandboxing to ensure a secure loca
 - **IndexedDB State Verification**: High scores and game states are bounds-checked at runtime to prevent local storage tampering.
 - **Shader Bounds Enforcement**: GLSL post-processing scanline shaders are bounds-checked to prevent WebGL resource memory overflow.
 
-For detailed security policies and reporting guidelines, refer to the [Security Policy](SECURITY.md) in the root repository.
+For detailed security policies and reporting guidelines, refer to the [Security Policy](../SECURITY.md) in the root repository.
