@@ -81,6 +81,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
 
   private spawnStage() {
     this.stageDefinition = this.generator.generate(this.stage);
+    if (this.stageDefinition.skin) { this.ship.setTint(parseInt(this.stageDefinition.skin.primary.slice(1), 16)); this.ship2?.setTint(parseInt(this.stageDefinition.skin.secondary.slice(1), 16)); }
     const count = Math.min(14, this.stageDefinition.hazards.length);
     for (let index = 0; index < count; index++) this.spawnAsteroid(this.stageDefinition.boss && index === 0 ? 4 : 3);
     this.updateHud();
@@ -152,7 +153,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     if (remaining) { this.updateHud(); return; }
     this.physics.pause(); AudioEngine.playEffect('EXPLOSION'); SaveManager.submitScore('AsteroidsScene', `${this.difficulty}-${this.mode}`, this.score);
     const panel = this.add.text(320, 240, `VECTOR CORE LOST\nSCORE ${this.score}\nCLICK TO REBOOT`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff2ec4', align: 'center', backgroundColor: '#000000cc', padding: { x: 20, y: 14 } }).setOrigin(0.5).setInteractive();
-    panel.on('pointerdown', () => this.scene.restart({ difficulty: this.difficulty }));
+    panel.on('pointerdown', () => this.scene.restart({ difficulty: this.difficulty, mode: this.mode }));
   }
 
   private updateHud() { const state = this.session?.snapshot(); this.hud?.setText(`SCORE ${this.score}  STAGE ${this.stage}  ${this.mode} X${state?.multiplier ?? 1}  MIN ${this.mineralCount}  ${this.weapon}${this.shield ? ' SHIELD' : ''}`); }

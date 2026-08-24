@@ -1,5 +1,11 @@
 ## [Unreleased] - 2026-08-24
 ### Changed
+- Add managed CRT bloom, barrel distortion, vignette, chromatic fallback, scanline controls, and half-resolution phosphor persistence.
+- Add adaptive post-processing profiles that disable bloom at medium quality and all feedback passes at low quality or when CRT is disabled.
+- Add a closed-schema declarative mod runtime for custom hazards, procedural skins, score scaling, audio triggers, and lifecycle hooks.
+- Reject executable mod code, unknown fields, oversized JSON, unsafe strings, and values outside fixed engine bounds.
+- Add a fixed-ring BIOS telemetry overlay with mean frame time, p95 frame time, dropped-frame rate, scene count, quality tier, and optional heap readings.
+- Add open-source architecture research and a stage mod authoring guide.
 - Add a shared local multiplayer engine with P1 WASD and Space, P2 arrows and Enter, two hot-plug gamepad slots, cooperative combo scoring, independent lives, and collision separation math.
 - Add Solo, Co-op, and Versus selection to the cabinet lobby and pass the selected mode through every lazy game launch.
 - Route both players through every replica with shared co-op control or timed versus relay turns when a bespoke dual-player ruleset is unavailable.
@@ -32,6 +38,10 @@
 - Remove the external Google Fonts runtime dependency and use local system monospace fonts.
 
 ### Verified
+- Pass 41 unit and integration tests across 15 files.
+- Record 100,000 telemetry frames and calculate a snapshot at 1,141.9 operations per second with a 0.88 ms mean.
+- Build 50 transformed modules with a 2.87 kB initial entry and no Vite chunk warning.
+- Render the cabinet through local headless Chrome with the production runtime active.
 - Pass 32 unit and integration tests across 12 files.
 - Update 10,000 simultaneous pooled particles at 1,219.1 operations per second with a 0.82 ms mean.
 - Process 5,000 spatial bodies and 500 regional queries at 578.0 operations per second with a 1.73 ms mean.

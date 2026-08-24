@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { PooledParticleSystem } from '../graphics/PooledParticleSystem';
+import { arcadeModRuntime } from '../mods/ModRuntime';
+import { AudioEngine } from './AudioEngine';
 
 interface ScenePool { particles: PooledParticleSystem; graphics: Phaser.GameObjects.Graphics; }
 
@@ -8,6 +10,7 @@ export class VFXManager {
 
     static playExplosion(scene: Phaser.Scene, x: number, y: number, color = 0xffffff) {
         this.getPool(scene).particles.emit({ x, y, count: this.scaleCount(28), speedMin: 50, speedMax: 210, lifeMs: 520, color, size: 4 });
+        this.runCollisionHooks(scene);
     }
 
     static playHit(scene: Phaser.Scene, x: number, y: number, color = 0x00ffcc) {
@@ -43,5 +46,10 @@ export class VFXManager {
         const quality = document.documentElement.dataset.quality;
         const scale = quality === 'low' ? 0.35 : quality === 'medium' ? 0.65 : 1;
         return Math.max(1, Math.round(count * scale));
+    }
+
+    private static runCollisionHooks(scene: Phaser.Scene) {
+        const stage = Number(scene.registry.get('stage')) || 1;
+        for (const dispatch of arcadeModRuntime.dispatch({ event: 'COLLISION', stage })) if (dispatch.action.type === 'PLAY_EFFECT') AudioEngine.playEffect(dispatch.action.effect);
     }
 }

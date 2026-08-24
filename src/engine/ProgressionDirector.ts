@@ -1,3 +1,6 @@
+import { arcadeModRuntime } from '../mods/ModRuntime';
+import { AudioEngine } from './AudioEngine';
+
 export type EnemyBehavior = 'PATROL' | 'CHASE' | 'BARRAGE';
 
 export interface ProgressionSnapshot {
@@ -18,7 +21,8 @@ export class ProgressionDirector {
     if (nowMs <= this.comboExpiresAt) this.multiplier = Math.min(8, this.multiplier + 1);
     else this.multiplier = 1;
     this.comboExpiresAt = nowMs + 1800;
-    const awarded = Math.max(0, Math.round(base * this.multiplier));
+    const modScale = arcadeModRuntime.dispatch({ event: 'SCORE_UPDATE', stage: this.stage, score: this.score }).reduce((scale, dispatch) => dispatch.action.type === 'SCALE_SCORE' ? Math.min(4, scale * dispatch.action.factor) : scale, 1);
+    const awarded = Math.max(0, Math.round(base * this.multiplier * modScale));
     this.score += awarded;
     return awarded;
   }
@@ -26,6 +30,7 @@ export class ProgressionDirector {
   advanceStage() {
     this.stage += 1;
     this.multiplier = Math.max(1, Math.min(8, this.multiplier + 1));
+    for (const dispatch of arcadeModRuntime.dispatch({ event: 'STAGE_CLEAR', stage: this.stage })) if (dispatch.action.type === 'PLAY_EFFECT') AudioEngine.playEffect(dispatch.action.effect);
     return this.stage;
   }
 

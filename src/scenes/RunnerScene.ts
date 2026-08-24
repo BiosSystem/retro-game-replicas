@@ -74,6 +74,7 @@ export default class RunnerScene extends Phaser.Scene {
       this.animator2 = this.createAnimator();
       (this.player2.body as Phaser.Physics.Arcade.Body).setGravityY(1500);
     } else { this.player2 = null; this.animator2 = null; }
+    this.applyStageSkin();
 
     this.obstacles = this.physics.add.group();
 
@@ -137,7 +138,7 @@ export default class RunnerScene extends Phaser.Scene {
 
       this.score += delta * 0.01 * (this.speed / 300);
       const nextStage = Math.floor(this.score / 300) + 1;
-      if (nextStage !== this.stage) { this.stage = nextStage; this.stageDefinition = this.generator.generate(this.stage); AudioEngine.playEffect('STAGE_CLEAR'); }
+      if (nextStage !== this.stage) { this.stage = nextStage; this.stageDefinition = this.generator.generate(this.stage); this.applyStageSkin(); AudioEngine.playEffect('STAGE_CLEAR'); }
       this.scoreText.setText(`SCORE ${Math.floor(this.score)}  STAGE ${this.stage}  ${this.stageDefinition.modifier}`);
       this.speed += delta * this.speedRamp; // Speed ramp
 
@@ -213,6 +214,12 @@ export default class RunnerScene extends Phaser.Scene {
         jump: { frames: ['runner-jump'], frameRate: 1, loop: false, hitbox: { width: 22, height: 40, offsetX: 5, offsetY: 5 }, emitOnEnter: 'jump-dust' },
         duck: { frames: ['runner-duck'], frameRate: 1, loop: false, hitbox: { width: 30, height: 24, offsetX: 1, offsetY: 24 } },
       }, 'run');
+  }
+
+  private applyStageSkin() {
+      if (!this.stageDefinition.skin) return;
+      this.player.setTint(parseInt(this.stageDefinition.skin.primary.slice(1), 16));
+      this.player2?.setTint(parseInt(this.stageDefinition.skin.secondary.slice(1), 16));
   }
 
   private createRunnerTextures() {

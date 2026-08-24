@@ -1,6 +1,8 @@
+import { arcadeModRuntime } from '../mods/ModRuntime';
+
 export type StageModifier = 'NONE' | 'LOW_GRAVITY' | 'FAST_BULLETS' | 'INVERTED_CONTROLS';
 export interface HazardSpawn { lane: number; offset: number; speed: number; kind: 'BLOCK' | 'FLYER' | 'MINE'; }
-export interface StageDefinition { stage: number; seed: number; spawnIntervalMs: number; enemySpeed: number; hazards: HazardSpawn[]; boss: boolean; modifier: StageModifier; }
+export interface StageDefinition { stage: number; seed: number; spawnIntervalMs: number; enemySpeed: number; hazards: HazardSpawn[]; boss: boolean; modifier: StageModifier; skin?: { primary: string; secondary: string }; }
 
 class SeededRandom {
   private state: number;
@@ -18,7 +20,7 @@ export class ProceduralStageGenerator {
     const random = new SeededRandom(seed);
     const hazardCount = Math.min(80, 4 + Math.floor(Math.sqrt(safeStage) * 3));
     const kinds: HazardSpawn['kind'][] = ['BLOCK', 'FLYER', 'MINE'];
-    const hazards = Array.from({ length: hazardCount }, (_, index) => ({
+    const hazards: HazardSpawn[] = Array.from({ length: hazardCount }, (_, index) => ({
       lane: Math.floor(random.next() * 4),
       offset: Number(((index + random.next() * 0.7) / hazardCount).toFixed(4)),
       speed: Number((1 + Math.log2(safeStage + 1) * 0.18 + random.next() * 0.2).toFixed(4)),
@@ -26,11 +28,15 @@ export class ProceduralStageGenerator {
     }));
     const modifiers: StageModifier[] = ['LOW_GRAVITY', 'FAST_BULLETS', 'INVERTED_CONTROLS'];
     const modifier = safeStage >= 4 && random.next() < Math.min(0.7, safeStage * 0.035) ? modifiers[Math.floor(random.next() * modifiers.length)] : 'NONE';
+    const patches = arcadeModRuntime.stagePatches();
+    for (const patch of patches) for (const hazard of patch.hazards) if (hazards.length < 80) hazards.push({ lane: hazard.lane % 4, offset: hazard.offset, speed: hazard.speed, kind: hazard.kind === 'SPIKE' ? 'BLOCK' : hazard.kind === 'DRONE' ? 'FLYER' : 'MINE' });
+    for (const dispatch of arcadeModRuntime.dispatch({ event: 'SPAWN', stage: safeStage })) if (dispatch.action.type === 'SPAWN_HAZARD' && hazards.length < 80) hazards.push({ lane: dispatch.action.lane % 4, offset: random.next(), speed: 1, kind: dispatch.action.kind === 'SPIKE' ? 'BLOCK' : dispatch.action.kind === 'DRONE' ? 'FLYER' : 'MINE' });
+    const skin = patches.find(patch => patch.skin)?.skin;
     return {
       stage: safeStage, seed,
       spawnIntervalMs: Math.max(220, Math.round(1600 / (1 + Math.log2(safeStage + 1) * 0.22))),
       enemySpeed: Number((1 + Math.log2(safeStage + 1) * 0.14).toFixed(4)),
-      hazards, boss: safeStage % 5 === 0, modifier,
+      hazards, boss: safeStage % 5 === 0, modifier, ...(skin ? { skin } : {}),
     };
   }
 }

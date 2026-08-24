@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import { PreferenceStore } from './PreferenceStore';
 import { AdaptiveQualityController } from '../graphics/PooledParticleSystem';
 import { InputManager } from './InputManager';
+import { CrtPipeline } from '../graphics/shaders/CrtPipeline';
+import { FrameTelemetry, TelemetryHud } from './FrameTelemetry';
 
 export class ArcadeRuntime {
   private readonly game: Phaser.Game;
@@ -10,9 +12,18 @@ export class ArcadeRuntime {
   private frameRequest = 0;
   private startPressed = false;
   private readonly quality = new AdaptiveQualityController();
+  private readonly telemetry = new FrameTelemetry();
+  private readonly telemetryHud: TelemetryHud | null;
+  private readonly crt: CrtPipeline;
+  private lastFrameAt = performance.now();
+  private reducedMotion = false;
+  private crtEnabled = false;
 
   constructor(game: Phaser.Game) {
     this.game = game;
+    const telemetryRoot = document.getElementById('runtime-telemetry');
+    this.telemetryHud = telemetryRoot ? new TelemetryHud(telemetryRoot) : null;
+    this.crt = new CrtPipeline(game);
     this.applyPreferences();
     this.bindVisibility();
     this.bindInputStatus();
@@ -21,6 +32,8 @@ export class ArcadeRuntime {
   }
 
   private measureFrames = (time: number) => {
+    this.telemetry.record(time - this.lastFrameAt);
+    this.lastFrameAt = time;
     InputManager.update();
     this.pollGamepadPause();
     this.frameCount += 1;
@@ -31,9 +44,13 @@ export class ArcadeRuntime {
       this.setText('runtime-fps', `${fps} FPS`);
       document.documentElement.dataset.quality = tier.toLowerCase();
       document.documentElement.style.setProperty('--adaptive-resolution', this.quality.resolutionScale.toString());
+      const snapshot = this.telemetry.snapshot();
+      this.telemetryHud?.update(snapshot, tier, this.game.scene.getScenes(true).length);
+      this.crt.sync(tier, this.reducedMotion, this.crtEnabled);
       this.frameCount = 0;
       this.sampleStarted = time;
     }
+    this.crt.render(this.reducedMotion);
     this.frameRequest = requestAnimationFrame(this.measureFrames);
   };
 
@@ -48,6 +65,7 @@ export class ArcadeRuntime {
       this.game.loop.wake();
       this.frameCount = 0;
       this.sampleStarted = performance.now();
+      this.lastFrameAt = this.sampleStarted;
       this.frameRequest = requestAnimationFrame(this.measureFrames);
       this.setText('runtime-state', 'ACTIVE');
     });
@@ -64,9 +82,11 @@ export class ArcadeRuntime {
 
   private applyPreferences() {
     const preferences = new PreferenceStore(localStorage).load();
-    document.documentElement.classList.toggle('crt-enabled', localStorage.getItem('arcade_crt') === 'true');
+    this.crtEnabled = localStorage.getItem('arcade_crt') === 'true';
+    document.documentElement.classList.toggle('crt-enabled', this.crtEnabled);
     document.documentElement.classList.toggle('motion-reduced', localStorage.getItem('arcade_reduced_motion') === 'true');
     document.documentElement.dataset.cabinetTheme = preferences.theme.toLowerCase();
+    this.reducedMotion = localStorage.getItem('arcade_reduced_motion') === 'true' || matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 
   private setText(id: string, value: string) {

@@ -95,6 +95,40 @@ Stress results on the development workstation:
 - Complete 32 tests across 12 files.
 - Build 45 modules with a 2.88 kB initial entry and no Vite warning.
 
+## CRT persistence and filter pipeline
+
+Keep Phaser 4 in control of WebGL state. Install camera bloom as threshold, blur, and additive composition. Add managed barrel and vignette filters to the same external chain. Do not access the raw WebGL context.
+
+Blend phosphor history through two reusable half-resolution Canvas surfaces. Read from one surface, decay it into the other, add the current Phaser canvas with screen composition, then swap references. Allocate no canvas or pixel buffer during a frame. Disable persistence under reduced motion.
+
+Use three adaptive profiles:
+
+- High: enable bloom, barrel, vignette, scanlines, chromatic fallback, and 0.14 persistence.
+- Medium: disable bloom, retain light framing, and reduce persistence to 0.08.
+- Low: disable all post-processing and hide the feedback surface.
+
+Keep the combined GLSL contract in `src/graphics/shaders/crtShaders.ts` so a renderer-native custom filter can consume the same curvature, aberration, scanline, vignette, and previous-frame uniforms. Use the managed Phaser filter implementation in production to retain context restoration.
+
+## Declarative mod runtime
+
+Treat every mod as untrusted data. Parse no more than 64 KiB of JSON. Accept only API version 1, safe identifiers, semantic versions, bounded hazard records, two hex skin colors, known lifecycle events, and known instructions. Reject unknown properties at every nesting level.
+
+Store at most 32 registered mods. Limit each stage patch to 64 hazards, each manifest to 16 hooks, and each hook to 16 instructions. Copy data at runtime boundaries. Expose only register, unregister, and list operations to the browser. Expose no evaluator, DOM, storage, network, Phaser, or audio graph object.
+
+Merge validated hazards and skins into deterministic procedural stages. Apply score-scale instructions through `ProgressionDirector`. Execute existing procedural audio effects on stage-clear hooks. Keep native stage generation bounded at 80 total hazards after mod composition.
+
+## Benchmark telemetry
+
+Record frame durations in one 240-entry Float32Array ring. Ignore invalid and one-second samples. Calculate estimated FPS, mean frame time, p95 frame time, and the percentage of samples slower than the 55 FPS budget. Update the hidden BIOS overlay once per second. Type `B-I-O-S` to toggle it.
+
+Current verification measures:
+
+- Pass 41 tests across 15 files.
+- Record 100,000 telemetry frames and calculate a snapshot at 1,141.9 ops/s with a 0.88 ms mean.
+- Update 10,000 simultaneous particles at 1,108.8 ops/s with a 0.90 ms mean.
+- Insert 5,000 spatial bodies and execute 500 queries at 540.7 ops/s with a 1.85 ms mean.
+- Build 50 modules with a 2.87 kB initial entry, a 31.92 kB deferred bootstrap, and no Vite warning.
+
 ## Progression and persistence
 
 Use `ProgressionDirector` for stage counters, combo expiry, score multipliers, power-up thresholds, and enemy behavior selection. Space Defenders selects patrol, chase, or barrage fire based on stage and distance. Clear a wave to advance without resetting the score.

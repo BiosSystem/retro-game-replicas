@@ -43,11 +43,14 @@ Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLS
 - **Universal Multiplayer Routing** - Share controls in co-op or alternate 15-second versus relay turns in every single-avatar replica.
 - **Infinite Procedural Stages** - Generate deterministic hazards, bosses, speed curves, low gravity, fast bullets, and inverted-control rounds without level assets.
 - **Pooled Particle Rendering** - Reuse typed-array particle slots for explosions and sparks without per-burst emitter allocation.
+- **Adaptive CRT Persistence** - Blend half-resolution phosphor history with managed bloom, barrel, vignette, scanline, and chromatic passes that shed work as frame rate falls.
+- **Declarative Stage Mods** - Register bounded JSON stage hazards, procedural skins, score rules, and lifecycle instructions without executable plugin code.
+- **BIOS Telemetry Overlay** - Type `B-I-O-S` to inspect mean and p95 frame time, dropped-frame percentage, quality tier, active scenes, and available heap telemetry.
 - **Neon Vector Asteroids** - Fracture procedural rocks, collect minerals, intercept scout UFOs, upgrade weapons, and carry shields through endless stages.
 - **Multi-Stage Combat** - Clear endless Space Defenders waves with combo multipliers, adaptive enemy fire, and shield drops.
 - **Persistent Arcade Ledger** - Keep the top ten scores for every game and difficulty with safe v2 migration.
 - **Cabinet Customization** - Switch among neon, classic woodgrain, cyber, and Amber phosphor themes and remap Player 1 fire control.
-- **Fast Initial Entry** - Load a 2.88 kB JavaScript entry, defer the Phaser runtime, and fetch each game scene only when selected.
+- **Fast Initial Entry** - Load a 2.87 kB JavaScript entry, defer the Phaser runtime, and fetch each game scene only when selected.
 - **Cross-Platform Native** - Less than 15MB binary size for desktop (macOS, Windows), with native Android APK support.
 - **Self-Contained Architecture** - Load zero external ROMs or web fonts and persist high scores locally.
 
@@ -73,6 +76,8 @@ For comprehensive details on architecture (IPC bridge, capability scoping), depl
 **👉 [View the Developer Wiki](docs/WIKI.md)**
 
 Read the [deep arcade engine architecture](docs/ENGINE_OVERHAUL.md) for rendering, physics, audio, progression, persistence, test, and benchmark decisions.
+
+Read the [open-source architecture synthesis](docs/OPEN_SOURCE_RESEARCH.md) and [declarative modding guide](docs/MODDING.md) before extending renderer or stage systems.
 
 ---
 
