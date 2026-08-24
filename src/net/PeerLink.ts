@@ -1,0 +1,28 @@
+import { decodeInputFrame, encodeInputFrame, inputChecksum, type NetInputFrame } from './InputCodec';
+
+interface RoomEnvelope { version: 1; description: RTCSessionDescriptionInit; }
+export type PeerStatus = 'IDLE' | 'NEGOTIATING' | 'CONNECTED' | 'DISCONNECTED' | 'FAILED';
+
+export class PeerLink extends EventTarget {
+  private connection?: RTCPeerConnection; private input?: RTCDataChannel; private control?: RTCDataChannel; private status: PeerStatus = 'IDLE'; private readonly configuration: RTCConfiguration;
+  constructor(configuration: RTCConfiguration = {}) { super(); this.configuration = configuration; }
+
+  async createHostCode() { this.openConnection(); this.bindChannel(this.connection!.createDataChannel('arcade-input', { ordered: false, maxRetransmits: 0 }), 'input'); this.bindChannel(this.connection!.createDataChannel('arcade-control', { ordered: true }), 'control'); await this.connection!.setLocalDescription(await this.connection!.createOffer()); await waitForIce(this.connection!); return encodeRoom({ version: 1, description: this.connection!.localDescription!.toJSON() }); }
+  async acceptHostCode(code: string) { const envelope = decodeRoom(code); if (envelope.description.type !== 'offer') throw new Error('Expected a host offer code'); this.openConnection(); await this.connection!.setRemoteDescription(envelope.description); await this.connection!.setLocalDescription(await this.connection!.createAnswer()); await waitForIce(this.connection!); return encodeRoom({ version: 1, description: this.connection!.localDescription!.toJSON() }); }
+  async acceptAnswerCode(code: string) { if (!this.connection) throw new Error('Create a host code first'); const envelope = decodeRoom(code); if (envelope.description.type !== 'answer') throw new Error('Expected an answer code'); await this.connection.setRemoteDescription(envelope.description); }
+  sendInput(frame: NetInputFrame) { if (this.input?.readyState !== 'open' || this.input.bufferedAmount > 65536) return false; this.input.send(encodeInputFrame(frame)); return true; }
+  sendControl(message: unknown) { if (this.control?.readyState !== 'open') return false; const json = JSON.stringify(message); if (json.length > 16384) throw new Error('Control message exceeds 16 KiB'); this.control.send(json); return true; }
+  close() { this.input?.close(); this.control?.close(); this.connection?.close(); this.setStatus('DISCONNECTED'); }
+  getStatus() { return this.status; }
+
+  private openConnection() { if (this.connection) this.close(); this.setStatus('NEGOTIATING'); const connection = new RTCPeerConnection(this.configuration); this.connection = connection; connection.ondatachannel = event => this.bindChannel(event.channel, event.channel.label === 'arcade-input' ? 'input' : 'control'); connection.onconnectionstatechange = () => this.setStatus(connection.connectionState === 'connected' ? 'CONNECTED' : connection.connectionState === 'failed' ? 'FAILED' : connection.connectionState === 'closed' || connection.connectionState === 'disconnected' ? 'DISCONNECTED' : 'NEGOTIATING'); }
+  private bindChannel(channel: RTCDataChannel, kind: 'input' | 'control') { if (kind === 'input') this.input = channel; else this.control = channel; channel.binaryType = 'arraybuffer'; channel.onmessage = event => { try { const detail = kind === 'input' && event.data instanceof ArrayBuffer ? decodeInputFrame(event.data) : JSON.parse(String(event.data)); if (kind === 'input') { const input = detail as NetInputFrame; if (input.checksum !== inputChecksum(input.frame, input.buttons, input.axisX, input.axisY)) throw new Error('Input checksum mismatch'); } this.dispatchEvent(new CustomEvent(kind, { detail })); } catch { this.dispatchEvent(new CustomEvent('protocol-error')); } }; }
+  private setStatus(status: PeerStatus) { this.status = status; this.dispatchEvent(new CustomEvent('status', { detail: status })); }
+}
+
+export function encodeRoom(envelope: RoomEnvelope) { const json = JSON.stringify(envelope); return `ARC1.${bytesToBase64(new TextEncoder().encode(json))}`; }
+export function decodeRoom(code: string): RoomEnvelope { if (!code.startsWith('ARC1.') || code.length > 65536) throw new Error('Invalid room code'); let value: unknown; try { value = JSON.parse(new TextDecoder().decode(base64ToBytes(code.slice(5)))); } catch { throw new Error('Invalid room code'); } if (!record(value) || value.version !== 1 || !record(value.description) || !['offer', 'answer'].includes(String(value.description.type)) || typeof value.description.sdp !== 'string' || value.description.sdp.length > 60000) throw new Error('Invalid room code'); return { version: 1, description: { type: value.description.type as RTCSdpType, sdp: value.description.sdp } }; }
+function waitForIce(connection: RTCPeerConnection) { if (connection.iceGatheringState === 'complete') return Promise.resolve(); return new Promise<void>((resolve, reject) => { const timer = globalThis.setTimeout(() => { cleanup(); reject(new Error('ICE gathering timed out')); }, 10000); const changed = () => { if (connection.iceGatheringState === 'complete') { cleanup(); resolve(); } }; const cleanup = () => { globalThis.clearTimeout(timer); connection.removeEventListener('icegatheringstatechange', changed); }; connection.addEventListener('icegatheringstatechange', changed); }); }
+function bytesToBase64(bytes: Uint8Array) { let binary = ''; for (const byte of bytes) binary += String.fromCharCode(byte); return btoa(binary); }
+function base64ToBytes(value: string) { const binary = atob(value); return Uint8Array.from(binary, character => character.charCodeAt(0)); }
+function record(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null && !Array.isArray(value); }

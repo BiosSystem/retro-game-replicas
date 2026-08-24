@@ -1,0 +1,12 @@
+import { expect, test } from '@playwright/test';
+
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => { let state = 0x4252494f; Math.random = () => { state ^= state << 13; state ^= state >>> 17; state ^= state << 5; return (state >>> 0) / 4294967296; }; localStorage.setItem('bios_arcade_free_play', 'true'); }); });
+
+test('render stable cabinet and creation overlays', async ({ page }) => { await page.goto('/?mods=1'); await expect(page.locator('.arcade-cabinet')).toBeVisible(); await expect(page.locator('#mod-manager')).toBeVisible(); await expect(page.locator('[data-preview]')).toBeVisible(); const first = await pixels(page); await page.waitForTimeout(100); const second = await pixels(page); expect(pixelRatio(first, second)).toBeLessThan(0.002); });
+
+test('open bounded netplay handshake panel', async ({ page }) => { await page.goto('/'); await page.locator('#netplay-toggle').click(); await expect(page.locator('.netplay-panel')).toBeVisible(); await expect(page.locator('.netplay-panel')).toContainText('P2P NETPLAY'); });
+
+test('launch the generated Neon Retro Racer scene', async ({ page }) => { await page.goto('/'); await page.locator('#app canvas').first().waitFor(); await page.evaluate(() => { const lobby = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { updateGameSelection(change: number): void; handleSpace(): void }; for (let index = 0; index < 11; index++) lobby.updateGameSelection(1); lobby.handleSpace(); }); await page.waitForTimeout(250); await page.evaluate(() => ((window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { handleSpace(): void }).handleSpace()); await expect.poll(() => page.evaluate(() => Boolean((window as typeof window & { game?: { scene: { isActive(key: string): boolean } } }).game?.scene.isActive('RacerScene'))), { timeout: 10000 }).toBe(true); });
+
+async function pixels(page: import('@playwright/test').Page) { return page.locator('[data-preview]').evaluate((canvas: HTMLCanvasElement) => Array.from(canvas.getContext('2d')!.getImageData(0, 0, canvas.width, canvas.height).data)); }
+function pixelRatio(a: number[], b: number[]) { let changed = 0; for (let index = 0; index < a.length; index += 4) if (Math.abs(a[index] - b[index]) > 8 || Math.abs(a[index + 1] - b[index + 1]) > 8 || Math.abs(a[index + 2] - b[index + 2]) > 8 || Math.abs(a[index + 3] - b[index + 3]) > 8) changed++; return changed / (a.length / 4); }

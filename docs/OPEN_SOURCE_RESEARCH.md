@@ -36,6 +36,18 @@ Inspect primary project repositories and official browser documentation. Extract
 
 [JSON Schema object guidance](https://json-schema.org/understanding-json-schema/reference/object) documents explicit property allow-lists and rejection of unevaluated properties. Apply the same closed-schema rule manually to avoid a runtime dependency. Reject unknown fields, executable strings, invalid identifiers, oversized JSON, excessive hooks, excessive actions, unsafe colors, and numeric values outside engine bounds.
 
+### WebRTC transport and signaling
+
+[The W3C WebRTC Recommendation](https://www.w3.org/TR/webrtc/) defines ordered and unordered DataChannels plus bounded retransmission modes. Use an unordered zero-retransmission input channel and an ordered control channel. [MDN perfect negotiation guidance](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Perfect_negotiation) confirms that applications must carry descriptions and ICE candidates over a signaling channel chosen by the application. Use manual room-code exchange instead of inventing serverless global discovery.
+
+### Browser cryptography
+
+[MDN digest guidance](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest) defines SHA-256 hashing over byte buffers. [MDN signature verification guidance](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/verify) documents Ed25519 public-key verification in secure contexts. Sign canonical manifest bytes, verify the digest first, then verify the signature before any cache or registration write.
+
+### Visual regression
+
+[Playwright visual comparison guidance](https://playwright.dev/docs/test-snapshots) warns that host rendering conditions affect screenshots. Fix the browser, viewport, motion preference, and random seed. Compare Canvas pixels under a narrow threshold and keep the headless gate separate from Vitest unit discovery.
+
 ## Implemented architecture
 
 ### CRT processing
@@ -67,3 +79,7 @@ Store 240 frame durations in one fixed Float32Array ring. Calculate mean frame t
 - Reject full-resolution historical frame buffers on low-power devices.
 - Reject frame-rate-dependent audio or simulation timing.
 - Reject copied sprite, audio, shader, or level assets from researched projects.
+- Reject claims of global room discovery without a signaling service.
+- Reject embedded TURN credentials or hard-coded relay services.
+- Reject executable mod bundles even when a signature is valid.
+- Reject binary golden screenshots when deterministic RGBA comparison provides the required gate without asset bloat.

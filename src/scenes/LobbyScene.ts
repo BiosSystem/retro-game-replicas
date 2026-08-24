@@ -36,6 +36,7 @@ export default class LobbyScene extends Phaser.Scene {
     { name: 'PIXEL RUNNER',     scene: 'RunnerScene',       icon: '🏃' },
     { name: 'BRAVE BIRD',       scene: 'BirdScene',         icon: '🐦' },
     { name: 'CYBER CHASM',      scene: 'CyberScene',        icon: '⚡' },
+    { name: 'NEON RETRO RACER', scene: 'RacerScene',        icon: '🏁' },
   ];
 
   private difficulties = [
@@ -186,7 +187,7 @@ export default class LobbyScene extends Phaser.Scene {
   private buildGameList() {
     this.games.forEach((game, i) => {
       const isSelected = i === this.selectedGameIndex;
-      const y          = 132 + i * 28;
+      const y          = 125 + i * 25;
 
       const label  = `${game.icon}  ${game.name}`;
       const color  = isSelected ? PALETTE.white : PALETTE.dim;
@@ -435,6 +436,7 @@ export default class LobbyScene extends Phaser.Scene {
           AchievementManager.recordPlay(game.scene);
           if (game.scene === 'InvadersScene') AudioEngine.playTrack('space');
           else if (game.scene === 'RunnerScene') AudioEngine.playTrack('sprint');
+          else if (game.scene === 'RacerScene') AudioEngine.playTrack('racer');
           else if (game.scene === 'AsteroidsScene') AudioEngine.playTrack('vector');
           else AudioEngine.stopTrack();
           await mountGameScene({
@@ -465,7 +467,7 @@ export default class LobbyScene extends Phaser.Scene {
 
     this.gameItems[prev].setColor(PALETTE.dim).setScale(1).setFontSize('18px');
     this.gameItems[this.selectedGameIndex].setColor(PALETTE.white).setScale(1.06).setFontSize('20px');
-    this.selectionCursor?.setY(132 + this.selectedGameIndex * 28);
+    this.selectionCursor?.setY(125 + this.selectedGameIndex * 25);
 
     this.tweens.add({ targets: this.gameItems[this.selectedGameIndex], scale: 1.1, duration: 80, yoyo: true });
   }

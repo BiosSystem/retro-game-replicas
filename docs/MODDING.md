@@ -44,3 +44,21 @@ List active mods with `window.arcadeMods.list()`. Remove one with `window.arcade
 Use the Sound Patch panel to select square, sawtooth, triangle, sine, pulse, or noise generation. Bound start and end frequency, duration, attack, decay, pulse duty, filter cutoff, and gain through the editor. Preview the synthesized result, save it under a lowercase identifier, then assign it to laser, explosion, coin, power-up, or stage-clear playback.
 
 Do not import JavaScript, remote modules, data URLs, credential-bearing URLs, redirected documents, or JSON larger than 64 KiB. Treat local storage as convenience persistence, not a trust boundary. Revalidate every stored document during hydration.
+
+## Signed repository packages
+
+Wrap a declarative manifest in this closed envelope:
+
+```json
+{
+  "version": 1,
+  "manifest": {},
+  "sha256": "64 lowercase hexadecimal characters",
+  "publicKey": "base64 encoded 32-byte Ed25519 public key",
+  "signature": "base64 encoded 64-byte Ed25519 signature"
+}
+```
+
+Canonicalize the inner manifest by sorting every object key and retaining array order. Calculate SHA-256 over the canonical UTF-8 bytes. Sign the same bytes with Ed25519. Serve the envelope through credential-free HTTPS below 96 KiB.
+
+Use `VERIFY + IMPORT` in the Mod Manager. Reject unsigned envelopes, hash mismatches, invalid signatures, unknown fields, redirects, oversized responses, and invalid inner schemas. Treat a valid signature as proof that the package holder controls the included key, not as automatic publisher identity. Pin and compare the public-key fingerprint through a trusted external channel before trusting a publisher name. Keep all imported behavior inside the declarative instruction set. Never execute signed JavaScript.

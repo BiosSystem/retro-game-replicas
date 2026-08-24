@@ -29,4 +29,8 @@ export const TRACKS: Record<string, TrackerTrack> = {
     id: 'vector', title: 'Hyper Vector', bpm: 148, stepsPerBeat: 4,
     voices: { LEAD: notes(81, 0, 79, 0, 76, 0, 74, 76, 81, 0, 84, 83, 79, 0, 76, 74), ARP: notes(57, 60, 64, 69, 55, 59, 62, 67, 53, 57, 60, 65, 55, 59, 62, 67), BASS: notes(33, 0, 33, 0, 31, 0, 31, 0, 29, 0, 29, 0, 31, 0, 31, 0), DRUMS: drums('KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'KICK', 'KICK', 'HAT', 'SNARE', 'HAT') },
   },
+  racer: {
+    id: 'racer', title: 'Midnight Highway', bpm: 156, stepsPerBeat: 4,
+    voices: { LEAD: notes(76, 79, 83, 88, 86, 83, 79, 76, 74, 78, 81, 86, 83, 81, 78, 74), ARP: notes(64, 67, 71, 67, 62, 66, 69, 66, 60, 64, 67, 64, 62, 66, 69, 71), BASS: notes(40, 0, 40, 47, 38, 0, 38, 45, 36, 0, 36, 43, 38, 0, 38, 45), DRUMS: drums('KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'KICK', 'SNARE', 'HAT') },
+  },
 };

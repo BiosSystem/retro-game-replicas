@@ -1,5 +1,12 @@
-## [Unreleased] - 2026-08-24
+## [Unreleased] - 2026-08-25
 ### Changed
+- Add a direct WebRTC netplay panel with bounded manual offer-answer room codes and configurable STUN or TURN servers.
+- Add fixed 12-byte input frames, unreliable low-latency input delivery, reliable control messages, prediction, rollback history, reconciliation, and remote Player 2 input routing.
+- Add deterministic packet-loss, latency, and jitter simulation plus a 10,000-packet benchmark.
+- Add SHA-256 content hashing, canonical JSON encoding, Ed25519 verification, verified-package caching, and signed HTTPS repository imports.
+- Reject unsigned, modified, oversized, credential-bearing, redirected, executable, or schema-invalid mod packages.
+- Add Neon Retro Racer with a scanline-projected curved highway, depth-sorted billboards, generated traffic hazards, five gears, nitro, collisions, mod track hazards, and a procedural synthwave track.
+- Add a Playwright Chromium regression gate for stable Canvas pixels, cabinet overlays, netplay controls, and Racer scene loading.
 - Add a cabinet Mod Manager with drag-and-drop, paste, file, and credential-free HTTPS JSON import paths.
 - Validate community mods before activation, preview stage palettes and hazard lanes on Canvas, and persist up to 32 bounded manifests locally.
 - Add a visual chiptune patch editor with pulse, noise, oscillator, envelope, filter, preview, save, and effect-slot assignment controls.
@@ -44,6 +51,11 @@
 - Remove the external Google Fonts runtime dependency and use local system monospace fonts.
 
 ### Verified
+- Pass 64 unit and integration tests across 22 files plus 3 Playwright browser regression tests.
+- Simulate 10,000 packets with 8 percent loss, 120 ms latency, and 35 ms jitter at 523.02 operations per second with a 1.91 ms mean.
+- Update 10,000 pooled particles at 1,203.44 operations per second with a 0.83 ms mean.
+- Record 100,000 telemetry frames at 1,193.05 operations per second with a 0.84 ms mean.
+- Build 62 transformed modules with a 2.91 kB initial entry, a 4.66 kB Racer chunk, and no Vite chunk warning.
 - Pass 52 unit and integration tests across 18 files.
 - Update 10,000 simultaneous pooled particles at 448.61 operations per second with a 2.23 ms mean on the verification workstation.
 - Record 100,000 telemetry frames at 767.43 operations per second with a 1.30 ms mean.

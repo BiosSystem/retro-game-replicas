@@ -69,14 +69,44 @@ Represent laser, multiball, sticky, and slow effects as timed or immediate state
 
 Keep `src/main.ts` limited to CSS, BIOS output, and one dynamic bootstrap import. Split all 11 games into separate dynamic entries. Isolate tracker code and Phaser into stable shared chunks. The production build measures:
 
-- Initial JavaScript entry: 2.87 kB, 1.43 kB gzip.
-- Deferred bootstrap: 41.51 kB, 12.85 kB gzip.
+- Initial JavaScript entry: 2.91 kB, 1.46 kB gzip.
+- Deferred bootstrap: 53.62 kB, 16.24 kB gzip.
 - Lazy game modules: 2.99-9.76 kB each.
 - Deferred cached Phaser runtime: 1,352.40 kB, 351.52 kB gzip.
 
 Set the Vite warning ceiling to 1.5 MB for the known Phaser runtime. Keep every application-owned entry below 500 kB and emit a manifest for bundle verification. Do not claim the Phaser framework itself became smaller.
 
 Reference: [Vite production build guidance](https://vite.dev/guide/build)
+
+## Direct WebRTC netplay
+
+Exchange complete ICE offer and answer descriptions as bounded `ARC1` room codes through a user-selected trusted channel. Do not claim automatic global discovery without a signaling service. Load optional STUN and TURN records from validated local configuration and never place relay credentials in source control.
+
+Send gameplay inputs through an unordered DataChannel with zero retransmissions. Send synchronization and lobby control records through a separate ordered reliable channel. Encode every input in 12 bytes with frame number, button mask, signed axes, and checksum. Refuse input sends when the channel buffer exceeds 64 KiB.
+
+Retain 120 frames of cloned deterministic state. Predict missing remote input from the most recent confirmed frame. Restore the state before a late frame and replay local plus confirmed remote inputs through the current frame. Keep this generic rollback adapter separate from Phaser rendering so visual state cannot alter simulation results.
+
+Reference: [W3C WebRTC Recommendation](https://www.w3.org/TR/webrtc/)
+
+## Signed community repository
+
+Canonicalize validated manifest objects by sorting keys and rejecting unsupported values. Calculate SHA-256 over the canonical UTF-8 bytes. Import a raw 32-byte Ed25519 public key and verify the 64-byte signature over the same canonical bytes. Compare the declared and actual content hashes before signature verification.
+
+Fetch packages only over credential-free HTTPS. Refuse redirects, responses over 96 KiB, unknown envelope fields, modified content, invalid signatures, and invalid inner manifests. Cache only verified declarative data. Never evaluate or sandbox JavaScript from a package.
+
+References: [MDN SubtleCrypto digest](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest), [MDN SubtleCrypto verify](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/verify)
+
+## Neon Retro Racer
+
+Project the road as four-pixel horizontal scanlines below a fixed horizon. Grow road width with squared depth and apply stage-derived curvature to the center position. Sort procedural trees, signs, lamps, traffic, and mod hazards from far to near. Keep the generated player car at the foreground layer.
+
+Apply gear-specific speed limits, drag, braking, steering response, manual upshifts and downshifts, regenerating nitro, and depth-aware collision severity. Compose Midnight Highway through the existing four-voice tracker. Load no road, vehicle, billboard, or audio assets.
+
+## Headless regression gate
+
+Run Playwright against the production preview with a fixed viewport, reduced motion, seeded random output, and one Chromium worker. Compare two Canvas RGBA captures with a per-channel threshold and a changed-pixel ratio. Smoke-test the cabinet creation tools, netplay panel, and lazy Racer scene launch. Keep binary screenshots out of the repository.
+
+Reference: [Playwright visual comparisons](https://playwright.dev/docs/test-snapshots)
 
 ## Local multiplayer
 

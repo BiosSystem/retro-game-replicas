@@ -10,6 +10,7 @@ import { ArcadeRuntime } from './engine/ArcadeRuntime';
 import { SaveManager } from './engine/SaveManager';
 import { installModApi } from './mods/ModRuntime';
 import { installModManager } from './ui/mods/ModManagerController';
+import { installNetplayController } from './ui/net/NetplayController';
 
 const game = new Phaser.Game({
   type: Phaser.AUTO, parent: 'app', width: 640, height: 480,
@@ -25,5 +26,6 @@ InputManager.initialize();
 SaveManager.initialize();
 installModApi(window);
 installModManager();
+installNetplayController();
 window.addEventListener('pointerdown', () => AudioEngine.initialize(), { once: true });
 window.addEventListener('keydown', () => AudioEngine.initialize(), { once: true });

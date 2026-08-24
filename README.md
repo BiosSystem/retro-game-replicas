@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;11+Classic+Games;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
+  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;12+Classic+Games;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
 </p>
 
 <p align="center">
@@ -22,13 +22,13 @@
 
 ## 🚀 Elevator Pitch
 
-**Universal Retro Arcade** is a premium, open-source collection of 11 classic and 2000s-era game replicas. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
+**Universal Retro Arcade** is a premium, open-source collection of 12 classic and 2000s-era game replicas. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
 
 Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLSL CRT shaders, and local persistence - without needing external emulators or illegal ROMs.
 
 ## ✨ Features
 
-- **11 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, and Cyber Chasm.
+- **12 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, and Neon Retro Racer.
 - **Hardware Gamepad Support** - Plug-and-play support for Xbox and PlayStation controllers via the HTML5 Gamepad API.
 - **Hardware-Accelerated Post-FX** - Toggle GLSL CRT scanlines, chromatic aberration, and barrel distortion (`Ctrl+Shift+C`).
 - **Arcade Cabinet Interface** - Scale the 640x480 playfield inside a responsive marquee, bezel, and live runtime console.
@@ -46,8 +46,11 @@ Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLS
 - **Adaptive CRT Persistence** - Blend half-resolution phosphor history with managed bloom, barrel, vignette, scanline, and chromatic passes that shed work as frame rate falls.
 - **Declarative Stage Mods** - Register bounded JSON stage hazards, procedural skins, score rules, and lifecycle instructions without executable plugin code.
 - **Community Mod Manager** - Drop, paste, select, or fetch bounded JSON manifests over credential-free HTTPS, inspect a live stage preview, and retain validated mods locally.
+- **Signed Mod Repository** - Verify canonical SHA-256 content hashes and Ed25519 signatures before caching or registering declarative community stages.
+- **Direct P2P Netplay** - Exchange bounded room codes, connect through WebRTC DataChannels, and supply optional STUN or TURN configuration outside the application bundle.
 - **Visual Sound Patch Lab** - Shape oscillator or noise effects, preview the result, save patches, and assign them to cabinet effect slots without audio files.
 - **Neon Breakout** - Clear deterministic brick fields with paddle spin, boss formations, tiered armor, lasers, multiball, sticky catches, and slow-ball power-ups.
+- **Neon Retro Racer** - Drive a generated pseudo-3D highway with curved scanline projection, traffic, five gears, nitro, roadside depth scaling, and synthwave audio.
 - **BIOS Telemetry Overlay** - Type `B-I-O-S` to inspect mean and p95 frame time, dropped-frame percentage, quality tier, active scenes, and available heap telemetry.
 - **Neon Vector Asteroids** - Fracture procedural rocks, collect minerals, intercept scout UFOs, upgrade weapons, and carry shields through endless stages.
 - **Multi-Stage Combat** - Clear endless Space Defenders waves with combo multipliers, adaptive enemy fire, and shield drops.

@@ -14,6 +14,7 @@ export class InputManager {
         1: { UP: false, DOWN: false, LEFT: false, RIGHT: false, FIRE: false },
         2: { UP: false, DOWN: false, LEFT: false, RIGHT: false, FIRE: false }
     };
+    private static networkPlayer: PlayerInputState = { UP: false, DOWN: false, LEFT: false, RIGHT: false, FIRE: false };
 
     public static initialize() {
         this.refreshBindings();
@@ -175,8 +176,10 @@ export class InputManager {
     }
 
     public static isP2Down(action: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FIRE'): boolean {
-        return this.playerState[2][action];
+        return this.playerState[2][action] || this.networkPlayer[action];
     }
+
+    public static setNetworkPlayerState(state: PlayerInputState) { this.networkPlayer = { ...state }; }
 
     public static configureArcadeMode(mode: ArcadeMode, nativeDualControl = false) {
         this.modeRouter.configure(mode, nativeDualControl, performance.now());
