@@ -50,6 +50,12 @@ Accept at most 64 KiB of JSON per registration. Register at most 32 mods. Allow 
 
 Expose `window.arcadeMods.register(json)`, `window.arcadeMods.unregister(id)`, and `window.arcadeMods.list()`. Expose no evaluator, dynamic import, Function constructor, DOM handle, storage handle, fetch handle, or scene reference. Treat instruction lists as the lightweight scripting layer.
 
+### Community tools and Breakout expansion
+
+Place the user-facing import controller at the cabinet layer and keep the runtime API unchanged. Reuse the closed schema for local files, drops, pasted text, HTTPS responses, and stored documents so no ingestion path gains extra authority. Show a Canvas preview derived only from validated records.
+
+Generate Neon Breakout bricks, palettes, power-up drops, walls, and boss formations from deterministic stage data. Preserve simulation speed after paddle contact by normalizing the reflection vector. Use active declarative hazards and skin colors as bounded generator inputs rather than scene scripts.
+
 ### Telemetry
 
 Store 240 frame durations in one fixed Float32Array ring. Calculate mean frame time, p95 frame time, estimated FPS, and the percentage of frames slower than the 55 FPS budget. Show active quality, active scene count, sample count, and heap data when the browser exposes it. Toggle the overlay by typing `B-I-O-S`.

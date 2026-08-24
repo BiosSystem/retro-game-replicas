@@ -1,6 +1,8 @@
 # Declarative Stage Modding
 
-Register a mod after the arcade boots:
+Press `M` or `O` to open the cabinet Mod Manager. Drop a JSON file, select a local file, paste a manifest, or import one from a credential-free HTTPS URL. Validate and inspect the Canvas preview before activation. Validated manifests persist in local storage and hydrate on the next launch.
+
+Register a mod directly after the arcade boots when developing in the console:
 
 ```js
 window.arcadeMods.register(JSON.stringify({
@@ -25,13 +27,20 @@ Use these event names:
 - `COLLISION`
 - `SCORE_UPDATE`
 - `STAGE_CLEAR`
+- `BOSS_ENTRY`
+- `POWER_UP`
 
 Use these instructions:
 
 - `SCALE_SCORE` with a factor from 0.5 through 3.
 - `SPAWN_HAZARD` with a lane from 0 through 7 and a `SPIKE`, `DRONE`, or `WALL` kind.
 - `PLAY_EFFECT` with an existing procedural audio effect name.
+- `PLAY_PATCH` with the identifier of a sound patch saved in the cabinet patch lab.
 
 Keep identifiers lowercase and use semantic versions. Keep each JSON document below 64 KiB. Register no more than 32 mods. Supply only declared fields. Reject executable JavaScript, HTML, unknown properties, invalid colors, and values outside documented limits.
 
 List active mods with `window.arcadeMods.list()`. Remove one with `window.arcadeMods.unregister("neon-trials")`.
+
+Use the Sound Patch panel to select square, sawtooth, triangle, sine, pulse, or noise generation. Bound start and end frequency, duration, attack, decay, pulse duty, filter cutoff, and gain through the editor. Preview the synthesized result, save it under a lowercase identifier, then assign it to laser, explosion, coin, power-up, or stage-clear playback.
+
+Do not import JavaScript, remote modules, data URLs, credential-bearing URLs, redirected documents, or JSON larger than 64 KiB. Treat local storage as convenience persistence, not a trust boundary. Revalidate every stored document during hydration.

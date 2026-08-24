@@ -9,6 +9,7 @@ import { AudioEngine } from './engine/AudioEngine';
 import { ArcadeRuntime } from './engine/ArcadeRuntime';
 import { SaveManager } from './engine/SaveManager';
 import { installModApi } from './mods/ModRuntime';
+import { installModManager } from './ui/mods/ModManagerController';
 
 const game = new Phaser.Game({
   type: Phaser.AUTO, parent: 'app', width: 640, height: 480,
@@ -23,5 +24,6 @@ new ArcadeRuntime(game);
 InputManager.initialize();
 SaveManager.initialize();
 installModApi(window);
+installModManager();
 window.addEventListener('pointerdown', () => AudioEngine.initialize(), { once: true });
 window.addEventListener('keydown', () => AudioEngine.initialize(), { once: true });

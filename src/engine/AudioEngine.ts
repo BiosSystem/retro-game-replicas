@@ -1,3 +1,8 @@
+import { ChiptuneSequencer, WebAudioTrackerBackend } from '../audio/bgm/ChiptuneSequencer';
+import { TRACKS } from '../audio/bgm/tracks';
+import type { SoundPatch } from '../audio/patches/SoundPatch';
+import { SoundPatchStore } from '../audio/patches/SoundPatchStore';
+
 export type AudioEffect = 'LASER' | 'EXPLOSION' | 'COIN' | 'POWER_UP' | 'STAGE_CLEAR';
 export interface ToneStep { frequency: number; type: OscillatorType; duration: number; delay: number; endFrequency?: number; }
 
@@ -83,10 +88,30 @@ export class AudioEngine {
 
     public static playEffect(effect: AudioEffect) {
         if (!this.ctx || !this.masterGain) return;
+        const custom = new SoundPatchStore(localStorage).assigned(effect);
+        if (custom) { this.playPatch(custom); return; }
         const now = this.ctx.currentTime;
         const plan = getEffectPlan(effect);
         for (const tone of plan.tones) this.scheduleTone(tone.frequency, tone.type, tone.duration, now + tone.delay, tone.endFrequency);
         if (plan.noise) this.playNoise(0.45, now);
+    }
+
+    public static playPatch(patch: SoundPatch) {
+        if (!this.ctx || !this.masterGain) return;
+        const now = this.ctx.currentTime; const end = now + patch.duration;
+        const gain = this.ctx.createGain(); const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass'; filter.frequency.setValueAtTime(patch.filterHz, now);
+        gain.gain.setValueAtTime(0.0001, now); gain.gain.exponentialRampToValueAtTime(patch.gain, now + patch.attack); gain.gain.exponentialRampToValueAtTime(0.0001, Math.min(end, now + patch.attack + patch.decay));
+        filter.connect(gain); gain.connect(this.masterGain);
+        if (patch.waveform === 'noise') {
+            if (!this.noiseBuffer) return;
+            const source = this.ctx.createBufferSource(); source.buffer = this.noiseBuffer; source.loop = true; source.connect(filter); source.start(now); source.stop(end); source.onended = () => { source.disconnect(); filter.disconnect(); gain.disconnect(); };
+            return;
+        }
+        const oscillator = this.ctx.createOscillator();
+        if (patch.waveform === 'pulse') oscillator.setPeriodicWave(this.createPulseWave(this.ctx, patch.dutyCycle)); else oscillator.type = patch.waveform;
+        oscillator.frequency.setValueAtTime(patch.frequency, now); oscillator.frequency.exponentialRampToValueAtTime(patch.endFrequency, end);
+        oscillator.connect(filter); oscillator.start(now); oscillator.stop(end); oscillator.onended = () => { oscillator.disconnect(); filter.disconnect(); gain.disconnect(); };
     }
 
     private static scheduleTone(frequency: number, type: OscillatorType, duration: number, startAt: number, endFrequency = frequency) {
@@ -142,6 +167,12 @@ export class AudioEngine {
         return buffer;
     }
 
+    private static createPulseWave(ctx: AudioContext, dutyCycle: number) {
+        const harmonics = 32; const real = new Float32Array(harmonics); const imaginary = new Float32Array(harmonics);
+        for (let harmonic = 1; harmonic < harmonics; harmonic++) imaginary[harmonic] = 2 * Math.sin(Math.PI * harmonic * dutyCycle) / (Math.PI * harmonic);
+        return ctx.createPeriodicWave(real, imaginary, { disableNormalization: false });
+    }
+
     public static playBGM(track: number[], speedMs: number = 150, type: OscillatorType = 'square') {
         this.currentTrack = { track, speedMs, type };
         this.stopBGM();
@@ -164,5 +195,3 @@ export class AudioEngine {
         }
     }
 }
-import { ChiptuneSequencer, WebAudioTrackerBackend } from '../audio/bgm/ChiptuneSequencer';
-import { TRACKS } from '../audio/bgm/tracks';

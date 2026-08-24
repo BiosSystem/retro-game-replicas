@@ -45,6 +45,9 @@ Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLS
 - **Pooled Particle Rendering** - Reuse typed-array particle slots for explosions and sparks without per-burst emitter allocation.
 - **Adaptive CRT Persistence** - Blend half-resolution phosphor history with managed bloom, barrel, vignette, scanline, and chromatic passes that shed work as frame rate falls.
 - **Declarative Stage Mods** - Register bounded JSON stage hazards, procedural skins, score rules, and lifecycle instructions without executable plugin code.
+- **Community Mod Manager** - Drop, paste, select, or fetch bounded JSON manifests over credential-free HTTPS, inspect a live stage preview, and retain validated mods locally.
+- **Visual Sound Patch Lab** - Shape oscillator or noise effects, preview the result, save patches, and assign them to cabinet effect slots without audio files.
+- **Neon Breakout** - Clear deterministic brick fields with paddle spin, boss formations, tiered armor, lasers, multiball, sticky catches, and slow-ball power-ups.
 - **BIOS Telemetry Overlay** - Type `B-I-O-S` to inspect mean and p95 frame time, dropped-frame percentage, quality tier, active scenes, and available heap telemetry.
 - **Neon Vector Asteroids** - Fracture procedural rocks, collect minerals, intercept scout UFOs, upgrade weapons, and carry shields through endless stages.
 - **Multi-Stage Combat** - Clear endless Space Defenders waves with combo multipliers, adaptive enemy fire, and shield drops.
@@ -78,6 +81,8 @@ For comprehensive details on architecture (IPC bridge, capability scoping), depl
 Read the [deep arcade engine architecture](docs/ENGINE_OVERHAUL.md) for rendering, physics, audio, progression, persistence, test, and benchmark decisions.
 
 Read the [open-source architecture synthesis](docs/OPEN_SOURCE_RESEARCH.md) and [declarative modding guide](docs/MODDING.md) before extending renderer or stage systems.
+
+Press `M` or `O` from the cabinet to open the Mod Manager. Import only declarative JSON documents below 64 KiB. Use the same drawer to design and assign procedural sound patches.
 
 ---
 

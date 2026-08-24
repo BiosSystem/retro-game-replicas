@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { PooledParticleSystem } from '../graphics/PooledParticleSystem';
-import { arcadeModRuntime } from '../mods/ModRuntime';
-import { AudioEngine } from './AudioEngine';
+import { playModAudioEvent } from '../audio/patches/ModAudioBridge';
 
 interface ScenePool { particles: PooledParticleSystem; graphics: Phaser.GameObjects.Graphics; }
 
@@ -50,6 +49,6 @@ export class VFXManager {
 
     private static runCollisionHooks(scene: Phaser.Scene) {
         const stage = Number(scene.registry.get('stage')) || 1;
-        for (const dispatch of arcadeModRuntime.dispatch({ event: 'COLLISION', stage })) if (dispatch.action.type === 'PLAY_EFFECT') AudioEngine.playEffect(dispatch.action.effect);
+        playModAudioEvent('COLLISION', stage);
     }
 }

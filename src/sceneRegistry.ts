@@ -4,7 +4,7 @@ type SceneClass = new () => Phaser.Scene;
 
 const loaders: Record<string, () => Promise<{ default: SceneClass }>> = {
   SnakeScene: () => import('./scenes/SnakeScene'), PongScene: () => import('./scenes/PongScene'),
-  AsteroidsScene: () => import('./games/asteroids/NeonAsteroidsScene'), BreakoutScene: () => import('./scenes/BreakoutScene'),
+  AsteroidsScene: () => import('./games/asteroids/NeonAsteroidsScene'), BreakoutScene: () => import('./games/breakout/NeonBreakoutScene'),
   FroggerScene: () => import('./scenes/FroggerScene'), InvadersScene: () => import('./scenes/InvadersScene'),
   TetrisScene: () => import('./scenes/TetrisScene'), MinesweeperScene: () => import('./scenes/MinesweeperScene'),
   RunnerScene: () => import('./scenes/RunnerScene'), BirdScene: () => import('./scenes/BirdScene'), CyberScene: () => import('./scenes/CyberScene'),

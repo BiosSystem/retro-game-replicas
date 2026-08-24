@@ -28,7 +28,7 @@ export default class LobbyScene extends Phaser.Scene {
     { name: 'SNAKE EVOLUTION',  scene: 'SnakeScene',       icon: '🐍' },
     { name: 'NEON PONG',        scene: 'PongScene',         icon: '🏓' },
     { name: 'NEON VECTOR',      scene: 'AsteroidsScene',    icon: '🚀' },
-    { name: 'BRICK BREAKER',    scene: 'BreakoutScene',     icon: '🧱' },
+    { name: 'NEON BREAKOUT',    scene: 'BreakoutScene',     icon: '🧱' },
     { name: 'FROGGIE CROSSER',  scene: 'FroggerScene',      icon: '🐸' },
     { name: 'SPACE DEFENDERS',  scene: 'InvadersScene',     icon: '👾' },
     { name: 'TETRIS PULSE',     scene: 'TetrisScene',       icon: '🟦' },
@@ -227,7 +227,7 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   private buildFooter() {
-    this.add.text(320, 458, 'UP/DOWN MOVE  SPACE SELECT  M MODE  C COIN  S SETTINGS', {
+    this.add.text(320, 458, 'UP/DOWN MOVE  SPACE SELECT  M MODE  C COIN  S SETTINGS  O MODS', {
       fontFamily: "'Share Tech Mono', Courier",
       fontSize: '11px',
       color: PALETTE.muted,

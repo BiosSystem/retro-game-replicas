@@ -1,5 +1,11 @@
 ## [Unreleased] - 2026-08-24
 ### Changed
+- Add a cabinet Mod Manager with drag-and-drop, paste, file, and credential-free HTTPS JSON import paths.
+- Validate community mods before activation, preview stage palettes and hazard lanes on Canvas, and persist up to 32 bounded manifests locally.
+- Add a visual chiptune patch editor with pulse, noise, oscillator, envelope, filter, preview, save, and effect-slot assignment controls.
+- Extend declarative mod hooks with boss-entry and power-up events plus saved sound-patch playback.
+- Replace the basic Breakout scene with Neon Breakout featuring paddle spin, deterministic stage palettes, tiered bricks, boss walls, multiball, lasers, sticky catches, and slow-ball drops.
+- Apply validated mod hazards and skins directly to generated Neon Breakout stages without loading external assets or executable code.
 - Add managed CRT bloom, barrel distortion, vignette, chromatic fallback, scanline controls, and half-resolution phosphor persistence.
 - Add adaptive post-processing profiles that disable bloom at medium quality and all feedback passes at low quality or when CRT is disabled.
 - Add a closed-schema declarative mod runtime for custom hazards, procedural skins, score scaling, audio triggers, and lifecycle hooks.
@@ -38,6 +44,11 @@
 - Remove the external Google Fonts runtime dependency and use local system monospace fonts.
 
 ### Verified
+- Pass 52 unit and integration tests across 18 files.
+- Update 10,000 simultaneous pooled particles at 448.61 operations per second with a 2.23 ms mean on the verification workstation.
+- Record 100,000 telemetry frames at 767.43 operations per second with a 1.30 ms mean.
+- Build 56 transformed modules with a 2.87 kB initial entry, a 9.08 kB Neon Breakout chunk, and no Vite chunk warning.
+- Render the Mod Manager and Neon Breakout through isolated local headless Chrome sessions.
 - Pass 41 unit and integration tests across 15 files.
 - Record 100,000 telemetry frames and calculate a snapshot at 1,141.9 operations per second with a 0.88 ms mean.
 - Build 50 transformed modules with a 2.87 kB initial entry and no Vite chunk warning.

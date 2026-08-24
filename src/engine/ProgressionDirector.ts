@@ -1,5 +1,5 @@
 import { arcadeModRuntime } from '../mods/ModRuntime';
-import { AudioEngine } from './AudioEngine';
+import { playModAudioEvent } from '../audio/patches/ModAudioBridge';
 
 export type EnemyBehavior = 'PATROL' | 'CHASE' | 'BARRAGE';
 
@@ -30,7 +30,7 @@ export class ProgressionDirector {
   advanceStage() {
     this.stage += 1;
     this.multiplier = Math.max(1, Math.min(8, this.multiplier + 1));
-    for (const dispatch of arcadeModRuntime.dispatch({ event: 'STAGE_CLEAR', stage: this.stage })) if (dispatch.action.type === 'PLAY_EFFECT') AudioEngine.playEffect(dispatch.action.effect);
+    playModAudioEvent('STAGE_CLEAR', this.stage);
     return this.stage;
   }
 

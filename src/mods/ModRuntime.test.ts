@@ -3,7 +3,7 @@ import { arcadeModRuntime, ModRuntime } from './ModRuntime';
 import { validateModManifest } from './ModSchema';
 import { ProceduralStageGenerator } from '../generators/ProceduralStageGenerator';
 
-const valid = { apiVersion: 1, id: 'neon-trials', name: 'Neon Trials', version: '1.0.0', stage: { hazards: [{ lane: 2, offset: 0.5, speed: 1.4, kind: 'DRONE' }], skin: { primary: '#00ffcc', secondary: '#ff2255' } }, hooks: [{ event: 'SCORE_UPDATE', actions: [{ type: 'SCALE_SCORE', factor: 1.5 }] }] };
+const valid = { apiVersion: 1, id: 'neon-trials', name: 'Neon Trials', version: '1.0.0', stage: { hazards: [{ lane: 2, offset: 0.5, speed: 1.4, kind: 'DRONE' }], skin: { primary: '#00ffcc', secondary: '#ff2255' } }, hooks: [{ event: 'SCORE_UPDATE', actions: [{ type: 'SCALE_SCORE', factor: 1.5 }] }, { event: 'BOSS_ENTRY', actions: [{ type: 'PLAY_PATCH', patchId: 'boss-alarm' }] }] };
 
 describe('mod runtime', () => {
   it('registers, dispatches, lists, and unregisters a valid declarative mod', () => {

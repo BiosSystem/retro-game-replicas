@@ -51,13 +51,27 @@ Use inertial thrust, rotation, damping, world wrapping, and fixed-step Arcade Ph
 
 Spawn scout UFOs on a timed lane and solve the projectile interception quadratic against ship velocity. Advance stages after every asteroid fragment is cleared. Increase field density per stage while preserving the current score and mineral inventory.
 
+## Community creation tools
+
+Mount `ModManagerController` outside the Phaser canvas so creation tools remain available without coupling untrusted data to a scene. Route drag-and-drop, local file, paste, and URL input through one `CommunityModState` validator before registering any manifest. Fetch remote documents only from credential-free HTTPS URLs, refuse redirects, omit credentials, enforce an eight-second timeout, and verify both declared and actual response size.
+
+Render previews with a dedicated Canvas using validated hazard lanes and skin colors. Write labels through `textContent`. Never evaluate imported text, inject it as HTML, or expose DOM, storage, fetch, Phaser, or audio objects to a mod.
+
+Store sound patches as bounded oscillator and envelope records. Resolve effect-slot assignments inside `AudioEngine`, then build the Web Audio graph from validated values. Keep oscillator, pulse, and noise sources procedural and release every source and filter node after its envelope ends.
+
+## Neon Breakout
+
+Generate each brick field from its stage number. Increase brick durability by tier, introduce indestructible walls from stage four, and place a boss formation every fifth stage. Compute paddle reflection from normalized contact position plus bounded paddle velocity, then normalize the result to preserve predictable ball speed.
+
+Represent laser, multiball, sticky, and slow effects as timed or immediate state changes. Reuse generated textures and Phaser groups for every entity. Merge active mod hazards and two-color skins into the deterministic field before creating bodies.
+
 ## Bundle architecture
 
 Keep `src/main.ts` limited to CSS, BIOS output, and one dynamic bootstrap import. Split all 11 games into separate dynamic entries. Isolate tracker code and Phaser into stable shared chunks. The production build measures:
 
-- Initial JavaScript entry: 2.83 kB, 1.41 kB gzip.
-- Deferred bootstrap: 26.07 kB, 7.68 kB gzip.
-- Lazy game modules: 2.99-7.16 kB each.
+- Initial JavaScript entry: 2.87 kB, 1.43 kB gzip.
+- Deferred bootstrap: 41.51 kB, 12.85 kB gzip.
+- Lazy game modules: 2.99-9.76 kB each.
 - Deferred cached Phaser runtime: 1,352.40 kB, 351.52 kB gzip.
 
 Set the Vite warning ceiling to 1.5 MB for the known Phaser runtime. Keep every application-owned entry below 500 kB and emit a manifest for bundle verification. Do not claim the Phaser framework itself became smaller.

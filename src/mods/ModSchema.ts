@@ -1,8 +1,9 @@
-export type ModEventName = 'SPAWN' | 'COLLISION' | 'SCORE_UPDATE' | 'STAGE_CLEAR';
+export type ModEventName = 'SPAWN' | 'COLLISION' | 'SCORE_UPDATE' | 'STAGE_CLEAR' | 'BOSS_ENTRY' | 'POWER_UP';
 export type ModAction =
   | { type: 'SCALE_SCORE'; factor: number }
   | { type: 'SPAWN_HAZARD'; kind: 'SPIKE' | 'DRONE' | 'WALL'; lane: number }
-  | { type: 'PLAY_EFFECT'; effect: 'LASER' | 'EXPLOSION' | 'COIN' | 'POWER_UP' | 'STAGE_CLEAR' };
+  | { type: 'PLAY_EFFECT'; effect: 'LASER' | 'EXPLOSION' | 'COIN' | 'POWER_UP' | 'STAGE_CLEAR' }
+  | { type: 'PLAY_PATCH'; patchId: string };
 
 export interface StageSkin { primary: string; secondary: string; }
 export interface StagePatch { hazards: Array<{ lane: number; offset: number; speed: number; kind: 'SPIKE' | 'DRONE' | 'WALL' }>; skin?: StageSkin; }
@@ -20,7 +21,7 @@ export interface ValidationResult { valid: boolean; errors: string[]; manifest?:
 const ID = /^[a-z0-9](?:[a-z0-9-]{1,46}[a-z0-9])$/;
 const VERSION = /^\d+\.\d+\.\d+$/;
 const COLOR = /^#[0-9a-fA-F]{6}$/;
-const EVENTS: ModEventName[] = ['SPAWN', 'COLLISION', 'SCORE_UPDATE', 'STAGE_CLEAR'];
+const EVENTS: ModEventName[] = ['SPAWN', 'COLLISION', 'SCORE_UPDATE', 'STAGE_CLEAR', 'BOSS_ENTRY', 'POWER_UP'];
 const EFFECTS = ['LASER', 'EXPLOSION', 'COIN', 'POWER_UP', 'STAGE_CLEAR'];
 const KINDS = ['SPIKE', 'DRONE', 'WALL'];
 
@@ -67,6 +68,7 @@ function validateHooks(value: unknown, errors: string[]): ModManifest['hooks'] |
       if (action.type === 'SCALE_SCORE' && finiteRange(action.factor, 0.5, 3)) { rejectUnknown(action, ['type', 'factor'], 'scale score action', errors); actions.push({ type: action.type, factor: Number(action.factor) }); }
       else if (action.type === 'SPAWN_HAZARD' && KINDS.includes(String(action.kind)) && Number.isInteger(action.lane) && Number(action.lane) >= 0 && Number(action.lane) <= 7) { rejectUnknown(action, ['type', 'kind', 'lane'], 'spawn hazard action', errors); actions.push({ type: action.type, kind: action.kind as 'SPIKE' | 'DRONE' | 'WALL', lane: Number(action.lane) }); }
       else if (action.type === 'PLAY_EFFECT' && EFFECTS.includes(String(action.effect))) { rejectUnknown(action, ['type', 'effect'], 'play effect action', errors); actions.push({ type: action.type, effect: action.effect as 'LASER' | 'EXPLOSION' | 'COIN' | 'POWER_UP' | 'STAGE_CLEAR' }); }
+      else if (action.type === 'PLAY_PATCH' && typeof action.patchId === 'string' && ID.test(action.patchId)) { rejectUnknown(action, ['type', 'patchId'], 'play patch action', errors); actions.push({ type: action.type, patchId: action.patchId }); }
       else errors.push('hook action is outside the allowed instruction set');
     }
     hooks.push({ event: hook.event as ModEventName, actions });
