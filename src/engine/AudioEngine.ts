@@ -1,8 +1,20 @@
+export type AudioEffect = 'LASER' | 'EXPLOSION' | 'COIN' | 'POWER_UP' | 'STAGE_CLEAR';
+export interface ToneStep { frequency: number; type: OscillatorType; duration: number; delay: number; endFrequency?: number; }
+
+export function getEffectPlan(effect: AudioEffect): { tones: ToneStep[]; noise: boolean } {
+    if (effect === 'LASER') return { tones: [{ frequency: 880, type: 'square', duration: 0.12, delay: 0, endFrequency: 220 }], noise: false };
+    if (effect === 'EXPLOSION') return { tones: [{ frequency: 90, type: 'sawtooth', duration: 0.4, delay: 0, endFrequency: 35 }], noise: true };
+    if (effect === 'COIN') return { tones: [{ frequency: 988, type: 'square', duration: 0.08, delay: 0 }, { frequency: 1319, type: 'square', duration: 0.12, delay: 0.08 }], noise: false };
+    if (effect === 'POWER_UP') return { tones: [440, 554, 659, 880].map((frequency, index) => ({ frequency, type: 'triangle', duration: 0.12, delay: index * 0.07 })), noise: false };
+    return { tones: [523, 659, 784, 1047].map((frequency, index) => ({ frequency, type: 'square', duration: 0.18, delay: index * 0.11 })), noise: false };
+}
+
 export class AudioEngine {
     private static ctx: AudioContext | null = null;
     private static masterGain: GainNode | null = null;
     private static bgmInterval: number | null = null;
     private static currentTrack: { track: number[], speedMs: number, type: OscillatorType } | null = null;
+    private static noiseBuffer: AudioBuffer | null = null;
 
     public static initialize() {
         if (this.ctx) return;
@@ -21,6 +33,7 @@ export class AudioEngine {
         }
 
         this.masterGain.connect(this.ctx.destination);
+        this.noiseBuffer = this.createNoiseBuffer(this.ctx);
         
         if (this.currentTrack && !this.bgmInterval) {
             this.playBGM(this.currentTrack.track, this.currentTrack.speedMs, this.currentTrack.type);
@@ -36,22 +49,68 @@ export class AudioEngine {
     public static playTone(frequency: number, type: OscillatorType = 'square', duration: number = 0.1) {
         if (!this.ctx || !this.masterGain) return;
 
+        this.scheduleTone(frequency, type, duration, this.ctx.currentTime);
+    }
+
+    public static playEffect(effect: AudioEffect) {
+        if (!this.ctx || !this.masterGain) return;
+        const now = this.ctx.currentTime;
+        const plan = getEffectPlan(effect);
+        for (const tone of plan.tones) this.scheduleTone(tone.frequency, tone.type, tone.duration, now + tone.delay, tone.endFrequency);
+        if (plan.noise) this.playNoise(0.45, now);
+    }
+
+    private static scheduleTone(frequency: number, type: OscillatorType, duration: number, startAt: number, endFrequency = frequency) {
+        if (!this.ctx || !this.masterGain) return;
+
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
 
         osc.type = type;
-        osc.frequency.setValueAtTime(frequency, this.ctx.currentTime);
+        osc.frequency.setValueAtTime(frequency, startAt);
+        osc.frequency.exponentialRampToValueAtTime(Math.max(1, endFrequency), startAt + duration);
 
-        // Envelope (ADSR - simplified)
-        gain.gain.setValueAtTime(0, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(1, this.ctx.currentTime + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        gain.gain.setValueAtTime(0.0001, startAt);
+        gain.gain.exponentialRampToValueAtTime(0.35, startAt + Math.min(0.01, duration / 4));
+        gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
 
         osc.connect(gain);
         gain.connect(this.masterGain);
 
-        osc.start();
-        osc.stop(this.ctx.currentTime + duration);
+        osc.start(startAt);
+        osc.stop(startAt + duration + 0.01);
+    }
+
+    private static playNoise(duration: number, startAt: number) {
+        if (!this.ctx || !this.masterGain || !this.noiseBuffer) return;
+        const source = this.ctx.createBufferSource();
+        const filter = this.ctx.createBiquadFilter();
+        const gain = this.ctx.createGain();
+        source.buffer = this.noiseBuffer;
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1400, startAt);
+        filter.frequency.exponentialRampToValueAtTime(80, startAt + duration);
+        gain.gain.setValueAtTime(0.45, startAt);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.masterGain);
+        source.start(startAt);
+        source.stop(startAt + duration);
+    }
+
+    private static createNoiseBuffer(ctx: AudioContext) {
+        const length = Math.floor(ctx.sampleRate * 0.5);
+        const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+        const channel = buffer.getChannelData(0);
+        let value = 0x12345678;
+        for (let index = 0; index < length; index++) {
+            value ^= value << 13;
+            value ^= value >>> 17;
+            value ^= value << 5;
+            channel[index] = (value / 0x7fffffff) * 0.6;
+        }
+        return buffer;
     }
 
     public static playBGM(track: number[], speedMs: number = 150, type: OscillatorType = 'square') {

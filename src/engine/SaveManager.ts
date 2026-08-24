@@ -3,6 +3,7 @@ export interface ScoreData {
     name: string;
 }
 import { AchievementManager } from './AchievementManager';
+import { ScoreLedger, type ScoreEntry } from './ScoreLedger';
 
 export class SaveManager {
     private static STORAGE_KEY_V1 = 'bios_arcade_saves_v1';
@@ -10,8 +11,10 @@ export class SaveManager {
     
     // Schema: { gameName: { difficulty: { score: 1000, name: 'AAA' } } }
     private static data: Record<string, Record<string, ScoreData>> = {};
+    private static ledger: ScoreLedger;
 
     public static initialize() {
+        this.ledger = new ScoreLedger(localStorage);
         try {
             const rawV2 = localStorage.getItem(this.STORAGE_KEY_V2);
             if (rawV2) {
@@ -33,6 +36,15 @@ export class SaveManager {
                     this.save();
                 }
             }
+            if (localStorage.getItem('bios_arcade_ledger_migrated') !== 'true') {
+                for (const game of Object.keys(this.data)) {
+                    for (const difficulty of Object.keys(this.data[game])) {
+                        const entry = this.data[game][difficulty];
+                        this.ledger.submit(game, difficulty, entry.score, entry.name, 0);
+                    }
+                }
+                localStorage.setItem('bios_arcade_ledger_migrated', 'true');
+            }
         } catch (e) {
             console.warn('Failed to load save data:', e);
             this.data = {};
@@ -40,6 +52,8 @@ export class SaveManager {
     }
 
     public static getHighScoreData(game: string, difficulty: string): ScoreData {
+        const ledgerBest = this.ledger?.getBest(game, difficulty);
+        if (ledgerBest?.score) return { score: ledgerBest.score, name: ledgerBest.name };
         if (!this.data[game] || !this.data[game][difficulty]) {
             return { score: 0, name: '---' };
         }
@@ -56,6 +70,8 @@ export class SaveManager {
 
     public static submitScore(game: string, difficulty: string, score: number, name: string = 'AAA'): boolean {
         AchievementManager.recordScore(score);
+        this.ledger ??= new ScoreLedger(localStorage);
+        this.ledger.submit(game, difficulty, score, name);
 
         if (!this.data[game]) {
             this.data[game] = {};
@@ -67,6 +83,11 @@ export class SaveManager {
             return true; // New High Score
         }
         return false;
+    }
+
+    public static getLeaderboard(game: string, difficulty: string): ScoreEntry[] {
+        this.ledger ??= new ScoreLedger(localStorage);
+        return this.ledger.getBoard(game, difficulty);
     }
 
     private static save() {

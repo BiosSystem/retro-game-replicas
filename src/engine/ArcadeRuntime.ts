@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { PreferenceStore } from './PreferenceStore';
 
 export class ArcadeRuntime {
   private readonly game: Phaser.Game;
@@ -52,8 +53,10 @@ export class ArcadeRuntime {
   }
 
   private applyPreferences() {
+    const preferences = new PreferenceStore(localStorage).load();
     document.documentElement.classList.toggle('crt-enabled', localStorage.getItem('arcade_crt') === 'true');
     document.documentElement.classList.toggle('motion-reduced', localStorage.getItem('arcade_reduced_motion') === 'true');
+    document.documentElement.dataset.cabinetTheme = preferences.theme.toLowerCase();
   }
 
   private setText(id: string, value: string) {

@@ -34,6 +34,11 @@ Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLS
 - **Arcade Cabinet Interface** - Scale the 640x480 playfield inside a responsive marquee, bezel, and live runtime console.
 - **Power-Aware Runtime** - Suspend rendering in hidden tabs and resume without advancing game simulation.
 - **Accessible Motion Controls** - Disable cabinet animation from Settings or the operating system reduced-motion preference.
+- **Animated Character Engine** - Drive generated pixel characters through deterministic run, jump, duck, and action states with tailored hitboxes.
+- **Procedural Chiptune Audio** - Synthesize laser, explosion, coin, power-up, stage-clear, and music signals with the Web Audio API.
+- **Multi-Stage Combat** - Clear endless Space Defenders waves with combo multipliers, adaptive enemy fire, and shield drops.
+- **Persistent Arcade Ledger** - Keep the top ten scores for every game and difficulty with safe v2 migration.
+- **Cabinet Customization** - Switch among neon, classic woodgrain, and cyber themes and select persistent Player 1 controls.
 - **Cross-Platform Native** - Less than 15MB binary size for desktop (macOS, Windows), with native Android APK support.
 - **Self-Contained Architecture** - Load zero external ROMs or web fonts and persist high scores locally.
 
@@ -57,6 +62,8 @@ npm run tauri dev
 For comprehensive details on architecture (IPC bridge, capability scoping), deployment, security mechanisms, and the complete feature matrix, please visit the Developer Wiki:
 
 **👉 [View the Developer Wiki](docs/WIKI.md)**
+
+Read the [deep arcade engine architecture](docs/ENGINE_OVERHAUL.md) for rendering, physics, audio, progression, persistence, test, and benchmark decisions.
 
 ---
 

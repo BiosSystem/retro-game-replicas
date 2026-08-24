@@ -1,9 +1,14 @@
+import { PreferenceStore, type ControlAction } from './PreferenceStore';
+
 export class InputManager {
     private static keys: Set<string> = new Set();
     private static gamepadState: Record<number, Record<string, boolean>> = {};
     private static connectedPads: Set<number> = new Set();
+    private static bindings: Record<ControlAction, string[]>;
 
     public static initialize() {
+        this.refreshBindings();
+        window.addEventListener('arcade-settings-change', () => this.refreshBindings());
         window.addEventListener('keydown', (e) => {
             this.keys.add(e.code);
         });
@@ -142,14 +147,7 @@ export class InputManager {
     }
 
     public static isP1Down(action: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FIRE'): boolean {
-        const keys: Record<string, string[]> = {
-            'UP': ['ArrowUp', 'KeyW'],
-            'DOWN': ['ArrowDown', 'KeyS'],
-            'LEFT': ['ArrowLeft', 'KeyA'],
-            'RIGHT': ['ArrowRight', 'KeyD'],
-            'FIRE': ['Space']
-        };
-        let pressed = keys[action].some(k => this.keys.has(k));
+        let pressed = this.bindings[action].some(k => this.keys.has(k));
         if (this.gamepadState[0] && this.gamepadState[0][action]) pressed = true;
         return pressed;
     }
@@ -176,5 +174,9 @@ export class InputManager {
         } else {
             this.keys.delete(code);
         }
+    }
+
+    private static refreshBindings() {
+        this.bindings = new PreferenceStore(localStorage).load().bindings;
     }
 }

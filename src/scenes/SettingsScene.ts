@@ -1,9 +1,10 @@
 import Phaser from 'phaser';
 import { AudioEngine } from '../engine/AudioEngine';
+import { PreferenceStore, type CabinetTheme } from '../engine/PreferenceStore';
 
 export default class SettingsScene extends Phaser.Scene {
     private sourceScene!: string;
-    private options = ['RESUME', 'TOGGLE CRT', 'REDUCE MOTION', 'VOLUME +10%', 'VOLUME -10%', 'WIPE SAVE DATA'];
+    private options = ['RESUME', 'CABINET THEME', 'CONTROL SCHEME', 'TOGGLE CRT', 'REDUCE MOTION', 'VOLUME +10%', 'VOLUME -10%', 'WIPE SAVE DATA'];
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
 
@@ -20,7 +21,7 @@ export default class SettingsScene extends Phaser.Scene {
         const bg = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.8);
         bg.setInteractive(); // block clicks
         
-        this.add.text(320, 100, 'SETTINGS', {
+        this.add.text(320, 78, 'CABINET CONTROL', {
             fontFamily: "'Share Tech Mono', Courier",
             fontSize: '36px',
             color: '#00ffcc',
@@ -31,7 +32,7 @@ export default class SettingsScene extends Phaser.Scene {
         this.menuItems = [];
 
         this.options.forEach((opt, idx) => {
-            const y = 180 + (idx * 40);
+            const y = 145 + (idx * 36);
             const text = this.add.text(320, y, opt, {
                 fontFamily: "'Share Tech Mono', Courier",
                 fontSize: '24px',
@@ -61,14 +62,24 @@ export default class SettingsScene extends Phaser.Scene {
 
     private updateMenu() {
         this.menuItems.forEach((item, idx) => {
+            const label = this.getOptionLabel(this.options[idx]);
             if (idx === this.selectedIndex) {
                 item.setColor('#ffff00');
-                item.setText(`> ${this.options[idx]} <`);
+                item.setText(`> ${label} <`);
             } else {
                 item.setColor('#ffffff');
-                item.setText(this.options[idx]);
+                item.setText(label);
             }
         });
+    }
+
+    private getOptionLabel(option: string) {
+        const preferences = new PreferenceStore(localStorage).load();
+        if (option === 'CABINET THEME') return `${option}: ${preferences.theme}`;
+        if (option === 'CONTROL SCHEME') return `${option}: ${preferences.bindings.FIRE.includes('KeyZ') ? 'WASD + Z' : 'ARROWS'}`;
+        if (option === 'TOGGLE CRT') return `${option}: ${localStorage.getItem('arcade_crt') === 'true' ? 'ON' : 'OFF'}`;
+        if (option === 'REDUCE MOTION') return `${option}: ${localStorage.getItem('arcade_reduced_motion') === 'true' ? 'ON' : 'OFF'}`;
+        return option;
     }
 
     private selectOption() {
@@ -77,14 +88,34 @@ export default class SettingsScene extends Phaser.Scene {
         
         if (opt === 'RESUME') {
             this.closeSettings();
+        } else if (opt === 'CABINET THEME') {
+            const store = new PreferenceStore(localStorage);
+            const themes: CabinetTheme[] = ['NEON', 'CLASSIC', 'CYBER'];
+            const current = store.load().theme;
+            store.setTheme(themes[(themes.indexOf(current) + 1) % themes.length]);
+            window.dispatchEvent(new Event('arcade-settings-change'));
+            this.updateMenu();
+        } else if (opt === 'CONTROL SCHEME') {
+            const store = new PreferenceStore(localStorage);
+            const current = store.load().bindings;
+            const alternate = current.FIRE.includes('KeyZ');
+            store.setBinding('UP', alternate ? ['ArrowUp', 'KeyW'] : ['KeyW']);
+            store.setBinding('DOWN', alternate ? ['ArrowDown', 'KeyS'] : ['KeyS']);
+            store.setBinding('LEFT', alternate ? ['ArrowLeft', 'KeyA'] : ['KeyA']);
+            store.setBinding('RIGHT', alternate ? ['ArrowRight', 'KeyD'] : ['KeyD']);
+            store.setBinding('FIRE', alternate ? ['Space'] : ['KeyZ', 'Space']);
+            window.dispatchEvent(new Event('arcade-settings-change'));
+            this.updateMenu();
         } else if (opt === 'TOGGLE CRT') {
             const isEnabled = localStorage.getItem('arcade_crt') === 'true';
             localStorage.setItem('arcade_crt', isEnabled ? 'false' : 'true');
             window.dispatchEvent(new Event('arcade-settings-change'));
+            this.updateMenu();
         } else if (opt === 'REDUCE MOTION') {
             const isEnabled = localStorage.getItem('arcade_reduced_motion') === 'true';
             localStorage.setItem('arcade_reduced_motion', isEnabled ? 'false' : 'true');
             window.dispatchEvent(new Event('arcade-settings-change'));
+            this.updateMenu();
         } else if (opt === 'VOLUME +10%') {
             const vol = Math.min(1.0, parseFloat(localStorage.getItem('retro_master_volume') || '0.5') + 0.1);
             AudioEngine.setVolume(vol);

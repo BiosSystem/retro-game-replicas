@@ -1,13 +1,25 @@
 ## [Unreleased] - 2026-08-24
 ### Changed
+- Add deterministic sprite animation states with directional metadata, interpolated frame progress, per-state hitboxes, and action emission hooks.
+- Expand Space Defenders with endless stage progression, combo multipliers, patrol, chase, and barrage fire, shield power-ups, and procedural effects.
+- Replace the Pixel Runner rectangle with generated animated character frames and state-specific collision bodies.
+- Expand Web Audio synthesis with scheduled laser, explosion, coin, power-up, and stage-clear effects plus a generated noise channel.
+- Migrate best scores into a persistent top-ten ledger per game and difficulty while preserving v2 compatibility.
+- Add validated persistent cabinet themes and remappable Player 1 control bindings.
+- Add classic woodgrain and cyber cabinet themes to the neon default.
+- Add shared progression and spatial-hash engines with unit and benchmark coverage.
+- Update Vite and Vitest to advisory-fixed versions and clear the npm audit.
 - Wrap the game viewport in a responsive arcade cabinet with a marquee, bezel, console rails, and live frame, input, and runtime indicators.
 - Restore requestAnimationFrame scheduling and suspend the Phaser loop while the document is hidden.
 - Apply CRT and reduced-motion preferences immediately from the settings overlay.
 - Remove the external Google Fonts runtime dependency and use local system monospace fonts.
 
 ### Verified
+- Pass 11 unit tests across 5 test files.
+- Process 5,000 spatial bodies and 500 regional queries at 442.9 operations per second with a 2.26 ms mean on the development workstation.
+- Pass npm audit with zero known vulnerabilities.
 - Pass TypeScript compilation and the Vite production build.
-- Confirm the generated production bundle contains 28 transformed modules with no build errors.
+- Confirm the generated production bundle contains 32 transformed modules with no build errors.
 
 ### Added
 - Native HTML5 Gamepad API integration for Player 1 and Player 2 local co-op.

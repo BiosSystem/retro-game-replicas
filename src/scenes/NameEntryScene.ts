@@ -115,7 +115,7 @@ export default class NameEntryScene extends Phaser.Scene {
             // Restart the game scene
             const src = this.scene.get(this.sourceScene);
             if (src) {
-                src.scene.restart();
+                src.scene.restart({ difficulty: this.difficulty });
             } else {
                 this.scene.start('LobbyScene');
             }

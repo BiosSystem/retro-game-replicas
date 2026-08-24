@@ -1,9 +1,12 @@
 import Phaser from 'phaser';
 import { SaveManager } from '../engine/SaveManager';
 import { VFXManager } from '../engine/VFXManager';
+import { AudioEngine } from '../engine/AudioEngine';
+import { SpriteStateMachine } from '../engine/SpriteStateMachine';
 
 export default class RunnerScene extends Phaser.Scene {
-  private player!: Phaser.GameObjects.Rectangle;
+  private player!: Phaser.Physics.Arcade.Sprite;
+  private animator!: SpriteStateMachine;
   private obstacles!: Phaser.Physics.Arcade.Group;
   private score = 0;
   private scoreText!: Phaser.GameObjects.Text;
@@ -47,9 +50,13 @@ export default class RunnerScene extends Phaser.Scene {
     const ground = this.add.rectangle(320, 440, 640, 80, 0x336677);
     this.physics.add.existing(ground, true);
 
-    // Player
-    this.player = this.add.rectangle(100, 380, 30, 50, 0x00ffcc);
-    this.physics.add.existing(this.player);
+    this.createRunnerTextures();
+    this.player = this.physics.add.sprite(100, 380, 'runner-idle');
+    this.animator = new SpriteStateMachine({
+      run: { frames: ['runner-run-1', 'runner-run-2'], frameRate: 10, hitbox: { width: 24, height: 46, offsetX: 4, offsetY: 2 } },
+      jump: { frames: ['runner-jump'], frameRate: 1, loop: false, hitbox: { width: 22, height: 40, offsetX: 5, offsetY: 5 }, emitOnEnter: 'jump-dust' },
+      duck: { frames: ['runner-duck'], frameRate: 1, loop: false, hitbox: { width: 30, height: 24, offsetX: 1, offsetY: 24 } },
+    }, 'run');
     (this.player.body as Phaser.Physics.Arcade.Body).setGravityY(1500);
 
     this.obstacles = this.physics.add.group();
@@ -87,22 +94,30 @@ export default class RunnerScene extends Phaser.Scene {
       if (body.touching.down) {
           body.setVelocityY(-650);
           VFXManager.screenShake(this, 0.001, 100);
+          this.animator.setState('jump');
+          AudioEngine.playEffect('POWER_UP');
       }
   }
 
   duck(down: boolean) {
       const body = this.player.body as Phaser.Physics.Arcade.Body;
       if (down) {
-          this.player.setSize(30, 25);
-          this.player.setDisplaySize(30, 25);
+          this.animator.setState('duck');
           if (!body.touching.down) body.setVelocityY(800); // Fast fall
       } else {
-          this.player.setSize(30, 50);
-          this.player.setDisplaySize(30, 50);
+          this.animator.setState(body.touching.down ? 'run' : 'jump');
       }
   }
 
   update(_time: number, delta: number) {
+      const body = this.player.body as Phaser.Physics.Arcade.Body;
+      if (!body.touching.down) this.animator.setState('jump');
+      else if (this.animator.getState() === 'jump') this.animator.setState('run');
+      const animation = this.animator.update(delta);
+      this.player.setTexture(animation.frame);
+      body.setSize(animation.hitbox.width, animation.hitbox.height).setOffset(animation.hitbox.offsetX, animation.hitbox.offsetY);
+      if (animation.event) VFXManager.playHit(this, this.player.x - 10, this.player.y + 20, 0x00ffcc);
+
       // Scroll BG
       this.bg1.tilePositionX += delta * 0.05 * (this.speed / 300);
       this.bg2.tilePositionX += delta * 0.1 * (this.speed / 300);
@@ -142,6 +157,7 @@ export default class RunnerScene extends Phaser.Scene {
   endGame() {
       this.physics.pause();
       VFXManager.screenShake(this, 0.02, 300);
+      AudioEngine.playEffect('EXPLOSION');
       const banner = this.add.rectangle(320, 240, 640, 100, 0x000000, 0.8);
       this.add.text(320, 240, `GAME OVER\nFINAL SCORE: ${Math.floor(this.score)}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff0055', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
       banner.setInteractive().on('pointerdown', () => { if (SaveManager.isHighScore('RunnerScene', this.difficulty, this.score)) {
@@ -151,5 +167,34 @@ export default class RunnerScene extends Phaser.Scene {
       SaveManager.submitScore('RunnerScene', this.difficulty, this.score);
       this.scene.restart({ difficulty: this.difficulty });
     } });
+  }
+
+  private createRunnerTextures() {
+      const frames = [
+          { key: 'runner-idle', leg: 0, crouch: false, jump: false },
+          { key: 'runner-run-1', leg: -5, crouch: false, jump: false },
+          { key: 'runner-run-2', leg: 5, crouch: false, jump: false },
+          { key: 'runner-jump', leg: 6, crouch: false, jump: true },
+          { key: 'runner-duck', leg: 0, crouch: true, jump: false },
+      ];
+      for (const frame of frames) {
+          if (this.textures.exists(frame.key)) continue;
+          const graphics = this.add.graphics();
+          graphics.fillStyle(0x00ffcc);
+          if (frame.crouch) {
+              graphics.fillRect(4, 22, 26, 16);
+              graphics.fillRect(22, 14, 10, 10);
+              graphics.fillRect(2, 36, 28, 8);
+          } else {
+              graphics.fillRect(11, 4, 12, 12);
+              graphics.fillRect(8, 16, 18, 20);
+              graphics.fillRect(5, 19, 5, 18);
+              graphics.fillRect(24, 19, 5, 18);
+              graphics.fillRect(9 + frame.leg, 35, 6, frame.jump ? 10 : 13);
+              graphics.fillRect(19 - frame.leg, 35, 6, frame.jump ? 10 : 13);
+          }
+          graphics.generateTexture(frame.key, 34, 50);
+          graphics.destroy();
+      }
   }
 }
