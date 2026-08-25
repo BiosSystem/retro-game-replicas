@@ -1,5 +1,10 @@
 ## [Unreleased] - 2026-08-25
 ### Changed
+- Add capability-gated immersive VR and AR sessions, device-supplied stereo view planning, nearest supported 90 or 120 Hz refresh selection, adaptive render budgets, controller poses, hand joints, pinch detection, and FABRIK arm mapping.
+- Add an Ed25519 signed last-writer-wins world CRDT for voxel, body, portal, and arcade state with deterministic actor tie-breaking, bounded quotas, snapshot restoration, and reliable WebTransport or WebRTC chunk routing.
+- Add a generated 4,096-vector motion database and deterministic matrix-projection matcher that scores velocity, terrain slope, intent, turn, and phase before blending twelve-joint poses.
+- Add Neon Nexus with persistent voxel edits, generated cabinet placement for thirteen flagship games, soft-body decoration, motion-matched locomotion, capability-gated XR entry, attachable spatial voice, and attachable CRDT peer transport.
+- Add a 100,000-edit two-replica CRDT convergence benchmark, 100,000-frame stereo planning benchmark, 4,096-vector motion benchmark, unit coverage, and Playwright stereo, convergence, motion, and paused-frame gates.
 - Add oriented non-Euclidean portals with crossing tests, momentum and gravity transformation, packed projectile traversal, four-level recursive camera planning, and stencil mask or restore contracts.
 - Add a deterministic flat BVH, reflective two-bounce global illumination, soft visibility, a WebGPU compute traversal shader, and temporal depth or motion rejection for denoising.
 - Add a seeded 10,240-byte INT4 transformer with bounded attention, feed-forward inference, sanitized Avatar DNA and telemetry context, local dialogue, quest synthesis, and a 64-thread WebGPU projection shader.

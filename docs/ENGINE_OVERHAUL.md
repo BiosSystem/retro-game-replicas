@@ -446,3 +446,23 @@ Current verification:
 - Preserve momentum magnitude through oriented portals to six decimal places in browser diagnostics.
 - Render byte-identical paused recursive portal frames across consecutive screenshots.
 - Build 128 modules with a 3.09 kB entry, a 22.11 kB lazy Paradox chunk, and the deferred 1,352.40 kB Phaser runtime.
+
+## WebXR, world CRDT, and generated motion matching
+
+Treat WebXR session capability as device-owned state. Request `immersive-vr` or `immersive-ar` only from a user gesture, use `XRSession.requestAnimationFrame`, consume every device-supplied `XRView`, and never synthesize a headset pose. Select the supported refresh rate nearest the requested 90 or 120 Hz target when the runtime exposes dynamic frame-rate control. Feed measured frame time into a bounded 0.5 to 1.0 quality scale. Convert grip poses, target buttons, wrists, thumb tips, and index tips into controller state, pinch state, and FABRIK hand targets. Keep desktop rendering available when WebXR is absent.
+
+Represent shared voxel, body, portal, and arcade records in a last-writer-wins map ordered by logical counter and actor identifier. Bind each actor identifier to the SHA-256 digest of its Ed25519 public key. Verify canonical operations before merge, reject malformed shapes, cap verified batches at 4,096 operations, cap each actor at 250,000 keys, and cap a world at 1,000,000 keys. Send signed operations in bounded reliable chunks through `UnifiedTransport`, which selects an application-supplied HTTPS WebTransport endpoint or falls back to an already established WebRTC peer. Do not claim global discovery or protection from a malicious holder of a valid private key.
+
+Generate 4,096 locomotion vectors and twelve-joint poses from a deterministic seed. Project eight normalized inputs into six matrix features, retain a sixteen-item shortlist, score exact velocity, terrain, turn, intent, and phase distance, and exponentially blend the selected pose. Store no model, mocap, texture, level, or audio asset.
+
+## Neon Nexus
+
+Generate thirteen flagship arcade cabinets around a persistent local world. Apply signed crater edits to the CRDT, save the bounded snapshot locally, and broadcast edits after an application attaches `UnifiedTransport`. Update the generated motion matcher and soft-body field each frame. Attach established one-track WebRTC voice streams to the existing HRTF spatial mixer without requesting media automatically. Enter supported immersive VR with `V`, immersive AR with `B`, and the nearest cabinet with `E`.
+
+Current verification:
+
+- Pass 160 Vitest tests across 59 files and 23 Playwright Chromium tests.
+- Merge 100,000 concurrent voxel edits into two replicas in 432.14 ms mean and verify identical digests.
+- Plan 100,000 dual-view XR frames in 41.74 ms mean.
+- Match one query against 4,096 generated locomotion vectors in 0.1750 ms mean.
+- Build 138 modules with a 3.17 kB entry, a 15.19 kB lazy Nexus chunk, and the deferred 1,352.40 kB Phaser runtime.

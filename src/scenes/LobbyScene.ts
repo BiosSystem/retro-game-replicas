@@ -46,6 +46,7 @@ export default class LobbyScene extends Phaser.Scene {
     { name: 'NEON ODYSSEY',     scene: 'OdysseyScene',       icon: '◉' },
     { name: 'NEON CHRONO',      scene: 'ChronoScene',        icon: '⌛' },
     { name: 'NEON PARADOX',     scene: 'ParadoxScene',       icon: '◇' },
+    { name: 'NEON NEXUS',       scene: 'NexusScene',         icon: '◎' },
   ];
 
   private difficulties = [
@@ -196,11 +197,11 @@ export default class LobbyScene extends Phaser.Scene {
   private buildGameList() {
     this.games.forEach((game, i) => {
       const isSelected = i === this.selectedGameIndex;
-      const y          = 94 + i * 15;
+      const y          = 94 + i * 14;
 
       const label  = `${game.icon}  ${game.name}`;
       const color  = isSelected ? PALETTE.white : PALETTE.dim;
-      const fsize  = isSelected ? '18px' : '16px';
+      const fsize  = isSelected ? '17px' : '15px';
 
       const item = this.add.text(320, y, label, {
         fontFamily: "'Share Tech Mono', Courier",

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;20+Classic+Games;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
+  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;21+Arcade+Worlds;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
 </p>
 
 <p align="center">
@@ -22,13 +22,17 @@
 
 ## 🚀 Elevator Pitch
 
-**Universal Retro Arcade** is a premium, open-source collection of 20 classic and 2000s-era game replicas. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
+**Universal Retro Arcade** is a premium, open-source collection of 21 classic, 2000s-era, and experimental arcade worlds. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
 
 Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLSL CRT shaders, and local persistence - without needing external emulators or illegal ROMs.
 
 ## ✨ Features
 
-- **20 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Odyssey, Neon Chrono, and Neon Paradox.
+- **21 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Odyssey, Neon Chrono, Neon Paradox, and Neon Nexus.
+- **Capability-Gated WebXR Core** - Request immersive VR or AR only after support checks and user gestures, consume device-provided stereo views, select the nearest supported 90 or 120 Hz target, adapt render budgets, and map controllers or hand joints into IK poses.
+- **Signed World CRDT** - Merge voxel, body, portal, and arcade edits through deterministic logical clocks, Ed25519 signatures, bounded actor quotas, and the existing WebTransport or WebRTC transport path.
+- **Generated Motion Matching** - Search 4,096 seeded locomotion vectors through a compact matrix projection, score velocity, terrain slope, intent, turn, and gait phase, then blend twelve-joint poses without model assets.
+- **Neon Nexus** - Explore a persistent generated arcade world, deform local terrain, animate through motion matching and soft bodies, opt into XR and spatial voice, synchronize signed edits over an attached peer transport, and enter thirteen procedurally placed flagship cabinets.
 - **Non-Euclidean Portal Core** - Transform positions, momentum, projectiles, and gravity between oriented portal frames while planning stencil mask, recursive view, and depth restoration passes through four levels.
 - **Compute BVH Global Illumination** - Trace reflective boxes, two-bounce lighting, soft visibility, and temporal denoising through code-owned CPU and WebGPU compute paths without claiming unavailable standardized hardware ray tracing.
 - **Local INT4 Transformer** - Generate a 10,240-byte quantized language model from a deterministic seed, infer bounded NPC dialogue locally, and compile a 64-thread WebGPU projection shader when an adapter is available.
@@ -89,7 +93,7 @@ Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLS
 - **Multi-Stage Combat** - Clear endless Space Defenders waves with combo multipliers, adaptive enemy fire, and shield drops.
 - **Persistent Arcade Ledger** - Keep the top ten scores for every game and difficulty with safe v2 migration.
 - **Cabinet Customization** - Switch among neon, classic woodgrain, cyber, and Amber phosphor themes and remap Player 1 fire control.
-- **Fast Initial Entry** - Load a 3.09 kB JavaScript entry, defer the Phaser runtime, and fetch each game scene only when selected.
+- **Fast Initial Entry** - Load a 3.17 kB JavaScript entry, defer the Phaser runtime, and fetch each game scene only when selected.
 - **Cross-Platform Native** - Less than 15MB binary size for desktop (macOS, Windows), with native Android APK support.
 - **Self-Contained Architecture** - Load zero external ROMs or web fonts and persist high scores locally.
 
