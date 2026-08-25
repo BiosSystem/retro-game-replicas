@@ -11,6 +11,8 @@ export class ChiptuneSequencer {
   private nextStepTime = 0;
   private readonly lookaheadMs = 25;
   private readonly scheduleAheadSeconds = 0.1;
+  private tempoScale = 1;
+  private pitchSemitones = 0;
 
   constructor(backend: TrackerBackend) { this.backend = backend; }
 
@@ -19,6 +21,8 @@ export class ChiptuneSequencer {
     this.track = track;
     this.step = 0;
     this.nextStepTime = this.backend.currentTime + 0.03;
+    this.tempoScale = 1;
+    this.pitchSemitones = 0;
     if (fadeSeconds > 0) {
       this.backend.setGain(0.0001, this.backend.currentTime, fadeSeconds / 2);
       this.backend.setGain(1, this.backend.currentTime + fadeSeconds / 2, fadeSeconds / 2);
@@ -45,6 +49,7 @@ export class ChiptuneSequencer {
   }
 
   getStep() { return this.step; }
+  setTimeWarp(tempoScale: number, pitchSemitones: number) { this.tempoScale = Math.max(.125, Math.min(1, tempoScale)); this.pitchSemitones = Math.max(-24, Math.min(0, pitchSemitones)); }
   suspend() { this.stopTimer(); return this.backend.suspend(); }
   resume() { if (this.track) { this.nextStepTime = this.backend.currentTime + 0.03; this.tick(); } return this.backend.resume(); }
 
@@ -54,18 +59,18 @@ export class ChiptuneSequencer {
   };
 
   private scheduleStep(track: TrackerTrack, step: number, time: number) {
-    const stepDuration = 60 / track.bpm / track.stepsPerBeat;
+    const stepDuration = 60 / track.bpm / track.stepsPerBeat / this.tempoScale;
     for (const voice of Object.keys(track.voices) as TrackerVoice[]) {
       const pattern = track.voices[voice];
       const data: TrackerStep = pattern[step % pattern.length];
-      if (data.note || data.chord || data.drum) this.backend.schedule({ voice, time, duration: stepDuration * (data.gate ?? 0.72), note: data.note, chord: data.chord, drum: data.drum });
+      if (data.note || data.chord || data.drum) this.backend.schedule({ voice, time, duration: stepDuration * (data.gate ?? 0.72), note: data.note === undefined ? undefined : data.note + this.pitchSemitones, chord: data.chord?.map(note => note + this.pitchSemitones), drum: data.drum });
     }
   }
 
   private advance(track: TrackerTrack) {
     const length = Math.max(...Object.values(track.voices).map(pattern => pattern.length));
     this.step = (this.step + 1) % length;
-    this.nextStepTime += 60 / track.bpm / track.stepsPerBeat;
+    this.nextStepTime += 60 / track.bpm / track.stepsPerBeat / this.tempoScale;
   }
 
   private stopTimer() { if (this.timer !== undefined) clearTimeout(this.timer); this.timer = undefined; }

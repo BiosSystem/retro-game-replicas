@@ -16,6 +16,7 @@ const loaders: Record<string, () => Promise<{ default: SceneClass }>> = {
   DanmakuScene: () => import('./games/danmaku/NeonDanmakuScene'),
   KombatScene: () => import('./games/kombat/NeonKombatScene'),
   OdysseyScene: () => import('./games/odyssey/NeonOdysseyScene'),
+  ChronoScene: () => import('./games/chrono/NeonChronoScene'),
 };
 
 export async function loadGameScene(key: string): Promise<SceneClass> {

@@ -373,3 +373,40 @@ Store the top ten scores per game and difficulty in the versioned v3 ledger. Mig
 - Unit tests must cover animation transitions, collision queries, combo expiry, AI selection, effect plans, preference validation, and stable top-ten ordering.
 - The spatial hash benchmark must insert 5,000 bodies and execute 500 regional queries per sample.
 - The production Vite build must complete with zero errors.
+## Temporal rewind and causal branches
+
+Record fixed-width `Int32Array` world state at 60 Hz in `TemporalRing`. Cap history at 1,800 frames. Store one full keyframe every 60 frames and encode intermediate snapshots as changed `Uint16` indices plus replacement `Int32` values. Rebase the oldest surviving delta into a full frame before its dependency leaves the ring. Reject gaps and oversize state schemas so rewind cannot silently decode partial history.
+
+Record only input masks in `TimelineBrancher`. Spawn at most eight time clones from intervals shorter than the 30-second history and play each interval once. Sort physical bodies by timeline and entity identifier before collision resolution. Give the older timeline positional priority when two timelines overlap, then evaluate switches only after contacts settle. Keep the rule deterministic and avoid clone feedback loops that can rewrite already recorded input.
+
+Use the allocation-free synthetic delta kernel for the 10,000-operation latency gate. Keep the complete archival benchmark separate because it includes typed-array copies, delta allocation, keyframe rebasing, and random-access reconstruction. Current workstation measurements:
+
+- Run 10,000 synthetic delta compressions and resimulations in 0.1468 ms mean.
+- Record and decode 10,000 complete compact states through the rolling archive in 18.5306 ms mean.
+- Compress sparse eight-value history above 1 to 1 once the ring fills.
+
+## Volumetric atmospheric scattering
+
+Use wavelength-to-the-minus-four Rayleigh coefficients for molecular air and the Henyey-Greenstein phase function for directional Mie haze. Integrate density, optical depth, transmittance, and scattered luminance along each view ray. Keep a CPU reference integrator for deterministic tests and universal presentation.
+
+Dispatch the production WGSL contract in 8x8 compute workgroups to an `rgba16float` storage texture when WebGPU exposes a usable adapter. Vary ray steps from 8-20 on low, 12-40 on medium, and 20-72 on high profiles. Remove two steps after frames above 18 ms and restore one after frames below 13 ms. Never infer WebGPU support from `navigator.gpu` alone. Request an adapter and report `UNAVAILABLE` when acquisition fails.
+
+Current workstation measurement: integrate 10,000 CPU reference rays at 24 steps in 9.0975 ms mean. Headless Chromium exposes the API but returns no adapter on the verification workstation, so the browser gate validates the shader contract and compilation attempt without claiming GPU execution.
+
+## WebTransport multiplexing
+
+Use WebTransport only when the host application supplies a validated HTTPS endpoint backed by HTTP/3. Send packets below 1,200 bytes through QUIC datagrams for avatar telemetry and pace sends to at most 120 Hz. Prefix every packet with a bounded channel identifier, sequence, and payload length. Send replay and mod synchronization over a length-framed bidirectional stream with a 1 MiB application ceiling.
+
+Fall back to the existing manual ARC1 WebRTC link when WebTransport is absent, the endpoint is not configured, connection setup fails, or no adapter service exists. Reuse the unordered zero-retransmit input DataChannel for framed telemetry and the ordered control DataChannel for reliable frames. Retain the existing 16 KiB serialized WebRTC control ceiling and cap one base64-encoded fallback payload at 12,000 bytes. Chunk larger replay or mod transfers at the caller. Do not claim a bundled HTTP/3 server, relay, discovery service, or automatic global mesh.
+
+## Neon Chrono
+
+Integrate platformer movement in fixed-point serializable state. Generate platforms, laser grids, slow fields, gravity zones, switch locations, and gate locations from the chamber index and seed. Slow both physics and tracker tempo inside localized fields. Drop tracker pitch by seven semitones in slow fields and by twelve semitones during rewind, then schedule a generated sawtooth tape signal without audio assets.
+
+Rewind with `R`, branch the prior three seconds into a clone with `C`, jump with Space, and move with the shared Player 1 bindings. Let a live player or clone hold the generated switch while another timeline crosses the gate. Render fog and light shafts from the same scattering reference used by the shader tests.
+
+Current verification:
+
+- Pass 135 Vitest tests across 51 files and 19 Playwright Chromium tests.
+- Keep deterministic Chrono simulation and causal collision output identical across repeated 600-frame browser runs.
+- Build 117 modules with a 3.09 kB initial entry, a 12.51 kB lazy Chrono chunk, and the deferred 1,352.40 kB Phaser runtime.

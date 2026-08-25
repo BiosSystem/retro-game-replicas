@@ -48,6 +48,21 @@ describe('ChiptuneSequencer', () => {
     expect(backend.gains).toEqual([0.0001, 1, 0.0001]);
   });
 
+  it('stretches tracker steps and lowers pitch during temporal effects', () => {
+    vi.useFakeTimers();
+    const backend = new FakeBackend();
+    const sequencer = new ChiptuneSequencer(backend);
+    sequencer.play(TRACKS.chrono, 0);
+    backend.events = [];
+    sequencer.setTimeWarp(.25, -7);
+    backend.currentTime = 10.2;
+    sequencer.scheduleWindow();
+    const lead = backend.events.find(event => event.voice === 'LEAD');
+    expect(lead?.note).toBe(69);
+    expect(lead?.duration).toBeGreaterThan(.3);
+    sequencer.stop(0);
+  });
+
   it('disconnects and releases ended Web Audio voices', () => {
     class Param { value = 0; setValueAtTime() {} exponentialRampToValueAtTime() {} cancelScheduledValues() {} }
     class Node { connect(target: Node) { return target; } disconnect() {} }

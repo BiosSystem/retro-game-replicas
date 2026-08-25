@@ -79,6 +79,7 @@ export class AudioEngine {
     }
 
     public static stopTrack() { this.pendingTrack = null; this.sequencer?.stop(); }
+    public static setTrackTimeWarp(tempoScale: number, pitchSemitones: number) { this.sequencer?.setTimeWarp(tempoScale, pitchSemitones); }
 
     public static playTone(frequency: number, type: OscillatorType = 'square', duration: number = 0.1) {
         if (!this.ctx || !this.masterGain) return;

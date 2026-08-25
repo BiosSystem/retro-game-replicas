@@ -1,5 +1,10 @@
 ## [Unreleased] - 2026-08-25
 ### Changed
+- Add a 1,800-frame temporal ring with sparse delta snapshots, rolling keyframe rebasing, rewind branching, bounded recorded-input clones, and deterministic causal collision priority.
+- Add Rayleigh and Mie atmospheric integration, adaptive volumetric ray steps, an 8x8 WebGPU compute shader, and a universal CPU reference path.
+- Add WebTransport datagram and bidirectional stream backends, 120 Hz telemetry pacing, replay and mod multiplexing, validated size ceilings, and WebRTC DataChannel fallback.
+- Add Neon Chrono with fixed-point movement, full-world rewind, time-clone switch cooperation, generated chambers, laser grids, slow fields, gravity inversion, and tracker tempo or pitch warping.
+- Add unit, benchmark, and Playwright coverage for temporal compression, timeline branching, causal collisions, transport routing, scattering math, deterministic Chrono simulation, and WebGPU pipeline compilation attempts.
 - Add deterministic spherical voxel fields, persistent bounded crater edits, real surface-net edge intersections, indexed meshes, continuous LOD morph factors, and a 64-thread WebGPU density shader contract.
 - Add bounded acoustic SDF ray marching with direct occlusion, diffraction gain, generated dynamic impulse responses, and procedural binaural interaural delay and level filtering.
 - Add Ed25519 signed Avatar DNA across bounded cross-game statistics, SHA-256 cosmetic derivation, local persistence, opponent gossip, and tamper rejection.
@@ -87,6 +92,11 @@
 - Remove the external Google Fonts runtime dependency and use local system monospace fonts.
 
 ### Verified
+- Pass 135 unit and integration tests across 51 files plus 19 Playwright Chromium tests.
+- Run 10,000 allocation-free temporal delta compressions and resimulations in 0.1468 ms mean. Run the complete 1,800-slot archival ring record and random-access decode workload across 10,000 states in 18.5306 ms mean.
+- Integrate 10,000 CPU reference fog rays at 24 steps in 9.0975 ms mean.
+- Build 117 transformed modules with a 3.09 kB initial entry, a 12.51 kB Chrono chunk, and no Vite chunk warning.
+- Attempt the WebGPU compute pipeline in Chromium and report `UNAVAILABLE` when the headless adapter cannot be acquired instead of claiming shader execution.
 - Pass 121 unit and integration tests across 47 files plus 17 Playwright Chromium tests.
 - Generate one 32 cubed surface-net chunk in 12.97 ms mean, select a planetary LOD octree in 0.0031 ms mean, and trace 64 acoustic rays in 0.193 ms mean on the verification workstation.
 - Build 110 transformed modules with a 3.09 kB initial entry, a 10.80 kB Odyssey chunk, and no Vite chunk warning.

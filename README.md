@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;18+Classic+Games;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
+  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;19+Classic+Games;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
 </p>
 
 <p align="center">
@@ -22,13 +22,17 @@
 
 ## 🚀 Elevator Pitch
 
-**Universal Retro Arcade** is a premium, open-source collection of 18 classic and 2000s-era game replicas. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
+**Universal Retro Arcade** is a premium, open-source collection of 19 classic and 2000s-era game replicas. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
 
 Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLSL CRT shaders, and local persistence - without needing external emulators or illegal ROMs.
 
 ## ✨ Features
 
-- **18 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, and Neon Odyssey.
+- **19 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Odyssey, and Neon Chrono.
+- **Temporal Rewind Core** - Retain 1,800 fixed-width world frames, delta-compress sparse changes, rebase rolling history, branch past inputs into eight bounded clones, and resolve cross-timeline contacts deterministically.
+- **Volumetric Scattering** - Raymarch generated fog through Rayleigh and Henyey-Greenstein Mie models with adaptive 8-72 step budgets and a capability-gated WebGPU compute pipeline.
+- **Unified QUIC Transport** - Multiplex 120 Hz telemetry over WebTransport datagrams and replay or mod data over reliable streams when an application supplies an HTTPS HTTP/3 endpoint, then fall back to established WebRTC DataChannels.
+- **Neon Chrono** - Rewind fixed-point world state, cooperate with recorded time clones, cross generated switch gates, laser grids, time-slow fields, and gravity zones, and time-warp the procedural tracker during temporal effects.
 - **Voxel Planet Engine** - Generate indexed surface-net geometry from deterministic spherical fields, morph bounded LOD octrees, and retain procedural crater edits.
 - **Binaural Acoustic Tracing** - Trace sound through signed-distance geometry and derive occlusion, diffraction, impulse taps, and headphone spatialization without measured HRTF assets.
 - **Persistent Avatar DNA** - Sign canonical cross-game statistics with Ed25519 and derive reproducible avatars, decals, particles, and cosmetic economy tiers from SHA-256 bytes.
@@ -81,7 +85,7 @@ Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLS
 - **Multi-Stage Combat** - Clear endless Space Defenders waves with combo multipliers, adaptive enemy fire, and shield drops.
 - **Persistent Arcade Ledger** - Keep the top ten scores for every game and difficulty with safe v2 migration.
 - **Cabinet Customization** - Switch among neon, classic woodgrain, cyber, and Amber phosphor themes and remap Player 1 fire control.
-- **Fast Initial Entry** - Load a 2.99 kB JavaScript entry, defer the Phaser runtime, and fetch each game scene only when selected.
+- **Fast Initial Entry** - Load a 3.09 kB JavaScript entry, defer the Phaser runtime, and fetch each game scene only when selected.
 - **Cross-Platform Native** - Less than 15MB binary size for desktop (macOS, Windows), with native Android APK support.
 - **Self-Contained Architecture** - Load zero external ROMs or web fonts and persist high scores locally.
 
