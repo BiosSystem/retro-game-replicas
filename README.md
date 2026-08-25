@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;19+Classic+Games;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
+  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;20+Classic+Games;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
 </p>
 
 <p align="center">
@@ -22,13 +22,17 @@
 
 ## 🚀 Elevator Pitch
 
-**Universal Retro Arcade** is a premium, open-source collection of 19 classic and 2000s-era game replicas. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
+**Universal Retro Arcade** is a premium, open-source collection of 20 classic and 2000s-era game replicas. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
 
 Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLSL CRT shaders, and local persistence - without needing external emulators or illegal ROMs.
 
 ## ✨ Features
 
-- **19 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Odyssey, and Neon Chrono.
+- **20 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Odyssey, Neon Chrono, and Neon Paradox.
+- **Non-Euclidean Portal Core** - Transform positions, momentum, projectiles, and gravity between oriented portal frames while planning stencil mask, recursive view, and depth restoration passes through four levels.
+- **Compute BVH Global Illumination** - Trace reflective boxes, two-bounce lighting, soft visibility, and temporal denoising through code-owned CPU and WebGPU compute paths without claiming unavailable standardized hardware ray tracing.
+- **Local INT4 Transformer** - Generate a 10,240-byte quantized language model from a deterministic seed, infer bounded NPC dialogue locally, and compile a 64-thread WebGPU projection shader when an adapter is available.
+- **Neon Paradox** - Infiltrate generated impossible corridors, throw linked portal anchors, exploit true BVH shadow values, evade adaptive guards, collect procedural heist objectives, and receive context-conditioned local dialogue.
 - **Temporal Rewind Core** - Retain 1,800 fixed-width world frames, delta-compress sparse changes, rebase rolling history, branch past inputs into eight bounded clones, and resolve cross-timeline contacts deterministically.
 - **Volumetric Scattering** - Raymarch generated fog through Rayleigh and Henyey-Greenstein Mie models with adaptive 8-72 step budgets and a capability-gated WebGPU compute pipeline.
 - **Unified QUIC Transport** - Multiplex 120 Hz telemetry over WebTransport datagrams and replay or mod data over reliable streams when an application supplies an HTTPS HTTP/3 endpoint, then fall back to established WebRTC DataChannels.

@@ -1,5 +1,10 @@
 ## [Unreleased] - 2026-08-25
 ### Changed
+- Add oriented non-Euclidean portals with crossing tests, momentum and gravity transformation, packed projectile traversal, four-level recursive camera planning, and stencil mask or restore contracts.
+- Add a deterministic flat BVH, reflective two-bounce global illumination, soft visibility, a WebGPU compute traversal shader, and temporal depth or motion rejection for denoising.
+- Add a seeded 10,240-byte INT4 transformer with bounded attention, feed-forward inference, sanitized Avatar DNA and telemetry context, local dialogue, quest synthesis, and a 64-thread WebGPU projection shader.
+- Add Neon Paradox with generated heist geometry, tesseract vertices, throwable portal anchors, gravity-aware traversal, shadow-driven guard detection, recursive corridor presentation, objectives, and procedural tracker audio.
+- Add unit, benchmark, and Playwright coverage for portal transforms, projectile momentum, stencil recursion, BVH intersections, GI, temporal denoising, INT4 packing, dialogue determinism, stable portal frames, and compute compilation attempts.
 - Add a 1,800-frame temporal ring with sparse delta snapshots, rolling keyframe rebasing, rewind branching, bounded recorded-input clones, and deterministic causal collision priority.
 - Add Rayleigh and Mie atmospheric integration, adaptive volumetric ray steps, an 8x8 WebGPU compute shader, and a universal CPU reference path.
 - Add WebTransport datagram and bidirectional stream backends, 120 Hz telemetry pacing, replay and mod multiplexing, validated size ceilings, and WebRTC DataChannel fallback.
@@ -92,6 +97,12 @@
 - Remove the external Google Fonts runtime dependency and use local system monospace fonts.
 
 ### Verified
+- Pass 148 unit and integration tests across 55 files plus 21 Playwright Chromium tests.
+- Generate 100 local INT4 dialogue tokens in 35.3797 ms mean, or 2,826.5 CPU tokens per second.
+- Plan 1,000 four-level recursive portal frames in 26.4958 ms mean, or 0.02650 ms per frame plan.
+- Trace 10,000 two-bounce CPU BVH GI rays in 60.9934 ms mean.
+- Build 128 transformed modules with a 3.09 kB initial entry, a 22.11 kB Paradox chunk, and no Vite chunk warning.
+- Confirm the current W3C WebGPU feature set has no standardized ray-tracing capability. Use compute BVH traversal and report `UNAVAILABLE` when headless Chromium returns no WebGPU adapter.
 - Pass 135 unit and integration tests across 51 files plus 19 Playwright Chromium tests.
 - Run 10,000 allocation-free temporal delta compressions and resimulations in 0.1468 ms mean. Run the complete 1,800-slot archival ring record and random-access decode workload across 10,000 states in 18.5306 ms mean.
 - Integrate 10,000 CPU reference fog rays at 24 steps in 9.0975 ms mean.

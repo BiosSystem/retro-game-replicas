@@ -410,3 +410,39 @@ Current verification:
 - Pass 135 Vitest tests across 51 files and 19 Playwright Chromium tests.
 - Keep deterministic Chrono simulation and causal collision output identical across repeated 600-frame browser runs.
 - Build 117 modules with a 3.09 kB initial entry, a 12.51 kB lazy Chrono chunk, and the deferred 1,352.40 kB Phaser runtime.
+## Non-Euclidean portal rendering and physics
+
+Represent each portal with a position, normal, up vector, linked identifier, and bounded rectangular aperture. Convert points and vectors into the entry basis, rotate them through a half turn, and reconstruct them in the exit basis. Apply the same transform to avatar velocity, rigid-body momentum, projectile buffers, and gravity. Preserve vector magnitude and add an 80 ms crossing cooldown to prevent immediate threshold oscillation.
+
+Plan recursive cameras only after validating both ends of a link. Emit a stencil mask pass, a recursively transformed view pass, and a depth restoration pass for every visible level. Use `depth24plus-stencil8`, increment-clamp during masks, preserve the reference during views, decrement-clamp during restoration, and cap recursion at four. Neon Paradox renders a generated Canvas representation of the same recursive plan because Phaser's universal Canvas path does not expose a WebGPU stencil target.
+
+Current workstation measurement: plan 1,000 complete four-level portal frames in 26.4958 ms mean, or 0.02650 ms per frame plan.
+
+## Compute BVH global illumination
+
+Build a median-split flat BVH over at most 4,096 procedural axis-aligned surfaces. Traverse with a fixed 64-entry stack. Evaluate emissive contribution, direct-light visibility, Lambertian bounce, reflective metallic direction, and roughness jitter for up to three bounded bounces. Feed current color, depth, and motion into `TemporalDenoiser`. Clamp history to the current neighborhood and reject depth changes or motion above the stability threshold.
+
+Dispatch the WGSL fallback in 8x8 workgroups when WebGPU supplies an adapter. The W3C WebGPU feature list does not define a standardized ray-tracing feature, so do not claim hardware RT execution. Detect a future `ray-tracing` feature string as experimental only and retain compute BVH traversal as the production contract. See [W3C WebGPU optional capabilities](https://www.w3.org/TR/webgpu/#optional-capabilities) and the [GPUFeatureName index](https://gpuweb.github.io/types/types/GPUFeatureName.html).
+
+Current workstation measurement: trace 10,000 two-bounce CPU reference GI rays across a 256-box BVH in 60.9934 ms mean. Headless Chromium returns no adapter, so browser verification attempts shader compilation and reports `UNAVAILABLE` without claiming GPU timing.
+
+## Local INT4 dialogue transformer
+
+Generate every model parameter from a deterministic seed at runtime. Pack two signed four-bit weights per byte and apply a fixed scale during projection. Bound the model to 32 hidden dimensions, 64 feed-forward dimensions, two attention layers, 64 context tokens, a 64-token vocabulary, and 24 generated tokens. Keep the complete generated parameter set at 10,240 bytes.
+
+Tokenize sanitized local NPC, Avatar DNA tier, victories, stealth lighting, room, and objective context. Apply quantized query, key, value, output, and feed-forward projections with bounded softmax attention. Sample deterministically from the top six logits. Make no API calls, download no model, and claim no general-purpose language understanding or pretrained knowledge.
+
+Compile the INT4 projection WGSL in 64-thread workgroups when WebGPU supplies an adapter. Retain the TypeScript quantized reference path for universal execution and deterministic tests. Current workstation measurement: generate 100 CPU reference dialogue tokens in 35.3797 ms mean, or 2,826.5 tokens per second. Do not label this CPU result as WebGPU throughput.
+
+## Neon Paradox
+
+Generate a bounded reflective heist room, obstructions, tesseract vertices, guards, and objective from the room seed. Move in first person with the shared bindings, turn with arrows, and throw alternating portal anchors with Space. Transform position, velocity, and gravity through linked anchors. Derive player shadow from the same two-bounce BVH lighting path used by tests. Let guards acquire only nearby players above the lighting threshold, then decay alert while the player remains in shadow.
+
+Render recursive portal frames, perspective floor lines, depth-scaled guards, generated objectives, shadow overlays, and context-conditioned local dialogue without image, model, level, or audio assets. Advance into a new deterministic heist room after collecting each objective.
+
+Current verification:
+
+- Pass 148 Vitest tests across 55 files and 21 Playwright Chromium tests.
+- Preserve momentum magnitude through oriented portals to six decimal places in browser diagnostics.
+- Render byte-identical paused recursive portal frames across consecutive screenshots.
+- Build 128 modules with a 3.09 kB entry, a 22.11 kB lazy Paradox chunk, and the deferred 1,352.40 kB Phaser runtime.
