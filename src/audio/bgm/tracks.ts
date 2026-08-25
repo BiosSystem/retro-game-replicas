@@ -53,4 +53,5 @@ export const TRACKS: Record<string, TrackerTrack> = {
     id:'kombat',title:'Frame Advantage',bpm:154,stepsPerBeat:4,
     voices:{LEAD:notes(69,72,76,81,68,71,75,80,66,69,73,78,64,68,71,76),ARP:notes(57,60,64,60,56,59,63,59,54,57,61,57,52,56,59,56),BASS:notes(33,0,33,40,32,0,32,39,30,0,30,37,28,0,28,35),DRUMS:drums('KICK','HAT','SNARE','HAT','KICK','KICK','SNARE','HAT','KICK','HAT','SNARE','KICK','KICK','HAT','SNARE','HAT')},
   },
+  odyssey:{id:'odyssey',title:'Orbital Descent',bpm:124,stepsPerBeat:4,voices:{LEAD:notes(76,0,83,81,74,0,81,79,72,0,79,76,71,74,78,83),ARP:notes(52,59,64,59,50,57,62,57,48,55,60,55,47,54,59,54),BASS:notes(28,0,28,35,26,0,26,33,24,0,24,31,23,0,23,30),DRUMS:drums('KICK','HAT',0,'HAT','SNARE','HAT','KICK','HAT','KICK','HAT',0,'HAT','SNARE','KICK','SNARE','HAT')}},
 };

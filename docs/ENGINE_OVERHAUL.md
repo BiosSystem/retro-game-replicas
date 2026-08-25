@@ -1,5 +1,39 @@
 # Deep Arcade Engine Architecture
 
+## Voxel surface geometry and planetary LOD
+
+Sample deterministic spherical density fields into bounded grids. Add seeded scalar variation and subtract up to 128 persisted crater fields. Generate one surface-net vertex per sign-changing cell by averaging all edge intersections, then connect neighboring cell vertices around sign-changing grid edges into indexed quads.
+
+Select octree nodes from camera distance and projected node ratio. Cap depth at five in Odyssey and expose a continuous zero-to-one morph factor across the split band. Use the morph factor to blend parent and child geometry in capable renderers. Do not describe this mathematical transition as a universal zero-pop guarantee across every driver or frame budget.
+
+Expose a 64-thread WebGPU density shader contract and retain the deterministic CPU mesher as the verified universal path. Cap one synthetic chunk at 40 cubed cells and 68,921 density samples. Persist crater parameters, not mesh assets.
+
+## Binaural acoustic tracing
+
+March a direct source-to-listener ray and up to 256 Fibonacci-distributed reflection rays through signed-distance geometry. Derive direct occlusion, bounded diffraction gain, propagation delay, and a generated 120 ms impulse response. Calculate interaural time difference from a procedural 8.75 cm head radius and interaural level difference from source azimuth.
+
+Feed the result into the existing WASM phase generator and produce separate left and right sample blocks. Treat the procedural filter as a useful headphone approximation, not a measured listener-specific HRTF dataset or a full physical path tracer.
+
+## Avatar DNA and cosmetic economy
+
+Canonicalize at most 32 cross-game statistics and bind player, creation time, sorted stats, SHA-256 digest, and public key into an Ed25519 signature. Reject modified statistics, malformed identifiers, stale duplicate players, oversized gossip, and invalid signatures. Store one bounded local payload and gossip at most 32 opponent payloads over already connected manual ARC1 peers.
+
+Derive hue, body segments, wing span, decal index, particle rate, and a cosmetic economy tier from digest bytes and aggregate performance. Treat SHA-256 as deterministic derivation and tamper evidence. Treat the Ed25519 signature as authorship by the included ephemeral key, not a central account identity or anti-cheat authority.
+
+## Neon Odyssey
+
+Integrate quaternion pitch, yaw, roll, forward thrust, lateral thrust, vertical thrust, angular velocity, fuel, and un-damped Newtonian drift at the scene timestep. Calculate altitude from the voxel planet radius and blend atmosphere continuously across 120 world units. Persist crater parameters and rebuild generated surface geometry after impacts.
+
+Use the local neural director for encounter pressure and deterministic seeded cycles for commodity prices. Publish signed Odyssey statistics into Avatar DNA when the pilot exits. Generate the ship, stars, planet, terrain points, markets, audio, and cosmetics entirely at runtime.
+
+Current workstation measurements:
+
+- Generate one 32 cubed surface-net chunk in 12.97 ms mean, about 77 complete chunks per second.
+- Select one planetary LOD octree in 0.0031 ms mean.
+- Trace 64 acoustic rays and build an impulse response in 0.193 ms mean.
+- Pass 121 Vitest tests and 17 Playwright Chromium tests.
+- Build 110 modules with a 3.09 kB entry and a 10.80 kB Odyssey chunk.
+
 ## Competitive rollback and desync recovery
 
 Advance local input immediately at a fixed simulation frame. Predict missing remote input from the latest validated remote frame. Store cloned deterministic states in a fixed ring, record which prediction each frame consumed, and compare late inputs against the consumed value. Restore the state before the first divergent frame and resimulate only the bounded affected range.

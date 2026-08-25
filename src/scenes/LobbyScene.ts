@@ -43,6 +43,7 @@ export default class LobbyScene extends Phaser.Scene {
     { name: 'NEON LABYRINTH',   scene: 'LabyrinthScene',     icon: '🕸️' },
     { name: 'NEON DANMAKU',     scene: 'DanmakuScene',       icon: '✦' },
     { name: 'NEON KOMBAT',      scene: 'KombatScene',        icon: '🥊' },
+    { name: 'NEON ODYSSEY',     scene: 'OdysseyScene',       icon: '◉' },
   ];
 
   private difficulties = [
@@ -193,7 +194,7 @@ export default class LobbyScene extends Phaser.Scene {
   private buildGameList() {
     this.games.forEach((game, i) => {
       const isSelected = i === this.selectedGameIndex;
-      const y          = 101 + i * 18;
+      const y          = 96 + i * 17;
 
       const label  = `${game.icon}  ${game.name}`;
       const color  = isSelected ? PALETTE.white : PALETTE.dim;
@@ -448,6 +449,7 @@ export default class LobbyScene extends Phaser.Scene {
           else if (game.scene === 'LabyrinthScene') AudioEngine.playTrack('labyrinth');
           else if (game.scene === 'DanmakuScene') AudioEngine.playTrack('danmaku');
           else if (game.scene === 'KombatScene') AudioEngine.playTrack('kombat');
+          else if (game.scene === 'OdysseyScene') AudioEngine.playTrack('odyssey');
           else if (game.scene === 'AsteroidsScene') AudioEngine.playTrack('vector');
           else AudioEngine.stopTrack();
           await mountGameScene({
@@ -478,7 +480,7 @@ export default class LobbyScene extends Phaser.Scene {
 
     this.gameItems[prev].setColor(PALETTE.dim).setScale(1).setFontSize('18px');
     this.gameItems[this.selectedGameIndex].setColor(PALETTE.white).setScale(1.06).setFontSize('20px');
-    this.selectionCursor?.setY(101 + this.selectedGameIndex * 18);
+    this.selectionCursor?.setY(96 + this.selectedGameIndex * 17);
 
     this.tweens.add({ targets: this.gameItems[this.selectedGameIndex], scale: 1.1, duration: 80, yoyo: true });
   }

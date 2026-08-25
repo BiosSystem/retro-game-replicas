@@ -1,5 +1,10 @@
 ## [Unreleased] - 2026-08-25
 ### Changed
+- Add deterministic spherical voxel fields, persistent bounded crater edits, real surface-net edge intersections, indexed meshes, continuous LOD morph factors, and a 64-thread WebGPU density shader contract.
+- Add bounded acoustic SDF ray marching with direct occlusion, diffraction gain, generated dynamic impulse responses, and procedural binaural interaural delay and level filtering.
+- Add Ed25519 signed Avatar DNA across bounded cross-game statistics, SHA-256 cosmetic derivation, local persistence, opponent gossip, and tamper rejection.
+- Add Neon Odyssey with quaternion 6-DOF flight, Newtonian drift, continuous atmospheric state, voxel planet descent, crater persistence, adaptive encounters, and deterministic trading markets.
+- Add unit, benchmark, and Playwright coverage for surface nets, crater restoration, LOD transitions, acoustic output, DNA signing, 6-DOF integration, and stable planetary rendering.
 - Add fixed-capacity rollback state history, checksum-validated inputs, local prediction, late-input rewind, bounded resimulation telemetry, and twelve-frame redundant input bundles.
 - Add loss, 110 ms latency, and 35 ms jitter desync simulation that reconverges deterministic fighter state after dropped packets.
 - Add a generated WebAssembly phase core and AudioWorklet synthesizer for 128-sample square, triangle, and noise rendering outside the main thread.
@@ -82,6 +87,9 @@
 - Remove the external Google Fonts runtime dependency and use local system monospace fonts.
 
 ### Verified
+- Pass 121 unit and integration tests across 47 files plus 17 Playwright Chromium tests.
+- Generate one 32 cubed surface-net chunk in 12.97 ms mean, select a planetary LOD octree in 0.0031 ms mean, and trace 64 acoustic rays in 0.193 ms mean on the verification workstation.
+- Build 110 transformed modules with a 3.09 kB initial entry, a 10.80 kB Odyssey chunk, and no Vite chunk warning.
 - Pass 111 unit and integration tests across 43 files plus 15 Playwright Chromium tests.
 - Resimulate 120 divergent frames in 0.195 ms mean, step 4,096 cloth nodes in 1.27 ms mean, and shatter 32 Voronoi cells in 0.082 ms mean on the verification workstation.
 - Render one 128-sample WASM DSP block in 0.0009 ms mean. Calculate a 2.67 ms render quantum at 48 kHz without treating it as total hardware latency.
