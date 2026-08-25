@@ -47,6 +47,7 @@ export default class LobbyScene extends Phaser.Scene {
     { name: 'NEON CHRONO',      scene: 'ChronoScene',        icon: '⌛' },
     { name: 'NEON PARADOX',     scene: 'ParadoxScene',       icon: '◇' },
     { name: 'NEON NEXUS',       scene: 'NexusScene',         icon: '◎' },
+    { name: 'NEON GENESIS',     scene: 'GenesisScene',       icon: '✺' },
   ];
 
   private difficulties = [

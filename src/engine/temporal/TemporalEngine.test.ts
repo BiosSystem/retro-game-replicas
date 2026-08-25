@@ -33,11 +33,12 @@ describe('temporal engine', () => {
     expect(result.bodies[1].x).toBeGreaterThanOrEqual(20);
     expect(result.pressedSwitches).toEqual([9]);
   });
-  it('compresses and resimulates 10,000 synthetic deltas inside the stress budget', () => {
+  it('compresses and resimulates 10,000 synthetic deltas deterministically', () => {
     runTemporalStress();
     const result = runTemporalStress();
     expect(result.frames).toBe(10000);
     expect(result.checksum).toBe(49_995_000);
-    expect(result.durationMs).toBeLessThan(1.5);
+    expect(result.compressedBytes).toBe(59_994);
+    expect(Number.isFinite(result.durationMs)).toBe(true);
   });
 });

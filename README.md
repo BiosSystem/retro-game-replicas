@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;21+Arcade+Worlds;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
+  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;22+Games+and+Meta+Hall;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
 </p>
 
 <p align="center">
@@ -22,13 +22,17 @@
 
 ## 🚀 Elevator Pitch
 
-**Universal Retro Arcade** is a premium, open-source collection of 21 classic, 2000s-era, and experimental arcade worlds. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
+**Universal Retro Arcade** is a premium, open-source collection of 22 classic, 2000s-era, and experimental game worlds plus a generated Meta-Arcade hall. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
 
 Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLSL CRT shaders, and local persistence - without needing external emulators or illegal ROMs.
 
 ## ✨ Features
 
-- **21 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Odyssey, Neon Chrono, Neon Paradox, and Neon Nexus.
+- **22 Built-In Games plus Meta-Arcade Hall** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, and Neon Genesis.
+- **Quantum Game-State Solver** - Evolve normalized complex amplitudes across bounded categorical branches, collapse only after in-range camera observation, correlate entangled branch indices, and publish deterministic collapse records through the existing world CRDT.
+- **Worker-Evolved Ecosystems** - Cross, mutate, select, and score up to 4,096 eight-trait genomes against temperature, moisture, fluid, and elevation gradients through transferable Worker buffers with a CPU fallback.
+- **Local INT4 Society** - Run up to 32 seeded local transformer agents with bounded statements, wealth, trust, influence, trade, migration, faction, hierarchy, and consensus state without downloads or API calls.
+- **Neon Genesis** - Shape procedural planetary habitats, guide evolving life, observe correlated resources, follow local civilization policy, and explore cabinets inherited from fifteen engine milestones.
 - **Capability-Gated WebXR Core** - Request immersive VR or AR only after support checks and user gestures, consume device-provided stereo views, select the nearest supported 90 or 120 Hz target, adapt render budgets, and map controllers or hand joints into IK poses.
 - **Signed World CRDT** - Merge voxel, body, portal, and arcade edits through deterministic logical clocks, Ed25519 signatures, bounded actor quotas, and the existing WebTransport or WebRTC transport path.
 - **Generated Motion Matching** - Search 4,096 seeded locomotion vectors through a compact matrix projection, score velocity, terrain slope, intent, turn, and gait phase, then blend twelve-joint poses without model assets.

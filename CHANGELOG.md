@@ -1,5 +1,10 @@
 ## [Unreleased] - 2026-08-25
 ### Changed
+- Add a bounded categorical quantum game-state solver with normalized complex amplitudes, deterministic camera-triggered observation, correlated entanglement groups, phase evolution, and CRDT collapse records.
+- Add an eight-trait genetic ecosystem with terrain-gradient fitness, natural selection, crossover, bounded mutation, diversity metrics, snapshot validation, a 64-thread WebGPU fitness contract, and transferable Worker evolution with CPU fallback.
+- Add a seeded local INT4 society for up to 32 agents with concurrent conversation rounds, bounded statements, trade, alliances, migration, faction membership, influence, hierarchy, consensus, and capability-gated WebGPU pipeline compilation.
+- Add Neon Genesis with procedural universe rendering, player terrain deformation, 256-lifeform Worker evolution, camera observation of correlated resources, 24-agent civilization rounds, inherited arcade cabinets, and fifteen milestone references.
+- Add unit, benchmark, and Playwright coverage for 10,000 collapses, 4,096-genome evolution, 24-agent dialogue, 1,000-generation stability, Worker execution, WebGPU capability handling, entanglement correlation, consensus, and stable paused rendering.
 - Add capability-gated immersive VR and AR sessions, device-supplied stereo view planning, nearest supported 90 or 120 Hz refresh selection, adaptive render budgets, controller poses, hand joints, pinch detection, and FABRIK arm mapping.
 - Add an Ed25519 signed last-writer-wins world CRDT for voxel, body, portal, and arcade state with deterministic actor tie-breaking, bounded quotas, snapshot restoration, and reliable WebTransport or WebRTC chunk routing.
 - Add a generated 4,096-vector motion database and deterministic matrix-projection matcher that scores velocity, terrain slope, intent, turn, and phase before blending twelve-joint poses.

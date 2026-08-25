@@ -466,3 +466,38 @@ Current verification:
 - Plan 100,000 dual-view XR frames in 41.74 ms mean.
 - Match one query against 4,096 generated locomotion vectors in 0.1750 ms mean.
 - Build 138 modules with a 3.17 kB entry, a 15.19 kB lazy Nexus chunk, and the deferred 1,352.40 kB Phaser runtime.
+
+## Quantum game-state simulation
+
+Model a game object's uncertainty as two to sixteen categorical branches with normalized complex amplitudes. Apply phase-only evolution so total probability remains one. Collapse an object only when the supplied camera position falls inside the observation range. Select a branch through deterministic seeded sampling and correlate every object in the same bounded entanglement group to that branch index.
+
+Treat this as a gameplay abstraction. Do not describe it as a physical macroscopic quantum computer, a simulation of decoherence, or faster-than-light networking. Apply the correlated branch immediately inside one deterministic simulation and publish a bounded `BODY` record through the existing CRDT. Let remote peers converge after transport delivery rather than claiming instantaneous network propagation.
+
+Current workstation measurement: calculate 10,000 independent eight-branch camera collapses in 34.9470 ms mean, or 0.003495 ms per collapse.
+
+## Genetic ecosystems and Worker evolution
+
+Represent each organism with eight normalized traits for heat, moisture, fluid, elevation, mobility, fertility, size, and cooperation. Score adaptation against bounded terrain gradients. Select from the leading population quarter, blend two parents per child, apply deterministic bounded mutation, and retain fitness and diversity metrics. Cap one population at 4,096 genomes and validate every restored trait.
+
+Transfer a copied `Float32Array` into a module Worker and transfer ownership of the evolved buffer back. Retain the same CPU kernel when Workers are unavailable. Publish a 64-thread WGSL fitness contract for capable WebGPU runtimes, but retain CPU selection, crossover, and mutation as the deterministic universal path.
+
+Current workstation measurement: evolve 4,096 eight-trait genomes in 3.6237 ms mean.
+
+## Local INT4 swarm society
+
+Instantiate at most 32 independently seeded 10,240-byte INT4 transformers. Sanitize one topic, run one bounded statement per agent, and apply explicit `TRADE`, `ALLY`, `OBSERVE`, or `MIGRATE` state transitions. Track wealth, trust, influence, factions, hierarchy, and plurality consensus in deterministic data structures. Reuse the capability-gated 64-thread INT4 WebGPU projection compiler and retain universal CPU inference.
+
+Treat generated text and policy as procedural game behavior, not general intelligence, understanding, autonomous governance, or factual reasoning. Download no model and call no external service. Current workstation measurement: create and run one complete 24-agent eight-token conversation round in 107.03 ms mean.
+
+## Neon Genesis
+
+Render a generated universe from mathematical spirals, lifeform traits, resource amplitudes, inherited cabinets, and terrain gradients. Move with `WASD`, deform the local voxel field with Space, and observe the nearest correlated resource with `Q`. Evolve 256 organisms in a module Worker while a 24-agent local society updates civilization dialogue and policy independently. Reference fifteen prior engine milestones without importing image, audio, model, or level assets.
+
+Current verification:
+
+- Pass 174 Vitest tests across 63 files and 25 Playwright Chromium tests.
+- Preserve probability normalization and correlated branch indices through deterministic tests.
+- Complete 1,000 ecosystem generations with bounded traits and mean fitness above 0.5 in unit and browser gates.
+- Confirm actual module Worker evolution in headless Chromium and accept `COMPILED` or `UNAVAILABLE` from the WebGPU capability probe.
+- Render byte-identical paused Neon Genesis frames across consecutive screenshots.
+- Build 145 modules with a 3.17 kB entry, a 1.74 kB Genetic Worker, a 15.24 kB lazy Genesis chunk, and the deferred 1,352.40 kB Phaser runtime.
