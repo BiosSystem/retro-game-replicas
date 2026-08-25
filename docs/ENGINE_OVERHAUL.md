@@ -532,3 +532,34 @@ Current verification:
 - Exercise WebCodecs canvas capture when supported and accept an explicit unsupported result otherwise.
 - Render byte-identical paused Neon OS frames across consecutive screenshots.
 - Build 153 modules with a 3.17 kB entry, a 12.28 kB lazy Neon OS chunk, and the deferred 1,352.40 kB Phaser runtime.
+
+## Deterministic neural terrain
+
+Generate network weights from a seed and execute two bounded feed-forward layers with signed integer arithmetic. Quantize spatial coordinates to sixteenth-unit cells, clamp inputs and intermediate activations, and classify five biome logits before emitting elevation, erosion, and mineral channels. Keep authoritative outputs in `Int16Array` and `Uint8Array` chunks. Use the same hash, weights, shifts, clamps, and packed output fields in the 64-thread WGSL kernel.
+
+Do not promise bit-identical results from unrelated floating-point neural runtimes. Preserve identical authoritative output by using fixed-point integer operations with bounded ranges. Apply any later visual interpolation only after the deterministic world fields exist. Current workstation measurement: generate 65,536 CPU reference terrain samples in 27.1218 ms mean, or about 2.416 million samples per second.
+
+## Recursive path lighting
+
+Trace up to 1,024 generated sphere primitives with at most eight bounce steps. Accumulate emissive radiance, rough diffuse or metallic reflection, Schlick dielectric selection, refraction by index of refraction, throughput attenuation, and bounded Russian roulette after the fourth contact. Retain the CPU reference for deterministic tests and low-capability devices. Compile the WebGPU shader in 8x8 workgroups only after adapter discovery.
+
+Apply a depth and normal weighted 3x3 spatial filter before bounded temporal feedback. Clamp temporal history to the current sample neighborhood. Treat this as noise reduction, not guaranteed film-quality reconstruction. WebGPU defines portable compute pipelines but does not standardize hardware ray-tracing acceleration. Label a future `ray-tracing` feature string experimental and never claim hardware execution from the current compute path. Current workstation measurement: trace 100,000 four-bounce CPU reference paths in 66.7981 ms mean, or about 1.497 million primary paths per second. Do not describe this CPU result as GPU throughput or a universal 60 FPS guarantee.
+
+## Authenticated quorum world ledger
+
+Fix membership at four to sixteen Ed25519 identities and require `floor(2N/3) + 1` unique valid votes. Bind every bounded payload to SHA-256, bind every proposal to its sequence and previous root, and derive the next root from the prior root, sequence, and authenticated proposal hash. Reject unknown members, duplicate votes, modified bytes, insufficient quorums, oversized payloads, and proposals that no longer extend the current root. Verify the complete chain before accepting a restored snapshot.
+
+Treat the ledger as an authenticated quorum log inside an application-supplied peer group. It provides tamper evidence, signer attribution, deterministic finalization, and stale-fork rejection. It does not provide automatic peer discovery, Sybil resistance, durable replication, proof that a signed claim is physically true, or a complete Byzantine consensus protocol under asynchronous partitions. Store only bounded safe-mod bytes or broadcast segment digests, not executable host code or complete media streams. Current workstation measurement: create, sign, verify, and commit 100 three-vote records in 182.19 ms mean.
+
+## The Singularity
+
+Present The Singularity as the twenty-fourth selectable game and the synthesis of seventeen established engine architectures. Render a generated path-lit world and fixed-point biome monitor, collapse one local quantum gate deterministically, distribute bounded mineral fitness work, run eight local INT4 society agents, and commit one authenticated world record. Open Neon OS with `O`, generate another seeded world with Space, and request immersive VR with `X` only when WebXR reports support.
+
+Current verification:
+
+- Pass 201 Vitest tests across 71 files and 29 Playwright Chromium tests.
+- Preserve terrain, light, and quantum checksums across identical seeds.
+- Reject tampered proposals, minority votes, and stale state-root forks.
+- Accept `COMPILED` or `UNAVAILABLE` from neural terrain and path-tracing WebGPU probes.
+- Render byte-identical paused Singularity frames across consecutive screenshots.
+- Build 160 modules with a 3.17 kB entry, a 17.50 kB lazy Singularity chunk, and the deferred 1,352.40 kB Phaser runtime.

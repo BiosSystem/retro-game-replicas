@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;23+Games+and+Meta+Hall;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
+  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;24+Games+and+Meta+Hall;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
 </p>
 
 <p align="center">
@@ -22,13 +22,17 @@
 
 ## 🚀 Elevator Pitch
 
-**Universal Retro Arcade** is a premium, open-source collection of 23 classic, 2000s-era, and experimental game worlds plus a generated Meta-Arcade hall. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
+**Universal Retro Arcade** is a premium, open-source collection of 24 classic, 2000s-era, and experimental game worlds plus a generated Meta-Arcade hall. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
 
 Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLSL CRT shaders, and local persistence - without needing external emulators or illegal ROMs.
 
 ## ✨ Features
 
-- **23 Built-In Games plus Meta-Arcade Hall** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, Neon Genesis, and Neon OS.
+- **24 Built-In Games plus Meta-Arcade Hall** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, Neon Genesis, Neon OS, and The Singularity.
+- **Fixed-Point Neural Terrain** - Generate deterministic elevation, erosion, mineral, and five-class biome fields from coordinates and seeds through matched CPU and 64-thread WebGPU integer networks.
+- **Recursive Path Lighting** - Trace generated scenes with rough reflection, dielectric refraction, emissive surfaces, bounded bounce depth, and spatial-temporal filtering through a universal CPU reference and capability-gated WebGPU compute contract.
+- **Authenticated Quorum Ledger** - Finalize bounded voxel, safe-mod, and broadcast-segment records after Ed25519 supermajority votes, chain each record into a SHA-256 state root, and reject tampered payloads or stale forks.
+- **The Singularity** - Explore generated worlds that synthesize seventeen engine architectures, open Neon OS, request supported WebXR sessions, inspect local society policy, and verify distributed world roots without external assets or model downloads.
 - **Capability-Gated Broadcast Core** - Probe AV1 then H.264 WebCodecs support, capture Canvas frames, expose a Web Audio graph tap, frame encoded chunks for application transport, and reduce bitrate or drop capture work before gameplay stalls.
 - **Self-Healing Compute Grid** - Distribute bounded numeric genetic and gradient shards over application-established peers, retry work after peer churn, and retain deterministic local recovery without claiming automatic internet discovery.
 - **Raw WebAssembly DSL Compiler** - Parse a small stack language, validate instruction count and stack effects, and emit import-free WebAssembly v1 modules without eval, memory, host calls, or downloaded code.

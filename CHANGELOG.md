@@ -1,5 +1,10 @@
 ## [Unreleased] - 2026-08-25
 ### Changed
+- Add a deterministic fixed-point neural terrain network with seeded integer weights, five biome classes, elevation, erosion, mineral fields, 128-square chunks, and a matching 64-thread WebGPU compute contract.
+- Add a bounded recursive path tracer with rough reflection, dielectric refraction, Russian roulette termination, generated emissive lighting, spatial-temporal filtering, and a capability-gated WebGPU compute shader.
+- Add an Ed25519 authenticated quorum world ledger with four to sixteen fixed members, supermajority votes, payload hashes, chained SHA-256 state roots, stale-fork rejection, and verified snapshots.
+- Add The Singularity as the twenty-fourth game and a synthesis of seventeen established architectures with neural terrain, path lighting, quantum state, grid compute, local society, WebXR, WebCodecs, and Neon OS access.
+- Add unit, benchmark, and Playwright coverage for 65,536 terrain samples, 100,000 recursive paths, 100 signed consensus records, tampering, minority votes, stale roots, capability handling, and stable paused rendering.
 - Add a capability-gated WebCodecs broadcast pipeline with AV1 or H.264 probing, canvas frame capture, Web Audio capture taps, custom application framing, queue-aware frame dropping, and adaptive 0.4 to 8 Mbps bitrate control.
 - Add a masterless grid coordinator for established peers with deterministic declarative genetic-fitness and gradient kernels, 1 MiB transport envelopes, bounded shards, peer-churn retries, and local recovery.
 - Add a safe Neon DSL compiler that validates stack effects and emits raw import-free WebAssembly v1 binaries for bounded i32 programs without JavaScript evaluation, memory, or host imports.
