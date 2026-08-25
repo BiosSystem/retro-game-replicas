@@ -1,5 +1,39 @@
 # Deep Arcade Engine Architecture
 
+## Capability-gated compute
+
+Pack each AABB pair into eight contiguous float values. Dispatch independent overlap tests through a WGSL storage-buffer kernel when `navigator.gpu` and a suitable adapter are available. Transfer the packed `ArrayBuffer` to a module Worker when WebGPU is unavailable. Probe WebAssembly compilation for the next capability tier, then retain the same bounded scalar kernel for computation. Fall back synchronously to the CPU when neither asynchronous tier is usable.
+
+Keep Phaser Arcade Physics and its renderer-owned state unchanged. Use this pipeline only for explicit custom batches and stress workloads. Reject malformed arrays and cap generated stress batches at one million pairs. Handle empty batches without issuing a zero-workgroup GPU dispatch.
+
+References: [W3C WebGPU](https://www.w3.org/TR/webgpu/), [MDN GPU adapter selection](https://developer.mozilla.org/en-US/docs/Web/API/GPU/requestAdapter), [MDN transferable Worker buffers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers)
+
+## Local learning ghosts
+
+Run one bounded dense network with six normalized sensors, twelve hidden neurons, and three discrete steering actions. Train with temporal-difference Q targets at an 80 ms decision cadence. Keep weights in `Float32Array` storage, clamp rewards and sensor inputs, cap serialized snapshots below 20 KiB, and make no network requests.
+
+Race the generated ghost car in Neon Retro Racer. Toggle the Breakout ghost with `G` to let the same architecture learn paddle tracking from ball position and velocity. Persist separate local snapshots for each game and save on scene shutdown.
+
+## Visual authoring studio
+
+Represent safe mod logic as a bounded directed acyclic graph. Start traversal from an event node, reject cycles and dangling edge identifiers, map reachable hazard, score, effect, and patch nodes into the existing declarative schema, then validate the compiled manifest. Sign canonical bytes with a generated Ed25519 session key. Never evaluate node text or grant a graph access to DOM, storage, network, Phaser, or Web Audio objects.
+
+## Neon Cyber-Caster
+
+Split a seeded dungeon recursively through binary space partitioning. Connect room centers with orthogonal corridors and place a generated exit on a reachable floor. Cast 160 rays through the grid with DDA, correct fish-eye distance, shade wall strips with deterministic coordinate patterns, and use the ray depth buffer to occlude generated billboard sprites. Keep collision, hitscan combat, enemies, health, and floor progression inside the generated 640x480 scene.
+
+## Advanced browser verification
+
+Fix the Chromium viewport, reduced-motion preference, and random seed. Compare two paused Raycaster Canvas frames byte-for-byte. Compile and verify a signed graph package in the browser. Use Chromium heap instrumentation plus explicit collection around repeated scene launch and removal cycles, then reject growth above 16 MiB. Store no golden screenshot assets.
+
+Current workstation measurements:
+
+- Process 100,000 packed AABB pairs in 1.09 ms mean.
+- Cast 100,000 DDA rays in 16.75 ms mean.
+- Run 10,000 neural inferences in 6.98 ms mean.
+- Pass 77 Vitest tests and 6 Playwright Chromium tests.
+- Build 74 modules with a 2.91 kB initial entry, a 0.39 kB compute Worker, an 8.17 kB Raycaster chunk, a 66.07 kB bootstrap, and no Vite warning.
+
 ## Rendering and physics
 
 Keep Phaser Arcade Physics on its 60 Hz fixed step. Phaser already maintains an RTree broad-phase index for dynamic bodies, so do not add a second quadtree around Phaser bodies. Use `SpatialHashGrid` only for custom systems that operate outside Arcade Physics, such as projectile threat queries and particle neighborhoods. Clamp sprite-state updates to 250 ms after stalls and let the runtime suspend the game loop when the document is hidden.

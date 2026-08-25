@@ -1,5 +1,11 @@
 ## [Unreleased] - 2026-08-25
 ### Changed
+- Add a capability-gated AABB compute pipeline with WebGPU WGSL dispatch, transferable Worker buffers, a WebAssembly capability tier, and a synchronous CPU fallback.
+- Add deterministic 100,000-pair collision stress generation without changing Phaser Arcade Physics internals.
+- Add bounded local neural Q-learning ghosts for Neon Retro Racer and opt-in Neon Breakout paddle control with persisted model snapshots.
+- Add a draggable Visual Mod Studio that compiles acyclic event graphs into validated declarative manifests and signs them with session Ed25519 keys.
+- Add Neon Cyber-Caster with deterministic BSP dungeons, grid DDA ray casting, generated wall patterns, depth-buffered sprites, hitscan combat, and infinite floors.
+- Add Playwright gates for stable Raycaster pixels, signed studio output, compute initialization, and bounded heap growth across repeated scene lifecycles.
 - Add a direct WebRTC netplay panel with bounded manual offer-answer room codes and configurable STUN or TURN servers.
 - Add fixed 12-byte input frames, unreliable low-latency input delivery, reliable control messages, prediction, rollback history, reconciliation, and remote Player 2 input routing.
 - Add deterministic packet-loss, latency, and jitter simulation plus a 10,000-packet benchmark.
@@ -51,6 +57,10 @@
 - Remove the external Google Fonts runtime dependency and use local system monospace fonts.
 
 ### Verified
+- Pass 77 unit and integration tests across 26 files plus 6 Playwright Chromium regression tests.
+- Process 100,000 packed AABB pairs in 1.09 ms mean and cast 100,000 DDA rays in 16.75 ms mean on the verification workstation.
+- Run 10,000 local neural inferences in 6.98 ms mean on the verification workstation.
+- Build 74 transformed modules with a 2.91 kB initial entry, a 0.39 kB compute Worker, an 8.17 kB Raycaster chunk, a 66.07 kB bootstrap, and no Vite chunk warning.
 - Pass 64 unit and integration tests across 22 files plus 3 Playwright browser regression tests.
 - Simulate 10,000 packets with 8 percent loss, 120 ms latency, and 35 ms jitter at 523.02 operations per second with a 1.91 ms mean.
 - Update 10,000 pooled particles at 1,203.44 operations per second with a 0.83 ms mean.

@@ -58,6 +58,14 @@ canvas { max-width: 100%; max-height: 100%; display: block; image-rendering: pix
 .netplay-panel button { padding: 8px; border: 1px solid #00ffae; background: #07110f; color: #00ffae; font: 700 10px monospace; cursor: pointer; }
 .netplay-panel textarea { width: 100%; min-height: 120px; margin-top: 10px; padding: 8px; resize: vertical; border: 1px solid #21443d; background: #020609; color: #d9fff2; font: 10px monospace; overflow-wrap: anywhere; }
 .netplay-panel output { display: block; margin-top: 8px; color: #ffcc00; font: 700 11px monospace; }
+.visual-studio { position: fixed; inset: 3vh 3vw; z-index: 19000; overflow: auto; padding: 16px; border: 1px solid #ff2ec4; background: rgba(2,5,11,.99); box-shadow: 0 0 60px rgba(255,46,196,.2); }
+.visual-studio[hidden] { display: none; } .visual-studio header, .studio-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.visual-studio h2 { color: #ff2ec4; letter-spacing: .12em; } .visual-studio small { color: #806078; }
+.visual-studio button { padding: 8px 10px; border: 1px solid #ff2ec4; background: #160817; color: #ffb3ea; font: 700 10px monospace; cursor: pointer; }
+.studio-toolbar { justify-content: flex-start; margin: 14px 0; } .studio-toolbar input { width: 160px; padding: 8px; border: 1px solid #334b4a; background: #020609; color: #fff; font: 11px monospace; }
+.visual-studio canvas { width: 100%; height: min(55vh, 480px); border: 1px solid #17302f; touch-action: none; }
+.visual-studio textarea { width: 100%; min-height: 120px; margin-top: 10px; padding: 9px; border: 1px solid #334b4a; background: #020609; color: #80d9c7; font: 10px monospace; }
+.visual-studio output { display: block; padding: 9px 0; color: #00ffae; font: 700 11px monospace; }
 @media (max-width: 860px) { .mod-manager-grid { grid-template-columns: 1fr; } }
 @keyframes scan-roll { to { background-position: 0 -200px, 0 0; } }
 .motion-reduced * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }

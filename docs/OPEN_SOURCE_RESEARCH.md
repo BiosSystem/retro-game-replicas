@@ -6,6 +6,12 @@ Inspect primary project repositories and official browser documentation. Extract
 
 ## Source findings
 
+### Browser compute and memory transfer
+
+[The W3C WebGPU Recommendation](https://www.w3.org/TR/webgpu/) defines compute passes, storage buffers, workgroup dispatch, and asynchronous buffer mapping. Keep feature detection explicit because WebGPU availability depends on the browser, platform, and adapter. [MDN adapter selection](https://developer.mozilla.org/en-US/docs/Web/API/GPU/requestAdapter) documents the nullable adapter request. Preserve a complete fallback path when no adapter is returned.
+
+[MDN Web Worker guidance](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) documents transferable objects that move an `ArrayBuffer` without copying its backing store. Transfer packed collision batches to the compute Worker and transfer the result ownership back. Avoid structured-cloning large object graphs.
+
 ### Accurate arcade simulation
 
 [Shaun LeBron's Pac-Man tribute](https://github.com/shaunlebron/pacman) separates readable source modules from its production bundle, keeps an arcade-compatible update rate, scales a resolution-independent Canvas presentation, models distinct ghost behavior, and includes a procedural map experiment. Preserve this separation between deterministic rules, render presentation, and generator data. Avoid coupling game rules to CSS pixels or display refresh rate.

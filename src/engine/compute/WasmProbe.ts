@@ -1,0 +1,2 @@
+const ADD_MODULE = new Uint8Array([0,97,115,109,1,0,0,0,1,7,1,96,2,127,127,1,127,3,2,1,0,7,7,1,3,97,100,100,0,0,10,9,1,7,0,32,0,32,1,106,11]);
+export async function initializeWasmProbe() { if (typeof WebAssembly === 'undefined') return false; try { const module = await WebAssembly.instantiate(ADD_MODULE); const add = (module.instance.exports as { add?: (a: number, b: number) => number }).add; return add?.(20, 22) === 42; } catch { return false; } }

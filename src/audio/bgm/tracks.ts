@@ -33,4 +33,8 @@ export const TRACKS: Record<string, TrackerTrack> = {
     id: 'racer', title: 'Midnight Highway', bpm: 156, stepsPerBeat: 4,
     voices: { LEAD: notes(76, 79, 83, 88, 86, 83, 79, 76, 74, 78, 81, 86, 83, 81, 78, 74), ARP: notes(64, 67, 71, 67, 62, 66, 69, 66, 60, 64, 67, 64, 62, 66, 69, 71), BASS: notes(40, 0, 40, 47, 38, 0, 38, 45, 36, 0, 36, 43, 38, 0, 38, 45), DRUMS: drums('KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'KICK', 'SNARE', 'HAT') },
   },
+  caster: {
+    id: 'caster', title: 'Chromatic Dungeon', bpm: 138, stepsPerBeat: 4,
+    voices: { LEAD: notes(72, 0, 73, 72, 68, 0, 67, 63, 72, 75, 73, 70, 68, 67, 63, 60), ARP: notes(60, 63, 67, 63, 56, 60, 63, 60, 58, 61, 65, 61, 55, 58, 63, 58), BASS: notes(36, 0, 36, 35, 32, 0, 32, 31, 34, 0, 34, 33, 31, 0, 31, 30), DRUMS: drums('KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 0, 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'KICK', 'SNARE', 'HAT') },
+  },
 };

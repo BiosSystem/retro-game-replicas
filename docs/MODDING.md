@@ -62,3 +62,11 @@ Wrap a declarative manifest in this closed envelope:
 Canonicalize the inner manifest by sorting every object key and retaining array order. Calculate SHA-256 over the canonical UTF-8 bytes. Sign the same bytes with Ed25519. Serve the envelope through credential-free HTTPS below 96 KiB.
 
 Use `VERIFY + IMPORT` in the Mod Manager. Reject unsigned envelopes, hash mismatches, invalid signatures, unknown fields, redirects, oversized responses, and invalid inner schemas. Treat a valid signature as proof that the package holder controls the included key, not as automatic publisher identity. Pin and compare the public-key fingerprint through a trusted external channel before trusting a publisher name. Keep all imported behavior inside the declarative instruction set. Never execute signed JavaScript.
+
+## Visual Mod Studio
+
+Press `V` or use `VISUAL STUDIO` in the Mod Manager. Add event, hazard, score, effect, and stage-patch nodes. Drag nodes to arrange the graph. Select two nodes to create a directed edge. Compile only acyclic graphs that are reachable from an event node.
+
+Compile the graph into the existing API version 1 manifest schema. Validate every generated field through the same closed-schema parser used for imported files. Sign the canonical manifest bytes with an in-memory Ed25519 session key and copy the declarative JSON envelope from the output panel. Treat that session key as an authoring convenience, not a persistent publisher identity. Pin a separately managed public-key fingerprint before distributing trusted releases.
+
+Keep the graph below 64 nodes and 128 edges. Never embed scripts, functions, HTML, URLs, binary blobs, or executable expressions in a node.

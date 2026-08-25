@@ -11,6 +11,8 @@ import { SaveManager } from './engine/SaveManager';
 import { installModApi } from './mods/ModRuntime';
 import { installModManager } from './ui/mods/ModManagerController';
 import { installNetplayController } from './ui/net/NetplayController';
+import { arcadeCompute } from './engine/compute/ComputePipeline';
+import { installVisualModStudio } from './ui/studio/VisualModStudio';
 
 const game = new Phaser.Game({
   type: Phaser.AUTO, parent: 'app', width: 640, height: 480,
@@ -27,5 +29,7 @@ SaveManager.initialize();
 installModApi(window);
 installModManager();
 installNetplayController();
+installVisualModStudio();
+void arcadeCompute.initialize().then(backend => { document.documentElement.dataset.compute = backend.toLowerCase(); });
 window.addEventListener('pointerdown', () => AudioEngine.initialize(), { once: true });
 window.addEventListener('keydown', () => AudioEngine.initialize(), { once: true });

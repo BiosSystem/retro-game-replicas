@@ -7,6 +7,7 @@ import type { ArcadeMode } from '../../multiplayer/CoopSession';
 import { playModAudioEvent } from '../../audio/patches/ModAudioBridge';
 import { arcadeModRuntime } from '../../mods/ModRuntime';
 import { generateBrickField, reflectFromPaddle, type BreakoutPowerUp } from './BreakoutSystems';
+import { breakoutSensors, GhostBrain } from '../../ai/neural/GhostBrain';
 
 export default class NeonBreakoutScene extends Phaser.Scene {
   private paddle!: Phaser.Physics.Arcade.Image;
@@ -17,6 +18,7 @@ export default class NeonBreakoutScene extends Phaser.Scene {
   private scoreText!: Phaser.GameObjects.Text;
   private score = 0; private stage = 1; private lives = 3; private ballSpeed = 330; private paddleSpeed = 430;
   private difficulty = 'NORMAL'; private mode: ArcadeMode = 'SOLO'; private fireHeld = false; private laserUntil = 0; private stickyUntil = 0; private finished = false; private stagePending = false;
+  private ghost!: GhostBrain; private ghostEnabled = false; private ghostDecisionAt = 0; private ghostSteer = 0;
 
   constructor() { super('BreakoutScene'); }
 
@@ -27,18 +29,21 @@ export default class NeonBreakoutScene extends Phaser.Scene {
     this.createTextures(); this.add.grid(320, 240, 640, 480, 32, 32, 0x02070d, 1, 0x00ffaa, 0.08);
     this.add.text(320, 15, 'NEON BREAKOUT // ARKANOID CORE', { fontFamily: 'Courier', fontSize: '19px', color: '#00ffcc', fontStyle: 'bold' }).setOrigin(0.5);
     this.scoreText = this.add.text(12, 40, '', { fontFamily: 'Courier', fontSize: '13px', color: '#ffffff' });
-    this.add.text(628, 42, 'MOVE A/D OR ARROWS  FIRE SPACE/ENTER  ESC PAUSE', { fontFamily: 'Courier', fontSize: '9px', color: '#779999' }).setOrigin(1, 0);
+    this.add.text(628, 42, 'MOVE A/D OR ARROWS  FIRE SPACE/ENTER  G GHOST  ESC PAUSE', { fontFamily: 'Courier', fontSize: '9px', color: '#779999' }).setOrigin(1, 0);
     this.paddle = this.physics.add.image(320, 442, 'neon-paddle').setImmovable(true).setCollideWorldBounds(true); (this.paddle.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
     this.balls = this.physics.add.group({ allowGravity: false }); this.bricks = this.physics.add.staticGroup(); this.drops = this.physics.add.group({ allowGravity: false }); this.lasers = this.physics.add.group({ allowGravity: false });
     this.physics.add.collider(this.balls, this.paddle, this.hitPaddle as never, undefined, this); this.physics.add.collider(this.balls, this.bricks, this.hitBrick as never, undefined, this);
     this.physics.add.overlap(this.drops, this.paddle, this.collectDrop as never, undefined, this); this.physics.add.overlap(this.lasers, this.bricks, this.laserHit as never, undefined, this);
-    this.spawnStage(); this.spawnBall(); this.input.keyboard?.on('keydown-ESC', () => { this.scene.pause(); this.scene.launch('PauseScene', { scene: this.scene.key }); }); this.updateHud();
+    this.ghost = new GhostBrain('retro_breakout_ghost_v1', localStorage); this.ghostEnabled = false; this.ghostDecisionAt = 0; this.ghostSteer = 0;
+    this.spawnStage(); this.spawnBall(); this.input.keyboard?.on('keydown-G', () => { this.ghostEnabled = !this.ghostEnabled; this.updateHud(); }); this.input.keyboard?.on('keydown-ESC', () => { this.scene.pause(); this.scene.launch('PauseScene', { scene: this.scene.key }); }); this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.ghost.save()); this.updateHud();
   }
 
   update() {
     if (this.finished) return;
     const left = InputManager.isP1Down('LEFT'); const right = InputManager.isP1Down('RIGHT'); const fire = InputManager.isP1Down('FIRE');
-    this.paddle.setVelocityX(left === right ? 0 : left ? -this.paddleSpeed : this.paddleSpeed);
+    const trackedBall = this.balls.getFirstAlive() as Phaser.Physics.Arcade.Image | null;
+    if (this.ghostEnabled && trackedBall && this.time.now >= this.ghostDecisionAt) { const body = trackedBall.body as Phaser.Physics.Arcade.Body; const alignment = 1 - Math.min(1, Math.abs(trackedBall.x - this.paddle.x) / 320); this.ghostSteer = this.ghost.decide(breakoutSensors(this.paddle.x, trackedBall.x, trackedBall.y, body.velocity.x, body.velocity.y), body.velocity.y > 0 ? alignment : alignment * 0.15); this.ghostDecisionAt = this.time.now + 80; }
+    this.paddle.setVelocityX(this.ghostEnabled ? this.ghostSteer * this.paddleSpeed : left === right ? 0 : left ? -this.paddleSpeed : this.paddleSpeed);
     for (const child of this.balls.getChildren()) { const ball = child as Phaser.Physics.Arcade.Image; if (ball.getData('stuck')) ball.setPosition(this.paddle.x + Number(ball.getData('stickOffset') ?? 0), this.paddle.y - 18); if (ball.y > 500) ball.destroy(); }
     if (fire && !this.fireHeld) { this.releaseSticky(); if (this.time.now < this.laserUntil) this.fireLasers(); }
     this.fireHeld = fire;
@@ -75,7 +80,7 @@ export default class NeonBreakoutScene extends Phaser.Scene {
   private releaseSticky() { for (const child of this.balls.getChildren()) { const ball = child as Phaser.Physics.Arcade.Image; if (ball.getData('stuck')) ball.setData('stuck', false).setVelocity(this.ballSpeed * 0.35, -this.ballSpeed); } }
   private fireLasers() { for (const offset of [-34, 34]) { const laser = this.lasers.create(this.paddle.x + offset, this.paddle.y - 12, 'neon-laser') as Phaser.Physics.Arcade.Image; laser.setVelocityY(-620); } AudioEngine.playEffect('LASER'); }
   private loseLife() { this.lives -= 1; if (this.lives > 0) { this.spawnBall(); this.updateHud(); return; } this.finish(); }
-  private finish() { this.finished = true; this.physics.pause(); const scoreKey = `${this.difficulty}-${this.mode}`; const panel = this.add.text(320, 240, `CORE BREACH\nSCORE ${this.score}\nSTAGE ${this.stage}\nCLICK TO REBOOT`, { fontFamily: 'Courier', fontSize: '27px', color: '#ff2255', align: 'center', backgroundColor: '#000000dd', padding: { x: 18, y: 12 } }).setOrigin(0.5).setInteractive(); panel.on('pointerdown', () => { if (SaveManager.isHighScore('BreakoutScene', scoreKey, this.score)) { this.scene.pause(); this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: scoreKey, score: this.score, restartData: { difficulty: this.difficulty, mode: this.mode } }); } else { SaveManager.submitScore('BreakoutScene', scoreKey, this.score); this.scene.restart({ difficulty: this.difficulty, mode: this.mode }); } }); }
-  private updateHud() { const power = `${this.time.now < this.laserUntil ? ' LASER' : ''}${this.time.now < this.stickyUntil ? ' STICKY' : ''}`; this.scoreText?.setText(`SCORE ${this.score}  STAGE ${this.stage}  LIVES ${this.lives}  ${this.mode}${power}`); }
+  private finish() { this.finished = true; this.ghost.save(); this.physics.pause(); const scoreKey = `${this.difficulty}-${this.mode}`; const panel = this.add.text(320, 240, `CORE BREACH\nSCORE ${this.score}\nSTAGE ${this.stage}\nCLICK TO REBOOT`, { fontFamily: 'Courier', fontSize: '27px', color: '#ff2255', align: 'center', backgroundColor: '#000000dd', padding: { x: 18, y: 12 } }).setOrigin(0.5).setInteractive(); panel.on('pointerdown', () => { if (SaveManager.isHighScore('BreakoutScene', scoreKey, this.score)) { this.scene.pause(); this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: scoreKey, score: this.score, restartData: { difficulty: this.difficulty, mode: this.mode } }); } else { SaveManager.submitScore('BreakoutScene', scoreKey, this.score); this.scene.restart({ difficulty: this.difficulty, mode: this.mode }); } }); }
+  private updateHud() { const power = `${this.time.now < this.laserUntil ? ' LASER' : ''}${this.time.now < this.stickyUntil ? ' STICKY' : ''}`; this.scoreText?.setText(`SCORE ${this.score}  STAGE ${this.stage}  LIVES ${this.lives}  ${this.mode}  GHOST ${this.ghostEnabled ? 'ON' : 'OFF'}${power}`); }
   private createTextures() { const make = (key: string, width: number, height: number, draw: (graphics: Phaser.GameObjects.Graphics) => void) => { if (this.textures.exists(key)) return; const graphics = this.add.graphics(); draw(graphics); graphics.generateTexture(key, width, height); graphics.destroy(); }; make('neon-paddle', 108, 16, g => g.fillStyle(0x00ffcc).fillRoundedRect(0, 0, 108, 16, 7)); make('neon-ball', 14, 14, g => g.fillStyle(0xffffff).fillCircle(7, 7, 7)); make('neon-brick', 58, 18, g => g.fillStyle(0xffffff).fillRoundedRect(0, 0, 58, 18, 3)); make('neon-drop', 18, 18, g => g.lineStyle(2, 0xffffff).strokeCircle(9, 9, 7).lineBetween(4, 9, 14, 9)); make('neon-laser', 4, 16, g => g.fillStyle(0xffffff).fillRect(0, 0, 4, 16)); }
 }
