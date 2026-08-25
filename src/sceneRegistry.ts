@@ -22,6 +22,7 @@ const loaders: Record<string, () => Promise<{ default: SceneClass }>> = {
   GenesisScene: () => import('./games/genesis/NeonGenesisScene'),
   OsScene: () => import('./games/os/NeonOsScene'),
   SingularityScene: () => import('./games/singularity/NeonSingularityScene'),
+  HorizonScene: () => import('./games/horizon/NeonEventHorizonScene'),
 };
 
 export async function loadGameScene(key: string): Promise<SceneClass> {

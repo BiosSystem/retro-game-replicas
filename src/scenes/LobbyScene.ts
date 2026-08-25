@@ -50,6 +50,7 @@ export default class LobbyScene extends Phaser.Scene {
     { name: 'NEON GENESIS',     scene: 'GenesisScene',       icon: '✺' },
     { name: 'NEON OS',          scene: 'OsScene',            icon: '▣' },
     { name: 'THE SINGULARITY',  scene: 'SingularityScene',   icon: '∞' },
+    { name: 'EVENT HORIZON',    scene: 'HorizonScene',       icon: '◌' },
   ];
 
   private difficulties = [

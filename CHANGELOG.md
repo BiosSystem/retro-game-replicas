@@ -1,5 +1,12 @@
 ## [Unreleased] - 2026-08-25
 ### Changed
+- Add Lamport SHA-256 one-time state attestations with 16 KiB public keys, 8 KiB signatures, automatic secret erasure, tamper rejection, and explicit key-reuse prevention.
+- Extend the quorum ledger with optional one-time hash-based root attestations while retaining Ed25519 proposal and vote compatibility.
+- Add deterministic weighted rendezvous sharding for one million virtual chunk coordinates, bounded replication, peer-churn movement measurement, validated shard envelopes, and reliable WebTransport or WebRTC routing through the existing transport mux.
+- Add a pooled fixed-weight neural texture synthesizer with deterministic 2x or 4x edge detail, caller-owned output storage, path-traced material modulation, and an 8x8 WebGPU compute contract.
+- Add special-relativity factors, Schwarzschild time dilation, weak-field light deflection, normalized near-light-speed combat physics, and a generated WebGPU gravitational lensing contract.
+- Add Neon Event Horizon as the twenty-fifth game and a synthesis of eighteen established architectures with relativistic combat, generated hull microdetail, spatial shard ownership, and one-time hash-authenticated state diagnostics.
+- Add unit, benchmark, and Playwright coverage for signature tampering and reuse, one million shard assignments, 512-square texture upscaling, relativistic invariants, lens mapping, capability handling, and stable paused rendering.
 - Add a deterministic fixed-point neural terrain network with seeded integer weights, five biome classes, elevation, erosion, mineral fields, 128-square chunks, and a matching 64-thread WebGPU compute contract.
 - Add a bounded recursive path tracer with rough reflection, dielectric refraction, Russian roulette termination, generated emissive lighting, spatial-temporal filtering, and a capability-gated WebGPU compute shader.
 - Add an Ed25519 authenticated quorum world ledger with four to sixteen fixed members, supermajority votes, payload hashes, chained SHA-256 state roots, stale-fork rejection, and verified snapshots.

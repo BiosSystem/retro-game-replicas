@@ -563,3 +563,43 @@ Current verification:
 - Accept `COMPILED` or `UNAVAILABLE` from neural terrain and path-tracing WebGPU probes.
 - Render byte-identical paused Singularity frames across consecutive screenshots.
 - Build 160 modules with a 3.17 kB entry, a 17.50 kB lazy Singularity chunk, and the deferred 1,352.40 kB Phaser runtime.
+
+## One-time hash-based state attestations
+
+Generate 512 independent 32-byte secrets, hash each secret into a 16 KiB public key, hash the canonical state-root message to 256 bits, and reveal one secret from each pair according to those bits. Verify all 256 revealed values against their selected public hashes. Bind the actor identifier to SHA-256 of the complete public key. Erase private bytes immediately after signing and refuse a second signature from the same signer.
+
+Treat this Lamport SHA-256 construction as a bounded one-time hash signature for local engine research. Do not label it ML-DSA, SLH-DSA, a NIST standardized implementation, audited production cryptography, or a reusable identity. Lamport signatures expose half of every secret pair and become unsafe when a key signs more than one message. Keep Ed25519 for compact quorum proposals and votes, then optionally attach one Lamport proof to a finalized root. Current workstation measurement: verify one 8 KiB state signature against one 16 KiB public key in 10.2269 ms mean.
+
+Use standardized implementations of [NIST FIPS 204 ML-DSA](https://csrc.nist.gov/pubs/fips/204/final) or [NIST FIPS 205 SLH-DSA](https://csrc.nist.gov/pubs/fips/205/final) for production post-quantum deployments after selecting an audited library and migration policy.
+
+## Dynamic spatial peer sharding
+
+Quantize chunk coordinates into bounded spatial regions and score every connected peer with deterministic weighted rendezvous hashing. Select up to the requested replication count without duplicate owners. Preserve most assignments when one peer leaves instead of remapping every region. Route validated `SHARD_STATE` envelopes through the reliable `MOD` channel on an application-established WebTransport or WebRTC session.
+
+Represent millions of chunks virtually by coordinate and seed. Do not allocate, transmit, or retain one million resident voxel chunks. Do not claim automatic discovery, persistent hosting, global availability, or consensus from the assignment function. Current workstation measurement: calculate two-owner assignments for one million virtual chunk coordinates over eight peers in 989.72 ms mean.
+
+## Fixed-weight neural texture detail
+
+Generate a bounded low-resolution RGBA surface, bilinearly reconstruct a 2x or 4x output, and feed color gradients, Laplacian response, subpixel phase, and seeded detail into a small fixed-weight rectified network. Accept a caller-owned output array to eliminate per-frame output allocation. Sample the resulting detail field when calculating path-traced material throughput. Compile the corresponding 8x8 WGSL path only after WebGPU adapter discovery.
+
+Treat this as deterministic procedural texture synthesis. Do not call it DLSS, FSR, a trained super-resolution model, temporal reconstruction, or proof of real-time performance. The current CPU reference allocates no new output when a pool is supplied but still requires the source and output memory. Current isolated workstation measurement: upscale one 128-square input into one 512-square texture in 33.3362 ms mean. Headless Chromium reports `COMPILED` or `UNAVAILABLE`; record no GPU timing without a supplied adapter.
+
+## Relativistic physics and lensing
+
+Calculate Lorentz gamma, rest-length contraction, longitudinal Doppler ratio, Schwarzschild radius, exterior gravitational time factor, combined proper-time delta, and weak-field light deflection with SI constants. Reject or capture inputs at and inside the event horizon where the exterior formulas no longer apply. Use a separate normalized light speed for stable arcade integration and label displayed velocity as a gameplay percentage rather than SI measurement.
+
+Map gravitational lens UVs radially in a deterministic CPU reference and publish an 8x8 WebGPU compute contract that captures the horizon, bends exterior samples, and applies a generated directional color shift. Treat the shader as an arcade weak-field visualization, not a numerical general-relativity solver. Current workstation measurements: step 100,000 normalized combat frames in 18.8338 ms mean and map one 512-square CPU lensing field in 14.8686 ms mean.
+
+## Neon Event Horizon
+
+Present Neon Event Horizon as game twenty-five and the synthesis of exactly eighteen established engine architectures. Render a generated accretion field, black-hole silhouette, neural hull microdetail, and a time-dilated player ship. Keep velocity below 0.95 of the normalized gameplay light speed. Assign the active world coordinate to two deterministic shard owners and authenticate diagnostics with one Lamport state proof. Compile neural texture and lensing WGSL only when WebGPU is available.
+
+Current verification:
+
+- Pass 220 Vitest tests across 77 files and 31 Playwright Chromium tests.
+- Reject modified Lamport messages, modified signatures, and one-time key reuse.
+- Converge sharding regardless of peer insertion order and limit remapping after peer churn.
+- Match Lorentz gamma, contraction, Doppler, and Schwarzschild time-factor reference values.
+- Accept `COMPILED` or `UNAVAILABLE` from neural texture and lensing WebGPU probes.
+- Render byte-identical paused Event Horizon frames across consecutive screenshots.
+- Build 167 modules with a 3.17 kB entry, an 8.66 kB lazy Event Horizon chunk, a shared 9.15 kB path-tracer chunk, and the deferred 1,352.40 kB Phaser runtime.

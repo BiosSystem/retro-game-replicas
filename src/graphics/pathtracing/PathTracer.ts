@@ -1,7 +1,9 @@
+import { sampleNeuralTexture, type NeuralTexture } from '../neural/NeuralTexture';
+
 export interface Vec3 { x: number; y: number; z: number; }
 export interface PathMaterial { albedo: Vec3; emission: Vec3; roughness: number; metallic: number; transmission: number; ior: number; }
 export interface PathSphere { center: Vec3; radius: number; material: PathMaterial; }
-export interface PathScene { spheres: readonly PathSphere[]; sky: Vec3; }
+export interface PathScene { spheres: readonly PathSphere[]; sky: Vec3; detailTexture?: NeuralTexture; }
 export interface PathSample { color: Vec3; depth: number; normal: Vec3; bounces: number; }
 export interface PathFrame { width: number; height: number; color: Float32Array<ArrayBuffer>; depth: Float32Array<ArrayBuffer>; normal: Float32Array<ArrayBuffer>; checksum: number; rays: number; }
 
@@ -13,7 +15,7 @@ export function tracePath(scene: PathScene, origin: Vec3, direction: Vec3, seed 
   for (let bounce = 0; bounce < Math.max(1, Math.min(8, maximumBounces)); bounce++) {
     bounceCount++; const hit = intersectScene(scene, rayOrigin, rayDirection); if (!hit) { radiance = add(radiance, multiply(throughput, scene.sky)); break; }
     if (bounce === 0) { depth = hit.distance; firstNormal = hit.normal; }
-    const material = hit.sphere.material; radiance = add(radiance, multiply(throughput, material.emission)); throughput = multiply(throughput, material.albedo);
+    const material = hit.sphere.material, texture = scene.detailTexture ? sampleNeuralTexture(scene.detailTexture, hit.point.x * .17 + hit.normal.x, hit.point.z * .17 + hit.normal.y) : vec(1); radiance = add(radiance, multiply(throughput, material.emission)); throughput = multiply(throughput, multiply(material.albedo, texture));
     state = random(state); const randomVector = normalize({ x: unit(state) * 2 - 1, y: unit(random(state)) * 2 - 1, z: unit(random(random(state))) * 2 - 1 }); const reflected = reflect(rayDirection, hit.normal);
     const entering = dot(rayDirection, hit.normal) < 0, orientedNormal = entering ? hit.normal : scale(hit.normal, -1), eta = entering ? 1 / Math.max(1, material.ior) : Math.max(1, material.ior), refracted = refract(rayDirection, orientedNormal, eta);
     const fresnel = schlick(Math.abs(dot(scale(rayDirection, -1), orientedNormal)), material.ior), chooseTransmission = refracted && material.transmission > 0 && unit(state ^ 0x51ed270b) > fresnel && unit(state ^ 0x9e3779b9) < material.transmission;
