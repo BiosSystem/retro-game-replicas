@@ -37,4 +37,8 @@ export const TRACKS: Record<string, TrackerTrack> = {
     id: 'caster', title: 'Chromatic Dungeon', bpm: 138, stepsPerBeat: 4,
     voices: { LEAD: notes(72, 0, 73, 72, 68, 0, 67, 63, 72, 75, 73, 70, 68, 67, 63, 60), ARP: notes(60, 63, 67, 63, 56, 60, 63, 60, 58, 61, 65, 61, 55, 58, 63, 58), BASS: notes(36, 0, 36, 35, 32, 0, 32, 31, 34, 0, 34, 33, 31, 0, 31, 30), DRUMS: drums('KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 0, 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'KICK', 'SNARE', 'HAT') },
   },
+  tactics: {
+    id: 'tactics', title: 'Silicon Command', bpm: 126, stepsPerBeat: 4,
+    voices: { LEAD: notes(69, 72, 76, 72, 67, 71, 74, 71, 65, 69, 72, 69, 67, 71, 74, 78), ARP: notes(57, 60, 64, 60, 55, 59, 62, 59, 53, 57, 60, 57, 55, 59, 62, 66), BASS: notes(33, 0, 33, 40, 31, 0, 31, 38, 29, 0, 29, 36, 31, 0, 31, 38), DRUMS: drums('KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'KICK', 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'KICK') },
+  },
 };

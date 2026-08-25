@@ -4,6 +4,7 @@ import { AdaptiveQualityController } from '../graphics/PooledParticleSystem';
 import { InputManager } from './InputManager';
 import { CrtPipeline } from '../graphics/shaders/CrtPipeline';
 import { FrameTelemetry, TelemetryHud } from './FrameTelemetry';
+import { ReplayRuntime } from './replay/ReplayRuntime';
 
 export class ArcadeRuntime {
   private readonly game: Phaser.Game;
@@ -18,12 +19,14 @@ export class ArcadeRuntime {
   private lastFrameAt = performance.now();
   private reducedMotion = false;
   private crtEnabled = false;
+  private readonly replay: ReplayRuntime;
 
   constructor(game: Phaser.Game) {
     this.game = game;
     const telemetryRoot = document.getElementById('runtime-telemetry');
     this.telemetryHud = telemetryRoot ? new TelemetryHud(telemetryRoot) : null;
     this.crt = new CrtPipeline(game);
+    this.replay = new ReplayRuntime(game);
     this.applyPreferences();
     this.bindVisibility();
     this.bindInputStatus();
@@ -35,6 +38,7 @@ export class ArcadeRuntime {
     this.telemetry.record(time - this.lastFrameAt);
     this.lastFrameAt = time;
     InputManager.update();
+    this.replay.sample();
     this.pollGamepadPause();
     this.frameCount += 1;
     const elapsed = time - this.sampleStarted;

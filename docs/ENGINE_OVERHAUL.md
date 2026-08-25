@@ -1,5 +1,35 @@
 # Deep Arcade Engine Architecture
 
+## Immersive Meta-Arcade
+
+Generate a 32x32 arcade hall from the existing BSP dungeon system. Place six flagship cabinets inside deterministic rooms. Render the hall through 160 corrected DDA rays and depth-test cabinet and remote-avatar billboards against the wall buffer. Launch a cabinet through the existing lazy scene lifecycle instead of embedding a second Phaser runtime.
+
+Build presence as a bounded collection of direct `PeerLink` connections. Exchange one manual ARC1 offer-answer pair for each remote peer and cap the mesh at eight links. Broadcast validated player transforms at 10 Hz over reliable control channels. Keep global discovery, identity, authoritative state, and relay infrastructure outside this zero-server client.
+
+## Deterministic replay and speedrun validation
+
+Sample Player 1 input into a five-bit mask at the 60 Hz runtime cadence. Store only state changes with integer ticks, the scene identifier, a replay seed, and the fixed tick rate. Cap sessions at twelve hours and 200,000 changes. Restart the recorded lazy scene with the replay seed, override live Player 1 input, and drive play, pause, rewind, fast-forward, and range seeking from the timeline HUD.
+
+Canonicalize replay fields and hash UTF-8 bytes with SHA-256 before local persistence. Recalculate the digest before accepting a speedrun ledger. Treat the hash as tamper evidence, not player identity or proof that the original client was uncompromised.
+
+## Spatial cabinet audio
+
+Create all cabinet tones with oscillators. Route each source through `PannerNode`, a distance-aware low-pass filter, dry gain, and a shared `ConvolverNode`. Generate the stereo impulse response from deterministic decaying noise. Update relative position, inverse-square attenuation, cutoff, and wet mix from hall coordinates. Cap the field at sixteen sources and destroy every node when the hall exits.
+
+## Neon Tactics
+
+Store up to 1,000 live units in one preallocated `Float32Array`. Build one breadth-first flow field per command target, then dispatch unit direction lookups without per-unit path allocation. Retain bounded A-star for individual route queries. Represent fog visibility in one byte per map cell and resources in `Uint16Array` storage.
+
+Expose a 64-thread WGSL flow lookup contract for WebGPU adapters. Retain the deterministic typed-array CPU path as the universal production fallback. Add marquee selection, shared move targets, harvesting, base construction, fog masking, and a six-sensor Q-learning commander. Cap maps at 64x64, units at 1,000 in play, and synthetic dispatch at 10,000 units.
+
+Current workstation measurements:
+
+- Dispatch 10,000 units through one flow field in 0.095 ms mean.
+- Process a 36,000-tick replay ledger in 0.130 ms mean.
+- Compress 36,000 raw input-mask bytes into a 4,828-byte state-change ledger, a 7.46 to 1 ratio.
+- Pass 86 Vitest tests across 30 files and 9 Playwright Chromium tests.
+- Build 83 modules with a 2.99 kB entry, a 5.48 kB Tactics chunk, a 6.06 kB Meta-Arcade chunk, and no Vite warning.
+
 ## Capability-gated compute
 
 Pack each AABB pair into eight contiguous float values. Dispatch independent overlap tests through a WGSL storage-buffer kernel when `navigator.gpu` and a suitable adapter are available. Transfer the packed `ArrayBuffer` to a module Worker when WebGPU is unavailable. Probe WebAssembly compilation for the next capability tier, then retain the same bounded scalar kernel for computation. Fall back synchronously to the CPU when neither asynchronous tier is usable.

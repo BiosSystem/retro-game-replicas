@@ -66,6 +66,10 @@ canvas { max-width: 100%; max-height: 100%; display: block; image-rendering: pix
 .visual-studio canvas { width: 100%; height: min(55vh, 480px); border: 1px solid #17302f; touch-action: none; }
 .visual-studio textarea { width: 100%; min-height: 120px; margin-top: 10px; padding: 9px; border: 1px solid #334b4a; background: #020609; color: #80d9c7; font: 10px monospace; }
 .visual-studio output { display: block; padding: 9px 0; color: #00ffae; font: 700 11px monospace; }
+.replay-hud { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 10040; width: min(760px, calc(100vw - 32px)); padding: 12px; border: 1px solid #00ffcc; background: #020610ee; color: #dffff8; font: 12px Courier, monospace; box-shadow: 0 0 24px #00ffcc44; }
+.replay-hud strong { margin-right: 14px; color: #00ffcc; }
+.replay-hud button { margin: 0 3px; border: 1px solid #00aa88; background: #071522; color: #fff; }
+.replay-hud input { width: 42%; vertical-align: middle; accent-color: #00ffcc; }
 @media (max-width: 860px) { .mod-manager-grid { grid-template-columns: 1fr; } }
 @keyframes scan-roll { to { background-position: 0 -200px, 0 0; } }
 .motion-reduced * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }

@@ -15,6 +15,7 @@ export class InputManager {
         2: { UP: false, DOWN: false, LEFT: false, RIGHT: false, FIRE: false }
     };
     private static networkPlayer: PlayerInputState = { UP: false, DOWN: false, LEFT: false, RIGHT: false, FIRE: false };
+    private static replayMask: number | null = null;
 
     public static initialize() {
         this.refreshBindings();
@@ -171,6 +172,7 @@ export class InputManager {
     }
 
     public static isP1Down(action: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FIRE'): boolean {
+        if (this.replayMask !== null) return Boolean(this.replayMask & maskFor(action));
         const player1 = this.playerState[1][action] || this.bindings[action].some(k => this.keys.has(k));
         return this.modeRouter.primary(action, player1, this.playerState[2][action]);
     }
@@ -180,6 +182,8 @@ export class InputManager {
     }
 
     public static setNetworkPlayerState(state: PlayerInputState) { this.networkPlayer = { ...state }; }
+    public static setReplayMask(mask: number | null) { this.replayMask = mask === null ? null : Math.max(0, Math.min(31, mask | 0)); }
+    public static getP1Mask() { return (this.isP1Down('UP') ? 1 : 0) | (this.isP1Down('DOWN') ? 2 : 0) | (this.isP1Down('LEFT') ? 4 : 0) | (this.isP1Down('RIGHT') ? 8 : 0) | (this.isP1Down('FIRE') ? 16 : 0); }
 
     public static configureArcadeMode(mode: ArcadeMode, nativeDualControl = false) {
         this.modeRouter.configure(mode, nativeDualControl, performance.now());
@@ -201,3 +205,5 @@ export class InputManager {
         this.bindings = new PreferenceStore(localStorage).load().bindings;
     }
 }
+
+function maskFor(action: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FIRE') { return { UP: 1, DOWN: 2, LEFT: 4, RIGHT: 8, FIRE: 16 }[action]; }

@@ -1,5 +1,12 @@
 ## [Unreleased] - 2026-08-25
 ### Changed
+- Add a deterministic Meta-Arcade hall with BSP rooms, six interactable flagship cabinets, DDA rendering, and generated remote-player avatars.
+- Add a bounded eight-link WebRTC presence mesh that exchanges validated avatar transforms over reliable control channels without a discovery server.
+- Add fixed 60 Hz input-change replay ledgers, interactive timeline playback, scene restart from replay seeds, SHA-256 validation, and bounded local persistence.
+- Add procedural spatial cabinet audio with HRTF panning, inverse-distance attenuation, low-pass muffling, and generated convolution reverb.
+- Add Neon Tactics with 1,000-unit typed-array storage, flow-field movement, A-star paths, marquee selection, harvesting, construction, fog of war, and a local Q-learning commander.
+- Add a WebGPU-compatible 64-thread flow dispatch shader contract with a deterministic CPU execution path for universal runtime support.
+- Add Playwright scale coverage for stable Meta-Arcade pixels, replay hash and timeline accuracy, and bounded Neon Tactics swarm launch.
 - Add a capability-gated AABB compute pipeline with WebGPU WGSL dispatch, transferable Worker buffers, a WebAssembly capability tier, and a synchronous CPU fallback.
 - Add deterministic 100,000-pair collision stress generation without changing Phaser Arcade Physics internals.
 - Add bounded local neural Q-learning ghosts for Neon Retro Racer and opt-in Neon Breakout paddle control with persisted model snapshots.
@@ -57,6 +64,10 @@
 - Remove the external Google Fonts runtime dependency and use local system monospace fonts.
 
 ### Verified
+- Pass 86 unit and integration tests across 30 files plus 9 Playwright Chromium regression tests.
+- Dispatch 10,000 RTS units through a shared flow field in 0.095 ms mean on the verification workstation.
+- Compress a 36,000-tick one-byte mask stream from 36,000 raw bytes to 4,828 ledger bytes, a 7.46 to 1 ratio.
+- Build 83 transformed modules with a 2.99 kB initial entry, a 5.48 kB Tactics chunk, a 6.06 kB Meta-Arcade chunk, and no Vite chunk warning.
 - Pass 77 unit and integration tests across 26 files plus 6 Playwright Chromium regression tests.
 - Process 100,000 packed AABB pairs in 1.09 ms mean and cast 100,000 DDA rays in 16.75 ms mean on the verification workstation.
 - Run 10,000 local neural inferences in 6.98 ms mean on the verification workstation.

@@ -1,0 +1,3 @@
+import { describe, expect, it } from 'vitest';
+import { proceduralImpulse, spatialSample } from './SpatialDsp';
+describe('spatial DSP', () => { it('attenuates, pans, and muffles distant cabinets', () => { const near = spatialSample(0, 0, 0, 2, 0); const far = spatialSample(0, 0, 0, 12, 0); const right = spatialSample(0, 0, 0, 0, 2); expect(near.gain).toBeGreaterThan(far.gain); expect(near.cutoffHz).toBeGreaterThan(far.cutoffHz); expect(right.pan).toBeCloseTo(1); }); it('creates deterministic bounded reverb impulses', () => { const a = proceduralImpulse(8000, 0.25, 7); const b = proceduralImpulse(8000, 0.25, 7); expect(a).toEqual(b); expect(a).toHaveLength(2000); expect(Math.abs(a.at(-1)!)).toBeLessThan(0.001); }); });
