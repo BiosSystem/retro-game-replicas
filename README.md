@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;14+Classic+Games;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
+  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;15+Classic+Games;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
 </p>
 
 <p align="center">
@@ -22,13 +22,17 @@
 
 ## 🚀 Elevator Pitch
 
-**Universal Retro Arcade** is a premium, open-source collection of 14 classic and 2000s-era game replicas. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
+**Universal Retro Arcade** is a premium, open-source collection of 15 classic and 2000s-era game replicas. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
 
 Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLSL CRT shaders, and local persistence - without needing external emulators or illegal ROMs.
 
 ## ✨ Features
 
-- **14 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, and Neon Tactics.
+- **15 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, and Neon Labyrinth.
+- **NeonVM Sandbox** - Compile validated visual graphs into gas-metered 16-bit bytecode with bounded registers, programs, jumps, and events.
+- **Connected Score Swarm** - Exchange Ed25519 signed score and replay claims across manually connected ARC1 peers and retain verified claims in IndexedDB.
+- **Procedural Kinematics** - Animate generated multi-joint bosses with FABRIK and simulate mass-conserving cellular lava without sprite or fluid assets.
+- **Neon Labyrinth** - Traverse cached procedural rooms, unlock dash, wall cling, and double jump, and fight reactive IK bosses across fluid hazards.
 - **Procedural Meta-Arcade** - Walk through a generated DDA-rendered arcade hall, hear cabinets spatially, and enter six physical flagship machines.
 - **Peer Presence Mesh** - Negotiate up to eight direct WebRTC links and render validated remote avatars without a central discovery service.
 - **Deterministic Replay Timeline** - Record fixed-tick input changes, verify SHA-256 replay hashes, and scrub or replay sessions from compact local ledgers with `R`.

@@ -70,6 +70,8 @@ canvas { max-width: 100%; max-height: 100%; display: block; image-rendering: pix
 .replay-hud strong { margin-right: 14px; color: #00ffcc; }
 .replay-hud button { margin: 0 3px; border: 1px solid #00aa88; background: #071522; color: #fff; }
 .replay-hud input { width: 42%; vertical-align: middle; accent-color: #00ffcc; }
+.swarm-board { position: fixed; right: 24px; top: 120px; z-index: 10050; width: 360px; max-height: 60vh; overflow: auto; padding: 14px; border: 1px solid #ffcc00; background: #050711f2; color: #fff; font: 12px Courier, monospace; }
+.swarm-board header { display: flex; justify-content: space-between; color: #ffcc00; } .swarm-board small { color: #8a8970; } .swarm-board li { margin: 7px 0; }
 @media (max-width: 860px) { .mod-manager-grid { grid-template-columns: 1fr; } }
 @keyframes scan-roll { to { background-position: 0 -200px, 0 0; } }
 .motion-reduced * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }

@@ -13,6 +13,7 @@ import { installModManager } from './ui/mods/ModManagerController';
 import { installNetplayController } from './ui/net/NetplayController';
 import { arcadeCompute } from './engine/compute/ComputePipeline';
 import { installVisualModStudio } from './ui/studio/VisualModStudio';
+import { installSwarmLeaderboard } from './ui/swarm/SwarmLeaderboardUi';
 
 const game = new Phaser.Game({
   type: Phaser.AUTO, parent: 'app', width: 640, height: 480,
@@ -28,8 +29,10 @@ InputManager.initialize();
 SaveManager.initialize();
 installModApi(window);
 installModManager();
-installNetplayController();
+const netplay = installNetplayController();
+(window as typeof window & { arcadeSwarm?: { merge(value: unknown): Promise<unknown>; top(): unknown } }).arcadeSwarm = { merge: value => netplay.mergeScores(value as import('./net/swarm/ScoreGossip').GossipEnvelope), top: () => netplay.swarmTop() };
 installVisualModStudio();
+installSwarmLeaderboard();
 void arcadeCompute.initialize().then(backend => { document.documentElement.dataset.compute = backend.toLowerCase(); });
 window.addEventListener('pointerdown', () => AudioEngine.initialize(), { once: true });
 window.addEventListener('keydown', () => AudioEngine.initialize(), { once: true });

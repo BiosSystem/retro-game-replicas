@@ -1,5 +1,12 @@
 ## [Unreleased] - 2026-08-25
 ### Changed
+- Add NeonVM with sixteen 16-bit registers, bounded programs, deterministic gas metering, checked jumps, fixed-point arithmetic, and a 64-event output cap.
+- Compile validated Visual Mod Studio graphs into NeonVM bytecode without evaluating JavaScript.
+- Add Ed25519 signed score claims, replay-hash binding, deterministic gossip merging, connected-peer rebroadcast, and bounded IndexedDB accumulation.
+- Add a connected-swarm leaderboard UI while explicitly retaining manual ARC1 signaling and rejecting unsupported global discovery claims.
+- Add a FABRIK inverse-kinematics solver and mass-conserving cellular fluid simulation with a 64-thread WebGPU shader contract and CPU fallback.
+- Add Neon Labyrinth with a nine-chunk cache, seamless procedural rooms, dash, wall-cling, double-jump gates, cellular lava, and reactive six-leg IK bosses.
+- Add Playwright gates for deterministic Labyrinth room transitions and browser-native signed-score convergence.
 - Add a deterministic Meta-Arcade hall with BSP rooms, six interactable flagship cabinets, DDA rendering, and generated remote-player avatars.
 - Add a bounded eight-link WebRTC presence mesh that exchanges validated avatar transforms over reliable control channels without a discovery server.
 - Add fixed 60 Hz input-change replay ledgers, interactive timeline playback, scene restart from replay seeds, SHA-256 validation, and bounded local persistence.
@@ -64,6 +71,11 @@
 - Remove the external Google Fonts runtime dependency and use local system monospace fonts.
 
 ### Verified
+- Pass 95 unit and integration tests across 34 files plus 11 Playwright Chromium regression tests.
+- Execute about 1.31 million 67-instruction NeonVM programs per second while recording native arithmetic as 17.91 times faster on the verification workstation.
+- Sort 1,000 converged score claims in 0.136 ms mean and verify two signed browser claims within the 1,000 ms convergence gate.
+- Solve 1,000 sixteen-joint IK chains in 9.29 ms mean and step 8,192 fluid cells in 0.025 ms mean.
+- Build 91 transformed modules with a 2.99 kB initial entry, a 5.49 kB Labyrinth chunk, and no Vite chunk warning.
 - Pass 86 unit and integration tests across 30 files plus 9 Playwright Chromium regression tests.
 - Dispatch 10,000 RTS units through a shared flow field in 0.095 ms mean on the verification workstation.
 - Compress a 36,000-tick one-byte mask stream from 36,000 raw bytes to 4,828 ledger bytes, a 7.46 to 1 ratio.

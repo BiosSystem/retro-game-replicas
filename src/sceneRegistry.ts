@@ -12,6 +12,7 @@ const loaders: Record<string, () => Promise<{ default: SceneClass }>> = {
   RaycasterScene: () => import('./games/raycaster/NeonCyberCasterScene'),
   MetaArcadeScene: () => import('./hub/MetaArcadeScene'),
   TacticsScene: () => import('./games/tactics/NeonTacticsScene'),
+  LabyrinthScene: () => import('./games/labyrinth/NeonLabyrinthScene'),
 };
 
 export async function loadGameScene(key: string): Promise<SceneClass> {

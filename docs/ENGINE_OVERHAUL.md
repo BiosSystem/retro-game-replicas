@@ -1,5 +1,37 @@
 # Deep Arcade Engine Architecture
 
+## NeonVM
+
+Decode each instruction from one 16-bit word. Reserve the high nibble for the opcode and two register nibbles for operands. Provide sixteen unsigned 16-bit registers and `HALT`, `LOADI`, `ADD`, `MULQ8`, `LOADCTX`, `EMIT`, `JUMP`, and `JNZ`. Bound programs to 4,096 words, context to 256 words, gas to 100,000 cycles, and output to 64 events. Check every immediate and jump before use. Expose no DOM, network, storage, Phaser, Web Audio, dynamic import, or JavaScript evaluator.
+
+Compile the already validated acyclic Visual Studio graph into event and action bytecode. Keep the signed declarative manifest as the portable package and treat bytecode as a derived runtime artifact. Never accept source strings or execute community JavaScript.
+
+## Connected score gossip
+
+Sign canonical score claims with an ephemeral Ed25519 identity. Bind player, game, score, logical clock, public key, and verified replay hash into the signature. Reject invalid shapes, modified claims, oversized batches, and duplicate identifiers. Merge valid claims through an order-independent grow-only map and rebroadcast the bounded 256-claim envelope across each connected `PeerLink`.
+
+Persist at most 4,096 verified claims in IndexedDB and render the top ten through the connected-swarm UI. Require one manual ARC1 offer-answer exchange per peer. Provide no background internet discovery, universal global view, authoritative identity, or central anti-cheat guarantee because browser WebRTC cannot discover strangers without signaling infrastructure.
+
+## Kinematics and cellular fluid
+
+Solve chains through bounded FABRIK forward and backward passes while preserving segment lengths and the root anchor. Cap chains at 64 joints and iterations at 32. Simulate water or lava in preallocated byte grids, prefer downward transfer, distribute residual mass sideways, and retain total mass unless a game explicitly adds or removes cells.
+
+Expose a 64-thread WGSL cellular copy contract for WebGPU evolution and retain the deterministic CPU implementation as the production fallback. Allocate no animation frames, fluid textures, or level assets.
+
+## Neon Labyrinth
+
+Generate each 32x24 room from integer chunk coordinates and keep only nine recent chunks. Carve matching side openings for seamless transitions. Gate outward progression behind dash, wall cling, and double jump rewards. Render hazards from the cellular field and build six-leg bosses from real-time FABRIK chains aimed toward the player.
+
+Current workstation measurements:
+
+- Execute about 1.31 million 67-instruction NeonVM programs per second.
+- Keep native arithmetic 17.91 times faster than the interpreter and report the comparison honestly.
+- Sort 1,000 converged score claims in 0.136 ms mean.
+- Solve 1,000 sixteen-joint IK chains in 9.29 ms mean.
+- Step 8,192 fluid cells in 0.025 ms mean.
+- Pass 95 Vitest tests and 11 Playwright Chromium tests.
+- Build 91 modules with a 2.99 kB entry and a 5.49 kB Labyrinth chunk.
+
 ## Immersive Meta-Arcade
 
 Generate a 32x32 arcade hall from the existing BSP dungeon system. Place six flagship cabinets inside deterministic rooms. Render the hall through 160 corrected DDA rays and depth-test cabinet and remote-avatar billboards against the wall buffer. Launch a cabinet through the existing lazy scene lifecycle instead of embedding a second Phaser runtime.

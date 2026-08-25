@@ -41,4 +41,8 @@ export const TRACKS: Record<string, TrackerTrack> = {
     id: 'tactics', title: 'Silicon Command', bpm: 126, stepsPerBeat: 4,
     voices: { LEAD: notes(69, 72, 76, 72, 67, 71, 74, 71, 65, 69, 72, 69, 67, 71, 74, 78), ARP: notes(57, 60, 64, 60, 55, 59, 62, 59, 53, 57, 60, 57, 55, 59, 62, 66), BASS: notes(33, 0, 33, 40, 31, 0, 31, 38, 29, 0, 29, 36, 31, 0, 31, 38), DRUMS: drums('KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'KICK', 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'KICK') },
   },
+  labyrinth: {
+    id: 'labyrinth', title: 'Subterranean Signal', bpm: 142, stepsPerBeat: 4,
+    voices: { LEAD: notes(64, 0, 67, 68, 71, 0, 68, 67, 62, 0, 65, 67, 70, 68, 65, 62), ARP: notes(52, 55, 59, 55, 50, 53, 57, 53, 48, 52, 55, 52, 50, 53, 57, 60), BASS: notes(28, 0, 28, 35, 26, 0, 26, 33, 24, 0, 24, 31, 26, 0, 26, 33), DRUMS: drums('KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 0, 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'KICK', 'SNARE', 'HAT') },
+  },
 };

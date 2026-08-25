@@ -72,6 +72,7 @@ export class SaveManager {
         AchievementManager.recordScore(score);
         this.ledger ??= new ScoreLedger(localStorage);
         this.ledger.submit(game, difficulty, score, name);
+        window.dispatchEvent(new CustomEvent('arcade-score-submit', { detail: { game, score, name } }));
 
         if (!this.data[game]) {
             this.data[game] = {};
