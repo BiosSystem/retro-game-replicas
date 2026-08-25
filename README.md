@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;16+Classic+Games;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
+  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;17+Classic+Games;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
 </p>
 
 <p align="center">
@@ -22,13 +22,17 @@
 
 ## 🚀 Elevator Pitch
 
-**Universal Retro Arcade** is a premium, open-source collection of 16 classic and 2000s-era game replicas. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
+**Universal Retro Arcade** is a premium, open-source collection of 17 classic and 2000s-era game replicas. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
 
 Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLSL CRT shaders, and local persistence - without needing external emulators or illegal ROMs.
 
 ## ✨ Features
 
-- **16 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, and Neon Danmaku.
+- **17 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, and Neon Kombat.
+- **Competitive Rollback Core** - Predict remote inputs, preserve 240 deterministic states, rewind divergent frames, and recover dropped inputs through bounded redundant bundles.
+- **WASM Worklet Synthesis** - Generate square, triangle, and noise signals in 128-sample AudioWorklet quanta with a runtime-created WebAssembly phase core and no audio assets.
+- **Soft-Body Destruction** - Deform procedural cloth through Verlet constraints and shatter arena elements into deterministic clipped Voronoi cells.
+- **Neon Kombat** - Fight at a fixed 60 Hz with explicit startup, active, recovery, hit-stun, block-stun, combo scaling, IK poses, rollback checksums, and deformable arenas.
 - **100K Projectile ECS** - Update fixed structure-of-arrays projectile storage without per-frame allocations, using SharedArrayBuffer only under cross-origin isolation and WebGPU only when available.
 - **Neural AI Director** - Adjust wave pressure, projectile speed, pattern choice, and power-up relief from bounded local gameplay telemetry.
 - **Spatial WebRTC Voice** - Opt into one microphone track per peer and position remote speech through HRTF panning, distance filtering, and generated reverb without bundled audio.

@@ -1,0 +1,1 @@
+import{bench,describe}from'vitest';import{createCloth}from'./SoftBodySolver';import{voronoiShatter}from'./VoronoiShatter';const cloth=createCloth(64,64,3);describe('soft body physics',()=>{bench('step 4096 cloth nodes',()=>cloth.step(1/60));bench('shatter 32 Voronoi cells',()=>{voronoiShatter(640,120,{x:320,y:60},32,7);});});

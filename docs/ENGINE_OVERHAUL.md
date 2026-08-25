@@ -1,5 +1,40 @@
 # Deep Arcade Engine Architecture
 
+## Competitive rollback and desync recovery
+
+Advance local input immediately at a fixed simulation frame. Predict missing remote input from the latest validated remote frame. Store cloned deterministic states in a fixed ring, record which prediction each frame consumed, and compare late inputs against the consumed value. Restore the state before the first divergent frame and resimulate only the bounded affected range.
+
+Validate each twelve-byte input checksum before simulation. Keep 240 frames by default and cap history at 600. Bundle up to sixteen recent remote frames so later packets repair isolated loss on the existing unordered WebRTC input channel. Treat rollback as latency masking, not latency removal. High ping expands prediction distance and correction risk even when local input remains immediate.
+
+Test 360 fighter frames through 12 percent packet loss, 110 ms base latency, and 35 ms jitter. Deliver twelve-frame redundant bundles and require final state checksum equality with the zero-delay reference.
+
+## WASM AudioWorklet DSP
+
+Create the WebAssembly module from code-owned bytes at runtime and keep binary assets out of the repository. Use its floating-point phase primitive inside an `AudioWorkletProcessor`, then generate bounded square, triangle, and seeded noise output in the audio rendering thread. Send only clamped note parameters across the worklet port.
+
+Render the browser-defined 128-sample quantum. At 48 kHz the quantum duration is 2.67 ms. Keep this distinct from `AudioContext.baseLatency`, output latency, operating-system mixing, and device latency. Never claim zero hardware latency from a synthetic block benchmark.
+
+## Soft-body physics and destructible stages
+
+Integrate up to 4,096 nodes with Verlet position history and solve up to 16,384 distance constraints without per-step node allocation. Pin selected anchors for capes and flags. Expose a 64-thread WGSL node integration kernel with the typed-array solver as the universal path.
+
+Generate destructible cells by clipping the arena rectangle against the perpendicular bisector between each deterministic site pair. Assign fragment velocity from the impact vector and distance. Cap one shatter event at 32 cells.
+
+## Neon Kombat
+
+Advance the complete match state at exactly 60 Hz. Keep positions, health, timers, action frames, stun, combo count, and combo damage in deterministic numeric state. Define startup, active, and recovery windows for every attack. Apply blocking from the defender's away direction, chip damage, block-stun, hit-stun, pushback, and a 25 percent combo-scaling floor.
+
+Build fighter limbs from bounded FABRIK chains, capes from the cloth solver, arena fractures from Voronoi cells, and music from the procedural tracker. Load no fighter sprites, stage textures, level data, models, or audio files.
+
+Current workstation measurements:
+
+- Resimulate 120 divergent frames in 0.195 ms mean.
+- Render a 128-sample WASM block in 0.0009 ms mean.
+- Step 4,096 cloth nodes in 1.27 ms mean.
+- Shatter 32 Voronoi cells in 0.082 ms mean.
+- Pass 111 Vitest tests and 15 Playwright Chromium tests.
+- Build 102 modules with a 3.05 kB entry and a 10.85 kB Kombat chunk.
+
 ## Projectile ECS, adaptive director, and Neon Danmaku
 
 Store up to 100,000 projectiles in fixed position, velocity, lifetime, kind, and activity typed arrays. Allocate one contiguous float buffer and one byte buffer, reuse dead slots, and allocate nothing inside the CPU update loop. Use `SharedArrayBuffer` only when the browser reports cross-origin isolation and retain `ArrayBuffer` everywhere else.

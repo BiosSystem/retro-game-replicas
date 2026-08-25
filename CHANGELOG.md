@@ -1,5 +1,11 @@
 ## [Unreleased] - 2026-08-25
 ### Changed
+- Add fixed-capacity rollback state history, checksum-validated inputs, local prediction, late-input rewind, bounded resimulation telemetry, and twelve-frame redundant input bundles.
+- Add loss, 110 ms latency, and 35 ms jitter desync simulation that reconverges deterministic fighter state after dropped packets.
+- Add a generated WebAssembly phase core and AudioWorklet synthesizer for 128-sample square, triangle, and noise rendering outside the main thread.
+- Add a 4,096-node Verlet soft-body solver, a 64-thread WebGPU deformation shader, and deterministic clipped Voronoi stage shattering.
+- Add Neon Kombat with fixed 60 Hz fighter state, startup and active frame data, hit-stun, block-stun, combo scaling, IK poses, cloth capes, and destructible boundaries.
+- Add unit, benchmark, and browser gates for rollback convergence, redundant packet recovery, WASM audio blocks, soft-body deformation, Voronoi fragments, and stable fighter rendering.
 - Add a 100,000-projectile structure-of-arrays ECS with fixed typed-array storage, capability-gated SharedArrayBuffer allocation, allocation-free CPU updates, and a real 64-thread WebGPU compute backend.
 - Add a bounded neural AI Director that adapts density, speed, pattern selection, and power-up relief from damage, accuracy, movement, near-miss, life, and stage telemetry.
 - Add opt-in WebRTC microphone tracks with one-audio-track enforcement, video rejection, eight-peer limits, HRTF positioning, distance filtering, and generated convolution reverb.
@@ -76,6 +82,10 @@
 - Remove the external Google Fonts runtime dependency and use local system monospace fonts.
 
 ### Verified
+- Pass 111 unit and integration tests across 43 files plus 15 Playwright Chromium tests.
+- Resimulate 120 divergent frames in 0.195 ms mean, step 4,096 cloth nodes in 1.27 ms mean, and shatter 32 Voronoi cells in 0.082 ms mean on the verification workstation.
+- Render one 128-sample WASM DSP block in 0.0009 ms mean. Calculate a 2.67 ms render quantum at 48 kHz without treating it as total hardware latency.
+- Build 102 transformed modules with a 3.05 kB initial entry, a 10.85 kB Kombat chunk, and no Vite chunk warning.
 - Pass 102 unit and integration tests across 38 files plus 13 Playwright Chromium regression tests.
 - Update 100,000 projectiles in 2.94 ms mean and evaluate an adaptive director decision in 0.0023 ms mean on the verification workstation.
 - Build 96 transformed modules with a 3.02 kB initial entry, an 8.55 kB Danmaku chunk, and no Vite chunk warning.

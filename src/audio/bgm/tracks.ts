@@ -49,4 +49,8 @@ export const TRACKS: Record<string, TrackerTrack> = {
     id: 'danmaku', title: 'Curtain Fire Protocol', bpm: 168, stepsPerBeat: 4,
     voices: { LEAD: notes(81, 84, 88, 91, 79, 83, 86, 91, 77, 81, 84, 89, 76, 79, 83, 88), ARP: notes(57, 60, 64, 69, 55, 59, 62, 67, 53, 57, 60, 65, 52, 55, 59, 64), BASS: notes(33, 33, 0, 40, 31, 31, 0, 38, 29, 29, 0, 36, 28, 28, 0, 35), DRUMS: drums('KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'KICK', 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'KICK', 'KICK', 'HAT', 'SNARE', 'HAT') },
   },
+  kombat: {
+    id:'kombat',title:'Frame Advantage',bpm:154,stepsPerBeat:4,
+    voices:{LEAD:notes(69,72,76,81,68,71,75,80,66,69,73,78,64,68,71,76),ARP:notes(57,60,64,60,56,59,63,59,54,57,61,57,52,56,59,56),BASS:notes(33,0,33,40,32,0,32,39,30,0,30,37,28,0,28,35),DRUMS:drums('KICK','HAT','SNARE','HAT','KICK','KICK','SNARE','HAT','KICK','HAT','SNARE','KICK','KICK','HAT','SNARE','HAT')},
+  },
 };

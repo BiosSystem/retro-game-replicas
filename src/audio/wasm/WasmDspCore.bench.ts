@@ -1,0 +1,1 @@
+import{bench,describe}from'vitest';import{WasmDspCore}from'./WasmDspCore';const core=await WasmDspCore.create(),block=new Float32Array(128);describe('WASM DSP',()=>{bench('render 128 sample quantum',()=>{core.render(block,440,48000,'TRIANGLE');});});
