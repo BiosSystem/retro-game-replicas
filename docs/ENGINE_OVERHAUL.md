@@ -645,3 +645,25 @@ Current verification:
 - Allocate the SharedArrayBuffer audio ring in cross-origin isolated Chromium and retain message fallback elsewhere.
 - Preserve deterministic splat, fluid, weather, and physics checksums and byte-identical paused Epoch frames.
 - Build 173 modules with a 3.17 kB entry, a 4.02 kB spatial AudioWorklet support chunk, a 13.81 kB lazy Neon Epoch chunk, and the deferred 1,352.40 kB Phaser runtime.
+
+## Animation-frame gamepad input
+
+Call `navigator.getGamepads()` once from the existing `requestAnimationFrame` runtime callback. Convert browser-standard buttons zero through sixteen into one integer bitmask and retain current, pressed, and released masks for each device index. Apply a radial deadzone independently to both analog sticks, rescale the surviving magnitude, and preserve stick direction. Accept analog trigger values at the configured threshold.
+
+Treat `mapping: "standard"` as the authoritative canonical layout for PlayStation, Xbox, and generic controllers. Use controller family detection only for labels. Apply the raw DualShock face-button permutation only when a recognized PlayStation controller does not expose the standard mapping. Treat all other raw generic layouts as a best-effort browser order because the Gamepad API does not standardize them.
+
+Keep the measurement scoped to handler computation. Do not describe polling as zero hardware latency or include USB, Bluetooth, browser scheduling, display scanout, or device latency in the synthetic result. Current workstation measurement: poll and normalize one synthetic standard controller in 0.0006 ms mean with a 0.0016 ms p99 across 894,042 samples.
+
+## IndexedDB Wasm state serialization
+
+Copy at most 16 MiB from a caller-provided WebAssembly memory, ArrayBuffer, SharedArrayBuffer, or Uint8Array during a scheduled idle task. Store version, validated slot, up to four finite player transforms, the unsigned Neon Epoch seed, capture time, memory bytes, and an asynchronous SHA-256 digest in the `bios_arcade_save_states_v1` IndexedDB database. Clone memory at every memory-backend boundary so callers cannot mutate persisted state by reference.
+
+Switch to isolated volatile memory when IndexedDB is missing, blocked, or fails an operation. Display the active backend in Neon Epoch. Restore the saved Wasm memory and player position only when the version, bounds, digest, and procedural seed match. Schedule a 15-second autosave and save once more on scene shutdown without blocking the animation callback on an IndexedDB transaction.
+
+Treat IndexedDB requests and Web Crypto digest work as asynchronous. Treat the initial memory copy and structured serialization as finite main-thread work, not a universal frame-drop guarantee. Current workstation measurement: complete the scheduled 4 MiB copy and SHA-256 pipeline in 11.67 ms mean wall time across 43 samples.
+
+Current verification:
+
+- Pass 242 Vitest tests across 83 files and 33 Playwright Chromium tests.
+- Pass `npm run lint`, `npx tsc -b`, and the production build.
+- Build 175 modules with a 3.17 kB entry, a 19.62 kB lazy Neon Epoch chunk, and the deferred 1,352.40 kB Phaser runtime.

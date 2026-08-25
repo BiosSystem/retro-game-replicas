@@ -1,5 +1,11 @@
 ## [Unreleased] - 2026-08-25
 ### Changed
+- Add one animation-frame Gamepad API sample with canonical standard-layout bitmasks, press and release edges, radial stick deadzones, analog trigger thresholds, PlayStation and Xbox family labels, and a bounded raw DualShock face-button fallback.
+- Route local multiplayer and pause controls through the shared controller frame so scenes do not issue duplicate `navigator.getGamepads()` calls.
+- Add a versioned IndexedDB save-state pipeline for up to 16 MiB of Wasm memory, four player transforms, and Neon Epoch seeds with scheduled capture, asynchronous SHA-256 integrity checks, isolated memory fallback, autosaves, and shutdown persistence.
+- Add Wasm physics memory copy and restore operations plus Neon Epoch session restoration through the new save-state adapter.
+- Add unit and benchmark coverage for controller mappings, deadzones, bitmask edges, hot-unplug behavior, IndexedDB failure fallback, validation bounds, and live SIMD memory restoration.
+- Configure direct Vitest invocations to exclude Playwright browser specifications while retaining the dedicated Playwright regression gate.
 - Add deterministic procedural anisotropic Gaussian point clouds with generated terrain, trunk, and canopy distributions, back-to-front CPU projection, stable checksums, a 100,000-splat ceiling, and an instanced WebGPU alpha-blending pipeline contract.
 - Add import-free scalar and 128-bit SIMD WebAssembly physics modules with four-lane collision separation, batched gravity distance stages, relativistic time factors, typed-memory reuse, capability validation, and scalar fallback.
 - Add a cross-origin isolated spatial audio path with a lock-free SharedArrayBuffer ring, message-block fallback, AudioWorklet rendering, bounded speed-of-sound delays, Doppler ratios, and fixed delay-line storage.

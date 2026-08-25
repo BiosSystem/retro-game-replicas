@@ -37,7 +37,7 @@ export class ArcadeRuntime {
   private measureFrames = (time: number) => {
     this.telemetry.record(time - this.lastFrameAt);
     this.lastFrameAt = time;
-    InputManager.update();
+    InputManager.update(time);
     this.replay.sample();
     this.pollGamepadPause();
     this.frameCount += 1;
@@ -99,7 +99,7 @@ export class ArcadeRuntime {
   }
 
   private pollGamepadPause() {
-    const pressed = Array.from(navigator.getGamepads?.() ?? []).some(pad => pad?.buttons[9]?.pressed);
+    const pressed = InputManager.getGamepadFrames().some(pad => Boolean(pad.buttons & (1 << 9)));
     if (pressed && !this.startPressed) {
       const active = this.game.scene.getScenes(true).find(scene => !['LobbyScene', 'PauseScene', 'SettingsScene', 'NameEntryScene', 'AchievementsScene'].includes(scene.scene.key));
       if (active && !this.game.scene.isActive('PauseScene')) { active.scene.pause(); active.scene.launch('PauseScene', { scene: active.scene.key }); }

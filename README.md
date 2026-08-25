@@ -29,6 +29,8 @@ Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLS
 ## ✨ Features
 
 - **26 Built-In Games plus Meta-Arcade Hall** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, Neon Genesis, Neon OS, The Singularity, Neon Event Horizon, and Neon Epoch.
+- **Animation-Frame Controller Sampling** - Poll connected controllers once per runtime frame, normalize standard PlayStation and Xbox layouts into compact bitmasks, expose press and release edges, and apply radial dual-stick deadzones without duplicate scene polling.
+- **IndexedDB Wasm Save States** - Persist bounded physics memory, player transforms, and Neon Epoch seeds through scheduled copies and asynchronous SHA-256 integrity checks, then retain a volatile isolated-memory fallback when browser storage is unavailable.
 - **Procedural Gaussian Worlds** - Generate up to 100,000 anisotropic terrain and flora splats, project them through the deterministic CPU path, and compile an instanced WebGPU transparency pipeline when supported.
 - **Wasm SIMD Physics** - Process four collision distance pairs per 128-bit instruction, reuse linear memory, batch gravity distance terms and relativistic time factors, and retain scalar Wasm and TypeScript references.
 - **Asynchronous Spatial Audio** - Stream generated samples through an AudioWorklet with a lock-free SharedArrayBuffer ring under cross-origin isolation and use transferred message blocks everywhere else.

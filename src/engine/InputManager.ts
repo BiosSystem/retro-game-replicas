@@ -2,11 +2,12 @@ import { PreferenceStore, type ControlAction } from './PreferenceStore';
 import { MultiInput, type PlayerInputState } from '../multiplayer/MultiInput';
 import { ArcadeModeRouter } from '../multiplayer/ArcadeModeRouter';
 import type { ArcadeMode } from '../multiplayer/CoopSession';
+import { GamepadHandler, type GamepadFrame } from './input/GamepadHandler';
 
 export class InputManager {
     private static keys: Set<string> = new Set();
-    private static gamepadState: Record<number, Record<string, boolean>> = {};
     private static connectedPads: Set<number> = new Set();
+    private static gamepads = new GamepadHandler();
     private static bindings: Record<ControlAction, string[]>;
     private static multi = new MultiInput();
     private static modeRouter = new ArcadeModeRouter();
@@ -33,7 +34,6 @@ export class InputManager {
         window.addEventListener('gamepadconnected', (e: GamepadEvent) => {
             const gp = e.gamepad;
             this.connectedPads.add(gp.index);
-            this.gamepadState[gp.index] = {};
             this.updateIndicator();
             console.log(`Gamepad connected: ${gp.id}`);
         });
@@ -41,7 +41,6 @@ export class InputManager {
         window.addEventListener('gamepaddisconnected', (e: GamepadEvent) => {
             const gp = e.gamepad;
             this.connectedPads.delete(gp.index);
-            delete this.gamepadState[gp.index];
             this.updateIndicator();
             console.log(`Gamepad disconnected: ${gp.id}`);
         });
@@ -129,11 +128,11 @@ export class InputManager {
         });
     }
 
-    public static update() {
+    public static update(frameTime = performance.now()) {
         if (this.modeRouter.tick(performance.now())) this.updateIndicator();
-        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-        const snapshots = Array.from(gamepads).filter((pad): pad is Gamepad => Boolean(pad)).map(pad => ({
-            index: pad.index, connected: pad.connected, axes: Array.from(pad.axes), buttons: pad.buttons.map(button => button.pressed)
+        const frames = this.gamepads.poll(frameTime);
+        const snapshots = frames.map(pad => ({
+            index: pad.index, connected: pad.connected, axes: [pad.leftX, pad.leftY, pad.rightX, pad.rightY], buttonMask: pad.buttons
         }));
         const detected = new Set(snapshots.map(pad => pad.index));
         if (detected.size !== this.connectedPads.size || [...detected].some(index => !this.connectedPads.has(index))) {
@@ -141,31 +140,18 @@ export class InputManager {
             this.updateIndicator();
         }
         this.playerState = this.multi.poll(snapshots);
-        for (let i = 0; i < gamepads.length; i++) {
-            const gp = gamepads[i];
-            if (!gp) continue;
-            
-            if (!this.gamepadState[i]) this.gamepadState[i] = {};
-            const state = this.gamepadState[i];
-
-            state['UP'] = !!(gp.buttons[12]?.pressed || (gp.axes[1] !== undefined && gp.axes[1] < -0.5));
-            state['DOWN'] = !!(gp.buttons[13]?.pressed || (gp.axes[1] !== undefined && gp.axes[1] > 0.5));
-            state['LEFT'] = !!(gp.buttons[14]?.pressed || (gp.axes[0] !== undefined && gp.axes[0] < -0.5));
-            state['RIGHT'] = !!(gp.buttons[15]?.pressed || (gp.axes[0] !== undefined && gp.axes[0] > 0.5));
-            state['FIRE'] = !!(gp.buttons[0]?.pressed || gp.buttons[1]?.pressed || gp.buttons[2]?.pressed || gp.buttons[3]?.pressed);
-        }
     }
 
     public static isDown(code: string): boolean {
         let isPressed = this.keys.has(code);
         
-        const p1State = this.gamepadState[0];
+        const p1State = this.playerState[1];
         if (p1State) {
-            if (code === 'ArrowUp' || code === 'KeyW') isPressed = isPressed || !!p1State['UP'];
-            if (code === 'ArrowDown' || code === 'KeyS') isPressed = isPressed || !!p1State['DOWN'];
-            if (code === 'ArrowLeft' || code === 'KeyA') isPressed = isPressed || !!p1State['LEFT'];
-            if (code === 'ArrowRight' || code === 'KeyD') isPressed = isPressed || !!p1State['RIGHT'];
-            if (code === 'Space') isPressed = isPressed || !!p1State['FIRE'];
+            if (code === 'ArrowUp' || code === 'KeyW') isPressed = isPressed || p1State.UP;
+            if (code === 'ArrowDown' || code === 'KeyS') isPressed = isPressed || p1State.DOWN;
+            if (code === 'ArrowLeft' || code === 'KeyA') isPressed = isPressed || p1State.LEFT;
+            if (code === 'ArrowRight' || code === 'KeyD') isPressed = isPressed || p1State.RIGHT;
+            if (code === 'Space') isPressed = isPressed || p1State.FIRE;
         }
         
         return isPressed;
@@ -184,6 +170,7 @@ export class InputManager {
     public static setNetworkPlayerState(state: PlayerInputState) { this.networkPlayer = { ...state }; }
     public static setReplayMask(mask: number | null) { this.replayMask = mask === null ? null : Math.max(0, Math.min(31, mask | 0)); }
     public static getP1Mask() { return (this.isP1Down('UP') ? 1 : 0) | (this.isP1Down('DOWN') ? 2 : 0) | (this.isP1Down('LEFT') ? 4 : 0) | (this.isP1Down('RIGHT') ? 8 : 0) | (this.isP1Down('FIRE') ? 16 : 0); }
+    public static getGamepadFrames(): readonly GamepadFrame[] { return this.gamepads.getFrames(); }
 
     public static configureArcadeMode(mode: ArcadeMode, nativeDualControl = false) {
         this.modeRouter.configure(mode, nativeDualControl, performance.now());

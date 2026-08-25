@@ -133,6 +133,19 @@ export class SimdPhysicsCore {
     return new SimdPhysicsCore(exports.memory, exports.separation4);
   }
 
+  copyMemory(byteLength = this.memory.buffer.byteLength) {
+    if (!Number.isSafeInteger(byteLength) || byteLength < 1 || byteLength > this.memory.buffer.byteLength) throw new Error('Wasm snapshot length is invalid');
+    return this.memory.buffer.slice(0, byteLength);
+  }
+
+  restoreMemory(snapshot: ArrayBuffer) {
+    if (!(snapshot instanceof ArrayBuffer) || snapshot.byteLength < 1 || snapshot.byteLength > 256 * 65_536) throw new Error('Wasm snapshot is invalid');
+    if (snapshot.byteLength > this.memory.buffer.byteLength) this.memory.grow(Math.ceil((snapshot.byteLength - this.memory.buffer.byteLength) / 65_536));
+    const target = new Uint8Array(this.memory.buffer);
+    target.fill(0);
+    target.set(new Uint8Array(snapshot));
+  }
+
   collisionSeparation(ax: Float32Array, ay: Float32Array, bx: Float32Array, by: Float32Array, radii: Float32Array) {
     const count = assertBatch([ax, ay, bx, by, radii]);
     const padded = Math.ceil(count / 4) * 4;

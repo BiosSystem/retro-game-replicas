@@ -3,6 +3,8 @@ import type { SpatialAudioBridge } from '../../audio/spatial/RelativisticAudioWo
 import { AudioEngine } from '../../engine/AudioEngine';
 import { InputManager } from '../../engine/InputManager';
 import { projectSplatCloud } from '../../graphics/volumetric/splatting';
+import { SimdPhysicsCore } from '../../engine/physics/simd';
+import { SaveStateStore } from '../../engine/persistence/SaveState';
 import { epochCore, epochDiagnostics, epochWeather } from './EpochSystems';
 
 export default class NeonEpochScene extends Phaser.Scene {
@@ -19,6 +21,8 @@ export default class NeonEpochScene extends Phaser.Scene {
   private readonly audioBlock = new Float32Array(1_024);
   private audioPhase = 0;
   private audioConfigureFrame = 0;
+  private simdPhysics: SimdPhysicsCore | null = null;
+  private readonly saveStates = SaveStateStore.create();
 
   constructor() { super('EpochScene'); }
 
@@ -35,7 +39,14 @@ export default class NeonEpochScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-ESC', () => this.scene.start('LobbyScene'));
     AudioEngine.playTrack('odyssey');
     void this.initializeSpatialAudio();
-    this.events.once('shutdown', () => { this.spatialAudio?.close(); this.spatialAudio = null; });
+    void this.restoreState();
+    this.time.addEvent({ delay: 15_000, loop: true, callback: () => this.scheduleAutosave() });
+    this.events.once('shutdown', () => {
+      this.saveStates.cancelAutosave();
+      void this.persistState();
+      this.spatialAudio?.close();
+      this.spatialAudio = null;
+    });
     this.draw();
   }
 
@@ -58,6 +69,36 @@ export default class NeonEpochScene extends Phaser.Scene {
     this.spatialAudio = await this.spatialAudioPending;
     this.spatialAudioPending = null;
     return this.spatialAudio;
+  }
+
+  private async restoreState() {
+    this.simdPhysics = await SimdPhysicsCore.create();
+    const saved = await this.saveStates.load('neon_epoch');
+    if (!saved || saved.epochSeed !== this.seed || !this.scene.isActive()) return;
+    this.simdPhysics?.restoreMemory(saved.wasmMemory);
+    this.cameraX = saved.players[0].x;
+    this.cameraZ = saved.players[0].y;
+    this.heading = saved.players[0].vx ?? 0;
+  }
+
+  private scheduleAutosave() {
+    if (!this.simdPhysics) return;
+    this.saveStates.scheduleAutosave(() => ({
+      slot: 'neon_epoch',
+      wasmMemory: this.simdPhysics!.copyMemory(),
+      players: [{ x: this.cameraX, y: this.cameraZ, vx: this.heading }],
+      epochSeed: this.seed,
+    }), 250);
+  }
+
+  private async persistState() {
+    if (!this.simdPhysics) return;
+    await this.saveStates.save({
+      slot: 'neon_epoch',
+      wasmMemory: this.simdPhysics.copyMemory(),
+      players: [{ x: this.cameraX, y: this.cameraZ, vx: this.heading }],
+      epochSeed: this.seed,
+    });
   }
 
   private renderSpatialAudio() {
@@ -95,7 +136,7 @@ export default class NeonEpochScene extends Phaser.Scene {
       if (value) graphics.fillStyle(0x18bfff, 0.12 + value / 512).fillRect(x * (640 / this.core.fluid.width), 411 - value * 0.04, 14, 20 + value * 0.04);
     }
     graphics.fillStyle(0xffffff, 0.9).fillCircle(320, 247, 3).lineStyle(1, 0x8effc1, 0.7).strokeCircle(320, 247, 8);
-    this.hud.setText(`SPLATS ${this.core.cloud.count.toLocaleString()}  WORLD ${this.core.splatChecksum.toString(16).padStart(8, '0')}  ARCH ${this.core.architectures}\nRAIN ${(weather.rain * 100).toFixed(0)}%  WIND ${weather.wind.toFixed(1)} m/s  TEMP ${weather.temperature.toFixed(1)} C  FLUID ${this.core.fluid.mass()}\nPOSITION ${this.cameraX.toFixed(1)}, ${this.cameraZ.toFixed(1)}  PROCEDURAL CPU FALLBACK ACTIVE`);
+    this.hud.setText(`SPLATS ${this.core.cloud.count.toLocaleString()}  WORLD ${this.core.splatChecksum.toString(16).padStart(8, '0')}  ARCH ${this.core.architectures}\nRAIN ${(weather.rain * 100).toFixed(0)}%  WIND ${weather.wind.toFixed(1)} m/s  TEMP ${weather.temperature.toFixed(1)} C  FLUID ${this.core.fluid.mass()}\nPOSITION ${this.cameraX.toFixed(1)}, ${this.cameraZ.toFixed(1)}  SAVE ${this.saveStates.backend}`);
   }
 
   async epochDiagnostics() {
