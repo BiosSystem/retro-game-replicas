@@ -51,6 +51,7 @@ export default class LobbyScene extends Phaser.Scene {
     { name: 'NEON OS',          scene: 'OsScene',            icon: '▣' },
     { name: 'THE SINGULARITY',  scene: 'SingularityScene',   icon: '∞' },
     { name: 'EVENT HORIZON',    scene: 'HorizonScene',       icon: '◌' },
+    { name: 'NEON EPOCH',       scene: 'EpochScene',         icon: '◈' },
   ];
 
   private difficulties = [
@@ -201,7 +202,7 @@ export default class LobbyScene extends Phaser.Scene {
   private buildGameList() {
     this.games.forEach((game, i) => {
       const isSelected = i === this.selectedGameIndex;
-      const y          = 94 + i * 14;
+      const y          = 92 + i * 13;
 
       const label  = `${game.icon}  ${game.name}`;
       const color  = isSelected ? PALETTE.white : PALETTE.dim;
@@ -487,7 +488,7 @@ export default class LobbyScene extends Phaser.Scene {
 
     this.gameItems[prev].setColor(PALETTE.dim).setScale(1).setFontSize('18px');
     this.gameItems[this.selectedGameIndex].setColor(PALETTE.white).setScale(1.06).setFontSize('20px');
-    this.selectionCursor?.setY(96 + this.selectedGameIndex * 17);
+    this.selectionCursor?.setY(92 + this.selectedGameIndex * 13);
 
     this.tweens.add({ targets: this.gameItems[this.selectedGameIndex], scale: 1.1, duration: 80, yoyo: true });
   }

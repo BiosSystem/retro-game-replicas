@@ -1,5 +1,11 @@
 ## [Unreleased] - 2026-08-25
 ### Changed
+- Add deterministic procedural anisotropic Gaussian point clouds with generated terrain, trunk, and canopy distributions, back-to-front CPU projection, stable checksums, a 100,000-splat ceiling, and an instanced WebGPU alpha-blending pipeline contract.
+- Add import-free scalar and 128-bit SIMD WebAssembly physics modules with four-lane collision separation, batched gravity distance stages, relativistic time factors, typed-memory reuse, capability validation, and scalar fallback.
+- Add a cross-origin isolated spatial audio path with a lock-free SharedArrayBuffer ring, message-block fallback, AudioWorklet rendering, bounded speed-of-sound delays, Doppler ratios, and fixed delay-line storage.
+- Add Neon Epoch as the twenty-sixth game and a synthesis of nineteen established architectures with generated volumetric flora, traversal, dynamic rain and wind, mass-conserving fluid, and procedural audio.
+- Add COOP and COEP development and preview headers so capable browser sessions can allocate SharedArrayBuffer storage safely.
+- Add unit, benchmark, and Playwright coverage for deterministic splats, scalar and SIMD Wasm equivalence, gravity and time batches, audio allocation, stable paused Epoch rendering, and cross-origin isolation.
 - Add Lamport SHA-256 one-time state attestations with 16 KiB public keys, 8 KiB signatures, automatic secret erasure, tamper rejection, and explicit key-reuse prevention.
 - Extend the quorum ledger with optional one-time hash-based root attestations while retaining Ed25519 proposal and vote compatibility.
 - Add deterministic weighted rendezvous sharding for one million virtual chunk coordinates, bounded replication, peer-churn movement measurement, validated shard envelopes, and reliable WebTransport or WebRTC routing through the existing transport mux.

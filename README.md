@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;25+Games+and+Meta+Hall;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
+  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;26+Games+and+Meta+Hall;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
 </p>
 
 <p align="center">
@@ -22,13 +22,17 @@
 
 ## 🚀 Elevator Pitch
 
-**Universal Retro Arcade** is a premium, open-source collection of 25 classic, 2000s-era, and experimental game worlds plus a generated Meta-Arcade hall. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
+**Universal Retro Arcade** is a premium, open-source collection of 26 classic, 2000s-era, and experimental game worlds plus a generated Meta-Arcade hall. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
 
 Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLSL CRT shaders, and local persistence - without needing external emulators or illegal ROMs.
 
 ## ✨ Features
 
-- **25 Built-In Games plus Meta-Arcade Hall** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, Neon Genesis, Neon OS, The Singularity, and Neon Event Horizon.
+- **26 Built-In Games plus Meta-Arcade Hall** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, Neon Genesis, Neon OS, The Singularity, Neon Event Horizon, and Neon Epoch.
+- **Procedural Gaussian Worlds** - Generate up to 100,000 anisotropic terrain and flora splats, project them through the deterministic CPU path, and compile an instanced WebGPU transparency pipeline when supported.
+- **Wasm SIMD Physics** - Process four collision distance pairs per 128-bit instruction, reuse linear memory, batch gravity distance terms and relativistic time factors, and retain scalar Wasm and TypeScript references.
+- **Asynchronous Spatial Audio** - Stream generated samples through an AudioWorklet with a lock-free SharedArrayBuffer ring under cross-origin isolation and use transferred message blocks everywhere else.
+- **Neon Epoch** - Traverse a generated volumetric ecosystem with changing rain, wind, temperature, and mass-conserving cellular water without image, model, level, or audio assets.
 - **One-Time Hash State Attestations** - Sign one finalized state root with a bounded Lamport SHA-256 key, erase used secrets, reject reuse, and preserve Ed25519 quorum compatibility.
 - **Spatial Peer Shards** - Assign replicated procedural chunk regions through deterministic weighted rendezvous hashing and route bounded state envelopes over established WebTransport or WebRTC sessions.
 - **Neural Texture Detail** - Upscale generated surfaces through a deterministic fixed-weight edge network, reuse caller-owned output buffers, modulate path-traced materials, and compile an 8x8 WebGPU compute contract when supported.

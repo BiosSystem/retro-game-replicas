@@ -2,6 +2,7 @@ import { ChiptuneSequencer, WebAudioTrackerBackend } from '../audio/bgm/Chiptune
 import { TRACKS } from '../audio/bgm/tracks';
 import type { SoundPatch } from '../audio/patches/SoundPatch';
 import { SoundPatchStore } from '../audio/patches/SoundPatchStore';
+import type { SpatialAudioBridge } from '../audio/spatial/RelativisticAudioWorklet';
 
 export type AudioEffect = 'LASER' | 'EXPLOSION' | 'COIN' | 'POWER_UP' | 'STAGE_CLEAR';
 export interface ToneStep { frequency: number; type: OscillatorType; duration: number; delay: number; endFrequency?: number; }
@@ -80,6 +81,11 @@ export class AudioEngine {
 
     public static stopTrack() { this.pendingTrack = null; this.sequencer?.stop(); }
     public static setTrackTimeWarp(tempoScale: number, pitchSemitones: number) { this.sequencer?.setTimeWarp(tempoScale, pitchSemitones); }
+    public static async createRelativisticSpatialBridge(): Promise<SpatialAudioBridge | null> {
+        if (!this.ctx || !this.masterGain) return null;
+        const { installRelativisticSpatialWorklet } = await import('../audio/spatial/RelativisticAudioWorklet');
+        return installRelativisticSpatialWorklet(this.ctx, this.masterGain);
+    }
 
     public static playTone(frequency: number, type: OscillatorType = 'square', duration: number = 0.1) {
         if (!this.ctx || !this.masterGain) return;

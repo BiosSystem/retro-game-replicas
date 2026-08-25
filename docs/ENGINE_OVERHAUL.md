@@ -603,3 +603,45 @@ Current verification:
 - Accept `COMPILED` or `UNAVAILABLE` from neural texture and lensing WebGPU probes.
 - Render byte-identical paused Event Horizon frames across consecutive screenshots.
 - Build 167 modules with a 3.17 kB entry, an 8.66 kB lazy Event Horizon chunk, a shared 9.15 kB path-tracer chunk, and the deferred 1,352.40 kB Phaser runtime.
+
+## Procedural anisotropic Gaussian splatting
+
+Store each generated splat in sixteen packed Float32 values for center, opacity, scale, rotation, color, and lighting terms. Cap one cloud at 100,000 splats. Generate ground cover, trunks, and canopies from a seeded xorshift stream without image, mesh, model, or point-cloud assets. Project a bounded sample through a deterministic camera, reject near and off-screen points, and order visible splats back to front for the universal CPU renderer.
+
+Publish an instanced WebGPU render pipeline with one quad per splat, storage-buffer records, exponential Gaussian falloff, premultiplied alpha, and fixed-function blending. Compile it only after adapter discovery. Treat this as procedural anisotropic Gaussian rendering, not captured-scene 3D Gaussian Splatting reconstruction or a promise of photorealism. The current Neon Epoch scene uses the CPU projection path. Record no GPU throughput without an available adapter and actual command submission timing.
+
+Current workstation measurement: project, cull, and depth-order 4,096 sampled records from a 65,536-splat cloud in 1.0686 ms mean. Do not infer a universal frame rate from this isolated CPU benchmark.
+
+## Scalar and 128-bit SIMD WebAssembly physics
+
+Emit two raw import-free WebAssembly modules from code-owned bytes. Let the scalar module process one Float32 pair per loop and let the SIMD module process four pairs through `v128.load`, `f32x4.sub`, `f32x4.mul`, `f32x4.add`, and `v128.store`. Validate SIMD support before instantiation. Reuse one bounded linear memory and pad only the SIMD tail to four lanes.
+
+Use the SIMD distance stage for circle separation, gravity radius terms, and velocity magnitude terms. Finish inverse-distance gravity and Lorentz square-root terms with deterministic scalar operations because baseline SIMD has no portable exact reciprocal instruction. Preserve the TypeScript reference and assert Float32 equality in tests. Treat the benchmark as a local observation, not a guaranteed speedup on every browser or CPU.
+
+Current workstation measurements for 65,536 collision pairs:
+
+- Run scalar Wasm in 0.3744 ms mean, about 2,671 batches per second.
+- Run 128-bit SIMD Wasm in 0.3561 ms mean, about 2,808 batches per second.
+- Observe 1.05 times throughput in this isolated run.
+
+## Shared spatial AudioWorklet pipeline
+
+Allocate a single-producer and single-consumer SharedArrayBuffer ring only when the browser reports cross-origin isolation. Advance read and write counters with Atomics and never block the audio rendering thread. Transfer bounded Float32 message blocks through the AudioWorklet port when shared memory is unavailable. Serve Vite development and preview pages with COOP and COEP headers so the shared path can be tested in Chromium.
+
+Calculate propagation delay from distance divided by a bounded speed of sound. Apply a clamped classical radial Doppler ratio and the established gameplay time factor. Treat this as a procedural spatial approximation, not mathematically perfect acoustics, a listener-specific HRTF, or proof of hardware output latency. The Web Audio rendering thread processes browser-defined render quanta independently of the main control thread.
+
+Current workstation measurement: process one 128-sample delayed and pitch-shifted block in 0.0041 ms mean inside the isolated TypeScript delay-line benchmark. Keep this separate from AudioWorklet scheduling, `AudioContext.baseLatency`, operating-system mixing, and device latency.
+
+## Neon Epoch
+
+Present Neon Epoch as game twenty-six and the synthesis of exactly nineteen established engine architectures. Traverse a 24,000-splat generated terrestrial field with changing rain, wind, cloud cover, and temperature. Evolve a mass-conserving cellular water field and render every environment, weather streak, traversal marker, sound, and HUD element at runtime.
+
+Keep the universal CPU splat renderer active in the Phaser scene and expose capability diagnostics for WebGPU compilation, Wasm SIMD validation, cross-origin isolated audio allocation, fluid conservation, and stable seeded checksums. Do not describe the stylized procedural output as photorealistic or captured reality.
+
+Current verification:
+
+- Pass 233 Vitest tests across 81 files and 33 Playwright Chromium tests.
+- Match scalar TypeScript, scalar Wasm, and 128-bit SIMD collision output exactly at Float32 precision.
+- Allocate the SharedArrayBuffer audio ring in cross-origin isolated Chromium and retain message fallback elsewhere.
+- Preserve deterministic splat, fluid, weather, and physics checksums and byte-identical paused Epoch frames.
+- Build 173 modules with a 3.17 kB entry, a 4.02 kB spatial AudioWorklet support chunk, a 13.81 kB lazy Neon Epoch chunk, and the deferred 1,352.40 kB Phaser runtime.
