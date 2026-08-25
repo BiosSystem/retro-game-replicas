@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;22+Games+and+Meta+Hall;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
+  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;23+Games+and+Meta+Hall;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
 </p>
 
 <p align="center">
@@ -22,13 +22,17 @@
 
 ## 🚀 Elevator Pitch
 
-**Universal Retro Arcade** is a premium, open-source collection of 22 classic, 2000s-era, and experimental game worlds plus a generated Meta-Arcade hall. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
+**Universal Retro Arcade** is a premium, open-source collection of 23 classic, 2000s-era, and experimental game worlds plus a generated Meta-Arcade hall. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
 
 Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLSL CRT shaders, and local persistence - without needing external emulators or illegal ROMs.
 
 ## ✨ Features
 
-- **22 Built-In Games plus Meta-Arcade Hall** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, and Neon Genesis.
+- **23 Built-In Games plus Meta-Arcade Hall** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, Neon Genesis, and Neon OS.
+- **Capability-Gated Broadcast Core** - Probe AV1 then H.264 WebCodecs support, capture Canvas frames, expose a Web Audio graph tap, frame encoded chunks for application transport, and reduce bitrate or drop capture work before gameplay stalls.
+- **Self-Healing Compute Grid** - Distribute bounded numeric genetic and gradient shards over application-established peers, retry work after peer churn, and retain deterministic local recovery without claiming automatic internet discovery.
+- **Raw WebAssembly DSL Compiler** - Parse a small stack language, validate instruction count and stack effects, and emit import-free WebAssembly v1 modules without eval, memory, host calls, or downloaded code.
+- **Neon OS** - Program a generated retro terminal, arrange procedural windows, compile safe arithmetic processes, submit grid reductions, and inspect WebCodecs or WebGPU capabilities.
 - **Quantum Game-State Solver** - Evolve normalized complex amplitudes across bounded categorical branches, collapse only after in-range camera observation, correlate entangled branch indices, and publish deterministic collapse records through the existing world CRDT.
 - **Worker-Evolved Ecosystems** - Cross, mutate, select, and score up to 4,096 eight-trait genomes against temperature, moisture, fluid, and elevation gradients through transferable Worker buffers with a CPU fallback.
 - **Local INT4 Society** - Run up to 32 seeded local transformer agents with bounded statements, wealth, trust, influence, trade, migration, faction, hierarchy, and consensus state without downloads or API calls.

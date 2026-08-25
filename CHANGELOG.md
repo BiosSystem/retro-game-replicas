@@ -1,5 +1,10 @@
 ## [Unreleased] - 2026-08-25
 ### Changed
+- Add a capability-gated WebCodecs broadcast pipeline with AV1 or H.264 probing, canvas frame capture, Web Audio capture taps, custom application framing, queue-aware frame dropping, and adaptive 0.4 to 8 Mbps bitrate control.
+- Add a masterless grid coordinator for established peers with deterministic declarative genetic-fitness and gradient kernels, 1 MiB transport envelopes, bounded shards, peer-churn retries, and local recovery.
+- Add a safe Neon DSL compiler that validates stack effects and emits raw import-free WebAssembly v1 binaries for bounded i32 programs without JavaScript evaluation, memory, or host imports.
+- Add Neon OS with a generated terminal, bounded window manager, safe DSL execution, grid job submission, capability diagnostics, and a lazy 12.28 kB scene chunk.
+- Add unit, benchmark, and Playwright coverage for 10,000-line compilation, 100,000-value grid reduction, broadcast framing, codec capability handling, peer loss, stable Neon OS rendering, and browser canvas capture attempts.
 - Add a bounded categorical quantum game-state solver with normalized complex amplitudes, deterministic camera-triggered observation, correlated entanglement groups, phase evolution, and CRDT collapse records.
 - Add an eight-trait genetic ecosystem with terrain-gradient fitness, natural selection, crossover, bounded mutation, diversity metrics, snapshot validation, a 64-thread WebGPU fitness contract, and transferable Worker evolution with CPU fallback.
 - Add a seeded local INT4 society for up to 32 agents with concurrent conversation rounds, bounded statements, trade, alliances, migration, faction membership, influence, hierarchy, consensus, and capability-gated WebGPU pipeline compilation.

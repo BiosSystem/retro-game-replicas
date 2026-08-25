@@ -501,3 +501,34 @@ Current verification:
 - Confirm actual module Worker evolution in headless Chromium and accept `COMPILED` or `UNAVAILABLE` from the WebGPU capability probe.
 - Render byte-identical paused Neon Genesis frames across consecutive screenshots.
 - Build 145 modules with a 3.17 kB entry, a 1.74 kB Genetic Worker, a 15.24 kB lazy Genesis chunk, and the deferred 1,352.40 kB Phaser runtime.
+
+## WebCodecs broadcast pipeline
+
+Probe `VideoEncoder.isConfigSupported` in AV1 then H.264 order and treat absence as a normal capability result. Capture each Phaser canvas frame into a short-lived `VideoFrame`, submit it to a realtime encoder, close the frame immediately, and stop accepting captures when the encoder queue exceeds five frames. Feed queue depth and frame time into a bounded controller that reduces bitrate under pressure and raises it only after thirty calm samples. Expose a `MediaStreamAudioDestinationNode` so the existing procedural Web Audio graph can be tapped without microphone access.
+
+Frame encoded audio and video chunks in the NSB1 application envelope with track, keyframe, codec, timestamp, duration, and bounded payload metadata. Treat this as application framing, not a standardized MP4 or WebM container. WebCodecs does not provide container muxing and does not guarantee a zero-copy canvas-to-encoder path, so retain those as explicit non-claims. Current workstation measurement: frame 1,000 1 KiB encoded chunks in 2.9146 ms mean.
+
+## Masterless bounded compute grid
+
+Let every connected application peer instantiate the same deterministic coordinator. Accept only named `GENETIC_FITNESS` and `GRADIENT_SUM` kernels with finite numeric arrays, cap jobs at 131,072 values, cap shards at 16,384 values, and cap transport envelopes at 1 MiB. Sort established peers by identifier before assignment. Remove a peer after a rejected or malformed shard result, retry the shard on remaining peers, and complete locally if no peer remains.
+
+Do not accept JavaScript, WebAssembly, shader text, URLs, or arbitrary functions in a grid envelope. Reuse application-established WebRTC or WebTransport sessions because neither transport supplies global discovery or a public worker marketplace. Current workstation measurement: reduce 100,000 values over four local peer adapters in 2.6841 ms mean.
+
+## Safe DSL and raw WebAssembly emission
+
+Parse a line or semicolon-delimited i32 stack language containing `input`, `const`, arithmetic, bitwise operations, shifts, `drop`, and `return`. Cap source at 256 KiB, instructions at 16,384, and stack depth at 256. Reject unknown syntax, invalid operands, stack underflow, trailing instructions, and returns with anything other than one value.
+
+Emit the WebAssembly magic and version followed by type, function, export, and code sections using signed and unsigned LEB128 encodings. Export one `run(i32) -> i32` function and emit no import, table, memory, global, element, or data sections. Validate every module before execution and instantiate it with an empty import object. Current workstation measurement: compile and validate a 10,000-line safe script in 4.0842 ms mean.
+
+## Neon OS
+
+Render a generated three-window workstation through Phaser's managed universal renderer. Keep the graphical window layout deterministic and compile a minimal WebGPU compute contract only when the browser supplies an adapter. Accept bounded terminal commands for help, clearing output, safe DSL execution, window inspection, and numeric grid submission. Display capability outcomes without treating `UNAVAILABLE` as a failure.
+
+Current verification:
+
+- Pass 188 Vitest tests across 67 files and 27 Playwright Chromium tests.
+- Compile exactly 10,000 safe DSL instructions and execute an import-free WebAssembly module.
+- Recover a rejected distributed shard and preserve a deterministic numeric reduction.
+- Exercise WebCodecs canvas capture when supported and accept an explicit unsupported result otherwise.
+- Render byte-identical paused Neon OS frames across consecutive screenshots.
+- Build 153 modules with a 3.17 kB entry, a 12.28 kB lazy Neon OS chunk, and the deferred 1,352.40 kB Phaser runtime.
