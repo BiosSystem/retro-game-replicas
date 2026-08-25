@@ -1,5 +1,28 @@
 # Deep Arcade Engine Architecture
 
+## Projectile ECS, adaptive director, and Neon Danmaku
+
+Store up to 100,000 projectiles in fixed position, velocity, lifetime, kind, and activity typed arrays. Allocate one contiguous float buffer and one byte buffer, reuse dead slots, and allocate nothing inside the CPU update loop. Use `SharedArrayBuffer` only when the browser reports cross-origin isolation and retain `ArrayBuffer` everywhere else.
+
+Pack six-value projectile records into the optional 64-thread WebGPU backend. Clamp dispatches to 100,000 records, validate record shape before GPU allocation, read results through a staging buffer, and destroy each transient GPU buffer. Keep the synchronous typed-array kernel as the universal gameplay path because WebGPU availability and readback cost vary by device.
+
+Feed damage rate, accuracy, movement entropy, near misses, remaining lives, and stage into a bounded 6-16-4 local network. Make one decision at most every 750 ms. Adjust density and speed around a target pressure band, increase power-up relief under sustained stress, and keep every output inside explicit gameplay bounds.
+
+Generate Fibonacci spirals, polygon rings, and homing fans from math alone. Select higher-stage boss phases through gas-metered NeonVM bytecode and build eight articulated boss limbs through FABRIK. Render a capped sample of the live ECS when frame time rises while continuing to simulate the complete fixed arena.
+
+Current workstation measurements:
+
+- Update 100,000 live CPU projectiles in 2.94 ms mean, about 340 complete updates per second.
+- Evaluate and train one AI Director decision in 0.0023 ms mean.
+- Pass 102 Vitest tests and 13 Playwright Chromium tests.
+- Build 96 modules with a 3.02 kB entry and an 8.55 kB Danmaku chunk.
+
+## Spatial WebRTC voice
+
+Request microphone permission only from the explicit Voice control. Accept one audio track, reject video and multiple audio tracks, and attach media to the existing manual ARC1 peer connection. Route each remote stream through `MediaStreamAudioSourceNode`, HRTF `PannerNode`, a distance-aware low-pass filter, dry gain, and a shared `ConvolverNode` filled with generated impulse data. Cap voice at the same eight direct peers as presence.
+
+Treat the feature as direct-peer audio, not a hosted voice service. Require a fresh room-code exchange after enabling a track, external TURN configuration where NAT traversal needs relay service, and browser permission from each participant. Test negotiation constraints and graph limits locally. Do not claim measured end-to-end voice latency without two real endpoints and network instrumentation.
+
 ## NeonVM
 
 Decode each instruction from one 16-bit word. Reserve the high nibble for the opcode and two register nibbles for operands. Provide sixteen unsigned 16-bit registers and `HALT`, `LOADI`, `ADD`, `MULQ8`, `LOADCTX`, `EMIT`, `JUMP`, and `JNZ`. Bound programs to 4,096 words, context to 256 words, gas to 100,000 cycles, and output to 64 events. Check every immediate and jump before use. Expose no DOM, network, storage, Phaser, Web Audio, dynamic import, or JavaScript evaluator.

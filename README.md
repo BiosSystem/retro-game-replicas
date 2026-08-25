@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;15+Classic+Games;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
+  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;16+Classic+Games;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
 </p>
 
 <p align="center">
@@ -22,13 +22,17 @@
 
 ## 🚀 Elevator Pitch
 
-**Universal Retro Arcade** is a premium, open-source collection of 15 classic and 2000s-era game replicas. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
+**Universal Retro Arcade** is a premium, open-source collection of 16 classic and 2000s-era game replicas. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
 
 Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLSL CRT shaders, and local persistence - without needing external emulators or illegal ROMs.
 
 ## ✨ Features
 
-- **15 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, and Neon Labyrinth.
+- **16 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, and Neon Danmaku.
+- **100K Projectile ECS** - Update fixed structure-of-arrays projectile storage without per-frame allocations, using SharedArrayBuffer only under cross-origin isolation and WebGPU only when available.
+- **Neural AI Director** - Adjust wave pressure, projectile speed, pattern choice, and power-up relief from bounded local gameplay telemetry.
+- **Spatial WebRTC Voice** - Opt into one microphone track per peer and position remote speech through HRTF panning, distance filtering, and generated reverb without bundled audio.
+- **Neon Danmaku** - Dodge generated Fibonacci, polygon, mixed, and homing curtains while NeonVM phases drive procedural eight-limb IK bosses.
 - **NeonVM Sandbox** - Compile validated visual graphs into gas-metered 16-bit bytecode with bounded registers, programs, jumps, and events.
 - **Connected Score Swarm** - Exchange Ed25519 signed score and replay claims across manually connected ARC1 peers and retain verified claims in IndexedDB.
 - **Procedural Kinematics** - Animate generated multi-joint bosses with FABRIK and simulate mass-conserving cellular lava without sprite or fluid assets.

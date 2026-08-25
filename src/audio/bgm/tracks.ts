@@ -45,4 +45,8 @@ export const TRACKS: Record<string, TrackerTrack> = {
     id: 'labyrinth', title: 'Subterranean Signal', bpm: 142, stepsPerBeat: 4,
     voices: { LEAD: notes(64, 0, 67, 68, 71, 0, 68, 67, 62, 0, 65, 67, 70, 68, 65, 62), ARP: notes(52, 55, 59, 55, 50, 53, 57, 53, 48, 52, 55, 52, 50, 53, 57, 60), BASS: notes(28, 0, 28, 35, 26, 0, 26, 33, 24, 0, 24, 31, 26, 0, 26, 33), DRUMS: drums('KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 0, 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'KICK', 'SNARE', 'HAT') },
   },
+  danmaku: {
+    id: 'danmaku', title: 'Curtain Fire Protocol', bpm: 168, stepsPerBeat: 4,
+    voices: { LEAD: notes(81, 84, 88, 91, 79, 83, 86, 91, 77, 81, 84, 89, 76, 79, 83, 88), ARP: notes(57, 60, 64, 69, 55, 59, 62, 67, 53, 57, 60, 65, 52, 55, 59, 64), BASS: notes(33, 33, 0, 40, 31, 31, 0, 38, 29, 29, 0, 36, 28, 28, 0, 35), DRUMS: drums('KICK', 'HAT', 'SNARE', 'HAT', 'KICK', 'KICK', 'SNARE', 'HAT', 'KICK', 'HAT', 'SNARE', 'KICK', 'KICK', 'HAT', 'SNARE', 'HAT') },
+  },
 };

@@ -1,5 +1,10 @@
 ## [Unreleased] - 2026-08-25
 ### Changed
+- Add a 100,000-projectile structure-of-arrays ECS with fixed typed-array storage, capability-gated SharedArrayBuffer allocation, allocation-free CPU updates, and a real 64-thread WebGPU compute backend.
+- Add a bounded neural AI Director that adapts density, speed, pattern selection, and power-up relief from damage, accuracy, movement, near-miss, life, and stage telemetry.
+- Add opt-in WebRTC microphone tracks with one-audio-track enforcement, video rejection, eight-peer limits, HRTF positioning, distance filtering, and generated convolution reverb.
+- Add Neon Danmaku with Fibonacci spirals, polygon curtains, homing fans, adaptive render budgets, generated chiptune audio, NeonVM boss phases, and eight-limb FABRIK bosses.
+- Add unit, benchmark, and Playwright coverage for deterministic patterns, director cadence, media constraints, fixed projectile capacity, and stable dense-curtain rendering.
 - Add NeonVM with sixteen 16-bit registers, bounded programs, deterministic gas metering, checked jumps, fixed-point arithmetic, and a 64-event output cap.
 - Compile validated Visual Mod Studio graphs into NeonVM bytecode without evaluating JavaScript.
 - Add Ed25519 signed score claims, replay-hash binding, deterministic gossip merging, connected-peer rebroadcast, and bounded IndexedDB accumulation.
@@ -71,6 +76,9 @@
 - Remove the external Google Fonts runtime dependency and use local system monospace fonts.
 
 ### Verified
+- Pass 102 unit and integration tests across 38 files plus 13 Playwright Chromium regression tests.
+- Update 100,000 projectiles in 2.94 ms mean and evaluate an adaptive director decision in 0.0023 ms mean on the verification workstation.
+- Build 96 transformed modules with a 3.02 kB initial entry, an 8.55 kB Danmaku chunk, and no Vite chunk warning.
 - Pass 95 unit and integration tests across 34 files plus 11 Playwright Chromium regression tests.
 - Execute about 1.31 million 67-instruction NeonVM programs per second while recording native arithmetic as 17.91 times faster on the verification workstation.
 - Sort 1,000 converged score claims in 0.136 ms mean and verify two signed browser claims within the 1,000 ms convergence gate.
