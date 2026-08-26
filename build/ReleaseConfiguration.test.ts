@@ -29,6 +29,11 @@ describe('release configuration', () => {
     expect(read('Dockerfile')).toContain('COPY nginx.conf /etc/nginx/conf.d/default.conf');
   });
 
+  it('keeps generated and native trees outside the web container context', () => {
+    const ignored = new Set(read('.dockerignore').split(/\r?\n/).filter(Boolean));
+    for (const path of ['.git', 'node_modules', 'dist', 'src-tauri', 'tests', 'test-results', 'docs', '*.py', '*.tsbuildinfo']) expect(ignored.has(path)).toBe(true);
+  });
+
   it('keeps the desktop CSP enabled for Wasm and generated worklets', () => {
     const config = JSON.parse(read('src-tauri/tauri.conf.json')) as { app: { security: { csp: string | null } } };
     expect(config.app.security.csp).not.toBeNull();

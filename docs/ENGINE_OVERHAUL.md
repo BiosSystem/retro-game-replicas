@@ -736,6 +736,8 @@ Run `npm ci` in the container and every release job. Gate tag-triggered containe
 
 Serve the web artifact from an unprivileged Nginx worker. Apply CSP, COOP, COEP, CORP, MIME sniffing protection, frame denial, a restrictive permissions policy, no-referrer behavior, immutable hashed-asset caching, no-cache service-worker delivery, and app-shell navigation fallback. Retain `blob:` worklet support and `wasm-unsafe-eval` only for code-generated AudioWorklet modules and validated code-owned Wasm bytes.
 
+Keep the Docker context limited to the frontend build inputs. Exclude `.git`, installed dependencies, existing bundles, documentation, browser reports, local scripts, tests, and the complete Tauri tree. Never send the multi-gigabyte Rust target cache to the Docker daemon for a web-only image.
+
 Enable a matching Tauri CSP with the minimum asset protocol and IPC sources required by the shell. Keep `core:default` as the only capability and expose no custom Rust commands. Track `Cargo.lock` and keep package, npm lock, Tauri, Cargo, and changelog versions synchronized.
 
 Current release-hardening verification:
