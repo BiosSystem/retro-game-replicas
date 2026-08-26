@@ -15,6 +15,9 @@ export interface GossipEnvelope {
   claims: ScoreClaim[];
 }
 
+export const MAX_GOSSIP_ENVELOPE_CLAIMS = 256;
+export const MAX_STORED_SCORE_CLAIMS = 4096;
+
 export class ScoreGossip extends EventTarget {
   private readonly claims = new Map<string, ScoreClaim>();
 
@@ -48,7 +51,7 @@ export class ScoreGossip extends EventTarget {
   }
 
   async mergeClaims(envelope: GossipEnvelope): Promise<ScoreClaim[]> {
-    if (envelope.type !== 'SCORE_GOSSIP' || !Array.isArray(envelope.claims) || envelope.claims.length > 256) return [];
+    if (envelope.type !== 'SCORE_GOSSIP' || !Array.isArray(envelope.claims) || envelope.claims.length > MAX_GOSSIP_ENVELOPE_CLAIMS) return [];
     const added: ScoreClaim[] = [];
     for (const claim of envelope.claims) {
       if (this.claims.has(claim.id) || !await verifyClaim(claim)) continue;
@@ -59,10 +62,22 @@ export class ScoreGossip extends EventTarget {
     return added;
   }
 
+  async mergeStored(claims: readonly ScoreClaim[]) {
+    if (!Array.isArray(claims) || claims.length > MAX_STORED_SCORE_CLAIMS) return 0;
+    let accepted = 0;
+    for (let offset = 0; offset < claims.length; offset += MAX_GOSSIP_ENVELOPE_CLAIMS) {
+      accepted += await this.merge({
+        type: 'SCORE_GOSSIP',
+        claims: claims.slice(offset, offset + MAX_GOSSIP_ENVELOPE_CLAIMS),
+      });
+    }
+    return accepted;
+  }
+
   envelope(): GossipEnvelope {
     return {
       type: 'SCORE_GOSSIP',
-      claims: [...this.claims.values()].sort((a, b) => a.clock - b.clock || a.id.localeCompare(b.id)).slice(-256),
+      claims: [...this.claims.values()].sort((a, b) => a.clock - b.clock || a.id.localeCompare(b.id)).slice(-MAX_GOSSIP_ENVELOPE_CLAIMS),
     };
   }
 

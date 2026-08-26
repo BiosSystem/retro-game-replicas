@@ -46,12 +46,16 @@ describe('score gossip', () => {
   it('relays the newest 256 logical clocks in deterministic order', async () => {
     const keys = await createSwarmIdentity();
     const gossip = new ScoreGossip();
+    const stored = [];
     for (let clock = 257; clock >= 1; clock--) {
-      await gossip.create('AAA', 'LabyrinthScene', clock, 'e'.repeat(64), keys, clock);
+      stored.push(await gossip.create('AAA', 'LabyrinthScene', clock, 'e'.repeat(64), keys, clock));
     }
     const claims = gossip.envelope().claims;
     expect(claims).toHaveLength(256);
     expect(claims[0].clock).toBe(2);
     expect(claims.at(-1)?.clock).toBe(257);
+    const hydrated = new ScoreGossip();
+    expect(await hydrated.mergeStored(stored)).toBe(257);
+    expect(hydrated.top(undefined, 100)).toHaveLength(100);
   });
 });

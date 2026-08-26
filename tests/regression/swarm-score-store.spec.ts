@@ -41,4 +41,9 @@ test('retain only the newest connected score claims on disk', async ({ page }) =
   });
 
   expect(result).toEqual({ count: 4096, oldest: 3, newest: 5000 });
+  await page.reload();
+  await expect.poll(() => page.evaluate(() => {
+    const api = (window as typeof window & { arcadeSwarm?: { top(): Array<{ score: number }> } }).arcadeSwarm;
+    return api?.top()[0]?.score;
+  })).toBe(5000);
 });

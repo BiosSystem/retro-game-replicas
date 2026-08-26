@@ -43,7 +43,7 @@ export class NetplayController {
   private async publishDna(payload:DnaPayload){if(await this.dna.merge({type:'DNA_GOSSIP',payloads:[payload]})){this.broadcast(this.dna.envelope());window.dispatchEvent(new CustomEvent('arcade-dna-received',{detail:this.dna.all()}));}}
   private async receiveDna(value:unknown){if(!value||typeof value!=='object'||(value as{type?:unknown}).type!=='DNA_GOSSIP')return;if(await this.dna.merge(value as DnaEnvelope)){this.broadcast(this.dna.envelope());window.dispatchEvent(new CustomEvent('arcade-dna-received',{detail:this.dna.all()}));}}
   private async receiveGossip(value:unknown){if(!value||typeof value!=='object'||(value as{type?:unknown}).type!=='SCORE_GOSSIP')return;const added=await this.gossip.mergeClaims(value as GossipEnvelope);if(!added.length)return;for(const claim of added)await this.scoreStore.put(claim);this.broadcast(this.gossip.envelope());this.emitBoard();}
-  private async hydrateScores(){try{await this.gossip.merge({type:'SCORE_GOSSIP',claims:await this.scoreStore.all()});this.emitBoard();}catch{return;}}
+  private async hydrateScores(){try{await this.gossip.mergeStored(await this.scoreStore.all());this.emitBoard();}catch{return;}}
   private broadcast(value:unknown){for(const peer of this.peers)peer.sendControl(value);}
   private emitBoard(){window.dispatchEvent(new CustomEvent('arcade-swarm-board',{detail:this.gossip.top(undefined,10)}));}
   private read() { return (this.pick('[data-code]') as HTMLTextAreaElement).value.trim(); }

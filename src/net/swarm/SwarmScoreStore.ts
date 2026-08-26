@@ -1,6 +1,6 @@
-import type { ScoreClaim } from './ScoreGossip';
+import { MAX_STORED_SCORE_CLAIMS, type ScoreClaim } from './ScoreGossip';
 
-export const MAX_PERSISTED_SCORE_CLAIMS = 4096;
+export const MAX_PERSISTED_SCORE_CLAIMS = MAX_STORED_SCORE_CLAIMS;
 
 const DATABASE_NAME = 'retro_swarm_scores_v1';
 const DATABASE_VERSION = 2;
