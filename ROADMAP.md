@@ -16,7 +16,8 @@ This document outlines the architectural evolution and feature improvements for 
 ## v1.3.0 (Phase 3) - Save State Persistence & BiosSystem Integration
 - [x] Implement instant game state serialization stored in IndexedDB with an isolated-memory fallback.
 - [x] Build UI for slot selection and generated thumbnail previews.
-- Create local-first leaderboard system with optional API sync to central bios-system.net dashboard.
+- [x] Create a local-first leaderboard center with persistent device boards and verified connected-peer score gossip.
+- [ ] Connect the optional central dashboard after bios-system.net publishes an authenticated score API endpoint and schema.
 
 ## v2.0.0 (Phase 4) - PWA Offline Mode & Local Multiplayer Matrix
 - [x] Configure a content-versioned Service Worker that precaches the complete production bundle for offline play.

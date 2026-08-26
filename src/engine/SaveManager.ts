@@ -3,7 +3,7 @@ export interface ScoreData {
     name: string;
 }
 import { AchievementManager } from './AchievementManager';
-import { ScoreLedger, type ScoreEntry } from './ScoreLedger';
+import { ScoreLedger, type ScoreBoard, type ScoreEntry } from './ScoreLedger';
 
 export class SaveManager {
     private static STORAGE_KEY_V1 = 'bios_arcade_saves_v1';
@@ -71,14 +71,15 @@ export class SaveManager {
     public static submitScore(game: string, difficulty: string, score: number, name: string = 'AAA'): boolean {
         AchievementManager.recordScore(score);
         this.ledger ??= new ScoreLedger(localStorage);
+        const newHighScore = this.isHighScore(game, difficulty, score);
         this.ledger.submit(game, difficulty, score, name);
-        window.dispatchEvent(new CustomEvent('arcade-score-submit', { detail: { game, score, name } }));
+        window.dispatchEvent(new CustomEvent('arcade-score-submit', { detail: { game, difficulty, score, name } }));
 
         if (!this.data[game]) {
             this.data[game] = {};
         }
 
-        if (this.isHighScore(game, difficulty, score)) {
+        if (newHighScore) {
             this.data[game][difficulty] = { score, name };
             this.save();
             return true; // New High Score
@@ -89,6 +90,11 @@ export class SaveManager {
     public static getLeaderboard(game: string, difficulty: string): ScoreEntry[] {
         this.ledger ??= new ScoreLedger(localStorage);
         return this.ledger.getBoard(game, difficulty);
+    }
+
+    public static getLeaderboards(): ScoreBoard[] {
+        this.ledger ??= new ScoreLedger(localStorage);
+        return this.ledger.getBoards();
     }
 
     private static save() {

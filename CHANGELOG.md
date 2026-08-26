@@ -1,5 +1,8 @@
 ## [Unreleased] - 2026-08-26
 ### Changed
+- Replace the compact connected-score list with a responsive local-first leaderboard center that merges persistent device boards and Ed25519-verified connected-peer claims, filters by game and source, and exposes cabinet, L-key, and Escape controls.
+- Add enumerable score-board snapshots, deterministic cross-source ranking, live refresh after score submission, and explicit device or peer provenance without inventing an unsupported central service.
+- Preserve the optional bios-system.net dashboard as a pending integration until an authenticated endpoint, request schema, and response schema are published.
 - Add a responsive Neon Epoch memory-bank drawer with one autosave and three manual slots, generated thumbnail previews, saved coordinates and timestamps, keyboard access, and save, load, or delete controls.
 - Share one IndexedDB or isolated-memory save-state store between the active scene and cabinet UI, enable commands only after Wasm physics initialization, and detach the scene bridge on shutdown.
 - Extend version-one save states with optional validated WebP or PNG data previews capped at 128 KiB while preserving existing states without thumbnails.

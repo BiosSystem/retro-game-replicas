@@ -104,6 +104,16 @@ Sign canonical score claims with an ephemeral Ed25519 identity. Bind player, gam
 
 Persist at most 4,096 verified claims in IndexedDB and render the top ten through the connected-swarm UI. Require one manual ARC1 offer-answer exchange per peer. Provide no background internet discovery, universal global view, authoritative identity, or central anti-cheat guarantee because browser WebRTC cannot discover strangers without signaling infrastructure.
 
+Project persistent device boards and the verified connected-peer view through one source-aware leaderboard center. Keep each device board capped at ten entries per game and difficulty, retain up to fifty projected rows in the visible view, sort by score then timestamp then player, and label every row as device or peer verified. Refresh after every local submission and peer merge. Open the center from the cabinet, with L, or close it with Escape.
+
+Do not send scores to bios-system.net yet. Keep central synchronization pending until the service publishes an HTTPS endpoint, authentication method, request schema, response schema, rate limits, replay-verification policy, and privacy or retention rules. Do not infer these contracts in the client.
+
+Current verification for the unified leaderboard milestone:
+
+- Pass 261 Vitest tests across 90 files and 38 Playwright Chromium workflows.
+- Build 182 modules with a 3.34 kB entry, a 94.91 kB bootstrap chunk, and a deferred 1,352.40 kB Phaser runtime.
+- Measure the existing CRT pass at 0.1356 ms mean CPU submission time during the complete browser matrix.
+
 ## Kinematics and cellular fluid
 
 Solve chains through bounded FABRIK forward and backward passes while preserving segment lengths and the root anchor. Cap chains at 64 joints and iterations at 32. Simulate water or lava in preallocated byte grids, prefer downward transfer, distribute residual mass sideways, and retain total mass unless a game explicitly adds or removes cells.

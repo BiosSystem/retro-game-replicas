@@ -1,6 +1,7 @@
 import type { StoragePort } from './PreferenceStore';
 
 export interface ScoreEntry { score: number; name: string; recordedAt: number; }
+export interface ScoreBoard { game: string; difficulty: string; entries: ScoreEntry[]; }
 
 export class ScoreLedger {
   private readonly storage: StoragePort;
@@ -26,6 +27,13 @@ export class ScoreLedger {
 
   getBoard(game: string, difficulty: string) { return this.read()[`${game}:${difficulty}`] ?? []; }
   getBest(game: string, difficulty: string) { return this.getBoard(game, difficulty)[0] ?? { score: 0, name: '---', recordedAt: 0 }; }
+  getBoards(): ScoreBoard[] {
+    return Object.entries(this.read()).flatMap(([key, entries]) => {
+      const separator = key.indexOf(':');
+      if (separator < 1 || separator === key.length - 1 || !Array.isArray(entries)) return [];
+      return [{ game: key.slice(0, separator), difficulty: key.slice(separator + 1), entries }];
+    }).sort((a, b) => a.game.localeCompare(b.game) || a.difficulty.localeCompare(b.difficulty));
+  }
 
   private read(): Record<string, ScoreEntry[]> {
     try {

@@ -24,5 +24,6 @@ describe('persistent arcade state', () => {
     expect(board).toHaveLength(10);
     expect(board[0]).toMatchObject({ score: 11, name: 'A' });
     expect(board[9].score).toBe(2);
+    expect(ledger.getBoards()).toEqual([{ game: 'Runner', difficulty: 'NORMAL', entries: board }]);
   });
 });
