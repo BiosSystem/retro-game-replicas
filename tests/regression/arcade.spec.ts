@@ -8,5 +8,24 @@ test('open bounded netplay handshake panel', async ({ page }) => { await page.go
 
 test('launch the generated Neon Retro Racer scene', async ({ page }) => { await page.goto('/'); await page.locator('#app canvas').first().waitFor(); await page.evaluate(() => { const lobby = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { updateGameSelection(change: number): void; handleSpace(): void }; for (let index = 0; index < 11; index++) lobby.updateGameSelection(1); lobby.handleSpace(); }); await page.waitForTimeout(250); await page.evaluate(() => ((window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { handleSpace(): void }).handleSpace()); await expect.poll(() => page.evaluate(() => Boolean((window as typeof window & { game?: { scene: { isActive(key: string): boolean } } }).game?.scene.isActive('RacerScene'))), { timeout: 10000 }).toBe(true); });
 
+test('render the WebGL CRT surface inside a 16:9 integer frame', async ({ page }) => {
+  await page.addInitScript(() => { localStorage.setItem('arcade_crt_preset', 'ARCADE_CRT_1980S'); localStorage.setItem('arcade_display_aspect', '16:9'); });
+  await page.goto('/');
+  const source = page.locator('#app canvas[data-arcade-surface="game"]');
+  const output = page.locator('#app canvas[data-arcade-surface="crt"]');
+  await source.waitFor();
+  await expect(output).toBeVisible();
+  await expect(page.locator('#app')).toHaveAttribute('data-display-aspect', '16x9');
+  await expect.poll(() => output.getAttribute('data-crt-submit-mean-ms'), { timeout: 5000 }).not.toBeNull();
+  const sourceBox = await source.boundingBox();
+  const outputBox = await output.boundingBox();
+  expect(outputBox).toEqual(sourceBox);
+  expect(await source.evaluate(canvas => canvas.style.opacity)).toBe('0');
+  const mean = Number(await output.getAttribute('data-crt-submit-mean-ms'));
+  expect(Number.isFinite(mean)).toBe(true);
+  expect(mean).toBeLessThan(20);
+  console.log(`CRT CPU SUBMISSION MEAN ${mean.toFixed(4)} MS`);
+});
+
 async function pixels(page: import('@playwright/test').Page) { return page.locator('[data-preview]').evaluate((canvas: HTMLCanvasElement) => Array.from(canvas.getContext('2d')!.getImageData(0, 0, canvas.width, canvas.height).data)); }
 function pixelRatio(a: number[], b: number[]) { let changed = 0; for (let index = 0; index < a.length; index += 4) if (Math.abs(a[index] - b[index]) > 8 || Math.abs(a[index + 1] - b[index + 1]) > 8 || Math.abs(a[index + 2] - b[index + 2]) > 8 || Math.abs(a[index + 3] - b[index + 3]) > 8) changed++; return changed / (a.length / 4); }

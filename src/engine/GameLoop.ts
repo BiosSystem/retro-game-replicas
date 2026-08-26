@@ -3,7 +3,8 @@ export class GameLoop {
     private accumulator: number = 0;
     private readonly step: number = 1 / 60; // 60 FPS logic update
     private animationId: number = 0;
-    private maxDelta: number = 0.25;
+    private readonly maxDelta: number = 0.05;
+    private readonly maxUpdatesPerFrame: number = 4;
 
     private updateFn: (dt: number) => void;
     private renderFn: (interpolation: number) => void;
@@ -23,19 +24,18 @@ export class GameLoop {
             return;
         }
 
-        let frameTime = (time - this.lastTime) / 1000;
+        const frameTime = clampFrameDelta(time - this.lastTime, this.maxDelta * 1000) / 1000;
         this.lastTime = time;
-
-        if (frameTime > this.maxDelta) {
-            frameTime = this.maxDelta;
-        }
 
         this.accumulator += frameTime;
 
-        while (this.accumulator >= this.step) {
+        let updates = 0;
+        while (this.accumulator >= this.step && updates < this.maxUpdatesPerFrame) {
             this.updateFn(this.step);
             this.accumulator -= this.step;
+            updates += 1;
         }
+        if (updates === this.maxUpdatesPerFrame) this.accumulator = Math.min(this.accumulator, this.step);
 
         const interpolation = this.accumulator / this.step;
         this.renderFn(interpolation);
@@ -52,4 +52,10 @@ export class GameLoop {
     public stop() {
         cancelAnimationFrame(this.animationId);
     }
+}
+
+export function clampFrameDelta(deltaMs: number, maximumMs = 50) {
+    if (!Number.isFinite(deltaMs) || deltaMs <= 0) return 0;
+    const maximum = Number.isFinite(maximumMs) ? Math.max(1, Math.min(250, maximumMs)) : 50;
+    return Math.min(deltaMs, maximum);
 }

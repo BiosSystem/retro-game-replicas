@@ -1,5 +1,11 @@
-## [Unreleased] - 2026-08-25
+## [Unreleased] - 2026-08-26
 ### Changed
+- Add a modular WebGL CRT post-process surface with nearest-neighbor frame upload, compile and runtime fallback, and uniform-driven scanlines, threshold bloom, barrel curvature, chromatic aberration, phosphor shadow mask, and edge vignette stages.
+- Add Clean Pixel, Arcade CRT 1980s, Trinitron 1990s, and Bypass runtime presets with adaptive quality reductions for expensive shader controls.
+- Add selectable 4:3 and 16:9 display frames with strict integer source scaling, centered letterbox or pillar space, and a bounded fractional fit only when the container cannot hold one source-resolution pixel scale.
+- Clamp invalid or long core-loop deltas to 50 ms, preserve native 60 Hz, 120 Hz, 144 Hz, and VRR intervals, and cap fixed-step catch-up at four updates per animation frame.
+- Replace the legacy CRT toggle in Cabinet Control with live CRT preset and display aspect selectors while preserving the earlier boolean preference as a migration fallback.
+- Add unit and Chromium coverage for preset uniforms, shader compile failure, WebGL fallback, integer viewport math, high-refresh delta bounds, synchronized source and post-process surfaces, and CPU submission timing.
 - Add one animation-frame Gamepad API sample with canonical standard-layout bitmasks, press and release edges, radial stick deadzones, analog trigger thresholds, PlayStation and Xbox family labels, and a bounded raw DualShock face-button fallback.
 - Route local multiplayer and pause controls through the shared controller frame so scenes do not issue duplicate `navigator.getGamepads()` calls.
 - Add a versioned IndexedDB save-state pipeline for up to 16 MiB of Wasm memory, four player transforms, and Neon Epoch seeds with scheduled capture, asynchronous SHA-256 integrity checks, isolated memory fallback, autosaves, and shutdown persistence.

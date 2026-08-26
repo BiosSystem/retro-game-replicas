@@ -1,10 +1,12 @@
 import Phaser from 'phaser';
 import { AudioEngine } from '../engine/AudioEngine';
 import { PreferenceStore, type CabinetTheme } from '../engine/PreferenceStore';
+import { CRT_PRESETS, nextCrtPreset, parseCrtPreset } from '../engine/graphics/CrtShaderPipeline';
+import { parseDisplayAspect } from '../engine/graphics/DisplayScaler';
 
 export default class SettingsScene extends Phaser.Scene {
     private sourceScene!: string;
-    private options = ['RESUME', 'CABINET THEME', 'REBIND FIRE', 'TOGGLE CRT', 'REDUCE MOTION', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
+    private options = ['RESUME', 'CABINET THEME', 'REBIND FIRE', 'CRT PRESET', 'DISPLAY ASPECT', 'REDUCE MOTION', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
 
@@ -77,7 +79,8 @@ export default class SettingsScene extends Phaser.Scene {
         const preferences = new PreferenceStore(localStorage).load();
         if (option === 'CABINET THEME') return `${option}: ${preferences.theme}`;
         if (option === 'REBIND FIRE') return `${option}: ${preferences.bindings.FIRE[0]}`;
-        if (option === 'TOGGLE CRT') return `${option}: ${localStorage.getItem('arcade_crt') === 'true' ? 'ON' : 'OFF'}`;
+        if (option === 'CRT PRESET') return `${option}: ${CRT_PRESETS[this.currentCrtPreset()].label.toUpperCase()}`;
+        if (option === 'DISPLAY ASPECT') return `${option}: ${parseDisplayAspect(localStorage.getItem('arcade_display_aspect'))}`;
         if (option === 'REDUCE MOTION') return `${option}: ${localStorage.getItem('arcade_reduced_motion') === 'true' ? 'ON' : 'OFF'}`;
         return option;
     }
@@ -103,9 +106,15 @@ export default class SettingsScene extends Phaser.Scene {
                 window.dispatchEvent(new Event('arcade-settings-change'));
                 this.updateMenu();
             });
-        } else if (opt === 'TOGGLE CRT') {
-            const isEnabled = localStorage.getItem('arcade_crt') === 'true';
-            localStorage.setItem('arcade_crt', isEnabled ? 'false' : 'true');
+        } else if (opt === 'CRT PRESET') {
+            const preset = nextCrtPreset(this.currentCrtPreset());
+            localStorage.setItem('arcade_crt_preset', preset);
+            localStorage.setItem('arcade_crt', preset === 'BYPASS' ? 'false' : 'true');
+            window.dispatchEvent(new Event('arcade-settings-change'));
+            this.updateMenu();
+        } else if (opt === 'DISPLAY ASPECT') {
+            const aspect = parseDisplayAspect(localStorage.getItem('arcade_display_aspect')) === '4:3' ? '16:9' : '4:3';
+            localStorage.setItem('arcade_display_aspect', aspect);
             window.dispatchEvent(new Event('arcade-settings-change'));
             this.updateMenu();
         } else if (opt === 'REDUCE MOTION') {
@@ -135,19 +144,10 @@ export default class SettingsScene extends Phaser.Scene {
 
     private closeSettings() {
         this.scene.stop('SettingsScene');
-        if (this.sourceScene === 'LobbyScene') {
-            // Lobby doesn't pause, so we just stop settings
-            const lobby = this.scene.get('LobbyScene') as any;
-            if (lobby && typeof lobby.applyCrt === 'function') {
-                if (localStorage.getItem('arcade_crt') === 'true') {
-                    lobby.applyCrt();
-                } else {
-                    lobby.cameras.main.filters.internal.clear();
-                }
-            }
-        } else {
-            // Restore caller if it was paused
-            this.scene.resume(this.sourceScene);
-        }
+        if (this.sourceScene !== 'LobbyScene') this.scene.resume(this.sourceScene);
+    }
+
+    private currentCrtPreset() {
+        return parseCrtPreset(localStorage.getItem('arcade_crt_preset'), localStorage.getItem('arcade_crt') === 'true' ? 'ARCADE_CRT_1980S' : 'BYPASS');
     }
 }
