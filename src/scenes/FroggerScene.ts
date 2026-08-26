@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { SaveManager } from '../engine/SaveManager';
 import { VFXManager } from '../engine/VFXManager';
+import { InputManager } from '../engine/InputManager';
 
 const TILE = 32;
 
@@ -76,6 +77,8 @@ export default class FroggerScene extends Phaser.Scene {
       this.scene.pause();
       this.scene.launch('PauseScene', { scene: this.scene.key });
     });
+    InputManager.setLegacyGamepadKeyboardBridge(true);
+    this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridge(false));
   }
 
   move(dx: number, dy: number) {

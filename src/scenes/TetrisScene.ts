@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { SaveManager } from '../engine/SaveManager';
 import { VFXManager } from '../engine/VFXManager';
+import { InputManager } from '../engine/InputManager';
 
 const COLS = 10;
 const ROWS = 20;
@@ -79,6 +80,8 @@ export default class TetrisScene extends Phaser.Scene {
       this.scene.pause();
       this.scene.launch('PauseScene', { scene: this.scene.key });
     });
+    InputManager.setLegacyGamepadKeyboardBridge(true);
+    this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridge(false));
   }
 
   spawnPiece() {

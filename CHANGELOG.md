@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Changed
+- Route Player 1 controller direction and face-button transitions through an opt-in compatibility bridge for the keyboard-owned Snake, Tetris, Frogger, Brave Bird, Cyber Chasm, and Neon Singularity replicas, then release synthetic input on scene shutdown.
+- Add a browser regression that launches Snake with a normalized connected controller and verifies the legacy keyboard path receives its direction.
+
 ## [2.0.0] - 2026-08-26
 ### Changed
 - Gate every tag-triggered container and desktop publication behind deterministic npm installation, TypeScript analysis, 265 Vitest tests, the production build, 38 Chromium regressions, four Firefox and WebKit smoke checks, a live container shell and header smoke test, and locked Cargo analysis.

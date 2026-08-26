@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { SaveManager } from '../engine/SaveManager';
 import { VFXManager } from '../engine/VFXManager';
+import { InputManager } from '../engine/InputManager';
 
 export default class BirdScene extends Phaser.Scene {
   private bird!: Phaser.GameObjects.Rectangle;
@@ -78,6 +79,8 @@ export default class BirdScene extends Phaser.Scene {
       this.scene.pause();
       this.scene.launch('PauseScene', { scene: this.scene.key });
     });
+    InputManager.setLegacyGamepadKeyboardBridge(true);
+    this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridge(false));
 
     // Collisions
     this.physics.add.collider(this.bird, this.pipes, () => this.endGame());

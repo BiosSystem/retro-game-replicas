@@ -670,6 +670,8 @@ Call `navigator.getGamepads()` once from the existing `requestAnimationFrame` ru
 
 Treat `mapping: "standard"` as the authoritative canonical layout for PlayStation, Xbox, and generic controllers. Use controller family detection only for labels. Apply the raw DualShock face-button permutation only when a recognized PlayStation controller does not expose the standard mapping. Treat all other raw generic layouts as a best-effort browser order because the Gamepad API does not standardize them.
 
+Keep keyboard-owned replicas compatible through an opt-in scene bridge. While Snake, Tetris, Frogger, Brave Bird, Cyber Chasm, or Neon Singularity is active, map the first normalized controller's stick or D-pad directions and face buttons to its existing arrow and Space handlers. Emit only state transitions and release every synthetic key when the scene shuts down. Keep the lobby and shared-input scenes on their native controller paths to avoid duplicate commands.
+
 Keep the measurement scoped to handler computation. Do not describe polling as zero hardware latency or include USB, Bluetooth, browser scheduling, display scanout, or device latency in the synthetic result. Current workstation measurement: poll and normalize one synthetic standard controller in 0.0006 ms mean with a 0.0016 ms p99 across 894,042 samples.
 
 ## IndexedDB Wasm state serialization

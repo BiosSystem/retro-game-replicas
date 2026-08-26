@@ -2,7 +2,7 @@ import { PreferenceStore, type ControlAction } from './PreferenceStore';
 import { MultiInput, type PlayerInputState } from '../multiplayer/MultiInput';
 import { ArcadeModeRouter } from '../multiplayer/ArcadeModeRouter';
 import type { ArcadeMode } from '../multiplayer/CoopSession';
-import { GamepadHandler, type GamepadFrame } from './input/GamepadHandler';
+import { GamepadButton, GamepadHandler, type GamepadFrame } from './input/GamepadHandler';
 
 export class InputManager {
     private static keys: Set<string> = new Set();
@@ -17,6 +17,8 @@ export class InputManager {
     };
     private static networkPlayer: PlayerInputState = { UP: false, DOWN: false, LEFT: false, RIGHT: false, FIRE: false };
     private static replayMask: number | null = null;
+    private static legacyGamepadKeyboardBridge = false;
+    private static legacyGamepadState: PlayerInputState = emptyPlayerState();
 
     public static initialize() {
         this.refreshBindings();
@@ -143,6 +145,7 @@ export class InputManager {
             this.updateIndicator();
         }
         this.playerState = this.multi.poll(snapshots);
+        if (this.legacyGamepadKeyboardBridge) this.syncLegacyGamepadKeys(frames);
     }
 
     public static isDown(code: string): boolean {
@@ -172,6 +175,11 @@ export class InputManager {
 
     public static setNetworkPlayerState(state: PlayerInputState) { this.networkPlayer = { ...state }; }
     public static setReplayMask(mask: number | null) { this.replayMask = mask === null ? null : Math.max(0, Math.min(31, mask | 0)); }
+    public static setLegacyGamepadKeyboardBridge(active: boolean) {
+        if (this.legacyGamepadKeyboardBridge === active) return;
+        this.legacyGamepadKeyboardBridge = active;
+        if (!active) this.releaseLegacyGamepadKeys();
+    }
     public static getP1Mask() { return (this.isP1Down('UP') ? 1 : 0) | (this.isP1Down('DOWN') ? 2 : 0) | (this.isP1Down('LEFT') ? 4 : 0) | (this.isP1Down('RIGHT') ? 8 : 0) | (this.isP1Down('FIRE') ? 16 : 0); }
     public static getGamepadFrames(): readonly GamepadFrame[] { return this.gamepads.getFrames(); }
 
@@ -188,9 +196,35 @@ export class InputManager {
     private static refreshBindings() {
         this.bindings = new PreferenceStore(localStorage).load().bindings;
     }
+
+    private static syncLegacyGamepadKeys(frames: readonly GamepadFrame[]) {
+        const gamepad = frames[0];
+        const buttons = gamepad?.buttons ?? 0;
+        this.syncLegacyGamepadKey('UP', Boolean(buttons & GamepadButton.DPAD_UP) || (gamepad?.leftY ?? 0) < -0.5);
+        this.syncLegacyGamepadKey('DOWN', Boolean(buttons & GamepadButton.DPAD_DOWN) || (gamepad?.leftY ?? 0) > 0.5);
+        this.syncLegacyGamepadKey('LEFT', Boolean(buttons & GamepadButton.DPAD_LEFT) || (gamepad?.leftX ?? 0) < -0.5);
+        this.syncLegacyGamepadKey('RIGHT', Boolean(buttons & GamepadButton.DPAD_RIGHT) || (gamepad?.leftX ?? 0) > 0.5);
+        this.syncLegacyGamepadKey('FIRE', Boolean(buttons & (GamepadButton.SOUTH | GamepadButton.EAST | GamepadButton.WEST | GamepadButton.NORTH)));
+    }
+
+    private static syncLegacyGamepadKey(action: keyof PlayerInputState, pressed: boolean) {
+        if (pressed === this.legacyGamepadState[action]) return;
+        this.legacyGamepadState[action] = pressed;
+        dispatchVirtualKey(LEGACY_GAMEPAD_KEYS[action], pressed);
+    }
+
+    private static releaseLegacyGamepadKeys() {
+        for (const action of LEGACY_ACTIONS) {
+            if (this.legacyGamepadState[action]) dispatchVirtualKey(LEGACY_GAMEPAD_KEYS[action], false);
+        }
+        this.legacyGamepadState = emptyPlayerState();
+    }
 }
 
 function maskFor(action: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FIRE') { return { UP: 1, DOWN: 2, LEFT: 4, RIGHT: 8, FIRE: 16 }[action]; }
+function emptyPlayerState(): PlayerInputState { return { UP: false, DOWN: false, LEFT: false, RIGHT: false, FIRE: false }; }
+const LEGACY_GAMEPAD_KEYS: Record<keyof PlayerInputState, string> = { UP: 'ArrowUp', DOWN: 'ArrowDown', LEFT: 'ArrowLeft', RIGHT: 'ArrowRight', FIRE: 'Space' };
+const LEGACY_ACTIONS: readonly (keyof PlayerInputState)[] = ['UP', 'DOWN', 'LEFT', 'RIGHT', 'FIRE'];
 function touchCodes(code: string) { return { KeyW: ['KeyW', 'ArrowUp'], KeyS: ['KeyS', 'ArrowDown'], KeyA: ['KeyA', 'ArrowLeft'], KeyD: ['KeyD', 'ArrowRight'], Space: ['Space'] }[code] ?? [code]; }
 function dispatchVirtualKey(code: string, pressed: boolean) {
     const key = { KeyW: 'w', KeyS: 's', KeyA: 'a', KeyD: 'd', ArrowUp: 'ArrowUp', ArrowDown: 'ArrowDown', ArrowLeft: 'ArrowLeft', ArrowRight: 'ArrowRight', Space: ' ' }[code] ?? code;
