@@ -77,11 +77,13 @@ export class InputManager {
     }
 
     private static checkAndInjectVirtualPad() {
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        if (!isMobile) return;
+        const hasTouch = navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
+        if (!hasTouch || document.getElementById('virtual-pad')) return;
 
         const container = document.createElement('div');
         container.id = 'virtual-pad';
+        container.setAttribute('role', 'group');
+        container.setAttribute('aria-label', 'Arcade touch controls');
         
         container.innerHTML = `
             <style>
@@ -97,7 +99,7 @@ export class InputManager {
                     background: rgba(0, 255, 204, 0.2); border: 2px solid rgba(0, 255, 204, 0.5);
                     border-radius: 50%; color: #00ffcc; font-family: monospace; font-weight: bold;
                     display: flex; align-items: center; justify-content: center; user-select: none;
-                    touch-action: none;
+                    padding: 0; touch-action: none;
                 }
                 .v-btn:active { background: rgba(0, 255, 204, 0.5); }
                 .up { grid-column: 2; grid-row: 1; }
@@ -107,24 +109,25 @@ export class InputManager {
                 .action { width: 70px; height: 70px; border-radius: 50%; }
             </style>
             <div class="d-pad">
-                <div class="v-btn up" data-key="KeyW">W</div>
-                <div class="v-btn left" data-key="KeyA">A</div>
-                <div class="v-btn right" data-key="KeyD">D</div>
-                <div class="v-btn down" data-key="KeyS">S</div>
+                <button type="button" class="v-btn up" data-key="KeyW" aria-label="Move up">W</button>
+                <button type="button" class="v-btn left" data-key="KeyA" aria-label="Move left">A</button>
+                <button type="button" class="v-btn right" data-key="KeyD" aria-label="Move right">D</button>
+                <button type="button" class="v-btn down" data-key="KeyS" aria-label="Move down">S</button>
             </div>
             <div class="action-pad">
-                <div class="v-btn action" data-key="Space">FIRE</div>
+                <button type="button" class="v-btn action" data-key="Space" aria-label="Fire or select">FIRE</button>
             </div>
         `;
 
         document.body.appendChild(container);
 
-        const buttons = document.querySelectorAll('.v-btn');
+        const buttons = container.querySelectorAll<HTMLButtonElement>('.v-btn');
         buttons.forEach(btn => {
             const key = btn.getAttribute('data-key')!;
-            btn.addEventListener('touchstart', (e) => { e.preventDefault(); this.simulateTouch(key, true); });
-            btn.addEventListener('touchend', (e) => { e.preventDefault(); this.simulateTouch(key, false); });
-            btn.addEventListener('touchcancel', (e) => { e.preventDefault(); this.simulateTouch(key, false); });
+            btn.addEventListener('pointerdown', event => { event.preventDefault(); btn.setPointerCapture(event.pointerId); this.simulateTouch(key, true); });
+            for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+                btn.addEventListener(type, event => { event.preventDefault(); this.simulateTouch(key, false); });
+            }
         });
     }
 
@@ -178,14 +181,8 @@ export class InputManager {
     }
 
     public static simulateTouch(code: string, isDown: boolean) {
-        if (isDown) {
-            this.keys.add(code);
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
-            }
-        } else {
-            this.keys.delete(code);
-        }
+        for (const emittedCode of touchCodes(code)) dispatchVirtualKey(emittedCode, isDown);
+        if (isDown && navigator.vibrate) navigator.vibrate(10);
     }
 
     private static refreshBindings() {
@@ -194,3 +191,11 @@ export class InputManager {
 }
 
 function maskFor(action: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FIRE') { return { UP: 1, DOWN: 2, LEFT: 4, RIGHT: 8, FIRE: 16 }[action]; }
+function touchCodes(code: string) { return { KeyW: ['KeyW', 'ArrowUp'], KeyS: ['KeyS', 'ArrowDown'], KeyA: ['KeyA', 'ArrowLeft'], KeyD: ['KeyD', 'ArrowRight'], Space: ['Space'] }[code] ?? [code]; }
+function dispatchVirtualKey(code: string, pressed: boolean) {
+    const key = { KeyW: 'w', KeyS: 's', KeyA: 'a', KeyD: 'd', ArrowUp: 'ArrowUp', ArrowDown: 'ArrowDown', ArrowLeft: 'ArrowLeft', ArrowRight: 'ArrowRight', Space: ' ' }[code] ?? code;
+    const keyCode = { KeyW: 87, KeyS: 83, KeyA: 65, KeyD: 68, ArrowUp: 38, ArrowDown: 40, ArrowLeft: 37, ArrowRight: 39, Space: 32 }[code] ?? 0;
+    const event = new KeyboardEvent(pressed ? 'keydown' : 'keyup', { code, key, bubbles: true, cancelable: true });
+    Object.defineProperties(event, { keyCode: { value: keyCode }, which: { value: keyCode } });
+    window.dispatchEvent(event);
+}

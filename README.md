@@ -153,6 +153,17 @@ Read the [open-source architecture synthesis](docs/OPEN_SOURCE_RESEARCH.md) and 
 
 Press `M` or `O` from the cabinet to open the Mod Manager. Import only declarative JSON documents below 64 KiB. Use the same drawer to design and assign procedural sound patches.
 
+## Fun Zone container hosting
+
+Run the web arcade as a dedicated HTTPS origin such as `fun.bios-system.net`. Keep the application at the origin root because its PWA manifest, service worker, cached navigation shell, and generated asset URLs use root-relative paths. Do not mount the current build below `/fun-zone/` without first adding an explicit Vite base path and matching service-worker scope.
+
+```bash
+docker compose up --build -d
+curl --fail http://127.0.0.1:8080/healthz
+```
+
+Route the public hostname to `127.0.0.1:8080` through the website reverse proxy or tunnel and terminate TLS there. Preserve `Cross-Origin-Opener-Policy`, `Cross-Origin-Embedder-Policy`, CSP, and the other Nginx response headers. Do not embed the current build in an iframe because the production policy intentionally sends `frame-ancestors 'none'` and `X-Frame-Options: DENY`.
+
 ---
 
 *Copyright © 2026 BiosSystem | Powered by BiosSystem Kernel*

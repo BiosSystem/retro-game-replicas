@@ -66,6 +66,8 @@ jobs:
             sleep 1
           done
           grep --fixed-strings '<main class="arcade-cabinet"' /tmp/arcade-shell.html
+          curl --fail --silent --output /dev/null http://127.0.0.1:8080/healthz
+          test "$(docker inspect --format '{{.Config.User}}' retro-arcade-validation)" = '10001:10001'
           curl --fail --silent --show-error --dump-header /tmp/arcade-headers.txt --output /dev/null http://127.0.0.1:8080/
           grep --ignore-case '^Content-Security-Policy:' /tmp/arcade-headers.txt
           grep --ignore-case '^Cross-Origin-Opener-Policy: same-origin' /tmp/arcade-headers.txt

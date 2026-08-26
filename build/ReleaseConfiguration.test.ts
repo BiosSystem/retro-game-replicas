@@ -25,8 +25,23 @@ describe('release configuration', () => {
     const nginx = read('nginx.conf');
     for (const header of ['Content-Security-Policy', 'Cross-Origin-Opener-Policy', 'Cross-Origin-Embedder-Policy', 'Cross-Origin-Resource-Policy', 'X-Content-Type-Options', 'Permissions-Policy']) expect(nginx).toContain(header);
     expect(nginx).toContain('try_files $uri $uri/ /index.html');
-    expect(read('Dockerfile')).toContain('RUN npm ci');
-    expect(read('Dockerfile')).toContain('COPY nginx.conf /etc/nginx/conf.d/default.conf');
+    expect(nginx).toContain('location = /healthz');
+    const dockerfile = read('Dockerfile');
+    expect(dockerfile).toContain('FROM node:24.14.1-alpine3.23 AS builder');
+    expect(dockerfile).toContain('FROM nginx:1.28.3-alpine3.23');
+    expect(dockerfile).toContain('RUN npm ci');
+    expect(dockerfile).toContain('COPY nginx.conf /etc/nginx/conf.d/default.conf');
+    expect(dockerfile).toContain('USER 10001:10001');
+    expect(dockerfile).toContain('HEALTHCHECK');
+  });
+
+  it('publishes a localhost-only hardened compose service', () => {
+    const compose = read('compose.yaml');
+    expect(compose).toContain('127.0.0.1:8080:8080');
+    expect(compose).toContain('read_only: true');
+    expect(compose).toContain('no-new-privileges:true');
+    expect(compose).toContain('cap_drop:');
+    expect(compose).toContain('- ALL');
   });
 
   it('keeps generated and native trees outside the web container context', () => {

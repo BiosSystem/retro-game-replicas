@@ -43,7 +43,7 @@ Run the native source gate when Cargo is installed:
 cargo check --locked --manifest-path src-tauri/Cargo.toml
 ```
 
-Build native packages with `npm run tauri build`. Build the container from `Dockerfile`; it installs the generated PWA under an unprivileged Nginx runtime with CSP, cross-origin isolation, and security headers.
+Build native packages with `npm run tauri build`. Build the container from `Dockerfile`; it installs the generated PWA under an unprivileged UID 10001 Nginx runtime with CSP, cross-origin isolation, security headers, and a `/healthz` probe. Use `compose.yaml` to bind the service to localhost with a read-only root filesystem, dropped capabilities, no-new-privileges, and memory-backed runtime directories. Publish it through an HTTPS reverse proxy on a dedicated origin. Keep the application at `/` and do not iframe it under the current frame-denial policy.
 
 ## Security boundary
 

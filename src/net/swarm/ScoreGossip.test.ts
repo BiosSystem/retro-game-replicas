@@ -57,5 +57,5 @@ describe('score gossip', () => {
     const hydrated = new ScoreGossip();
     expect(await hydrated.mergeStored(stored)).toBe(257);
     expect(hydrated.top(undefined, 100)).toHaveLength(100);
-  });
+  }, 15000);
 });

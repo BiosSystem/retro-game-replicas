@@ -4,6 +4,7 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     sessionStorage.setItem('bios_post_complete', 'true');
     localStorage.setItem('bios_arcade_ledger_migrated', 'true');
+    localStorage.setItem('bios_arcade_free_play', 'true');
   });
 });
 
@@ -29,4 +30,32 @@ test('provide browser persistence and safe rendering fallbacks', async ({ page }
     storage: typeof localStorage !== 'undefined',
   }));
   expect(capabilities).toEqual({ indexedDb: true, canvas: true, storage: true });
+});
+
+test('control a keyboard-owned game from a mobile touch pad', async ({ page }) => {
+  await page.addInitScript(() => Object.defineProperty(navigator, 'maxTouchPoints', { configurable: true, value: 1 }));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.locator('#app canvas').first().waitFor();
+  const pad = page.getByRole('group', { name: 'Arcade touch controls' });
+  await expect(pad).toBeVisible();
+  await page.evaluate(() => {
+    const lobby = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { selectedGameIndex: number; handleSpace(): void };
+    lobby.selectedGameIndex = 0;
+    lobby.handleSpace();
+  });
+  await page.waitForTimeout(220);
+  await page.evaluate(() => {
+    const lobby = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { handleSpace(): void };
+    lobby.handleSpace();
+  });
+  await expect.poll(() => page.evaluate(() => {
+    return (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('SnakeScene');
+  })).toBe(true);
+  await pad.getByRole('button', { name: 'Move up' }).hover();
+  await page.mouse.down();
+  await expect.poll(() => page.evaluate(() => {
+    return ((window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('SnakeScene') as { nextDirection: string }).nextDirection;
+  })).toBe('UP');
+  await page.mouse.up();
 });

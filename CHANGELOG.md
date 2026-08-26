@@ -10,6 +10,8 @@
 - Enforce the 4,096-claim IndexedDB ceiling on disk, prune the oldest logical clocks inside the write transaction, and hydrate retained claims newest-first through an indexed cursor.
 - Bind new connected-score identifiers to signer key fingerprints, prevent simultaneous cross-peer claim collisions, reject negative logical clocks, and relay the newest deterministic 256-claim window.
 - Hydrate up to 4,096 persisted score claims through verified 256-claim batches instead of passing the complete local database through the wire-envelope limit and losing every score above 256 records.
+- Pin the Node and Nginx container stages, run Nginx as fixed UID 10001, add a live health probe, and provide a localhost-only read-only compose profile for dedicated Fun Zone hosting.
+- Route semantic touch controls through paired WASD and arrow events so keyboard-owned games respond on phones and touch laptops, then sweep all 27 registered arcade scenes for launch-time failures.
 - Enable the Tauri production CSP while retaining the minimum blob, Wasm, worker, asset protocol, IPC, HTTPS, and secure WebSocket sources required by generated engine systems.
 - Add the missing Cargo lockfile, use `npm ci` in containers and release jobs, compile an 8.54 MB locked Windows release binary, and synchronize web, Tauri, and Rust versions at 2.0.0.
 - Add efficient Firefox and WebKit smoke coverage for cabinet startup, runtime delta protection, persistent controls, IndexedDB, local storage, and safe canvas rendering fallbacks.
