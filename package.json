@@ -1,7 +1,7 @@
 {
   "name": "retro-arcade-launcher",
   "private": true,
-  "version": "1.1.4",
+  "version": "2.0.0",
   "description": "A beautiful, lightning-fast Open Source Retro Arcade Launcher, crafted with passion by BiosSystem",
   "author": "BiosSystem Open Source Community",
   "license": "MIT",
@@ -11,6 +11,7 @@
     "lint": "tsc --noEmit",
     "test": "vitest run --exclude tests/**",
     "test:regression": "playwright test",
+    "test:cross-browser": "playwright test --config playwright.smoke.config.ts",
     "benchmark": "vitest bench --run",
     "build": "tsc && vite build",
     "preview": "vite preview",

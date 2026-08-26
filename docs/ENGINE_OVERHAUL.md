@@ -729,3 +729,19 @@ Current verification:
 - Build 178 modules with a 3.30 kB entry, a 0.66 kB deferred offline runtime, an 88.44 kB bootstrap chunk, and the deferred 1,352.40 kB Phaser runtime.
 
 References: [MDN Service Worker API](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API), [MDN Cache addAll](https://developer.mozilla.org/en-US/docs/Web/API/Cache/addAll), [MDN web application manifest](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest)
+
+## Version 2.0 release hardening
+
+Run `npm ci` in the container and every release job. Gate tag-triggered container and Tauri publication behind TypeScript analysis, Vitest, the production bundle, the complete Chromium regression matrix, focused Firefox and WebKit smoke checks, a live container shell and security-header probe, and `cargo check --locked`. Keep publication jobs disabled for branch pushes, pull requests, and manual validation runs.
+
+Serve the web artifact from an unprivileged Nginx worker. Apply CSP, COOP, COEP, CORP, MIME sniffing protection, frame denial, a restrictive permissions policy, no-referrer behavior, immutable hashed-asset caching, no-cache service-worker delivery, and app-shell navigation fallback. Retain `blob:` worklet support and `wasm-unsafe-eval` only for code-generated AudioWorklet modules and validated code-owned Wasm bytes.
+
+Enable a matching Tauri CSP with the minimum asset protocol and IPC sources required by the shell. Keep `core:default` as the only capability and expose no custom Rust commands. Track `Cargo.lock` and keep package, npm lock, Tauri, Cargo, and changelog versions synchronized.
+
+Current release-hardening verification:
+
+- Pass 265 Vitest tests across 91 files.
+- Pass 38 Chromium regression workflows plus four focused Firefox and WebKit smoke workflows.
+- Build 182 frontend modules with a 3.34 kB entry, a 94.91 kB bootstrap chunk, and the deferred 1,352.40 kB Phaser runtime.
+- Pass locked Cargo analysis and compile an 8,541,184-byte optimized Windows executable.
+- Keep the native process alive through a bounded five-second startup smoke check.

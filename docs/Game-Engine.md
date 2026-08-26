@@ -1,42 +1,41 @@
-# Architecture & Game Engine
+# Architecture and Game Engine
 
-Universal Retro Arcade is a TypeScript + Phaser 4 frontend wrapped in a Tauri v2 Rust shell. Understanding how these layers interact is essential for contributors.
+Universal Retro Arcade uses a TypeScript and Phaser 4 frontend wrapped by a minimal Tauri v2 Rust shell.
 
-## Technology Stack
+## Runtime layers
 
-| Layer | Technology |
+| Layer | Implementation |
 |---|---|
-| Game Engine | Phaser 4 (WebGL renderer) |
-| Frontend Language | TypeScript + Vite |
-| Desktop Shell | Tauri v2 (Rust) |
-| State Persistence | IndexedDB via localforage |
-| CI/CD | GitHub Actions (matrix: Windows, macOS, Ubuntu) |
+| Game runtime | Phaser 4 with fixed-step Arcade Physics |
+| Frontend | TypeScript 6 and Vite 8 |
+| Desktop shell | Tauri v2 with `core:default` permissions |
+| Scores and preferences | Versioned `localStorage` records |
+| Save states and peer claims | IndexedDB with bounded fallbacks |
+| Offline delivery | Content-versioned service worker and web app manifest |
+| Verification | Vitest plus Playwright Chromium, Firefox, and WebKit gates |
 
-## The Phaser 4 Scene System
+## Scene lifecycle
 
-Each game is implemented as a self-contained Phaser 4 `Scene` class. The arcade lobby manages a global Phaser `Game` instance and swaps between scenes using the `SceneManager`:
+Start `LobbyScene`, pause, settings, achievement, and name-entry utilities with the Phaser instance. Resolve selected games through the lazy scene lifecycle, import each scene chunk only when requested, mount it once, and start it with the selected difficulty and arcade mode.
 
-1. **Lobby Scene** - The initial landing screen. Displays game tiles and handles user selection.
-2. **Game Scenes** - Each game (`SnakeScene`, `TetrisScene`, etc.) extends `Phaser.Scene`. They receive configuration from the router and return control to the lobby on game-over.
-3. **PostFX Scene** - A persistent overlay scene that applies GLSL post-processing to the game canvas.
+Suspend hidden gameplay through the shared runtime. Guard the active Phaser animation callback with a finite 50 ms delta cap while preserving normal high-refresh intervals. Keep physics fixed at 60 Hz.
 
-## Game Router
+## Input
 
-The game router is a lightweight TypeScript module. When a player clicks a game tile in the lobby, the router:
+Poll keyboard and gamepads once per animation frame through the shared input layer. Map standard PlayStation, Xbox, and generic controllers into bitmasks, press and release edges, radial stick deadzones, and bounded trigger thresholds. Route local Player 1, Player 2, and optional network state through the same scene-facing actions.
 
-1. Stops the current Lobby scene.
-2. Starts the target game scene, passing control config (keyboard vs. gamepad).
-3. Registers a `game-over` event listener to return to the lobby when the game ends.
+## Rendering
 
-## Tauri v2 IPC
+Render gameplay at 640x480 with pixel-art sampling. Wrap the source with an optional WebGL CRT output surface. Keep 4:3 and 16:9 frame calculations separate from gameplay coordinates. Generate sprites, previews, particles, levels, shaders, and visual effects from code.
 
-The Rust backend exposes a minimal set of IPC commands:
+## Audio
 
-- `read_scores` - Reads the IndexedDB high score file from the native filesystem.
-- `write_scores` - Writes updated scores back to disk, bypassing browser storage quotas.
+Use one Web Audio graph for generated effects and tracker music. Schedule sequencer events ahead of playback time. Request AudioWorklet processing only after capability checks and retain message-block or main-graph fallbacks.
 
-All commands are declared in `src-tauri/capabilities/` using Tauri v2's capability scoping, ensuring the frontend can only call explicitly permitted backend commands.
+## Persistence and networking
 
-## Gamepad Manager
+Store top-ten score boards per game and difficulty locally. Store bounded Wasm save states in IndexedDB after asynchronous integrity validation. Exchange multiplayer and verified score data only across manually established peer sessions. Provide no automatic global peer discovery or central leaderboard until server contracts exist.
 
-The `GamepadManager` module polls the HTML5 Gamepad API on each `requestAnimationFrame` tick. It maps analog stick axes and button indices to standard directional/action events that each game scene subscribes to.
+## Tauri boundary
+
+Expose no custom Rust commands. Read no scores from the native filesystem. Keep the shell responsible for packaging and window creation only. Enforce the production CSP in `src-tauri/tauri.conf.json` and keep capabilities in `src-tauri/capabilities/default.json` minimal.

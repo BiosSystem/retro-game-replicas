@@ -1,5 +1,13 @@
-## [Unreleased] - 2026-08-26
+## [Unreleased]
+
+## [2.0.0] - 2026-08-26
 ### Changed
+- Gate every tag-triggered container and desktop publication behind deterministic npm installation, TypeScript analysis, 265 Vitest tests, the production build, 38 Chromium regressions, four Firefox and WebKit smoke checks, a live container shell and header smoke test, and locked Cargo analysis.
+- Add a production Nginx configuration with CSP, cross-origin isolation, resource policy, MIME protection, frame denial, permissions policy, no-referrer behavior, PWA navigation fallback, immutable asset caching, and an unprivileged runtime.
+- Enable the Tauri production CSP while retaining the minimum blob, Wasm, worker, asset protocol, IPC, HTTPS, and secure WebSocket sources required by generated engine systems.
+- Add the missing Cargo lockfile, use `npm ci` in containers and release jobs, compile an 8.54 MB locked Windows release binary, and synchronize web, Tauri, and Rust versions at 2.0.0.
+- Add efficient Firefox and WebKit smoke coverage for cabinet startup, runtime delta protection, persistent controls, IndexedDB, local storage, and safe canvas rendering fallbacks.
+- Replace stale wiki and security descriptions with the current 26-game architecture, standalone canvas CRT pass, local persistence boundaries, minimal Tauri shell, release policy, and verified platform scope.
 - Replace the compact connected-score list with a responsive local-first leaderboard center that merges persistent device boards and Ed25519-verified connected-peer claims, filters by game and source, and exposes cabinet, L-key, and Escape controls.
 - Add enumerable score-board snapshots, deterministic cross-source ranking, live refresh after score submission, and explicit device or peer provenance without inventing an unsupported central service.
 - Preserve the optional bios-system.net dashboard as a pending integration until an authenticated endpoint, request schema, and response schema are published.

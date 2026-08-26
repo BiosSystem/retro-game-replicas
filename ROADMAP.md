@@ -22,3 +22,6 @@ This document outlines the architectural evolution and feature improvements for 
 ## v2.0.0 (Phase 4) - PWA Offline Mode & Local Multiplayer Matrix
 - [x] Configure a content-versioned Service Worker that precaches the complete production bundle for offline play.
 - [x] Introduce the Local Multiplayer Matrix across co-op, competitive, relay, keyboard, and gamepad modes.
+- [x] Gate tagged releases behind deterministic frontend, Chromium, cross-browser, and locked Tauri verification.
+- [x] Enforce production Nginx security headers, cross-origin isolation, and a compatible Tauri CSP.
+- [x] Synchronize web, Tauri, Rust, changelog, and roadmap release metadata at 2.0.0.

@@ -37,6 +37,7 @@ Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLS
 - **IndexedDB Wasm Save States** - Persist bounded physics memory, player transforms, and Neon Epoch seeds through scheduled copies and asynchronous SHA-256 integrity checks, then retain a volatile isolated-memory fallback when browser storage is unavailable.
 - **Generated Save Gallery** - Open the cabinet memory bank to inspect one autosave and three manual Neon Epoch slots, capture procedural previews, and restore or delete local states without image assets.
 - **Local-First Leaderboard Center** - Rank persistent device scores beside signature-verified connected-peer claims, filter by game or source, and inspect provenance without requiring a hosted score service.
+- **Guarded 2.0 Release Pipeline** - Block tagged container and Tauri publication until deterministic web, Chromium, Firefox, WebKit, and locked Rust validation passes.
 - **Procedural Gaussian Worlds** - Generate up to 100,000 anisotropic terrain and flora splats, project them through the deterministic CPU path, and compile an instanced WebGPU transparency pipeline when supported.
 - **Wasm SIMD Physics** - Process four collision distance pairs per 128-bit instruction, reuse linear memory, batch gravity distance terms and relativistic time factors, and retain scalar Wasm and TypeScript references.
 - **Asynchronous Spatial Audio** - Stream generated samples through an AudioWorklet with a lock-free SharedArrayBuffer ring under cross-origin isolation and use transferred message blocks everywhere else.
@@ -123,21 +124,20 @@ Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLS
 - **Persistent Arcade Ledger** - Keep the top ten scores for every game and difficulty with safe v2 migration.
 - **Cabinet Customization** - Switch among neon, classic woodgrain, cyber, and Amber phosphor themes and remap Player 1 fire control.
 - **Fast Initial Entry** - Load a 3.17 kB JavaScript entry, defer the Phaser runtime, and fetch each game scene only when selected.
-- **Cross-Platform Native** - Less than 15MB binary size for desktop (macOS, Windows), with native Android APK support.
+- **Cross-Platform Packaging** - Build web, Windows, macOS, and Linux artifacts through the guarded release workflow, then treat Android packaging as unverified until a dedicated mobile gate exists.
 - **Self-Contained Architecture** - Load zero external ROMs or web fonts and persist high scores locally.
 
 ## ⚡ Quick Start
 
 **1. Install Prerequisites:**
-- [Node.js 20+](https://nodejs.org/)
+- [Node.js 24](https://nodejs.org/)
 - [Rust toolchain](https://rustup.rs/)
-- Tauri CLI: `npm install -g @tauri-apps/cli`
 
 **2. Setup & Run:**
 ```bash
 git clone https://github.com/BiosSystem/retro-game-replicas.git
 cd retro-game-replicas
-npm install
+npm ci
 npm run tauri dev
 ```
 

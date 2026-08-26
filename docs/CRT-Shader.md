@@ -1,61 +1,37 @@
 # CRT Shader Pipeline
 
-The GLSL CRT post-processing pipeline is one of the defining visual features of the arcade. Toggle it at runtime with `Ctrl+Shift+C`.
+Use `CrtShaderPipeline` as a lightweight WebGL output surface around the Phaser game canvas. Keep Phaser responsible for game rendering and upload the completed source canvas once per presentation frame with nearest-neighbor sampling.
 
-## Overview
+## Processing stages
 
-The pipeline runs as a Phaser 4 post-processing plugin applied to the game canvas after all game objects have been rendered. It stacks three effects in a single shader pass to keep performance overhead minimal.
+Control the single fragment pass through uniforms for:
 
-## The Three Effects
+- horizontal scanline intensity
+- threshold bloom contribution
+- barrel curvature
+- red and blue chromatic offsets
+- vertical phosphor shadow mask
+- edge vignette
 
-### 1. Barrel Distortion
+Keep the source canvas visible when WebGL context creation, shader compilation, linking, texture upload, or draw submission fails. Hide the source only after the CRT surface renders successfully.
 
-Simulates the curved glass of a CRT monitor. The vertex shader applies a radial outward warp to UV coordinates:
+## Presets
 
-```glsl
-vec2 curved(vec2 uv) {
-  uv = (uv - 0.5) * 2.0;
-  uv.x *= 1.0 + pow((abs(uv.y) / 5.0), 2.0);
-  uv.y *= 1.0 + pow((abs(uv.x) / 4.0), 2.0);
-  uv = (uv / 2.0) + 0.5;
-  return uv;
-}
-```
+Select presets from Cabinet Control:
 
-### 2. Chromatic Aberration
+- `Clean Pixel` keeps nearest-neighbor output with restrained framing effects.
+- `Arcade CRT 1980s` applies the strongest scanline, curvature, color split, and vignette profile.
+- `Trinitron 1990s` emphasizes the vertical phosphor mask with lower curvature.
+- `Bypass` removes the post-process output and displays the Phaser source canvas directly.
 
-Splits the red, green, and blue channels slightly along the horizontal axis to mimic electron gun misalignment in real CRT hardware:
+Persist the choice under the CRT preset preference. Migrate the earlier boolean CRT preference only as a compatibility fallback. Do not rely on the removed `Ctrl+Shift+C` toggle.
 
-```glsl
-float r = texture2D(uSampler, vec2(uv.x + 0.001, uv.y)).r;
-float g = texture2D(uSampler, uv).g;
-float b = texture2D(uSampler, vec2(uv.x - 0.001, uv.y)).b;
-gl_FragColor = vec4(r, g, b, 1.0);
-```
+## Display scaling
 
-### 3. Scanline Vignette
+Calculate a logical 640x480 frame for 4:3 and an 854x480 frame for 16:9. Apply the largest positive integer scale that fits the cabinet. Center the 640x480 source within the selected frame and retain symmetric letterbox or pillar space. Use a bounded fractional fit only when the viewport cannot hold one native source scale.
 
-Applies horizontal scanlines at a 2px interval and a radial vignette darkening toward the screen edges:
+Apply identical CSS bounds to the source and CRT canvases. Preserve `image-rendering: pixelated` and `image-rendering: crisp-edges` on the game surface.
 
-```glsl
-// Scanlines
-float scanline = sin(uv.y * resolution.y * 3.14159) * 0.04;
+## Performance policy
 
-// Vignette
-float vignette = uv.x * uv.y * (1.0 - uv.x) * (1.0 - uv.y);
-vignette = clamp(pow(16.0 * vignette, 0.3), 0.0, 1.0);
-
-gl_FragColor.rgb *= (1.0 - scanline) * vignette;
-```
-
-## Toggling the Shader
-
-The shader is registered globally in the Phaser `Game` config. The `Ctrl+Shift+C` keyboard binding simply calls:
-
-```typescript
-phaserGame.renderer.pipelines.get('CRTShader').setActive(!isActive)
-```
-
-## Performance Notes
-
-The entire pipeline runs in a single WebGL fragment shader pass, keeping GPU overhead low. On mobile devices (Android APK), the barrel distortion is automatically reduced from full to half intensity to maintain a stable 60fps.
+Reduce bloom, chromatic aberration, and mask intensity under adaptive quality pressure. Disable post-processing entirely on the lowest tier. Treat `data-crt-submit-mean-ms` as CPU submission and texture-upload time, not GPU completion, scanout, or end-to-end display latency.
