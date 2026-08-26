@@ -104,6 +104,8 @@ Sign canonical score claims with an ephemeral Ed25519 identity. Bind player, gam
 
 Persist at most 4,096 verified claims in IndexedDB and render the top ten through the connected-swarm UI. Require one manual ARC1 offer-answer exchange per peer. Provide no background internet discovery, universal global view, authoritative identity, or central anti-cheat guarantee because browser WebRTC cannot discover strangers without signaling infrastructure.
 
+Return the exact claims accepted during each signature-verification merge. Persist those claims directly, independent of their leaderboard rank. Never derive persistence writes from a top-N projection because a valid low score may not appear in that view and would otherwise disappear after restart.
+
 Project persistent device boards and the verified connected-peer view through one source-aware leaderboard center. Keep each device board capped at ten entries per game and difficulty, retain up to fifty projected rows in the visible view, sort by score then timestamp then player, and label every row as device or peer verified. Refresh after every local submission and peer merge. Open the center from the cabinet, with L, or close it with Escape.
 
 Do not send scores to bios-system.net yet. Keep central synchronization pending until the service publishes an HTTPS endpoint, authentication method, request schema, response schema, rate limits, replay-verification policy, and privacy or retention rules. Do not infer these contracts in the client.
