@@ -10,6 +10,7 @@ import { InputManager } from '../engine/InputManager';
 import { AttractController, CreditLedger } from '../ui/menu/ArcadeSession';
 import { mountGameScene } from '../ui/menu/SceneLifecycle';
 import type { ArcadeMode } from '../multiplayer/CoopSession';
+import { ARCADE_DIFFICULTIES, ARCADE_GAMES } from './ArcadeCatalog';
 type MenuMode = 'GAME_SELECT' | 'DIFFICULTY_SELECT';
 
 const PALETTE = {
@@ -24,42 +25,8 @@ const PALETTE = {
 };
 
 export default class LobbyScene extends Phaser.Scene {
-  private games = [
-    { name: 'SNAKE EVOLUTION',  scene: 'SnakeScene',       icon: '🐍' },
-    { name: 'NEON PONG',        scene: 'PongScene',         icon: '🏓' },
-    { name: 'NEON VECTOR',      scene: 'AsteroidsScene',    icon: '🚀' },
-    { name: 'NEON BREAKOUT',    scene: 'BreakoutScene',     icon: '🧱' },
-    { name: 'FROGGIE CROSSER',  scene: 'FroggerScene',      icon: '🐸' },
-    { name: 'SPACE DEFENDERS',  scene: 'InvadersScene',     icon: '👾' },
-    { name: 'TETRIS PULSE',     scene: 'TetrisScene',       icon: '🟦' },
-    { name: 'MINESWEEPER',      scene: 'MinesweeperScene',  icon: '💣' },
-    { name: 'PIXEL RUNNER',     scene: 'RunnerScene',       icon: '🏃' },
-    { name: 'BRAVE BIRD',       scene: 'BirdScene',         icon: '🐦' },
-    { name: 'CYBER CHASM',      scene: 'CyberScene',        icon: '⚡' },
-    { name: 'NEON RETRO RACER', scene: 'RacerScene',        icon: '🏁' },
-    { name: 'NEON CYBER-CASTER',scene: 'RaycasterScene',     icon: '🔫' },
-    { name: 'META-ARCADE HALL', scene: 'MetaArcadeScene',    icon: '🏛️' },
-    { name: 'NEON TACTICS',     scene: 'TacticsScene',       icon: '♟️' },
-    { name: 'NEON LABYRINTH',   scene: 'LabyrinthScene',     icon: '🕸️' },
-    { name: 'NEON DANMAKU',     scene: 'DanmakuScene',       icon: '✦' },
-    { name: 'NEON KOMBAT',      scene: 'KombatScene',        icon: '🥊' },
-    { name: 'NEON ODYSSEY',     scene: 'OdysseyScene',       icon: '◉' },
-    { name: 'NEON CHRONO',      scene: 'ChronoScene',        icon: '⌛' },
-    { name: 'NEON PARADOX',     scene: 'ParadoxScene',       icon: '◇' },
-    { name: 'NEON NEXUS',       scene: 'NexusScene',         icon: '◎' },
-    { name: 'NEON GENESIS',     scene: 'GenesisScene',       icon: '✺' },
-    { name: 'NEON OS',          scene: 'OsScene',            icon: '▣' },
-    { name: 'THE SINGULARITY',  scene: 'SingularityScene',   icon: '∞' },
-    { name: 'EVENT HORIZON',    scene: 'HorizonScene',       icon: '◌' },
-    { name: 'NEON EPOCH',       scene: 'EpochScene',         icon: '◈' },
-  ];
-
-  private difficulties = [
-    { name: 'EASY',    id: 'EASY',   color: PALETTE.accent,  desc: 'Relaxed pace, forgiving AI.' },
-    { name: 'NORMAL',  id: 'NORMAL', color: PALETTE.primary, desc: 'Balanced arcade challenge.' },
-    { name: 'HARD',    id: 'HARD',   color: PALETTE.warn,    desc: 'High speed, aggressive AI.' },
-    { name: 'EXPERT',  id: 'EXPERT', color: PALETTE.danger,  desc: 'Maximum velocity. Extreme.' },
-  ];
+  private readonly games = ARCADE_GAMES;
+  private readonly difficulties = ARCADE_DIFFICULTIES;
 
   private selectedGameIndex  = 0;
   private selectedDiffIndex  = 1;
@@ -109,7 +76,6 @@ export default class LobbyScene extends Phaser.Scene {
     this.buildPreview();
     this.modeText = this.add.text(616, 420, '', { fontFamily: 'Courier', fontSize: '12px', color: PALETTE.warn }).setOrigin(1, 0.5);
     this.updateModeText();
-    this.buildCrtShader();
     this.bindKeys();
     this.bindGamepad();
     AudioEngine.playTrack('plaza');
@@ -117,37 +83,6 @@ export default class LobbyScene extends Phaser.Scene {
 
   private gamepadConnected = false;
   private padLastState = { up: false, down: false, button: false, back: false };
-  private isCrtEnabled = false;
-
-  private buildCrtShader() {
-    // We'll apply built-in Phaser FX for the CRT look
-    this.isCrtEnabled = localStorage.getItem('arcade_crt') === 'true';
-    if (this.isCrtEnabled) {
-      this.applyCrt();
-    }
-  }
-
-  private applyCrt() {
-    const filters = this.cameras.main.filters.internal;
-    filters.clear();
-    filters.addBarrel(1.02);
-    filters.addVignette(0.5, 0.5, 0.7);
-    const color = filters.addColorMatrix();
-    if (color && color.colorMatrix) {
-      color.colorMatrix.sepia();
-      color.colorMatrix.saturate(2);
-    }
-  }
-
-  private toggleCrt() {
-    this.isCrtEnabled = !this.isCrtEnabled;
-    localStorage.setItem('arcade_crt', this.isCrtEnabled ? 'true' : 'false');
-    if (this.isCrtEnabled) {
-      this.applyCrt();
-    } else {
-      this.cameras.main.filters.internal.clear();
-    }
-  }
 
 
   private buildStarfield() {
@@ -314,7 +249,7 @@ export default class LobbyScene extends Phaser.Scene {
       this.diffContainer.add(item);
     });
 
-    this.diffDescText = this.add.text(320, 380, this.difficulties[this.selectedDiffIndex].desc, {
+    this.diffDescText = this.add.text(320, 380, this.difficulties[this.selectedDiffIndex].description, {
       fontFamily: "'Share Tech Mono', Courier",
       fontSize: '13px',
       color: PALETTE.muted,
@@ -363,11 +298,6 @@ export default class LobbyScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown', (e: KeyboardEvent) => {
       this.registerActivity();
       this.attractText.setText('');
-      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'c') {
-        this.toggleCrt();
-        return;
-      }
-
       this.secretBuffer = (this.secretBuffer + e.key.toUpperCase()).slice(-10);
       if (this.secretBuffer.includes('BIOS')) {
         this.secretBuffer = '';
@@ -500,7 +430,7 @@ export default class LobbyScene extends Phaser.Scene {
 
     this.selectedDiffIndex = Phaser.Math.Wrap(prev + change, 0, this.difficulties.length);
     this.diffItems[this.selectedDiffIndex].setColor(PALETTE.white).setScale(1.08);
-    this.diffDescText.setText(this.difficulties[this.selectedDiffIndex].desc);
+    this.diffDescText.setText(this.difficulties[this.selectedDiffIndex].description);
 
     this.tweens.add({ targets: this.diffItems[this.selectedDiffIndex], scale: 1.14, duration: 80, yoyo: true });
   }

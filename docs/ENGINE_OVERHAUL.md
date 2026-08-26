@@ -747,3 +747,7 @@ Current release-hardening verification:
 - Build 182 frontend modules with a 3.34 kB entry, a 94.91 kB bootstrap chunk, and the deferred 1,352.40 kB Phaser runtime.
 - Pass locked Cargo analysis and compile an 8,541,184-byte optimized Windows executable.
 - Keep the native process alive through a bounded five-second startup smoke check.
+
+## Lobby catalog boundary
+
+Keep the 26 game definitions plus the Meta-Arcade hall in one immutable catalog outside `LobbyScene`. Keep scene identifiers unique and preserve the ordered Easy, Normal, Hard, and Expert difficulty contract. Let the lobby own presentation and navigation only. Route all CRT selection through Cabinet Control and the standalone `CrtShaderPipeline`; do not restore the removed lobby camera-filter toggle or legacy boolean write path.

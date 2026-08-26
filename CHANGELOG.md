@@ -5,6 +5,7 @@
 - Gate every tag-triggered container and desktop publication behind deterministic npm installation, TypeScript analysis, 265 Vitest tests, the production build, 38 Chromium regressions, four Firefox and WebKit smoke checks, a live container shell and header smoke test, and locked Cargo analysis.
 - Add a production Nginx configuration with CSP, cross-origin isolation, resource policy, MIME protection, frame denial, permissions policy, no-referrer behavior, PWA navigation fallback, immutable asset caching, and an unprivileged runtime.
 - Exclude the 2.5 GB Rust target tree, installed Node modules, generated bundles, browser reports, tests, documentation, and local scripts from the web container context.
+- Extract the immutable 27-entry lobby catalog and four-tier difficulty contract into a dedicated tested module, then remove the obsolete lobby-owned Phaser CRT filters and `Ctrl+Shift+C` preference path that conflicted with the standalone CRT pipeline.
 - Enable the Tauri production CSP while retaining the minimum blob, Wasm, worker, asset protocol, IPC, HTTPS, and secure WebSocket sources required by generated engine systems.
 - Add the missing Cargo lockfile, use `npm ci` in containers and release jobs, compile an 8.54 MB locked Windows release binary, and synchronize web, Tauri, and Rust versions at 2.0.0.
 - Add efficient Firefox and WebKit smoke coverage for cabinet startup, runtime delta protection, persistent controls, IndexedDB, local storage, and safe canvas rendering fallbacks.
