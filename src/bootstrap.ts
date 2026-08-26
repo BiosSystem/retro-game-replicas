@@ -14,6 +14,7 @@ import { installNetplayController } from './ui/net/NetplayController';
 import { arcadeCompute } from './engine/compute/ComputePipeline';
 import { installVisualModStudio } from './ui/studio/VisualModStudio';
 import { installSwarmLeaderboard } from './ui/swarm/SwarmLeaderboardUi';
+import { installPhaserDeltaGuard } from './engine/PhaserDeltaGuard';
 
 const game = new Phaser.Game({
   type: Phaser.AUTO, parent: 'app', width: 640, height: 480,
@@ -24,6 +25,8 @@ const game = new Phaser.Game({
 });
 
 (window as typeof window & { game?: Phaser.Game }).game = game;
+const deltaGuard = installPhaserDeltaGuard(game);
+document.documentElement.dataset.frameDeltaCap = `${deltaGuard.maximumDeltaMs}ms`;
 new ArcadeRuntime(game);
 InputManager.initialize();
 SaveManager.initialize();

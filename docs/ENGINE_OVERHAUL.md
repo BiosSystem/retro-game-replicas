@@ -680,10 +680,12 @@ Reduce bloom, aberration, and shadow-mask strength under adaptive quality pressu
 
 Calculate a logical 640x480 frame for 4:3 output and an 854x480 frame for 16:9 output. Fit the logical frame into the cabinet screen, floor the scale to a positive integer, center the 640x480 game surface, and leave symmetric frame space around it. Apply a bounded fractional fit only when the physical container cannot hold one 640x480 source scale. Enforce the same CSS viewport on the Phaser source canvas and WebGL output canvas so Phaser FIT updates cannot introduce fractional post-process mismatch.
 
-Preserve valid high-refresh deltas instead of forcing every update to 16.67 ms. Accept 8.33 ms at 120 Hz, 6.94 ms at 144 Hz, and variable positive VRR intervals unchanged. Reject non-finite or non-positive deltas, cap long gaps at 50 ms, run at most four fixed updates per animation frame, and bound remaining accumulator time after catch-up saturation.
+Preserve valid high-refresh deltas instead of forcing every update to 16.67 ms. Accept 8.33 ms at 120 Hz, 6.94 ms at 144 Hz, and variable positive VRR intervals unchanged. Reject non-finite or non-positive deltas and cap long gaps at 50 ms. Install `PhaserDeltaGuard` in a microtask after Phaser emits its game-ready event and binds the real `Game.step` callback, then pass the bounded value into every active scene, timer, tween, and physics update. Restore the original callback during guard teardown. Keep the standalone fixed-step loop capped at four updates per animation frame and bound its remaining accumulator time after catch-up saturation.
+
+Publish `data-frame-delta-cap="50ms"` on the document root as a browser integration diagnostic. Keep the guard out of Phaser internals and avoid patching dependency files. Count cap events and the largest observed raw delta in an allocation-free snapshot for runtime inspection.
 
 Current verification:
 
-- Pass 252 Vitest tests across 86 files and 34 Playwright Chromium tests.
+- Pass 255 Vitest tests across 87 files and 35 Playwright Chromium tests.
 - Pass `npm run lint`, `npx tsc -b`, and the production build.
-- Build 175 modules with a 3.17 kB entry, an 87.14 kB bootstrap chunk, an 11.49 kB stylesheet, and the deferred 1,352.40 kB Phaser runtime.
+- Build 177 modules with a 3.17 kB entry, an 88.44 kB bootstrap chunk, an 11.49 kB stylesheet, and the deferred 1,352.40 kB Phaser runtime.

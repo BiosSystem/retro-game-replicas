@@ -1,5 +1,7 @@
 ## [Unreleased] - 2026-08-26
 ### Changed
+- Guard the active Phaser animation callback so every scene, timer, tween, and physics step receives a finite delta capped at 50 ms while valid 60 Hz, 120 Hz, 144 Hz, and VRR intervals remain unchanged.
+- Install the Phaser delta guard after the runtime binds its real step callback, expose the configured 50 ms cap for browser diagnostics, and restore the original callback during teardown.
 - Add a modular WebGL CRT post-process surface with nearest-neighbor frame upload, compile and runtime fallback, and uniform-driven scanlines, threshold bloom, barrel curvature, chromatic aberration, phosphor shadow mask, and edge vignette stages.
 - Add Clean Pixel, Arcade CRT 1980s, Trinitron 1990s, and Bypass runtime presets with adaptive quality reductions for expensive shader controls.
 - Add selectable 4:3 and 16:9 display frames with strict integer source scaling, centered letterbox or pillar space, and a bounded fractional fit only when the container cannot hold one source-resolution pixel scale.
