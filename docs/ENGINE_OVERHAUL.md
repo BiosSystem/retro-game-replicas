@@ -689,3 +689,20 @@ Current verification:
 - Pass 255 Vitest tests across 87 files and 35 Playwright Chromium tests.
 - Pass `npm run lint`, `npx tsc -b`, and the production build.
 - Build 177 modules with a 3.17 kB entry, an 88.44 kB bootstrap chunk, an 11.49 kB stylesheet, and the deferred 1,352.40 kB Phaser runtime.
+
+## Content-versioned PWA offline shell
+
+Run `offlineBundlePlugin` only after a production build finishes. Emit a standalone web app manifest, enumerate every public and bundled file except Vite's internal manifest and the worker itself, hash the ordered paths and bytes with SHA-256, and embed the first sixteen hexadecimal characters in the cache name. Precache the root navigation key, shell, styles, workers, audio support modules, Phaser runtime, and every lazy game chunk during installation. Add no binary PWA assets and reuse the existing rendered SVG favicon.
+
+Register `/sw.js` only in a secure production context, request root scope, and bypass the HTTP cache when checking worker updates. Keep development and Tauri custom-protocol startup outside the worker path. Activate the new worker immediately, claim open clients, and delete only older cache names carrying the `bios-arcade-` prefix. Expose pending, ready, unsupported, or error state through `data-offline` without blocking game startup.
+
+Use network-first navigation so online sessions still receive the current shell. Fall back to the cached index only after navigation fetch failure. Match known immutable build assets by canonical pathname inside the active named cache and avoid intercepting cross-origin requests, mutations, or unknown same-origin routes. This build stores 68 request keys and 1.717 MiB of uncompressed response bodies, including the root and index keys required for navigation fallback.
+
+Current verification:
+
+- Pass 257 Vitest tests across 88 files and 36 Playwright Chromium tests.
+- Reload the cross-origin-isolated cabinet under Chromium offline emulation and launch the cached lazy Neon Retro Racer scene.
+- Pass `npm run lint`, `npx tsc -b`, and the production build.
+- Build 178 modules with a 3.30 kB entry, a 0.66 kB deferred offline runtime, an 88.44 kB bootstrap chunk, and the deferred 1,352.40 kB Phaser runtime.
+
+References: [MDN Service Worker API](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API), [MDN Cache addAll](https://developer.mozilla.org/en-US/docs/Web/API/Cache/addAll), [MDN web application manifest](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest)

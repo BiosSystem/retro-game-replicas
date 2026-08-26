@@ -1,5 +1,13 @@
 import './style.css';
 
+if (import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    void import('./engine/OfflineRuntime').then(module => module.installOfflineRuntime());
+  }, { once: true });
+} else {
+  document.documentElement.dataset.offline = 'development';
+}
+
 async function bootArcade() {
   const boot = document.getElementById('bios-post');
   const firstBoot = sessionStorage.getItem('bios_post_complete') !== 'true';

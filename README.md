@@ -29,6 +29,7 @@ Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLS
 ## ✨ Features
 
 - **26 Built-In Games plus Meta-Arcade Hall** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, Cyber Chasm, Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, Neon Genesis, Neon OS, The Singularity, Neon Event Horizon, and Neon Epoch.
+- **Complete Offline Arcade** - Install one content-versioned service worker after the first online load, cache the full app shell and every lazy game chunk, and continue launching unvisited games without a network connection.
 - **Modular WebGL CRT Pipeline** - Select Clean Pixel, Arcade CRT 1980s, Trinitron 1990s, or Bypass while one shader pass controls scanlines, bloom, curvature, chromatic aberration, phosphor mask, and vignette effects with source-canvas fallback.
 - **Integer Display Frames** - Center the 640x480 playfield at a strict integer scale inside selectable 4:3 or 16:9 frames, retain letterbox or pillar space, and use bounded fit scaling only on displays smaller than one native pixel scale.
 - **High-Refresh Frame Safety** - Guard the active Phaser callback for every scene and physics step, preserve real 120 Hz, 144 Hz, and VRR deltas, cap invalid or long frame gaps at 50 ms, and bound standalone fixed-step catch-up work.

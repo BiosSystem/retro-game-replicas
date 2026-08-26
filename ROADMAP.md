@@ -19,5 +19,5 @@ This document outlines the architectural evolution and feature improvements for 
 - Create local-first leaderboard system with optional API sync to central bios-system.net dashboard.
 
 ## v2.0.0 (Phase 4) - PWA Offline Mode & Local Multiplayer Matrix
-- Configure Service Worker enabling full offline play (PWA support).
-- Introduce Local Multiplayer Matrix for specific game modes.
+- [x] Configure a content-versioned Service Worker that precaches the complete production bundle for offline play.
+- [x] Introduce the Local Multiplayer Matrix across co-op, competitive, relay, keyboard, and gamepad modes.
