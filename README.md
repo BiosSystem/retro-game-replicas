@@ -84,7 +84,7 @@ Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLS
 - **Spatial WebRTC Voice** - Opt into one microphone track per peer and position remote speech through HRTF panning, distance filtering, and generated reverb without bundled audio.
 - **Neon Danmaku** - Dodge generated Fibonacci, polygon, mixed, and homing curtains while NeonVM phases drive procedural eight-limb IK bosses.
 - **NeonVM Sandbox** - Compile validated visual graphs into gas-metered 16-bit bytecode with bounded registers, programs, jumps, and events.
-- **Connected Score Swarm** - Exchange Ed25519 signed score and replay claims across manually connected ARC1 peers and retain the newest 4,096 verified claims in an indexed, transaction-bounded IndexedDB store.
+- **Connected Score Swarm** - Exchange signer-fingerprinted Ed25519 score and replay claims across manually connected ARC1 peers, relay the newest 256 logical clocks, and retain the newest 4,096 verified claims in an indexed, transaction-bounded IndexedDB store.
 - **Procedural Kinematics** - Animate generated multi-joint bosses with FABRIK and simulate mass-conserving cellular lava without sprite or fluid assets.
 - **Neon Labyrinth** - Traverse cached procedural rooms, unlock dash, wall cling, and double jump, and fight reactive IK bosses across fluid hazards.
 - **Procedural Meta-Arcade** - Walk through a generated DDA-rendered arcade hall, hear cabinets spatially, and enter six physical flagship machines.

@@ -102,6 +102,8 @@ Compile the already validated acyclic Visual Studio graph into event and action 
 
 Sign canonical score claims with an ephemeral Ed25519 identity. Bind player, game, score, logical clock, public key, and verified replay hash into the signature. Reject invalid shapes, modified claims, oversized batches, and duplicate identifiers. Merge valid claims through an order-independent grow-only map and rebroadcast the bounded 256-claim envelope across each connected `PeerLink`.
 
+Bind newly created claim identifiers to the first 64 bits of a SHA-256 public-key fingerprint so simultaneous equal scores from different peers remain distinct. Preserve verification support for previously signed identifiers. Select the relay window by logical clock and identifier instead of lexicographic identifier alone so every peer deterministically forwards the newest 256 known claims.
+
 Persist at most 4,096 verified claims in IndexedDB and render the top ten through the connected-swarm UI. Require one manual ARC1 offer-answer exchange per peer. Provide no background internet discovery, universal global view, authoritative identity, or central anti-cheat guarantee because browser WebRTC cannot discover strangers without signaling infrastructure.
 
 Enforce the persistence ceiling in the same transaction as each write. Index claims by logical clock, delete the oldest indexed records when the store exceeds capacity, wait for transaction completion before reporting success, and hydrate newest-first without materializing an unbounded database.

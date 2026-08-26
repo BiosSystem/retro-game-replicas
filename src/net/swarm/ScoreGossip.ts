@@ -19,15 +19,22 @@ export class ScoreGossip extends EventTarget {
   private readonly claims = new Map<string, ScoreClaim>();
 
   async create(player: string, game: string, score: number, replayHash: string, keyPair: CryptoKeyPair, clock = Date.now()) {
+    const playerId = safeId(player);
+    const gameId = safeId(game);
+    const safeScore = clampInt(score, 0, 0x7fffffff);
+    const safeClock = clampInt(clock, 0, Number.MAX_SAFE_INTEGER);
+    const publicBytes = new Uint8Array(await crypto.subtle.exportKey('raw', keyPair.publicKey));
+    const publicKey = toBase64(publicBytes);
+    const fingerprint = toHex(new Uint8Array(await crypto.subtle.digest('SHA-256', publicBytes))).slice(0, 16);
     const base = {
       version: 1 as const,
-      id: `${game}-${clock}-${Math.floor(score)}`,
-      player: safeId(player),
-      game: safeId(game),
-      score: clampInt(score, 0, 0x7fffffff),
+      id: `${gameId}-${safeClock}-${safeScore}-${fingerprint}`,
+      player: playerId,
+      game: gameId,
+      score: safeScore,
       replayHash: /^[a-f0-9]{64}$/.test(replayHash) ? replayHash : '0'.repeat(64),
-      clock: clampInt(clock, 0, Number.MAX_SAFE_INTEGER),
-      publicKey: toBase64(new Uint8Array(await crypto.subtle.exportKey('raw', keyPair.publicKey))),
+      clock: safeClock,
+      publicKey,
     };
     const bytes = new TextEncoder().encode(canonical(base));
     const signature = toBase64(new Uint8Array(await crypto.subtle.sign({ name: 'Ed25519' }, keyPair.privateKey, bytes)));
@@ -55,7 +62,7 @@ export class ScoreGossip extends EventTarget {
   envelope(): GossipEnvelope {
     return {
       type: 'SCORE_GOSSIP',
-      claims: [...this.claims.values()].sort((a, b) => a.id.localeCompare(b.id)).slice(-256),
+      claims: [...this.claims.values()].sort((a, b) => a.clock - b.clock || a.id.localeCompare(b.id)).slice(-256),
     };
   }
 
@@ -75,7 +82,7 @@ export async function verifyClaim(claim: ScoreClaim) {
   try {
     if (claim.version !== 1 || safeId(claim.player) !== claim.player || safeId(claim.game) !== claim.game) return false;
     if (!Number.isInteger(claim.score) || claim.score < 0 || claim.score > 0x7fffffff) return false;
-    if (!Number.isSafeInteger(claim.clock) || !/^[a-f0-9]{64}$/.test(claim.replayHash) || claim.id.length > 128) return false;
+    if (!Number.isSafeInteger(claim.clock) || claim.clock < 0 || !/^[a-f0-9]{64}$/.test(claim.replayHash) || claim.id.length > 128) return false;
     const key = await crypto.subtle.importKey('raw', fromBase64(claim.publicKey), { name: 'Ed25519' }, false, ['verify']);
     const { signature, ...base } = claim;
     return crypto.subtle.verify({ name: 'Ed25519' }, key, fromBase64(signature), new TextEncoder().encode(canonical(base)));
@@ -115,4 +122,8 @@ function toBase64(bytes: Uint8Array) {
 function fromBase64(value: string) {
   const binary = atob(value);
   return Uint8Array.from(binary, character => character.charCodeAt(0));
+}
+
+function toHex(bytes: Uint8Array) {
+  return [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('');
 }

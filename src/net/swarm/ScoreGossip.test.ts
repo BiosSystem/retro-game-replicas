@@ -32,4 +32,26 @@ describe('score gossip', () => {
     claim.score = 999;
     expect(await receiver.merge({ type: 'SCORE_GOSSIP', claims: [claim] })).toBe(0);
   });
+
+  it('separates simultaneous claims from different signer identities', async () => {
+    const firstKeys = await createSwarmIdentity();
+    const secondKeys = await createSwarmIdentity();
+    const gossip = new ScoreGossip();
+    const first = await gossip.create('AAA', 'LabyrinthScene', 500, 'd'.repeat(64), firstKeys, 10);
+    const second = await gossip.create('AAA', 'LabyrinthScene', 500, 'd'.repeat(64), secondKeys, 10);
+    expect(first.id).not.toBe(second.id);
+    expect(gossip.top()).toHaveLength(2);
+  });
+
+  it('relays the newest 256 logical clocks in deterministic order', async () => {
+    const keys = await createSwarmIdentity();
+    const gossip = new ScoreGossip();
+    for (let clock = 257; clock >= 1; clock--) {
+      await gossip.create('AAA', 'LabyrinthScene', clock, 'e'.repeat(64), keys, clock);
+    }
+    const claims = gossip.envelope().claims;
+    expect(claims).toHaveLength(256);
+    expect(claims[0].clock).toBe(2);
+    expect(claims.at(-1)?.clock).toBe(257);
+  });
 });
