@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { MAX_WASM_SAVE_BYTES, MemorySaveStateBackend, SaveStateStore, serializeSaveState, type SaveStateBackend } from './SaveState';
+import { MAX_SAVE_THUMBNAIL_CHARS, MAX_WASM_SAVE_BYTES, MemorySaveStateBackend, SaveStateStore, serializeSaveState, type SaveStateBackend } from './SaveState';
 import { SimdPhysicsCore } from '../physics/simd/SimdPhysicsCore';
 
 const immediate = (capture: () => void) => capture();
@@ -12,6 +12,13 @@ describe('IndexedDB Wasm save-state pipeline', () => {
     bytes.fill(9);
     expect([...new Uint8Array(state.wasmMemory)]).toEqual([1, 2, 3, 4]);
     expect(state).toMatchObject({ version: 1, slot: 'epoch_1', epochSeed: 0xdecafbad, players: [{ x: 12, y: -8, vx: 2 }] });
+  });
+
+  it('round-trips bounded generated previews and rejects malformed images', async () => {
+    const thumbnail = `data:image/webp;base64,${btoa('generated-preview')}`;
+    expect((await serializeSaveState({ ...source(), thumbnail }, immediate)).thumbnail).toBe(thumbnail);
+    await expect(serializeSaveState({ ...source(), thumbnail: 'https://example.com/image.png' }, immediate)).rejects.toThrow('thumbnail');
+    await expect(serializeSaveState({ ...source(), thumbnail: `data:image/png;base64,${'A'.repeat(MAX_SAVE_THUMBNAIL_CHARS)}` }, immediate)).rejects.toThrow('thumbnail');
   });
 
   it('uses isolated memory storage when IndexedDB is unavailable', async () => {

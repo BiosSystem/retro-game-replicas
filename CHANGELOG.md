@@ -1,5 +1,8 @@
 ## [Unreleased] - 2026-08-26
 ### Changed
+- Add a responsive Neon Epoch memory-bank drawer with one autosave and three manual slots, generated thumbnail previews, saved coordinates and timestamps, keyboard access, and save, load, or delete controls.
+- Share one IndexedDB or isolated-memory save-state store between the active scene and cabinet UI, enable commands only after Wasm physics initialization, and detach the scene bridge on shutdown.
+- Extend version-one save states with optional validated WebP or PNG data previews capped at 128 KiB while preserving existing states without thumbnails.
 - Generate a content-versioned service worker from every production build, precache the complete 68-key arcade shell including all lazy game chunks, and remove only superseded BiosSystem cache versions.
 - Add a standalone web app manifest, defer secure-context worker registration until window load, keep development and Tauri startup non-blocking, and expose offline registration state through document diagnostics.
 - Serve known build assets cache-first by canonical pathname and use the cached app shell only when navigation fails, preserving normal online update checks while enabling complete play after one successful installation.

@@ -4,7 +4,8 @@ import { AudioEngine } from '../../engine/AudioEngine';
 import { InputManager } from '../../engine/InputManager';
 import { projectSplatCloud } from '../../graphics/volumetric/splatting';
 import { SimdPhysicsCore } from '../../engine/physics/simd';
-import { SaveStateStore } from '../../engine/persistence/SaveState';
+import { arcadeSaveStates, epochSaveBridge, type EpochSaveProvider } from '../../engine/persistence/SaveStateServices';
+import { captureSaveThumbnail } from '../../engine/persistence/SaveStateThumbnail';
 import { epochCore, epochDiagnostics, epochWeather } from './EpochSystems';
 
 export default class NeonEpochScene extends Phaser.Scene {
@@ -22,7 +23,11 @@ export default class NeonEpochScene extends Phaser.Scene {
   private audioPhase = 0;
   private audioConfigureFrame = 0;
   private simdPhysics: SimdPhysicsCore | null = null;
-  private readonly saveStates = SaveStateStore.create();
+  private readonly saveStates = arcadeSaveStates;
+  private readonly saveProvider: EpochSaveProvider = {
+    save: async slot => { await this.persistState(slot); },
+    load: async slot => { await this.restoreSlot(slot, true); },
+  };
 
   constructor() { super('EpochScene'); }
 
@@ -43,7 +48,8 @@ export default class NeonEpochScene extends Phaser.Scene {
     this.time.addEvent({ delay: 15_000, loop: true, callback: () => this.scheduleAutosave() });
     this.events.once('shutdown', () => {
       this.saveStates.cancelAutosave();
-      void this.persistState();
+      void this.persistState('neon_epoch', false);
+      epochSaveBridge.detach(this.saveProvider);
       this.spatialAudio?.close();
       this.spatialAudio = null;
     });
@@ -73,12 +79,27 @@ export default class NeonEpochScene extends Phaser.Scene {
 
   private async restoreState() {
     this.simdPhysics = await SimdPhysicsCore.create();
-    const saved = await this.saveStates.load('neon_epoch');
-    if (!saved || saved.epochSeed !== this.seed || !this.scene.isActive()) return;
-    this.simdPhysics?.restoreMemory(saved.wasmMemory);
+    if (this.simdPhysics && this.scene.isActive()) epochSaveBridge.attach(this.saveProvider);
+    await this.restoreSlot('neon_epoch', false);
+  }
+
+  private async restoreSlot(slot: string, required: boolean) {
+    if (!this.simdPhysics) {
+      if (required) throw new Error('Wasm physics state is still initializing');
+      return;
+    }
+    const saved = await this.saveStates.load(slot);
+    if (!saved) {
+      if (required) throw new Error('Save slot is empty');
+      return;
+    }
+    if (saved.epochSeed !== this.seed) throw new Error('Save slot belongs to another world seed');
+    if (!this.scene.isActive()) return;
+    this.simdPhysics.restoreMemory(saved.wasmMemory);
     this.cameraX = saved.players[0].x;
     this.cameraZ = saved.players[0].y;
     this.heading = saved.players[0].vx ?? 0;
+    this.draw();
   }
 
   private scheduleAutosave() {
@@ -88,16 +109,21 @@ export default class NeonEpochScene extends Phaser.Scene {
       wasmMemory: this.simdPhysics!.copyMemory(),
       players: [{ x: this.cameraX, y: this.cameraZ, vx: this.heading }],
       epochSeed: this.seed,
+      thumbnail: captureSaveThumbnail(this.game.canvas),
     }), 250);
   }
 
-  private async persistState() {
-    if (!this.simdPhysics) return;
+  private async persistState(slot = 'neon_epoch', required = true) {
+    if (!this.simdPhysics) {
+      if (required) throw new Error('Wasm physics state is still initializing');
+      return;
+    }
     await this.saveStates.save({
-      slot: 'neon_epoch',
+      slot,
       wasmMemory: this.simdPhysics.copyMemory(),
       players: [{ x: this.cameraX, y: this.cameraZ, vx: this.heading }],
       epochSeed: this.seed,
+      thumbnail: captureSaveThumbnail(this.game.canvas),
     });
   }
 

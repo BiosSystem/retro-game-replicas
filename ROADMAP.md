@@ -14,8 +14,8 @@ This document outlines the architectural evolution and feature improvements for 
 - Build a dedicated gain-node controller with local storage persistence for master volume.
 
 ## v1.3.0 (Phase 3) - Save State Persistence & BiosSystem Integration
-- Implement instant game state serialization stored in IndexedDB or localStorage.
-- Build UI for slot selection and thumbnail previews.
+- [x] Implement instant game state serialization stored in IndexedDB with an isolated-memory fallback.
+- [x] Build UI for slot selection and generated thumbnail previews.
 - Create local-first leaderboard system with optional API sync to central bios-system.net dashboard.
 
 ## v2.0.0 (Phase 4) - PWA Offline Mode & Local Multiplayer Matrix

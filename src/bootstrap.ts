@@ -15,6 +15,7 @@ import { arcadeCompute } from './engine/compute/ComputePipeline';
 import { installVisualModStudio } from './ui/studio/VisualModStudio';
 import { installSwarmLeaderboard } from './ui/swarm/SwarmLeaderboardUi';
 import { installPhaserDeltaGuard } from './engine/PhaserDeltaGuard';
+import { installSaveStateController } from './ui/saves/SaveStateController';
 
 const game = new Phaser.Game({
   type: Phaser.AUTO, parent: 'app', width: 640, height: 480,
@@ -32,6 +33,7 @@ InputManager.initialize();
 SaveManager.initialize();
 installModApi(window);
 installModManager();
+installSaveStateController();
 const netplay = installNetplayController();
 (window as typeof window & { arcadeSwarm?: { merge(value: unknown): Promise<unknown>; top(): unknown } }).arcadeSwarm = { merge: value => netplay.mergeScores(value as import('./net/swarm/ScoreGossip').GossipEnvelope), top: () => netplay.swarmTop() };
 installVisualModStudio();

@@ -1,5 +1,6 @@
 export const SAVE_STATE_VERSION = 1;
 export const MAX_WASM_SAVE_BYTES = 16 * 1024 * 1024;
+export const MAX_SAVE_THUMBNAIL_CHARS = 128 * 1024;
 
 export interface SavedPlayer {
   x: number;
@@ -15,6 +16,7 @@ export interface SaveStateSource {
   wasmByteLength?: number;
   players: readonly SavedPlayer[];
   epochSeed: number;
+  thumbnail?: string;
 }
 
 export interface SerializedSaveState {
@@ -25,6 +27,7 @@ export interface SerializedSaveState {
   players: SavedPlayer[];
   wasmMemory: ArrayBuffer;
   checksum: string;
+  thumbnail?: string;
 }
 
 export interface SaveStateBackend {
@@ -162,6 +165,7 @@ export function serializeSaveState(source: SaveStateSource, scheduler: CaptureSc
         players,
         checksum: await checksum(wasmMemory),
         wasmMemory,
+        thumbnail: validateThumbnail(source.thumbnail),
       }));
 }
 
@@ -182,10 +186,12 @@ async function validateState(value: unknown) {
   const state = value as SerializedSaveState;
   if (state.version !== SAVE_STATE_VERSION) throw new Error('Save state version is unsupported');
   assertSlot(state.slot);
+  if (!Number.isSafeInteger(state.savedAt) || state.savedAt < 0) throw new Error('Save timestamp is invalid');
+  if (!Number.isSafeInteger(state.epochSeed) || state.epochSeed < 0 || state.epochSeed > 0xffffffff) throw new Error('Saved Epoch seed is invalid');
   if (!(state.wasmMemory instanceof ArrayBuffer) || state.wasmMemory.byteLength < 1 || state.wasmMemory.byteLength > MAX_WASM_SAVE_BYTES) throw new Error('Saved Wasm memory is invalid');
   if (state.checksum !== await checksum(state.wasmMemory)) throw new Error('Save state checksum failed');
   if (!Array.isArray(state.players) || state.players.length < 1 || state.players.length > 4) throw new Error('Saved players are invalid');
-  return cloneState({ ...state, players: state.players.map(player => validatePlayer(player)) });
+  return cloneState({ ...state, players: state.players.map(player => validatePlayer(player)), thumbnail: validateThumbnail(state.thumbnail) });
 }
 
 function cloneState(state: SerializedSaveState): SerializedSaveState {
@@ -199,6 +205,12 @@ function validatePlayer(player: SavedPlayer) {
     if (value !== undefined && (!Number.isFinite(value) || Math.abs(value) > 1_000_000_000)) throw new Error('Player coordinates are invalid');
   }
   return output;
+}
+
+export function validateThumbnail(value: unknown) {
+  if (value === undefined) return undefined;
+  if (typeof value !== 'string' || value.length > MAX_SAVE_THUMBNAIL_CHARS || !/^data:image\/(?:webp|png);base64,[A-Za-z0-9+/]+={0,2}$/.test(value)) throw new Error('Save thumbnail is invalid');
+  return value;
 }
 
 async function checksum(buffer: ArrayBuffer) {

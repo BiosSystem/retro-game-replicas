@@ -668,6 +668,19 @@ Current verification:
 - Pass `npm run lint`, `npx tsc -b`, and the production build.
 - Build 175 modules with a 3.17 kB entry, a 19.62 kB lazy Neon Epoch chunk, and the deferred 1,352.40 kB Phaser runtime.
 
+### Generated save-state slot gallery
+
+Share one `SaveStateStore` between Neon Epoch and the cabinet memory-bank drawer so IndexedDB and isolated-memory fallback remain consistent. Expose the autosave plus three manual slots. Attach save and restore commands only after the scene creates its Wasm SIMD physics core, then detach the provider during scene shutdown. Disable capture and restore controls outside Neon Epoch while retaining safe inspection and deletion.
+
+Downsample the current generated game canvas to a 160x120 nearest-neighbor preview during save capture. Encode WebP when supported and accept PNG fallback. Store only validated `data:image/webp` or `data:image/png` base64 values below 128 KiB. Treat previews as optional presentation metadata so existing version-one states remain valid. Display the preview, local timestamp, and saved world coordinates without loading external image assets.
+
+Current verification:
+
+- Pass 259 Vitest tests across 89 files and 37 Playwright Chromium tests.
+- Capture a manual slot in Chromium, display its generated preview, move the Epoch camera, and restore the exact saved coordinates.
+- Pass `npm run lint`, `npx tsc -b`, and the production build.
+- Build 181 modules with a 3.34 kB entry, a 5.42 kB shared save-state services chunk, a 16.15 kB lazy Neon Epoch chunk, a 91.58 kB bootstrap chunk, and the deferred 1,352.40 kB Phaser runtime.
+
 ## Modular WebGL CRT post-processing
 
 Upload the current Phaser canvas into one nearest-filtered WebGL texture after the game render callback. Draw one full-screen triangle strip into a separate display canvas. Drive scanline intensity, threshold bloom, radial barrel curvature, horizontal RGB separation, three-column phosphor shadow mask strength, edge vignette strength, resolution, and time through explicit uniforms. Keep reduced-motion mode on a fixed scanline phase.
