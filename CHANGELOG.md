@@ -3,6 +3,7 @@
 ### Added
 - Add a user-initiated Fullscreen control to Cabinet Control with standard browser API detection, failure-safe state reporting, and no new dependency or asset.
 - Add normalized controller menu controls for Pause and Cabinet Control. D-pad or left stick navigates, the south face button confirms, and east face button or Select returns.
+- Add controller-only high-score initials entry with two-axis slot and character navigation, south-button confirmation, and east-button or Select slot return.
 
 ### Changed
 - Route Player 1 controller direction and face-button transitions through an opt-in compatibility bridge for the keyboard-owned Snake, Tetris, Frogger, Brave Bird, Cyber Chasm, and Neon Singularity replicas, then release synthetic input on scene shutdown.

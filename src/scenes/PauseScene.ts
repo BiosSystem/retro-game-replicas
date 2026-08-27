@@ -7,7 +7,7 @@ export default class PauseScene extends Phaser.Scene {
     private options = ['RESUME', 'RESTART', 'SETTINGS', 'QUIT'];
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
-    private gamepadState: GamepadMenuState = { up: false, down: false, confirm: false, back: false };
+    private gamepadState: GamepadMenuState = { up: false, down: false, left: false, right: false, confirm: false, back: false };
 
     constructor() {
         super('PauseScene');

@@ -140,6 +140,79 @@ test('navigate a paused legacy game from a connected gamepad without duplicate i
   })).toBe('UP');
 });
 
+test('enter and submit high-score initials from a connected gamepad', async ({ page }) => {
+  await page.addInitScript(() => {
+    const buttons = Array.from({ length: 17 }, () => ({ pressed: false, touched: false, value: 0 }));
+    const controller = {
+      axes: [0, 0, 0, 0],
+      buttons,
+      connected: true,
+      hapticActuators: [],
+      id: 'Xbox Wireless Controller',
+      index: 0,
+      mapping: 'standard',
+      timestamp: 1,
+      vibrationActuator: null,
+    };
+    Object.assign(window, { arcadeTestController: controller });
+    Object.defineProperty(navigator, 'getGamepads', { configurable: true, value: () => [controller] });
+  });
+  await page.goto('/');
+  await page.locator('#app canvas').first().waitFor();
+  await launchFromLobby(page, 0);
+  await expect.poll(() => page.evaluate(() => {
+    return (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('SnakeScene');
+  })).toBe(true);
+  await page.evaluate(() => {
+    const manager = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene;
+    const snake = manager.getScene('SnakeScene') as { scene: { pause(): void; launch(key: string, data: unknown): void } };
+    snake.scene.pause();
+    snake.scene.launch('NameEntryScene', { scene: 'SnakeScene', difficulty: 'EASY', score: 4242, restartData: { difficulty: 'EASY' } });
+  });
+  await expect.poll(() => page.evaluate(() => {
+    return (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('NameEntryScene');
+  })).toBe(true);
+
+  await page.evaluate(() => {
+    const controller = (window as typeof window & { arcadeTestController: { axes: number[] } }).arcadeTestController;
+    controller.axes[1] = -1;
+  });
+  await expect.poll(() => page.evaluate(() => {
+    return ((window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('NameEntryScene') as { initials: string[] }).initials.join('');
+  })).toBe('BAA');
+  await page.evaluate(() => {
+    const controller = (window as typeof window & { arcadeTestController: { axes: number[] } }).arcadeTestController;
+    controller.axes[1] = 0;
+    controller.axes[0] = 1;
+  });
+  await expect.poll(() => page.evaluate(() => {
+    return ((window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('NameEntryScene') as { currentIndex: number }).currentIndex;
+  })).toBe(1);
+  await page.evaluate(() => {
+    const controller = (window as typeof window & { arcadeTestController: { axes: number[]; buttons: Array<{ pressed: boolean; touched: boolean; value: number }> } }).arcadeTestController;
+    controller.axes[0] = 0;
+    controller.buttons[0] = { pressed: true, touched: true, value: 1 };
+  });
+  await expect.poll(() => page.evaluate(() => {
+    return ((window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('NameEntryScene') as { currentIndex: number }).currentIndex;
+  })).toBe(2);
+  await page.evaluate(() => {
+    const controller = (window as typeof window & { arcadeTestController: { buttons: Array<{ pressed: boolean; touched: boolean; value: number }> } }).arcadeTestController;
+    controller.buttons[0] = { pressed: false, touched: false, value: 0 };
+  });
+  await page.waitForTimeout(80);
+  await page.evaluate(() => {
+    const controller = (window as typeof window & { arcadeTestController: { buttons: Array<{ pressed: boolean; touched: boolean; value: number }> } }).arcadeTestController;
+    controller.buttons[0] = { pressed: true, touched: true, value: 1 };
+  });
+  await expect.poll(() => page.evaluate(() => {
+    return (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('NameEntryScene');
+  })).toBe(false);
+  await expect.poll(() => page.evaluate(() => {
+    return (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('SnakeScene');
+  })).toBe(true);
+});
+
 async function launchFromLobby(page: import('@playwright/test').Page, index: number) {
   await page.evaluate(({ index }) => {
     const manager = (window as typeof window & { game: { scene: { stop(key: string): void; start(key: string): void; getScene(key: string): unknown; getScenes(activeOnly?: boolean): Array<{ scene: { key: string } }> } } }).game.scene;

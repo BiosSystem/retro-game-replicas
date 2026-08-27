@@ -13,7 +13,7 @@ export default class SettingsScene extends Phaser.Scene {
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
     private fullscreen: FullscreenController | null = null;
-    private gamepadState: GamepadMenuState = { up: false, down: false, confirm: false, back: false };
+    private gamepadState: GamepadMenuState = { up: false, down: false, left: false, right: false, confirm: false, back: false };
 
     constructor() {
         super('SettingsScene');

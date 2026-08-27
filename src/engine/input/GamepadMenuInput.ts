@@ -3,6 +3,8 @@ import { GamepadButton, type GamepadFrame } from './GamepadHandler';
 export interface GamepadMenuState {
   up: boolean;
   down: boolean;
+  left: boolean;
+  right: boolean;
   confirm: boolean;
   back: boolean;
 }
@@ -13,6 +15,8 @@ export function readGamepadMenuInput(frames: readonly GamepadFrame[]): GamepadMe
   return {
     up: Boolean(buttons & GamepadButton.DPAD_UP) || (pad?.leftY ?? 0) < -0.5,
     down: Boolean(buttons & GamepadButton.DPAD_DOWN) || (pad?.leftY ?? 0) > 0.5,
+    left: Boolean(buttons & GamepadButton.DPAD_LEFT) || (pad?.leftX ?? 0) < -0.5,
+    right: Boolean(buttons & GamepadButton.DPAD_RIGHT) || (pad?.leftX ?? 0) > 0.5,
     confirm: Boolean(buttons & GamepadButton.SOUTH),
     back: Boolean(buttons & (GamepadButton.EAST | GamepadButton.SELECT)),
   };

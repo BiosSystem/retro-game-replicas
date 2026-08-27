@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { SaveManager } from '../engine/SaveManager';
+import { InputManager } from '../engine/InputManager';
+import { readGamepadMenuInput, type GamepadMenuState } from '../engine/input/GamepadMenuInput';
 
 export default class NameEntryScene extends Phaser.Scene {
     private sourceScene!: string;
@@ -10,6 +12,7 @@ export default class NameEntryScene extends Phaser.Scene {
     private initials: string[] = ['A', 'A', 'A'];
     private currentIndex = 0;
     private charDisplays: Phaser.GameObjects.Text[] = [];
+    private gamepadState: GamepadMenuState = { up: false, down: false, left: false, right: false, confirm: false, back: false };
 
     private chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?.- ";
 
@@ -25,6 +28,8 @@ export default class NameEntryScene extends Phaser.Scene {
     }
 
     create() {
+        InputManager.setLegacyGamepadKeyboardBridgeSuspended(true, this.scene.key);
+        this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridgeSuspended(false, this.scene.key));
         // Overlay background
         this.add.rectangle(320, 240, 640, 480, 0x000022, 0.9);
         
@@ -49,6 +54,7 @@ export default class NameEntryScene extends Phaser.Scene {
 
         this.initials = ['A', 'A', 'A'];
         this.currentIndex = 0;
+        this.gamepadState = { up: false, down: false, left: false, right: false, confirm: false, back: false };
         this.charDisplays = [];
 
         for (let i = 0; i < 3; i++) {
@@ -71,6 +77,17 @@ export default class NameEntryScene extends Phaser.Scene {
             this.input.keyboard?.on('keydown-SPACE', () => this.confirmChar());
             this.input.keyboard?.on('keydown-ENTER', () => this.confirmChar());
         });
+    }
+
+    update() {
+        const next = readGamepadMenuInput(InputManager.getGamepadFrames());
+        if (next.up && !this.gamepadState.up) this.changeChar(1);
+        if (next.down && !this.gamepadState.down) this.changeChar(-1);
+        if (next.left && !this.gamepadState.left) this.moveIndex(-1);
+        if (next.right && !this.gamepadState.right) this.moveIndex(1);
+        if (next.confirm && !this.gamepadState.confirm) this.confirmChar();
+        if (next.back && !this.gamepadState.back) this.moveIndex(-1);
+        this.gamepadState = next;
     }
 
     private updateDisplays() {
