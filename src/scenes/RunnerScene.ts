@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { SaveManager } from '../engine/SaveManager';
 import { VFXManager } from '../engine/VFXManager';
 import { AudioEngine } from '../engine/AudioEngine';
 import { SpriteStateMachine } from '../engine/SpriteStateMachine';
@@ -177,17 +176,10 @@ export default class RunnerScene extends Phaser.Scene {
       this.physics.pause();
       VFXManager.screenShake(this, 0.02, 300);
       AudioEngine.playEffect('EXPLOSION');
-      const banner = this.add.rectangle(320, 240, 640, 100, 0x000000, 0.8);
       const result = this.mode === 'VERSUS' ? `PLAYER ${loser === 1 ? 2 : 1} WINS` : 'RUN TERMINATED';
       const scoreKey = `${this.difficulty}-${this.mode}`;
-      this.add.text(320, 240, `${result}\nFINAL SCORE: ${Math.floor(this.score)}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff0055', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.setInteractive().on('pointerdown', () => { if (SaveManager.isHighScore('RunnerScene', scoreKey, this.score)) {
       this.scene.pause();
-      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: scoreKey, score: this.score, restartData: { difficulty: this.difficulty, mode: this.mode } });
-    } else {
-      SaveManager.submitScore('RunnerScene', scoreKey, this.score);
-      this.scene.restart({ difficulty: this.difficulty, mode: this.mode });
-    } });
+      this.scene.launch('GameOverScene', { scene: this.scene.key, title: result, score: this.score, difficulty: scoreKey, restartData: { difficulty: this.difficulty, mode: this.mode }, submitScore: true, color: '#ff0055' });
   }
 
   private updateRunner(player: Phaser.Physics.Arcade.Sprite, animator: SpriteStateMachine, playerId: 1 | 2, delta: number) {

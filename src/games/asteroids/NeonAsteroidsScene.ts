@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { AudioEngine } from '../../engine/AudioEngine';
 import { InputManager } from '../../engine/InputManager';
-import { SaveManager } from '../../engine/SaveManager';
 import { VFXManager } from '../../engine/VFXManager';
 import { fractureSizes, predictIntercept, unlockedWeapons, type WeaponMode } from './AsteroidSystems';
 import { CoopSession, type ArcadeMode } from '../../multiplayer/CoopSession';
@@ -151,9 +150,8 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     damaged.disableBody(true, true);
     const remaining = [this.ship, this.ship2].some(candidate => candidate?.active);
     if (remaining) { this.updateHud(); return; }
-    this.physics.pause(); AudioEngine.playEffect('EXPLOSION'); SaveManager.submitScore('AsteroidsScene', `${this.difficulty}-${this.mode}`, this.score);
-    const panel = this.add.text(320, 240, `VECTOR CORE LOST\nSCORE ${this.score}\nCLICK TO REBOOT`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff2ec4', align: 'center', backgroundColor: '#000000cc', padding: { x: 20, y: 14 } }).setOrigin(0.5).setInteractive();
-    panel.on('pointerdown', () => this.scene.restart({ difficulty: this.difficulty, mode: this.mode }));
+    this.physics.pause(); AudioEngine.playEffect('EXPLOSION'); this.scene.pause();
+    this.scene.launch('GameOverScene', { scene: this.scene.key, title: 'VECTOR CORE LOST', score: this.score, difficulty: `${this.difficulty}-${this.mode}`, restartData: { difficulty: this.difficulty, mode: this.mode }, submitScore: true, color: '#ff2ec4' });
   }
 
   private updateHud() { const state = this.session?.snapshot(); this.hud?.setText(`SCORE ${this.score}  STAGE ${this.stage}  ${this.mode} X${state?.multiplier ?? 1}  MIN ${this.mineralCount}  ${this.weapon}${this.shield ? ' SHIELD' : ''}`); }

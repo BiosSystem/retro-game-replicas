@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { SaveManager } from '../engine/SaveManager';
 import { VFXManager } from '../engine/VFXManager';
 import { InputManager } from '../engine/InputManager';
 
@@ -159,14 +158,7 @@ export default class BirdScene extends Phaser.Scene {
       VFXManager.screenShake(this, 0.03, 400);
       this.bird.setFillStyle(0xff0000);
       
-      const banner = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.85).setInteractive();
-      this.add.text(320, 240, `FLIGHT TERMINATED\nSCORE: ${Math.floor(this.score)}\nCLICK TO REBOOT`, { fontFamily: 'Courier', fontSize: '28px', color: '#ffff00', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.on('pointerdown', () => { if (SaveManager.isHighScore('BirdScene', this.difficulty, this.score)) {
       this.scene.pause();
-      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: this.difficulty, score: this.score });
-    } else {
-      SaveManager.submitScore('BirdScene', this.difficulty, this.score);
-      this.scene.restart({ difficulty: this.difficulty });
-    } });
+      this.scene.launch('GameOverScene', { scene: this.scene.key, title: 'FLIGHT TERMINATED', score: this.score, difficulty: this.difficulty, submitScore: true, color: '#ffff00' });
   }
 }

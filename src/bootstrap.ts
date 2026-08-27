@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import LobbyScene from './scenes/LobbyScene';
 import PauseScene from './scenes/PauseScene';
 import NameEntryScene from './scenes/NameEntryScene';
+import GameOverScene from './scenes/GameOverScene';
 import SettingsScene from './scenes/SettingsScene';
 import AchievementsScene from './scenes/AchievementsScene';
 import { InputManager } from './engine/InputManager';
@@ -22,7 +23,7 @@ const game = new Phaser.Game({
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   backgroundColor: '#0a0a0a', pixelArt: true, fps: { target: 60 },
   physics: { default: 'arcade', arcade: { debug: false, fixedStep: true, fps: 60 } },
-  scene: [LobbyScene, PauseScene, NameEntryScene, SettingsScene, AchievementsScene],
+  scene: [LobbyScene, PauseScene, NameEntryScene, GameOverScene, SettingsScene, AchievementsScene],
 });
 
 (window as typeof window & { game?: Phaser.Game }).game = game;
