@@ -20,7 +20,7 @@ test('install the complete arcade bundle and launch a lazy game offline', async 
   expect(cacheState.entries).toBeGreaterThan(60);
   expect(cacheState.styleCached).toBe(true);
   expect(cacheState.scriptCached).toBe(true);
-  expect(cacheState.manifest).toMatchObject({ name: 'Universal Retro Arcade', display: 'standalone' });
+  expect(cacheState.manifest).toMatchObject({ name: 'BiosSystem Neon Arcade', display: 'standalone' });
   expect(cacheState.manifest.icons).toHaveLength(1);
 
   await context.setOffline(true);

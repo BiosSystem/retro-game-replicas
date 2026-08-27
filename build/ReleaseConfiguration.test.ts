@@ -9,14 +9,14 @@ describe('release configuration', () => {
     const lock = JSON.parse(read('package-lock.json')) as { version: string; packages: Record<string, { version: string }> };
     const tauriVersion = (JSON.parse(read('src-tauri/tauri.conf.json')) as { version: string }).version;
     const cargoVersion = read('src-tauri/Cargo.toml').match(/^version = "([^"]+)"/m)?.[1];
-    const cargoLockVersion = read('src-tauri/Cargo.lock').match(/name = "retro-game-replicas"\r?\nversion = "([^"]+)"/)?.[1];
+    const cargoLockVersion = read('src-tauri/Cargo.lock').match(/name = "biossystem-neon-arcade"\r?\nversion = "([^"]+)"/)?.[1];
     expect([packageVersion, lock.version, lock.packages[''].version, tauriVersion, cargoVersion, cargoLockVersion]).toEqual(['2.0.0', '2.0.0', '2.0.0', '2.0.0', '2.0.0', '2.0.0']);
     expect(read('CHANGELOG.md')).toContain('## [2.0.0] - 2026-08-26');
   });
 
   it('blocks package publication behind complete validation', () => {
     const workflow = read('.github/workflows/release_and_packages.yml');
-    for (const command of ['npm ci', 'npm run lint', 'npm test', 'npm run build', 'npm run test:regression', 'npm run test:cross-browser', 'docker build --tag retro-arcade-validation .', 'Cross-Origin-Embedder-Policy: require-corp', 'cargo check --locked']) expect(workflow).toContain(command);
+    for (const command of ['npm ci', 'npm run lint', 'npm test', 'npm run build', 'npm run test:regression', 'npm run test:cross-browser', 'docker build --tag biossystem-neon-arcade-validation .', 'Cross-Origin-Embedder-Policy: require-corp', 'cargo check --locked']) expect(workflow).toContain(command);
     expect(workflow.match(/needs: validate/g)).toHaveLength(2);
     expect(workflow.match(/if: startsWith\(github\.ref, 'refs\/tags\/v'\)/g)).toHaveLength(2);
   });

@@ -1,6 +1,6 @@
 # Project Roadmap
 
-This document outlines the architectural evolution and feature improvements for the **retro-game-replicas** project.
+This document outlines the architectural evolution and feature improvements for **BiosSystem Neon Arcade**. Keep the existing `BiosSystem/retro-game-replicas` repository slug for continuity.
 
 ## v1.1.0 (Phase 1) - Core Engine Refactor & Input Overhaul
 - Scan the local project directory structure and verify local-only AI tracking directories are ignored.

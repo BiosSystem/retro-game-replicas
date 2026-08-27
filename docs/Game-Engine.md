@@ -1,6 +1,6 @@
 # Architecture and Game Engine
 
-Universal Retro Arcade uses a TypeScript and Phaser 4 frontend wrapped by a minimal Tauri v2 Rust shell.
+BiosSystem Neon Arcade uses a TypeScript and Phaser 4 frontend wrapped by a minimal Tauri v2 Rust shell.
 
 ## Runtime layers
 

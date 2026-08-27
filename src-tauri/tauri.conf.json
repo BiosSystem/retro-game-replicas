@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "Retro Arcade Launcher",
+  "productName": "BiosSystem Neon Arcade",
   "version": "2.0.0",
-  "identifier": "com.biossystem.retroarcade",
+  "identifier": "com.biossystem.neonarcade",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Retro Arcade Launcher",
+        "title": "BiosSystem Neon Arcade",
         "width": 800,
         "height": 600,
         "resizable": true,

@@ -1,10 +1,13 @@
 {
-  "name": "retro-arcade-launcher",
+  "name": "biossystem-neon-arcade",
   "private": true,
   "version": "2.0.0",
-  "description": "A beautiful, lightning-fast Open Source Retro Arcade Launcher, crafted with passion by BiosSystem",
+  "description": "A self-contained procedural arcade platform with 26 games and a generated Meta-Arcade Hall.",
   "author": "BiosSystem Open Source Community",
   "license": "MIT",
+  "repository": "https://github.com/BiosSystem/retro-game-replicas",
+  "homepage": "https://github.com/BiosSystem/retro-game-replicas#readme",
+  "bugs": "https://github.com/BiosSystem/retro-game-replicas/issues",
   "type": "module",
   "scripts": {
     "dev": "vite",

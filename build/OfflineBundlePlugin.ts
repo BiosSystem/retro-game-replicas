@@ -30,8 +30,8 @@ export function offlineBundlePlugin(): Plugin {
 function webManifest() {
   return {
     id: '/',
-    name: 'Universal Retro Arcade',
-    short_name: 'Retro Arcade',
+    name: 'BiosSystem Neon Arcade',
+    short_name: 'Neon Arcade',
     description: 'A self-contained BiosSystem arcade with generated games, graphics, and audio.',
     start_url: '/',
     scope: '/',

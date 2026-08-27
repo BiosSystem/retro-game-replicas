@@ -56,18 +56,18 @@ jobs:
         run: npm run test:cross-browser
 
       - name: Build Validation Container
-        run: docker build --tag retro-arcade-validation .
+        run: docker build --tag biossystem-neon-arcade-validation .
 
       - name: Smoke Test Container Headers
         run: |
-          docker run --detach --name retro-arcade-validation --publish 127.0.0.1:8080:8080 retro-arcade-validation
+          docker run --detach --name biossystem-neon-arcade-validation --publish 127.0.0.1:8080:8080 biossystem-neon-arcade-validation
           for attempt in {1..20}; do
             curl --fail --silent http://127.0.0.1:8080/ > /tmp/arcade-shell.html && break
             sleep 1
           done
           grep --fixed-strings '<main class="arcade-cabinet"' /tmp/arcade-shell.html
           curl --fail --silent --output /dev/null http://127.0.0.1:8080/healthz
-          test "$(docker inspect --format '{{.Config.User}}' retro-arcade-validation)" = '10001:10001'
+          test "$(docker inspect --format '{{.Config.User}}' biossystem-neon-arcade-validation)" = '10001:10001'
           curl --fail --silent --show-error --dump-header /tmp/arcade-headers.txt --output /dev/null http://127.0.0.1:8080/
           grep --ignore-case '^Content-Security-Policy:' /tmp/arcade-headers.txt
           grep --ignore-case '^Cross-Origin-Opener-Policy: same-origin' /tmp/arcade-headers.txt
@@ -76,7 +76,7 @@ jobs:
 
       - name: Stop Validation Container
         if: always()
-        run: docker rm --force retro-arcade-validation || true
+        run: docker rm --force biossystem-neon-arcade-validation || true
 
       - name: Check Tauri Sources
         run: cargo check --locked --manifest-path src-tauri/Cargo.toml
@@ -156,7 +156,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: 'Universal Retro Arcade ${{ github.ref_name }}'
+          releaseName: 'BiosSystem Neon Arcade ${{ github.ref_name }}'
           releaseBody: 'Official compiled native desktop release for Windows, macOS, and Linux.'
           releaseDraft: false
           prerelease: false

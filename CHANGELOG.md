@@ -11,6 +11,7 @@
 - Add a safe Game Over exit path. Use east face button, Select, or Escape to stop the finished game and return to the lobby.
 
 ### Changed
+- Rebrand the public product, desktop package, PWA manifest, runtime cabinet title, and delivery labels as BiosSystem Neon Arcade while retaining the existing repository slug and container publication path.
 - Block controller Start pause input while a marked DOM utility panel is visible.
 - Close visible DOM utility panels through the shared Escape priority path before active games can receive Pause or legacy lobby navigation.
 - Route keyboard Escape through shared Pause for every active game and exclude foreground overlays, including Game Over, from global pause interception.
@@ -287,7 +288,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expanded the main Launcher Lobby to seamlessly support all 11 games with back-to-menu functionality.
 
 ### Changed
-- Rebranded project to **Universal Retro Arcade Launcher** in `package.json` and Tauri configuration.
+- Update the package and Tauri product metadata.
 - Upgraded the `README.md` to reflect the full 11-game suite with documentation.
 - Removed all local, hardcoded absolute system paths to ensure professional cross-platform compilation.
 - Replaced all em dashes with hyphens in `README.md` and `CREDITS.md` for cross-platform doc consistency.

@@ -1,6 +1,6 @@
-# Universal Retro Arcade Technical Wiki
+# BiosSystem Neon Arcade Technical Wiki
 
-Use this document as the concise architecture, deployment, and security overview. Use `ENGINE_OVERHAUL.md` for detailed subsystem contracts and measured verification results.
+Use this document as the concise architecture, deployment, and security overview. Use [ARCHITECTURE.md](ARCHITECTURE.md) for the current runtime map, [WIKI_HOWTO.md](WIKI_HOWTO.md) for development procedures, and `ENGINE_OVERHAUL.md` for detailed subsystem contracts and measured verification results.
 
 ## Architecture
 

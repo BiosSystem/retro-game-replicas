@@ -1,6 +1,6 @@
 # Security Policy
 
-Protect the Universal Retro Arcade web and Tauri runtimes through narrow capabilities, bounded data contracts, browser isolation, and verification before publication.
+Protect the BiosSystem Neon Arcade web and Tauri runtimes through narrow capabilities, bounded data contracts, browser isolation, and verification before publication.
 
 ## Supported versions
 

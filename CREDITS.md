@@ -1,6 +1,6 @@
 ﻿# Credits & Acknowledgments
 
-**Universal Retro Arcade** is an original open-source project by the **BiosSystem Open Source Community**.
+**BiosSystem Neon Arcade** is an original open-source project by the **BiosSystem Open Source Community**.
 
 This project does not fork or derive from any external game codebase. The game implementations are original BiosSystem creations built on top of the Phaser framework.
 
@@ -47,8 +47,8 @@ The original BiosSystem game implementations listed below contain no copied thir
 |---|---|
 | Snake Evolution | Snake / Growth |
 | Neon Pong | Paddle |
-| Astro Drift | Asteroids |
-| Brick Breaker | Breakout |
+| Neon Vector | Asteroids |
+| Neon Breakout | Breakout |
 | Froggie Crosser | Frogger-style |
 | Space Defenders | Space Invaders-style |
 | Tetris Pulse | Falling blocks |

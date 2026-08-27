@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 by BiosSystem Open Source Community. All Rights Reserved.
- * Universal Retro Arcade | https://github.com/BiosSystem/retro-game-replicas
+ * BiosSystem Neon Arcade | https://github.com/BiosSystem/retro-game-replicas
  */
 import Phaser from 'phaser';
 import { SaveManager } from '../engine/SaveManager';
@@ -110,7 +110,7 @@ export default class LobbyScene extends Phaser.Scene {
     line.lineStyle(1, 0x00ff6e, 0.4);
     line.lineBetween(40, 108, 600, 108);
 
-    this.add.text(320, 30, '▸ UNIVERSAL RETRO ARCADE ◂', {
+    this.add.text(320, 30, '▸ BIOSSYSTEM NEON ARCADE ◂', {
       fontFamily: "'Share Tech Mono', Courier",
       fontSize: '30px',
       color: PALETTE.primary,

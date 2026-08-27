@@ -1,45 +1,59 @@
-# Contributing to retro-game-replicas
+# Contributing to BiosSystem Neon Arcade
 
-This is a private project under the BiosSystem suite. External contributions are not accepted.
+Contribute focused, tested changes only when the repository owner grants access to the existing `BiosSystem/retro-game-replicas` repository. Keep the public product name as BiosSystem Neon Arcade and preserve the repository slug for existing links and deployments.
 
-## Internal Development Notes
+## Before starting
 
-### Repository Owner
+1. Read [Architecture](docs/ARCHITECTURE.md) and [Developer How-To](docs/WIKI_HOWTO.md).
+2. Search existing issues, scene modules, and tests before introducing a parallel subsystem.
+3. Keep graphics, audio, levels, and gameplay data procedural or generated. Do not add ROMs, copied game assets, or executable third-party mods.
+4. Discuss broad architecture, protocol, security, or package-identifier changes before implementation.
 
-BiosSystem - https://github.com/BiosSystem
+## Branch and commit standards
 
-### Purpose
+Use focused branches such as `feat/neon-example-scene`, `fix/pause-overlay`, or `docs/architecture-refresh`.
 
-A collection of classic arcade game replicas built with TypeScript + Phaser 4, packaged as a cross-platform desktop app via Tauri v2.
+Write imperative, human-readable commit messages:
 
-### Stack
-
-| Component | Technology |
-|---|---|
-| Game Engine | Phaser 4 + TypeScript |
-| Desktop Shell | Tauri v2 |
-| CI Build | GitHub Actions: Tauri matrix (Windows, macOS, Ubuntu) |
-
-### Commit Guidelines
-
-- Author identity: `BiosSystem`
-- Plain imperative messages: `Add Snake game`, `Fix collision detection`, `Update Tauri build matrix`
-- No `feat:` / `fix:` / `chore:` prefixes
-- No AI signatures
-
-### Development Workflow
-
-```bash
-npm install
-
-# Web dev server
-npm run dev
-
-# Tauri desktop app
-npm run tauri dev
-
-# Production build
-npm run tauri build
+```text
+Add deterministic boss pattern tests
+Preserve arcade mode through scene restart
+Document the save-state validation boundary
 ```
 
-<!-- formatting tweak -->
+Do not use conventional commit prefixes, AI signatures, or em dashes. Use the `BiosSystem` author identity for project-owned commits.
+
+## Required checks
+
+Run these commands for TypeScript changes:
+
+```bash
+npm run lint
+npm test
+npm run build
+npm run test:regression
+npm run test:cross-browser
+```
+
+Run this command for Tauri changes when Rust is available:
+
+```bash
+cargo check --locked --manifest-path src-tauri/Cargo.toml
+```
+
+Run the Compose smoke test on a Docker-enabled host when Docker, Nginx, Compose, or hosting files change.
+
+## Pull request checklist
+
+- Explain the gameplay, engine, visual, or documentation outcome.
+- Identify changed scene keys, persistence formats, input contracts, or network message formats.
+- Add or update Vitest coverage for deterministic rules.
+- Add or update Playwright coverage for observable browser behavior.
+- Include build and test results.
+- Update `README.md`, `docs/ARCHITECTURE.md`, `docs/WIKI_HOWTO.md`, and `AGENT_STATE.md` when the architecture or developer workflow changes.
+- Preserve capability fallbacks for WebGPU, WebXR, WebCodecs, AudioWorklet, SharedArrayBuffer, and Wasm SIMD paths.
+- Keep security limits, validation, and asset-generation rules intact.
+
+## Review expectations
+
+Keep pull requests small enough to review. Separate broad refactors from gameplay additions when practical. Treat direct peer networking, cryptography, persistence, and browser security policy as high-risk areas that require tests and explicit rationale.
