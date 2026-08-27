@@ -3,12 +3,14 @@ import { AudioEngine } from '../engine/AudioEngine';
 import { PreferenceStore, type CabinetTheme } from '../engine/PreferenceStore';
 import { CRT_PRESETS, nextCrtPreset, parseCrtPreset } from '../engine/graphics/CrtShaderPipeline';
 import { parseDisplayAspect } from '../engine/graphics/DisplayScaler';
+import { FullscreenController } from '../engine/FullscreenController';
 
 export default class SettingsScene extends Phaser.Scene {
     private sourceScene!: string;
-    private options = ['RESUME', 'CABINET THEME', 'REBIND FIRE', 'CRT PRESET', 'DISPLAY ASPECT', 'REDUCE MOTION', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
+    private options = ['RESUME', 'FULLSCREEN', 'CABINET THEME', 'REBIND FIRE', 'CRT PRESET', 'DISPLAY ASPECT', 'REDUCE MOTION', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
+    private fullscreen: FullscreenController | null = null;
 
     constructor() {
         super('SettingsScene');
@@ -19,6 +21,8 @@ export default class SettingsScene extends Phaser.Scene {
     }
 
     create() {
+        const arcadeRoot = document.getElementById('app');
+        this.fullscreen = arcadeRoot ? new FullscreenController(arcadeRoot, document) : null;
         // Overlay background
         const bg = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.8);
         bg.setInteractive(); // block clicks
@@ -78,6 +82,7 @@ export default class SettingsScene extends Phaser.Scene {
     private getOptionLabel(option: string) {
         const preferences = new PreferenceStore(localStorage).load();
         if (option === 'CABINET THEME') return `${option}: ${preferences.theme}`;
+        if (option === 'FULLSCREEN') return `${option}: ${this.fullscreen?.status() ?? 'UNAVAILABLE'}`;
         if (option === 'REBIND FIRE') return `${option}: ${preferences.bindings.FIRE[0]}`;
         if (option === 'CRT PRESET') return `${option}: ${CRT_PRESETS[this.currentCrtPreset()].label.toUpperCase()}`;
         if (option === 'DISPLAY ASPECT') return `${option}: ${parseDisplayAspect(localStorage.getItem('arcade_display_aspect'))}`;
@@ -91,6 +96,8 @@ export default class SettingsScene extends Phaser.Scene {
         
         if (opt === 'RESUME') {
             this.closeSettings();
+        } else if (opt === 'FULLSCREEN') {
+            void this.fullscreen?.toggle().then(() => this.updateMenu());
         } else if (opt === 'CABINET THEME') {
             const store = new PreferenceStore(localStorage);
             const themes: CabinetTheme[] = ['NEON', 'CLASSIC', 'CYBER', 'AMBER'];

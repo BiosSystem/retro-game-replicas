@@ -674,6 +674,10 @@ Keep keyboard-owned replicas compatible through an opt-in scene bridge. While Sn
 
 Keep the measurement scoped to handler computation. Do not describe polling as zero hardware latency or include USB, Bluetooth, browser scheduling, display scanout, or device latency in the synthetic result. Current workstation measurement: poll and normalize one synthetic standard controller in 0.0006 ms mean with a 0.0016 ms p99 across 894,042 samples.
 
+## User-initiated cabinet fullscreen
+
+Request fullscreen only from a deliberate Cabinet Control selection. Test both `requestFullscreen` on the arcade root and `exitFullscreen` on the document before exposing the ready state. Treat unavailable or rejected requests as normal browser capability outcomes, keep the game playable at its existing responsive scale, and never force fullscreen during startup or a requestAnimationFrame callback.
+
 ## IndexedDB Wasm state serialization
 
 Copy at most 16 MiB from a caller-provided WebAssembly memory, ArrayBuffer, SharedArrayBuffer, or Uint8Array during a scheduled idle task. Store version, validated slot, up to four finite player transforms, the unsigned Neon Epoch seed, capture time, memory bytes, and an asynchronous SHA-256 digest in the `bios_arcade_save_states_v1` IndexedDB database. Clone memory at every memory-backend boundary so callers cannot mutate persisted state by reference.

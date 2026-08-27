@@ -2,7 +2,7 @@
 
 **Universal Retro Arcade** is an original open-source project by the **BiosSystem Open Source Community**.
 
-This project does not fork or derive from any external game codebase. All 11 game implementations are original BiosSystem creations built on top of the Phaser 3 framework.
+This project does not fork or derive from any external game codebase. The game implementations are original BiosSystem creations built on top of the Phaser framework.
 
 ---
 
@@ -10,9 +10,16 @@ This project does not fork or derive from any external game codebase. All 11 gam
 
 | Library | Author / Org | License |
 |---|---|---|
-| [Phaser 3](https://github.com/photonstorm/phaser) | Richard Davey (Photon Storm) & Phaser Contributors | MIT |
+| [Phaser 4](https://github.com/photonstorm/phaser) | Richard Davey (Photon Storm) & Phaser Contributors | MIT |
 | [TypeScript](https://github.com/microsoft/TypeScript) | Microsoft | Apache 2.0 |
 | [Vite](https://github.com/vitejs/vite) | Evan You & Vite Contributors | MIT |
+
+## Open Source Inspiration
+
+| Project | Author / Org | License | Use |
+|---|---|---|---|
+| [phaser-fullscreen](https://github.com/RocketshipGames/phaser-fullscreen) | Rocketship Games | MIT | Inspired the user-initiated fullscreen cabinet flow. The FullscreenController implementation is original and uses the standard browser Fullscreen API. |
+| [Phaser Examples](https://github.com/phaserjs/examples) | Phaser Studio | MIT source code | Referenced for Phaser 4 API patterns only. No example assets are included. |
 
 ## 🖥️ Desktop Runtime (Tauri)
 
@@ -34,7 +41,7 @@ This project does not fork or derive from any external game codebase. All 11 gam
 
 ## 🎮 BiosSystem Original Game Implementations
 
-All 11 games in Universal Retro Arcade are original BiosSystem implementations. No game code is derived from or copied from any third-party source:
+The original BiosSystem game implementations listed below contain no copied third-party game code:
 
 | Game | Genre |
 |---|---|

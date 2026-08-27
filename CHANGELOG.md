@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Added
+- Add a user-initiated Fullscreen control to Cabinet Control with standard browser API detection, failure-safe state reporting, and no new dependency or asset.
+
 ### Changed
 - Route Player 1 controller direction and face-button transitions through an opt-in compatibility bridge for the keyboard-owned Snake, Tetris, Frogger, Brave Bird, Cyber Chasm, and Neon Singularity replicas, then release synthetic input on scene shutdown.
 - Add a browser regression that launches Snake with a normalized connected controller and verifies the legacy keyboard path receives its direction.

@@ -12,6 +12,18 @@ test('install the active Phaser frame delta guard', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('data-frame-delta-cap', '50ms');
 });
 
+test('expose the user-initiated fullscreen cabinet control', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#app canvas').first().waitFor();
+  await page.evaluate(() => {
+    (window as typeof window & { game: { scene: { start(key: string, data: unknown): void } } }).game.scene.start('SettingsScene', { scene: 'LobbyScene' });
+  });
+  await expect.poll(() => page.evaluate(() => {
+    const scene = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('SettingsScene') as { menuItems: Array<{ text: string }> };
+    return scene.menuItems[1]?.text;
+  })).toMatch(/^FULLSCREEN: (READY|UNAVAILABLE)$/);
+});
+
 test('launch the generated Neon Retro Racer scene', async ({ page }) => { await page.goto('/'); await page.locator('#app canvas').first().waitFor(); await page.evaluate(() => { const lobby = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { updateGameSelection(change: number): void; handleSpace(): void }; for (let index = 0; index < 11; index++) lobby.updateGameSelection(1); lobby.handleSpace(); }); await page.waitForTimeout(250); await page.evaluate(() => ((window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { handleSpace(): void }).handleSpace()); await expect.poll(() => page.evaluate(() => Boolean((window as typeof window & { game?: { scene: { isActive(key: string): boolean } } }).game?.scene.isActive('RacerScene'))), { timeout: 10000 }).toBe(true); });
 
 test('render the WebGL CRT surface inside a 16:9 integer frame', async ({ page }) => {
