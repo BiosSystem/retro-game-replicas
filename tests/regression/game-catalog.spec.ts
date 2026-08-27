@@ -186,6 +186,27 @@ test('close an open utility panel before pausing the active game', async ({ page
   await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('SnakeScene'))).toBe(true);
 });
 
+test('do not pause gameplay through an open utility panel from controller Start', async ({ page }) => {
+  await page.addInitScript(() => {
+    const buttons = Array.from({ length: 17 }, () => ({ pressed: false, touched: false, value: 0 }));
+    const controller = { axes: [0, 0, 0, 0], buttons, connected: true, hapticActuators: [], id: 'Xbox Wireless Controller', index: 0, mapping: 'standard', timestamp: 1, vibrationActuator: null };
+    Object.assign(window, { arcadeTestController: controller });
+    Object.defineProperty(navigator, 'getGamepads', { configurable: true, value: () => [controller] });
+  });
+  await page.goto('/');
+  await page.locator('#app canvas').first().waitFor();
+  await launchFromLobby(page, 0);
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('SnakeScene'))).toBe(true);
+  await page.evaluate(() => { (document.querySelector<HTMLElement>('.save-state-panel')!).hidden = false; });
+  await page.evaluate(() => {
+    const controller = (window as typeof window & { arcadeTestController: { buttons: Array<{ pressed: boolean; touched: boolean; value: number }> } }).arcadeTestController;
+    controller.buttons[9] = { pressed: true, touched: true, value: 1 };
+  });
+  await page.waitForTimeout(150);
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('PauseScene'))).toBe(false);
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('SnakeScene'))).toBe(true);
+});
+
 test('enter and submit high-score initials from a connected gamepad', async ({ page }) => {
   await page.addInitScript(() => {
     const buttons = Array.from({ length: 17 }, () => ({ pressed: false, touched: false, value: 0 }));

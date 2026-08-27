@@ -22,7 +22,7 @@ Suspend hidden gameplay through the shared runtime. Guard the active Phaser anim
 
 ## Input
 
-Poll keyboard and gamepads once per animation frame through the shared input layer. Map standard PlayStation, Xbox, and generic controllers into bitmasks, press and release edges, radial stick deadzones, and bounded trigger thresholds. Use south to confirm, north to open Achievements in the lobby, east or Select to return, Escape or Start to open Pause during active play, and Start to open Cabinet Control from the lobby. Route local Player 1, Player 2, and optional network state through the same scene-facing actions.
+Poll keyboard and gamepads once per animation frame through the shared input layer. Map standard PlayStation, Xbox, and generic controllers into bitmasks, press and release edges, radial stick deadzones, and bounded trigger thresholds. Use south to confirm, north to open Achievements in the lobby, east or Select to return, Escape or Start to open Pause during active play, and Start to open Cabinet Control from the lobby. Block Start pause input while a marked DOM utility panel is visible. Route local Player 1, Player 2, and optional network state through the same scene-facing actions.
 
 ## Rendering
 

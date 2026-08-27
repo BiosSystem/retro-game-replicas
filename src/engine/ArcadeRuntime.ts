@@ -134,7 +134,7 @@ export class ArcadeRuntime {
     const pressed = InputManager.getGamepadFrames().some(pad => Boolean(pad.buttons & (1 << 9)));
     if (pressed && !this.startPressed) {
       const active = this.activeGameScene();
-      if (active && !this.game.scene.isActive('PauseScene')) { active.scene.pause(); active.scene.launch('PauseScene', { scene: active.scene.key }); }
+      if (active && !this.game.scene.isActive('PauseScene') && !this.activeUtilityOverlay()) { active.scene.pause(); active.scene.launch('PauseScene', { scene: active.scene.key }); }
     }
     this.startPressed = pressed;
   }
