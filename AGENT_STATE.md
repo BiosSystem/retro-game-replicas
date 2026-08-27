@@ -1,7 +1,7 @@
 # AGENT_STATE: Retro Game Project
 
 ## Current Objective & Milestone
-- Active Task: Complete Fun Zone Compose hosting template and architecture documentation.
+- Active Task: Add a controller and keyboard quit path to the shared Game Over overlay.
 - Target Status: Completed
 
 ## Verified Working Systems & Mechanics (Do NOT Break/Repeat)
@@ -9,7 +9,7 @@
 - [x] Legacy keyboard-owned scenes receive scene-scoped synthetic controller transitions and release them on shutdown. Verified by: Snake connected-controller regression.
 - [x] Pause and Cabinet Control read shared normalized controller menu input. D-pad or stick navigates, south confirms, and east or Select returns. Verified by: Chromium controller pause-menu regression.
 - [x] Name Entry accepts controller-only initials. D-pad or left stick changes a character and selects a slot, south confirms, and east or Select returns to the prior slot. Verified by: Chromium high-score entry regression.
-- [x] Game Over restarts are controller-accessible across Snake, Tetris Pulse, Space Defenders, Bird, Frogger, Cyber Chasm, Minesweeper, Pixel Runner, Neon Breakout, Neon Asteroids, Neon Retro Racer, and Neon Cyber-Caster. The shared overlay pauses the source scene, routes high scores to Name Entry, restarts non-high scores, and preserves click and keyboard fallback. Verified by: Chromium controller restart regression and classic-ending catalog workflow.
+- [x] Game Over restarts are controller-accessible across Snake, Tetris Pulse, Space Defenders, Bird, Frogger, Cyber Chasm, Minesweeper, Pixel Runner, Neon Breakout, Neon Asteroids, Neon Retro Racer, and Neon Cyber-Caster. The shared overlay pauses the source, routes high scores to Name Entry, restarts with south or Space, and returns to the lobby with east, Select, or Escape. Verified by: Chromium controller restart, controller quit, and classic-ending catalog workflows.
 - [x] Achievements opens from the lobby with the north face button and closes with east face button or Select. Verified by: Chromium controller overlay regression and catalog suite.
 - [x] Pause Restart preserves the source scene's active difficulty and multiplayer mode instead of falling back to defaults. Verified by: Chromium Expert co-op Neon Asteroids pause-restart regression.
 - [x] Fun Zone hosting uses a loopback-only Compose template with read-only root filesystem, dropped capabilities, no-new-privileges, and memory-backed Nginx runtime paths. Verified by: Compose schema review and existing CI container smoke workflow.
@@ -41,9 +41,9 @@
   - Reason Abandoned: Keep the versioned Compose template and rely on the repository CI container smoke workflow until a Docker-enabled host is available.
 
 ## Active Architecture & Engine Hypothesis
-- Current Approach: Keep one requestAnimationFrame-owned InputManager snapshot as the authoritative controller source. Let native shared-input scenes consume Player 1 state directly. Use an owner-scoped synthetic keyboard bridge only for legacy scenes, suspend it for foreground overlays, route every active classic loss path plus edge-safe two-axis menu, name-entry, Game Over, and achievement-overlay actions through shared scene contracts, copy source launch data before Pause Restart, and ship the web shell through the loopback-only Compose template.
+- Current Approach: Keep one requestAnimationFrame-owned InputManager snapshot as the authoritative controller source. Let native shared-input scenes consume Player 1 state directly. Use an owner-scoped synthetic keyboard bridge only for legacy scenes, suspend it for foreground overlays, route every active classic loss path plus edge-safe two-axis menu, name-entry, Game Over, and achievement-overlay actions through shared scene contracts, provide Game Over restart and lobby exit controls, copy source launch data before Pause Restart, and ship the web shell through the loopback-only Compose template.
 
 ## Engine & Asset Registry
 - Target Framework/Engine: Phaser 4, TypeScript, Vite, WebGL canvas post-processing, Web Audio API, WebAssembly, and IndexedDB.
 - Asset Pipelines: Procedural canvas graphics, generated shader effects, Web Audio synthesis, generated procedural levels, no imported third-party game assets.
-- Performance Baseline: Target 60 FPS with valid high-refresh deltas preserved, 50 ms maximum frame delta, strict integer 640x480 display scaling where possible, 186 production modules, a 105.22 kB initial bootstrap, and a deferred 1,352.40 kB Phaser runtime.
+- Performance Baseline: Target 60 FPS with valid high-refresh deltas preserved, 50 ms maximum frame delta, strict integer 640x480 display scaling where possible, 186 production modules, a 105.48 kB initial bootstrap, and a deferred 1,352.40 kB Phaser runtime.

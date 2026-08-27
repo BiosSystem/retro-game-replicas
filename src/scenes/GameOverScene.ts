@@ -29,14 +29,18 @@ export default class GameOverScene extends Phaser.Scene {
     this.confirmed = false;
     const scoreLine = Number.isFinite(this.gameOverData.score) ? `\nSCORE ${Math.floor(this.gameOverData.score as number)}` : '';
     const panel = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.86).setInteractive();
-    this.add.text(320, 240, `${this.gameOverData.title}${scoreLine}\nPRESS FIRE TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: this.gameOverData.color ?? '#ff2ec4', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
+    this.add.text(320, 240, `${this.gameOverData.title}${scoreLine}\nPRESS FIRE TO RESTART\nESC / B / SELECT TO QUIT`, { fontFamily: 'Courier', fontSize: '24px', color: this.gameOverData.color ?? '#ff2ec4', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
     panel.on('pointerdown', () => this.continue());
-    this.time.delayedCall(150, () => this.input.keyboard?.once('keydown-SPACE', () => this.continue()));
+    this.time.delayedCall(150, () => {
+      this.input.keyboard?.once('keydown-SPACE', () => this.continue());
+      this.input.keyboard?.once('keydown-ESC', () => this.quit());
+    });
   }
 
   update() {
     const next = readGamepadMenuInput(InputManager.getGamepadFrames());
     if (next.confirm && !this.gamepadState.confirm) this.continue();
+    if (next.back && !this.gamepadState.back) this.quit();
     this.gamepadState = next;
   }
 
@@ -55,6 +59,14 @@ export default class GameOverScene extends Phaser.Scene {
     const source = this.scene.get(this.gameOverData.scene);
     if (source) source.scene.restart(this.gameOverData.restartData ?? { difficulty });
     else this.scene.start('LobbyScene');
+  }
+
+  private quit() {
+    if (this.confirmed) return;
+    this.confirmed = true;
+    this.scene.stop();
+    this.scene.stop(this.gameOverData.scene);
+    this.scene.start('LobbyScene');
   }
 }
 

@@ -8,6 +8,7 @@
 - Add a shared controller-aware Game Over overlay for Bird, Frogger, Cyber Chasm, Minesweeper, Pixel Runner, Neon Breakout, Neon Asteroids, Neon Retro Racer, and Neon Cyber-Caster.
 - Route Snake Evolution, Tetris Pulse, and Space Defenders loss states through the shared Game Over overlay for consistent controller restart and high-score handling.
 - Add controller access to the Achievements overlay. Use the north face button from the lobby to open it, then the east face button or Select to close it.
+- Add a safe Game Over exit path. Use east face button, Select, or Escape to stop the finished game and return to the lobby.
 
 ### Changed
 - Preserve active difficulty and multiplayer mode when restarting a game from Pause.
