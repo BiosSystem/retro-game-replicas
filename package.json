@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "vite",
     "lint": "tsc --noEmit",
-    "test": "vitest run --exclude tests/**",
+    "test": "vitest run --exclude \"tests/**\"",
     "test:regression": "playwright test",
     "test:cross-browser": "playwright test --config playwright.smoke.config.ts",
     "benchmark": "vitest bench --run",

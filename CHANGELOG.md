@@ -11,6 +11,7 @@
 - Add a safe Game Over exit path. Use east face button, Select, or Escape to stop the finished game and return to the lobby.
 
 ### Changed
+- Quote the Vitest browser-tree exclusion so Linux CI and Windows development discover the same 96 unit-test files.
 - Rebrand the public product, desktop package, PWA manifest, runtime cabinet title, and delivery labels as BiosSystem Neon Arcade while retaining the existing repository slug and container publication path.
 - Block controller Start pause input while a marked DOM utility panel is visible.
 - Close visible DOM utility panels through the shared Escape priority path before active games can receive Pause or legacy lobby navigation.
