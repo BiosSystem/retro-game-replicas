@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { SaveManager } from '../engine/SaveManager';
 import { VFXManager } from '../engine/VFXManager';
 import { InputManager } from '../engine/InputManager';
 import { AudioEngine } from '../engine/AudioEngine';
@@ -21,6 +20,7 @@ export default class InvadersScene extends Phaser.Scene {
   private difficulty = 'NORMAL';
   private shieldActive = false;
   private wavePending = false;
+  private gameOver = false;
 
   constructor() {
     super('InvadersScene');
@@ -38,6 +38,7 @@ export default class InvadersScene extends Phaser.Scene {
     this.score = 0;
     this.shieldActive = false;
     this.wavePending = false;
+    this.gameOver = false;
     this.progression = new ProgressionDirector();
     this.add.text(320, 20, 'SPACE DEFENDERS - ARROWS TO MOVE - SPACE TO SHOOT - ESC TO LOBBY', { fontSize: '10px', color: '#00ff00' }).setOrigin(0.5);
     this.scoreText = this.add.text(10, 10, 'SCORE: 0', { fontSize: '20px', color: '#ffffff' });
@@ -108,14 +109,7 @@ export default class InvadersScene extends Phaser.Scene {
           VFXManager.playExplosion(this, this.player.x, this.player.y, 0xffff00);
           return;
         }
-        if (this.shootEvent) this.shootEvent.remove();
-        if (SaveManager.isHighScore('InvadersScene', this.difficulty, this.score)) {
-      this.scene.pause();
-      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: this.difficulty, score: this.score });
-    } else {
-      SaveManager.submitScore('InvadersScene', this.difficulty, this.score);
-      this.scene.restart({ difficulty: this.difficulty });
-    } 
+        this.triggerGameOver();
     }, undefined, this);
 
     this.shootEvent = this.time.addEvent({ delay: this.shootDelay, callback: this.alienShoot, callbackScope: this, loop: true });
@@ -154,6 +148,7 @@ export default class InvadersScene extends Phaser.Scene {
   }
 
   update() {
+    if (this.gameOver) return;
     if (InputManager.isP1Down('LEFT')) this.player.setVelocityX(-300);
     else if (InputManager.isP1Down('RIGHT')) this.player.setVelocityX(300);
     else this.player.setVelocityX(0);
@@ -191,5 +186,22 @@ export default class InvadersScene extends Phaser.Scene {
     this.player.setTint(0xffff00);
     this.shieldActive = true;
     VFXManager.floatingText(this, this.player.x, this.player.y - 24, 'SHIELD READY', '#ffff00');
+  }
+
+  private triggerGameOver() {
+    if (this.gameOver) return;
+    this.gameOver = true;
+    if (this.shootEvent) this.shootEvent.remove();
+    VFXManager.playExplosion(this, this.player.x, this.player.y, 0xff2255);
+    this.scene.pause();
+    this.scene.launch('GameOverScene', {
+      scene: this.scene.key,
+      title: 'SECTOR OVERRUN',
+      score: this.score,
+      difficulty: this.difficulty,
+      restartData: { difficulty: this.difficulty },
+      submitScore: true,
+      color: '#ff2255',
+    });
   }
 }

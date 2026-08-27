@@ -5,6 +5,7 @@
 - Add normalized controller menu controls for Pause and Cabinet Control. D-pad or left stick navigates, the south face button confirms, and east face button or Select returns.
 - Add controller-only high-score initials entry with two-axis slot and character navigation, south-button confirmation, and east-button or Select slot return.
 - Add a shared controller-aware Game Over overlay for Bird, Frogger, Cyber Chasm, Minesweeper, Pixel Runner, Neon Breakout, Neon Asteroids, Neon Retro Racer, and Neon Cyber-Caster.
+- Route Snake Evolution, Tetris Pulse, and Space Defenders loss states through the shared Game Over overlay for consistent controller restart and high-score handling.
 - Add controller access to the Achievements overlay. Use the north face button from the lobby to open it, then the east face button or Select to close it.
 
 ### Changed

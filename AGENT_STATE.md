@@ -1,7 +1,7 @@
 # AGENT_STATE: Retro Game Project
 
 ## Current Objective & Milestone
-- Active Task: Complete controller-only access to the arcade Achievements overlay.
+- Active Task: Unify remaining active classic replica loss states with the shared Game Over overlay.
 - Target Status: Completed
 
 ## Verified Working Systems & Mechanics (Do NOT Break/Repeat)
@@ -9,10 +9,10 @@
 - [x] Legacy keyboard-owned scenes receive scene-scoped synthetic controller transitions and release them on shutdown. Verified by: Snake connected-controller regression.
 - [x] Pause and Cabinet Control read shared normalized controller menu input. D-pad or stick navigates, south confirms, and east or Select returns. Verified by: Chromium controller pause-menu regression.
 - [x] Name Entry accepts controller-only initials. D-pad or left stick changes a character and selects a slot, south confirms, and east or Select returns to the prior slot. Verified by: Chromium high-score entry regression.
-- [x] Game Over restarts are controller-accessible across migrated pointer-only scenes. The shared overlay pauses the source scene, routes high scores to Name Entry, restarts non-high scores, and preserves click and keyboard fallback. Verified by: Chromium controller restart regression and six-workflow game-catalog suite.
+- [x] Game Over restarts are controller-accessible across Snake, Tetris Pulse, Space Defenders, Bird, Frogger, Cyber Chasm, Minesweeper, Pixel Runner, Neon Breakout, Neon Asteroids, Neon Retro Racer, and Neon Cyber-Caster. The shared overlay pauses the source scene, routes high scores to Name Entry, restarts non-high scores, and preserves click and keyboard fallback. Verified by: Chromium controller restart regression and classic-ending catalog workflow.
 - [x] Achievements opens from the lobby with the north face button and closes with east face button or Select. Verified by: Chromium controller overlay regression and catalog suite.
 - [x] Overlay suspension releases legacy synthetic keys and restores the active bridge after close. Verified by: Chromium controller pause-menu regression.
-- [x] Production browser shell builds with 185 modules, including responsive cabinet scaling, CRT fallback, IndexedDB save states, offline shell, and local-first leaderboards. Verified by: production build and cross-browser smoke suite.
+- [x] Production browser shell builds with 186 modules, including responsive cabinet scaling, CRT fallback, IndexedDB save states, offline shell, and local-first leaderboards. Verified by: production build and cross-browser smoke suite.
 - [x] Local release baseline passes with 278 Vitest tests across 96 files, 44 Chromium workflows, six Firefox and WebKit smoke workflows, lint, TypeScript build, and zero high-severity npm audit findings. Verify new browser mechanics with focused regressions before the next full release matrix.
 
 ## Failed Attempts & Discarded Implementations
@@ -31,11 +31,14 @@
 - [!] Attempt: Use Phaser's scene-local gamepad poller for lobby controller actions.
   - Failure: The lobby did not observe the controller state already normalized by the runtime input frame.
   - Reason Abandoned: Consume the shared InputManager snapshot so all cabinet actions use one animation-frame sample.
+- [!] Attempt: Migrate the legacy `src/scenes/AsteroidsScene.ts` loss path.
+  - Failure: The active catalog resolves `AsteroidsScene` to `src/games/asteroids/NeonAsteroidsScene.ts`.
+  - Reason Abandoned: Keep the inactive legacy class unchanged because the active Neon Asteroids implementation already uses Game Over.
 
 ## Active Architecture & Engine Hypothesis
-- Current Approach: Keep one requestAnimationFrame-owned InputManager snapshot as the authoritative controller source. Let native shared-input scenes consume Player 1 state directly. Use an owner-scoped synthetic keyboard bridge only for legacy scenes, suspend it for foreground overlays, and read edge-safe two-axis menu, name-entry, Game Over, and achievement-overlay actions directly from the shared frame.
+- Current Approach: Keep one requestAnimationFrame-owned InputManager snapshot as the authoritative controller source. Let native shared-input scenes consume Player 1 state directly. Use an owner-scoped synthetic keyboard bridge only for legacy scenes, suspend it for foreground overlays, and route every active classic loss path plus edge-safe two-axis menu, name-entry, Game Over, and achievement-overlay actions through shared scene contracts.
 
 ## Engine & Asset Registry
 - Target Framework/Engine: Phaser 4, TypeScript, Vite, WebGL canvas post-processing, Web Audio API, WebAssembly, and IndexedDB.
 - Asset Pipelines: Procedural canvas graphics, generated shader effects, Web Audio synthesis, generated procedural levels, no imported third-party game assets.
-- Performance Baseline: Target 60 FPS with valid high-refresh deltas preserved, 50 ms maximum frame delta, strict integer 640x480 display scaling where possible, 186 production modules, and deferred 1,352.40 kB Phaser runtime.
+- Performance Baseline: Target 60 FPS with valid high-refresh deltas preserved, 50 ms maximum frame delta, strict integer 640x480 display scaling where possible, 186 production modules, a 105.18 kB initial bootstrap, and a deferred 1,352.40 kB Phaser runtime.

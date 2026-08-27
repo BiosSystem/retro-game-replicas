@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { SaveManager } from '../engine/SaveManager';
 import { VFXManager } from '../engine/VFXManager';
 import { InputManager } from '../engine/InputManager';
 
@@ -18,6 +17,7 @@ export default class TetrisScene extends Phaser.Scene {
   private particles!: Phaser.GameObjects.Particles.ParticleEmitter;
   private graphics!: Phaser.GameObjects.Graphics;
   private difficulty = 'NORMAL';
+  private gameOver = false;
 
   constructor() {
     super('TetrisScene');
@@ -32,6 +32,7 @@ export default class TetrisScene extends Phaser.Scene {
       case 'EXPERT': this.baseInterval = 220; break;
     }
     this.dropInterval = this.baseInterval;
+    this.gameOver = false;
 
     // UI
     this.add.text(320, 20, 'TETRIS: PULSE', { fontFamily: 'Courier', fontSize: '24px', color: '#00ffff' }).setOrigin(0.5);
@@ -101,14 +102,7 @@ export default class TetrisScene extends Phaser.Scene {
       color: pick.c
     };
     if (this.checkCollision(0, 0)) {
-        VFXManager.screenShake(this, 0.02, 500);
-        this.time.delayedCall(500, () => { if (SaveManager.isHighScore('TetrisScene', this.difficulty, this.score)) {
-      this.scene.pause();
-      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: this.difficulty, score: this.score });
-    } else {
-      SaveManager.submitScore('TetrisScene', this.difficulty, this.score);
-      this.scene.restart({ difficulty: this.difficulty });
-    } });
+        this.triggerGameOver();
     }
   }
 
@@ -189,12 +183,31 @@ export default class TetrisScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number) {
+    if (this.gameOver) return;
     this.timer += delta;
     if (this.timer > this.dropInterval) {
       this.timer = 0;
       this.movePiece(0, 1);
     }
     this.draw();
+  }
+
+  private triggerGameOver() {
+    if (this.gameOver) return;
+    this.gameOver = true;
+    VFXManager.screenShake(this, 0.02, 500);
+    this.time.delayedCall(500, () => {
+      this.scene.pause();
+      this.scene.launch('GameOverScene', {
+        scene: this.scene.key,
+        title: 'STACK OVERLOAD',
+        score: this.score,
+        difficulty: this.difficulty,
+        restartData: { difficulty: this.difficulty },
+        submitScore: true,
+        color: '#00ffff',
+      });
+    });
   }
 
   getGhostY() {

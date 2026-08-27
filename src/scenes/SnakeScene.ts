@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { SaveManager } from '../engine/SaveManager';
 import { AudioEngine } from '../engine/AudioEngine';
 import { InputManager } from '../engine/InputManager';
 
@@ -19,7 +18,6 @@ export default class SnakeScene extends Phaser.Scene {
   private moveTimer!: number;
   private gameOver!: boolean;
   private graphics!: Phaser.GameObjects.Graphics;
-  private gameOverText!: Phaser.GameObjects.Text;
   private moveInterval = 100;
   private difficulty = 'NORMAL';
 
@@ -62,14 +60,6 @@ export default class SnakeScene extends Phaser.Scene {
       fontStyle: 'bold'
     }).setOrigin(1, 0).setDepth(10);
 
-    this.gameOverText = this.add.text(320, 240, 'GAME OVER\nPRESS SPACE TO RESTART', {
-      fontFamily: 'Courier',
-      fontSize: '32px',
-      color: '#ff0000',
-      align: 'center',
-      fontStyle: 'bold'
-    }).setOrigin(0.5).setDepth(10).setVisible(false);
-
     // Input
     this.input.keyboard?.on('keydown-ESC', () => {
       this.scene.pause();
@@ -99,18 +89,7 @@ export default class SnakeScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number) {
-    if (this.gameOver) {
-      if (this.input.keyboard?.checkDown(this.input.keyboard.addKey('SPACE'), 250)) {
-        if (SaveManager.isHighScore('SnakeScene', this.difficulty, this.score)) {
-      this.scene.pause();
-      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: this.difficulty, score: this.score });
-    } else {
-      SaveManager.submitScore('SnakeScene', this.difficulty, this.score);
-      this.scene.restart({ difficulty: this.difficulty });
-    }
-      }
-      return;
-    }
+    if (this.gameOver) return;
 
     this.moveTimer += delta;
     if (this.moveTimer > this.moveInterval) {
@@ -156,8 +135,18 @@ export default class SnakeScene extends Phaser.Scene {
   }
 
   triggerGameOver() {
+    if (this.gameOver) return;
     this.gameOver = true;
-    this.gameOverText.setVisible(true);
+    this.scene.pause();
+    this.scene.launch('GameOverScene', {
+      scene: this.scene.key,
+      title: 'SNAKE OVER',
+      score: this.score,
+      difficulty: this.difficulty,
+      restartData: { difficulty: this.difficulty },
+      submitScore: true,
+      color: '#ff2255',
+    });
   }
 
   draw() {

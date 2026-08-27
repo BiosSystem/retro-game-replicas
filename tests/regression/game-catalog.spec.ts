@@ -239,6 +239,37 @@ test('restart a finished game from the shared controller game-over overlay', asy
   await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('SnakeScene'))).toBe(true);
 });
 
+test('route classic replica endings through the shared game-over overlay', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#app canvas').first().waitFor();
+  const endings = [
+    { index: 0, scene: 'SnakeScene', method: 'triggerGameOver' },
+    { index: 5, scene: 'InvadersScene', method: 'triggerGameOver' },
+    { index: 6, scene: 'TetrisScene', method: 'triggerGameOver' },
+  ];
+
+  for (const ending of endings) {
+    await launchFromLobby(page, ending.index);
+    await expect.poll(() => page.evaluate(scene => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive(scene), ending.scene)).toBe(true);
+    await expect(page.evaluate(({ scene, method }) => {
+      const manager = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene;
+      const game = manager.getScene(scene) as unknown as Record<string, unknown>;
+      return `${scene}:${typeof game[method]}`;
+    }, ending)).resolves.toBe(`${ending.scene}:function`);
+    await page.evaluate(({ scene, method }) => {
+      const manager = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene;
+      const game = manager.getScene(scene) as unknown as Record<string, () => void>;
+      game[method]();
+    }, ending);
+    await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('GameOverScene'))).toBe(true);
+    await page.evaluate(scene => {
+      const manager = (window as typeof window & { game: { scene: { stop(key: string): void } } }).game.scene;
+      manager.stop('GameOverScene');
+      manager.stop(scene);
+    }, ending.scene);
+  }
+});
+
 test('open and dismiss the achievements overlay from a connected gamepad', async ({ page }) => {
   await page.addInitScript(() => {
     const buttons = Array.from({ length: 17 }, () => ({ pressed: false, touched: false, value: 0 }));
