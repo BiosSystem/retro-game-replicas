@@ -239,6 +239,28 @@ test('restart a finished game from the shared controller game-over overlay', asy
   await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('SnakeScene'))).toBe(true);
 });
 
+test('open and dismiss the achievements overlay from a connected gamepad', async ({ page }) => {
+  await page.addInitScript(() => {
+    const buttons = Array.from({ length: 17 }, () => ({ pressed: false, touched: false, value: 0 }));
+    const controller = { axes: [0, 0, 0, 0], buttons, connected: true, hapticActuators: [], id: 'Xbox Wireless Controller', index: 0, mapping: 'standard', timestamp: 1, vibrationActuator: null };
+    Object.assign(window, { arcadeTestController: controller });
+    Object.defineProperty(navigator, 'getGamepads', { configurable: true, value: () => [controller] });
+  });
+  await page.goto('/');
+  await page.locator('#app canvas').first().waitFor();
+  await page.evaluate(() => {
+    const controller = (window as typeof window & { arcadeTestController: { buttons: Array<{ pressed: boolean; touched: boolean; value: number }> } }).arcadeTestController;
+    controller.buttons[3] = { pressed: true, touched: true, value: 1 };
+  });
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('AchievementsScene'))).toBe(true);
+  await page.evaluate(() => {
+    const controller = (window as typeof window & { arcadeTestController: { buttons: Array<{ pressed: boolean; touched: boolean; value: number }> } }).arcadeTestController;
+    controller.buttons[3] = { pressed: false, touched: false, value: 0 };
+    controller.buttons[1] = { pressed: true, touched: true, value: 1 };
+  });
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('AchievementsScene'))).toBe(false);
+});
+
 async function launchFromLobby(page: import('@playwright/test').Page, index: number) {
   await page.evaluate(({ index }) => {
     const manager = (window as typeof window & { game: { scene: { stop(key: string): void; start(key: string): void; getScene(key: string): unknown; getScenes(activeOnly?: boolean): Array<{ scene: { key: string } }> } } }).game.scene;

@@ -5,8 +5,10 @@
 - Add normalized controller menu controls for Pause and Cabinet Control. D-pad or left stick navigates, the south face button confirms, and east face button or Select returns.
 - Add controller-only high-score initials entry with two-axis slot and character navigation, south-button confirmation, and east-button or Select slot return.
 - Add a shared controller-aware Game Over overlay for Bird, Frogger, Cyber Chasm, Minesweeper, Pixel Runner, Neon Breakout, Neon Asteroids, Neon Retro Racer, and Neon Cyber-Caster.
+- Add controller access to the Achievements overlay. Use the north face button from the lobby to open it, then the east face button or Select to close it.
 
 ### Changed
+- Route lobby controller actions through the shared InputManager frame instead of a second scene-local gamepad poll.
 - Route Player 1 controller direction and face-button transitions through an opt-in compatibility bridge for the keyboard-owned Snake, Tetris, Frogger, Brave Bird, Cyber Chasm, and Neon Singularity replicas, then release synthetic input on scene shutdown.
 - Add a browser regression that launches Snake with a normalized connected controller and verifies the legacy keyboard path receives its direction.
 - Track compatibility bridge owners and overlay suspensions independently so pausing a legacy game releases synthetic keys, avoids duplicate menu navigation, and resumes the original bridge after the overlay closes.

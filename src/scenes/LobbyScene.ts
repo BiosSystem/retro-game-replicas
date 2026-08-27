@@ -7,6 +7,7 @@ import { SaveManager } from '../engine/SaveManager';
 import { AchievementManager } from '../engine/AchievementManager';
 import { AudioEngine } from '../engine/AudioEngine';
 import { InputManager } from '../engine/InputManager';
+import { GamepadButton } from '../engine/input/GamepadHandler';
 import { AttractController, CreditLedger } from '../ui/menu/ArcadeSession';
 import { mountGameScene } from '../ui/menu/SceneLifecycle';
 import type { ArcadeMode } from '../multiplayer/CoopSession';
@@ -61,9 +62,7 @@ export default class LobbyScene extends Phaser.Scene {
     this.nextAttractCycle = this.time.now + 30_000;
     this.input.keyboard?.removeAllListeners();
 
-    // Reset gamepad flags
-    this.gamepadConnected = false;
-    this.padLastState = { up: false, down: false, button: false, back: false, start: false };
+    this.padLastState = { up: false, down: false, button: false, back: false, start: false, achievements: false };
 
     this.buildStarfield();
     this.buildScanlines();
@@ -77,12 +76,10 @@ export default class LobbyScene extends Phaser.Scene {
     this.modeText = this.add.text(616, 420, '', { fontFamily: 'Courier', fontSize: '12px', color: PALETTE.warn }).setOrigin(1, 0.5);
     this.updateModeText();
     this.bindKeys();
-    this.bindGamepad();
     AudioEngine.playTrack('plaza');
   }
 
-  private gamepadConnected = false;
-  private padLastState = { up: false, down: false, button: false, back: false, start: false };
+  private padLastState = { up: false, down: false, button: false, back: false, start: false, achievements: false };
 
 
   private buildStarfield() {
@@ -178,7 +175,7 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   private buildFooter() {
-    this.add.text(320, 458, 'UP/DOWN MOVE  SPACE SELECT  M MODE  C COIN  S/START SETTINGS  O MODS', {
+    this.add.text(320, 458, 'UP/DOWN MOVE  SPACE SELECT  Y ACH  M MODE  C COIN  S/START SETTINGS', {
       fontFamily: "'Share Tech Mono', Courier",
       fontSize: '11px',
       color: PALETTE.muted,
@@ -306,18 +303,6 @@ export default class LobbyScene extends Phaser.Scene {
     });
   }
 
-  private bindGamepad() {
-    this.input.gamepad?.once('connected', () => {
-      this.gamepadConnected = true;
-      this.add.text(320, 90, '🎮 GAMEPAD CONNECTED', {
-        fontFamily: "'Share Tech Mono', Courier",
-        fontSize: '14px',
-        color: PALETTE.primary,
-        fontStyle: 'bold',
-      }).setOrigin(0.5).setAlpha(0.8);
-    });
-  }
-
   update() {
     this.drawPreview(this.time.now);
     if (this.attract.isActive(this.time.now)) {
@@ -327,23 +312,25 @@ export default class LobbyScene extends Phaser.Scene {
         this.updateGameSelection(1);
       }
     }
-    if (this.gamepadConnected && this.input.gamepad && this.input.gamepad.total > 0) {
-      const pad = this.input.gamepad.getPad(0);
-      if (!pad) return;
-
-      const up = pad.up || pad.leftStick.y < -0.5;
-      const down = pad.down || pad.leftStick.y > 0.5;
-      const button = !!pad.A;
-      const back = !!(pad.B || pad.L1);
-      const start = pad.isButtonDown(9);
+    const pad = InputManager.getGamepadFrames()[0];
+    if (pad) {
+      const up = Boolean(pad.buttons & GamepadButton.DPAD_UP) || pad.leftY < -0.5;
+      const down = Boolean(pad.buttons & GamepadButton.DPAD_DOWN) || pad.leftY > 0.5;
+      const button = Boolean(pad.buttons & GamepadButton.SOUTH);
+      const back = Boolean(pad.buttons & (GamepadButton.EAST | GamepadButton.SELECT));
+      const start = Boolean(pad.buttons & GamepadButton.START);
+      const achievements = Boolean(pad.buttons & GamepadButton.NORTH);
 
       if (up && !this.padLastState.up) { this.registerActivity(); this.handleUp(); }
       if (down && !this.padLastState.down) { this.registerActivity(); this.handleDown(); }
       if (button && !this.padLastState.button) { this.registerActivity(); this.handleSpace(); }
       if (back && !this.padLastState.back) { this.registerActivity(); this.handleEsc(); }
       if (start && !this.padLastState.start && this.mode !== 'DIFFICULTY_SELECT') this.scene.launch('SettingsScene', { scene: this.scene.key });
+      if (achievements && !this.padLastState.achievements && this.mode !== 'DIFFICULTY_SELECT') this.scene.launch('AchievementsScene');
 
-      this.padLastState = { up, down, button, back, start };
+      this.padLastState = { up, down, button, back, start, achievements };
+    } else {
+      this.padLastState = { up: false, down: false, button: false, back: false, start: false, achievements: false };
     }
   }
 
