@@ -1,7 +1,7 @@
 # AGENT_STATE: Retro Game Project
 
 ## Current Objective & Milestone
-- Active Task: Restore cross-platform Vitest discovery in the GitHub release gate.
+- Active Task: Restore Linux Tauri source validation in the GitHub release gate.
 - Target Status: Completed
 
 ## Verified Working Systems & Mechanics (Do NOT Break/Repeat)
@@ -17,12 +17,16 @@
 - [x] Controller Start does not pause gameplay behind a visible marked DOM utility panel. Verified by: focused Chromium connected-controller save-state-panel regression.
 - [x] Public runtime, PWA manifest, Tauri package metadata, release labels, architecture guide, developer how-to, and contribution guide use BiosSystem Neon Arcade while GitHub and GHCR repository paths remain stable. Verified by: lint, 278 Vitest tests, production build, and Chromium offline PWA regression.
 - [x] The npm unit-test command quotes its browser-tree exclusion so POSIX and Windows shells pass the same literal Vitest glob. Verified by: 96 files and 278 Vitest tests through the quoted command.
+- [x] The Linux validation job installs the GTK, WebKitGTK, AppIndicator, and SVG development libraries required by Tauri before locked Cargo analysis. Verified by: failure isolation against the Ubuntu 22.04 runner and parity with the desktop release job dependency set.
 - [x] Fun Zone hosting uses a loopback-only Compose template with read-only root filesystem, dropped capabilities, no-new-privileges, and memory-backed Nginx runtime paths. Verified by: Compose schema review and existing CI container smoke workflow.
 - [x] Overlay suspension releases legacy synthetic keys and restores the active bridge after close. Verified by: Chromium controller pause-menu regression.
 - [x] Production browser shell builds with 186 modules, including responsive cabinet scaling, CRT fallback, IndexedDB save states, offline shell, and local-first leaderboards. Verified by: production build and cross-browser smoke suite.
 - [x] Local release baseline passes with 278 Vitest tests across 96 files, 44 Chromium workflows, six Firefox and WebKit smoke workflows, lint, TypeScript build, and zero high-severity npm audit findings. Verify new browser mechanics with focused regressions before the next full release matrix.
 
 ## Failed Attempts & Discarded Implementations
+- [!] Attempt: Run locked Cargo analysis after installing only Rust and Playwright browser dependencies.
+  - Failure: The Ubuntu runner could not resolve the native `gdk-3.0` development package required by Tauri.
+  - Reason Abandoned: Install the explicit Tauri Linux development libraries in the validation job before compiling Rust sources.
 - [!] Attempt: Start the Chromium suite before rebuilding the Vite production bundle.
   - Failure: Browser tests served a prior bundle that lacked the new PauseScene controller state.
   - Reason Abandoned: Always run the production build before Playwright because preview serves dist rather than source.
