@@ -63,7 +63,7 @@ export default class LobbyScene extends Phaser.Scene {
 
     // Reset gamepad flags
     this.gamepadConnected = false;
-    this.padLastState = { up: false, down: false, button: false, back: false };
+    this.padLastState = { up: false, down: false, button: false, back: false, start: false };
 
     this.buildStarfield();
     this.buildScanlines();
@@ -82,7 +82,7 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   private gamepadConnected = false;
-  private padLastState = { up: false, down: false, button: false, back: false };
+  private padLastState = { up: false, down: false, button: false, back: false, start: false };
 
 
   private buildStarfield() {
@@ -178,7 +178,7 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   private buildFooter() {
-    this.add.text(320, 458, 'UP/DOWN MOVE  SPACE SELECT  M MODE  C COIN  S SETTINGS  O MODS', {
+    this.add.text(320, 458, 'UP/DOWN MOVE  SPACE SELECT  M MODE  C COIN  S/START SETTINGS  O MODS', {
       fontFamily: "'Share Tech Mono', Courier",
       fontSize: '11px',
       color: PALETTE.muted,
@@ -333,15 +333,17 @@ export default class LobbyScene extends Phaser.Scene {
 
       const up = pad.up || pad.leftStick.y < -0.5;
       const down = pad.down || pad.leftStick.y > 0.5;
-      const button = !!(pad.A || pad.B || pad.X || pad.Y);
+      const button = !!pad.A;
       const back = !!(pad.B || pad.L1);
+      const start = pad.isButtonDown(9);
 
       if (up && !this.padLastState.up) { this.registerActivity(); this.handleUp(); }
       if (down && !this.padLastState.down) { this.registerActivity(); this.handleDown(); }
       if (button && !this.padLastState.button) { this.registerActivity(); this.handleSpace(); }
       if (back && !this.padLastState.back) { this.registerActivity(); this.handleEsc(); }
+      if (start && !this.padLastState.start && this.mode !== 'DIFFICULTY_SELECT') this.scene.launch('SettingsScene', { scene: this.scene.key });
 
-      this.padLastState = { up, down, button, back };
+      this.padLastState = { up, down, button, back, start };
     }
   }
 

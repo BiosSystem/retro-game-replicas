@@ -17,7 +17,8 @@ export class InputManager {
     };
     private static networkPlayer: PlayerInputState = { UP: false, DOWN: false, LEFT: false, RIGHT: false, FIRE: false };
     private static replayMask: number | null = null;
-    private static legacyGamepadKeyboardBridge = false;
+    private static legacyGamepadKeyboardBridgeOwners = new Set<string>();
+    private static legacyGamepadKeyboardBridgeSuspensions = new Set<string>();
     private static legacyGamepadState: PlayerInputState = emptyPlayerState();
 
     public static initialize() {
@@ -145,7 +146,7 @@ export class InputManager {
             this.updateIndicator();
         }
         this.playerState = this.multi.poll(snapshots);
-        if (this.legacyGamepadKeyboardBridge) this.syncLegacyGamepadKeys(frames);
+        if (this.legacyGamepadKeyboardBridgeActive()) this.syncLegacyGamepadKeys(frames);
     }
 
     public static isDown(code: string): boolean {
@@ -175,10 +176,18 @@ export class InputManager {
 
     public static setNetworkPlayerState(state: PlayerInputState) { this.networkPlayer = { ...state }; }
     public static setReplayMask(mask: number | null) { this.replayMask = mask === null ? null : Math.max(0, Math.min(31, mask | 0)); }
-    public static setLegacyGamepadKeyboardBridge(active: boolean) {
-        if (this.legacyGamepadKeyboardBridge === active) return;
-        this.legacyGamepadKeyboardBridge = active;
-        if (!active) this.releaseLegacyGamepadKeys();
+    public static setLegacyGamepadKeyboardBridge(active: boolean, owner = 'default') {
+        const wasActive = this.legacyGamepadKeyboardBridgeActive();
+        if (active) this.legacyGamepadKeyboardBridgeOwners.add(owner);
+        else this.legacyGamepadKeyboardBridgeOwners.delete(owner);
+        this.syncLegacyGamepadKeyboardBridgeState(wasActive);
+    }
+
+    public static setLegacyGamepadKeyboardBridgeSuspended(suspended: boolean, owner: string) {
+        const wasActive = this.legacyGamepadKeyboardBridgeActive();
+        if (suspended) this.legacyGamepadKeyboardBridgeSuspensions.add(owner);
+        else this.legacyGamepadKeyboardBridgeSuspensions.delete(owner);
+        this.syncLegacyGamepadKeyboardBridgeState(wasActive);
     }
     public static getP1Mask() { return (this.isP1Down('UP') ? 1 : 0) | (this.isP1Down('DOWN') ? 2 : 0) | (this.isP1Down('LEFT') ? 4 : 0) | (this.isP1Down('RIGHT') ? 8 : 0) | (this.isP1Down('FIRE') ? 16 : 0); }
     public static getGamepadFrames(): readonly GamepadFrame[] { return this.gamepads.getFrames(); }
@@ -195,6 +204,14 @@ export class InputManager {
 
     private static refreshBindings() {
         this.bindings = new PreferenceStore(localStorage).load().bindings;
+    }
+
+    private static legacyGamepadKeyboardBridgeActive() {
+        return this.legacyGamepadKeyboardBridgeOwners.size > 0 && this.legacyGamepadKeyboardBridgeSuspensions.size === 0;
+    }
+
+    private static syncLegacyGamepadKeyboardBridgeState(wasActive: boolean) {
+        if (wasActive && !this.legacyGamepadKeyboardBridgeActive()) this.releaseLegacyGamepadKeys();
     }
 
     private static syncLegacyGamepadKeys(frames: readonly GamepadFrame[]) {

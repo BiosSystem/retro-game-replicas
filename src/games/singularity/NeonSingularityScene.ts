@@ -26,8 +26,8 @@ export default class NeonSingularityScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-O', () => this.scene.start('OsScene'));
     this.input.keyboard?.on('keydown-X', () => void this.enterXr());
     this.input.keyboard?.on('keydown-ESC', () => this.scene.start('LobbyScene'));
-    InputManager.setLegacyGamepadKeyboardBridge(true);
-    this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridge(false));
+    InputManager.setLegacyGamepadKeyboardBridge(true, this.scene.key);
+    this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridge(false, this.scene.key));
     this.draw();
     AudioEngine.playTrack('odyssey');
   }

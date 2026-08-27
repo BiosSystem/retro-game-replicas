@@ -77,8 +77,8 @@ export default class FroggerScene extends Phaser.Scene {
       this.scene.pause();
       this.scene.launch('PauseScene', { scene: this.scene.key });
     });
-    InputManager.setLegacyGamepadKeyboardBridge(true);
-    this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridge(false));
+    InputManager.setLegacyGamepadKeyboardBridge(true, this.scene.key);
+    this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridge(false, this.scene.key));
   }
 
   move(dx: number, dy: number) {

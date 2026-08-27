@@ -2,10 +2,13 @@
 
 ### Added
 - Add a user-initiated Fullscreen control to Cabinet Control with standard browser API detection, failure-safe state reporting, and no new dependency or asset.
+- Add normalized controller menu controls for Pause and Cabinet Control. D-pad or left stick navigates, the south face button confirms, and east face button or Select returns.
 
 ### Changed
 - Route Player 1 controller direction and face-button transitions through an opt-in compatibility bridge for the keyboard-owned Snake, Tetris, Frogger, Brave Bird, Cyber Chasm, and Neon Singularity replicas, then release synthetic input on scene shutdown.
 - Add a browser regression that launches Snake with a normalized connected controller and verifies the legacy keyboard path receives its direction.
+- Track compatibility bridge owners and overlay suspensions independently so pausing a legacy game releases synthetic keys, avoids duplicate menu navigation, and resumes the original bridge after the overlay closes.
+- Reserve Start for Cabinet Control from the lobby and reserve the south face button for selection so a controller cannot select and back out from one face-button press.
 
 ## [2.0.0] - 2026-08-26
 ### Changed

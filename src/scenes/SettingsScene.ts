@@ -4,6 +4,8 @@ import { PreferenceStore, type CabinetTheme } from '../engine/PreferenceStore';
 import { CRT_PRESETS, nextCrtPreset, parseCrtPreset } from '../engine/graphics/CrtShaderPipeline';
 import { parseDisplayAspect } from '../engine/graphics/DisplayScaler';
 import { FullscreenController } from '../engine/FullscreenController';
+import { InputManager } from '../engine/InputManager';
+import { readGamepadMenuInput, type GamepadMenuState } from '../engine/input/GamepadMenuInput';
 
 export default class SettingsScene extends Phaser.Scene {
     private sourceScene!: string;
@@ -11,6 +13,7 @@ export default class SettingsScene extends Phaser.Scene {
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
     private fullscreen: FullscreenController | null = null;
+    private gamepadState: GamepadMenuState = { up: false, down: false, confirm: false, back: false };
 
     constructor() {
         super('SettingsScene');
@@ -23,6 +26,8 @@ export default class SettingsScene extends Phaser.Scene {
     create() {
         const arcadeRoot = document.getElementById('app');
         this.fullscreen = arcadeRoot ? new FullscreenController(arcadeRoot, document) : null;
+        InputManager.setLegacyGamepadKeyboardBridgeSuspended(true, this.scene.key);
+        this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridgeSuspended(false, this.scene.key));
         // Overlay background
         const bg = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.8);
         bg.setInteractive(); // block clicks
@@ -77,6 +82,15 @@ export default class SettingsScene extends Phaser.Scene {
                 item.setText(label);
             }
         });
+    }
+
+    update() {
+        const next = readGamepadMenuInput(InputManager.getGamepadFrames());
+        if (next.up && !this.gamepadState.up) this.moveSelection(-1);
+        if (next.down && !this.gamepadState.down) this.moveSelection(1);
+        if (next.confirm && !this.gamepadState.confirm) this.selectOption();
+        if (next.back && !this.gamepadState.back) this.closeSettings();
+        this.gamepadState = next;
     }
 
     private getOptionLabel(option: string) {

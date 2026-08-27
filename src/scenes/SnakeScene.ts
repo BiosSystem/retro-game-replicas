@@ -79,8 +79,8 @@ export default class SnakeScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-DOWN', () => { if (this.direction !== 'UP') this.nextDirection = 'DOWN'; });
     this.input.keyboard?.on('keydown-LEFT', () => { if (this.direction !== 'RIGHT') this.nextDirection = 'LEFT'; });
     this.input.keyboard?.on('keydown-RIGHT', () => { if (this.direction !== 'LEFT') this.nextDirection = 'RIGHT'; });
-    InputManager.setLegacyGamepadKeyboardBridge(true);
-    this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridge(false));
+    InputManager.setLegacyGamepadKeyboardBridge(true, this.scene.key);
+    this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridge(false, this.scene.key));
 
     // Energetic baseline
     const track = [110, 0, 110, 0, 146.83, 0, 110, 0, 98, 0, 110, 0, 146.83, 0, 0, 0];
