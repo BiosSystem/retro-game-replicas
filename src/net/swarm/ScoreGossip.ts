@@ -1,0 +1,144 @@
+export interface ScoreClaim {
+  version: 1;
+  id: string;
+  player: string;
+  game: string;
+  score: number;
+  replayHash: string;
+  clock: number;
+  publicKey: string;
+  signature: string;
+}
+
+export interface GossipEnvelope {
+  type: 'SCORE_GOSSIP';
+  claims: ScoreClaim[];
+}
+
+export const MAX_GOSSIP_ENVELOPE_CLAIMS = 256;
+export const MAX_STORED_SCORE_CLAIMS = 4096;
+
+export class ScoreGossip extends EventTarget {
+  private readonly claims = new Map<string, ScoreClaim>();
+
+  async create(player: string, game: string, score: number, replayHash: string, keyPair: CryptoKeyPair, clock = Date.now()) {
+    const playerId = safeId(player);
+    const gameId = safeId(game);
+    const safeScore = clampInt(score, 0, 0x7fffffff);
+    const safeClock = clampInt(clock, 0, Number.MAX_SAFE_INTEGER);
+    const publicBytes = new Uint8Array(await crypto.subtle.exportKey('raw', keyPair.publicKey));
+    const publicKey = toBase64(publicBytes);
+    const fingerprint = toHex(new Uint8Array(await crypto.subtle.digest('SHA-256', publicBytes))).slice(0, 16);
+    const base = {
+      version: 1 as const,
+      id: `${gameId}-${safeClock}-${safeScore}-${fingerprint}`,
+      player: playerId,
+      game: gameId,
+      score: safeScore,
+      replayHash: /^[a-f0-9]{64}$/.test(replayHash) ? replayHash : '0'.repeat(64),
+      clock: safeClock,
+      publicKey,
+    };
+    const bytes = new TextEncoder().encode(canonical(base));
+    const signature = toBase64(new Uint8Array(await crypto.subtle.sign({ name: 'Ed25519' }, keyPair.privateKey, bytes)));
+    const claim = { ...base, signature };
+    this.claims.set(claim.id, claim);
+    return claim;
+  }
+
+  async merge(envelope: GossipEnvelope) {
+    return (await this.mergeClaims(envelope)).length;
+  }
+
+  async mergeClaims(envelope: GossipEnvelope): Promise<ScoreClaim[]> {
+    if (envelope.type !== 'SCORE_GOSSIP' || !Array.isArray(envelope.claims) || envelope.claims.length > MAX_GOSSIP_ENVELOPE_CLAIMS) return [];
+    const added: ScoreClaim[] = [];
+    for (const claim of envelope.claims) {
+      if (this.claims.has(claim.id) || !await verifyClaim(claim)) continue;
+      this.claims.set(claim.id, claim);
+      added.push(claim);
+      this.dispatchEvent(new CustomEvent('score', { detail: claim }));
+    }
+    return added;
+  }
+
+  async mergeStored(claims: readonly ScoreClaim[]) {
+    if (!Array.isArray(claims) || claims.length > MAX_STORED_SCORE_CLAIMS) return 0;
+    let accepted = 0;
+    for (let offset = 0; offset < claims.length; offset += MAX_GOSSIP_ENVELOPE_CLAIMS) {
+      accepted += await this.merge({
+        type: 'SCORE_GOSSIP',
+        claims: claims.slice(offset, offset + MAX_GOSSIP_ENVELOPE_CLAIMS),
+      });
+    }
+    return accepted;
+  }
+
+  envelope(): GossipEnvelope {
+    return {
+      type: 'SCORE_GOSSIP',
+      claims: [...this.claims.values()].sort((a, b) => a.clock - b.clock || a.id.localeCompare(b.id)).slice(-MAX_GOSSIP_ENVELOPE_CLAIMS),
+    };
+  }
+
+  top(game?: string, limit = 10) {
+    return [...this.claims.values()]
+      .filter(claim => !game || claim.game === game)
+      .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id))
+      .slice(0, Math.max(1, Math.min(100, limit)));
+  }
+}
+
+export async function createSwarmIdentity() {
+  return crypto.subtle.generateKey({ name: 'Ed25519' }, true, ['sign', 'verify']) as Promise<CryptoKeyPair>;
+}
+
+export async function verifyClaim(claim: ScoreClaim) {
+  try {
+    if (claim.version !== 1 || safeId(claim.player) !== claim.player || safeId(claim.game) !== claim.game) return false;
+    if (!Number.isInteger(claim.score) || claim.score < 0 || claim.score > 0x7fffffff) return false;
+    if (!Number.isSafeInteger(claim.clock) || claim.clock < 0 || !/^[a-f0-9]{64}$/.test(claim.replayHash) || claim.id.length > 128) return false;
+    const key = await crypto.subtle.importKey('raw', fromBase64(claim.publicKey), { name: 'Ed25519' }, false, ['verify']);
+    const { signature, ...base } = claim;
+    return crypto.subtle.verify({ name: 'Ed25519' }, key, fromBase64(signature), new TextEncoder().encode(canonical(base)));
+  } catch {
+    return false;
+  }
+}
+
+function canonical(value: Omit<ScoreClaim, 'signature'>) {
+  return JSON.stringify({
+    clock: value.clock,
+    game: value.game,
+    id: value.id,
+    player: value.player,
+    publicKey: value.publicKey,
+    replayHash: value.replayHash,
+    score: value.score,
+    version: 1,
+  });
+}
+
+function safeId(value: string) {
+  const clean = String(value).replace(/[^A-Za-z0-9_-]/g, '').slice(0, 32);
+  return clean || 'AAA';
+}
+
+function clampInt(value: number, minimum: number, maximum: number) {
+  return Math.max(minimum, Math.min(maximum, Math.floor(Number.isFinite(value) ? value : minimum)));
+}
+
+function toBase64(bytes: Uint8Array) {
+  let binary = '';
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary);
+}
+
+function fromBase64(value: string) {
+  const binary = atob(value);
+  return Uint8Array.from(binary, character => character.charCodeAt(0));
+}
+
+function toHex(bytes: Uint8Array) {
+  return [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('');
+}

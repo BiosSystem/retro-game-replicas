@@ -1,0 +1,9 @@
+import { ProjectileEcs } from '../../engine/ecs/ProjectileEcs';
+import { instruction, NeonOpcode, NeonVM } from '../../engine/vm/NeonVM';
+const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+export function emitFibonacciSpiral(ecs: ProjectileEcs, x: number, y: number, count: number, speed: number, phase = 0) { const total = bounded(count); for (let i = 0; i < total; i++) { const angle = phase + i * GOLDEN_ANGLE; ecs.spawn({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, kind: 0 }); } return total; }
+export function emitPolygon(ecs: ProjectileEcs, x: number, y: number, sides: number, rings: number, speed: number, phase = 0) { const safeSides = clampInt(sides, 3, 24), safeRings = clampInt(rings, 1, 64); let emitted = 0; for (let ring = 1; ring <= safeRings; ring++) for (let side = 0; side < safeSides; side++) { const angle = phase + side / safeSides * Math.PI * 2; if (ecs.spawn({ x, y, vx: Math.cos(angle) * speed * (.55 + ring / safeRings * .45), vy: Math.sin(angle) * speed * (.55 + ring / safeRings * .45), kind: 1 }) >= 0) emitted++; } return emitted; }
+export function emitHomingFan(ecs: ProjectileEcs, x: number, y: number, count: number, speed: number, phase = Math.PI / 2) { const total = bounded(count); for (let i = 0; i < total; i++) { const angle = phase + (i - (total - 1) / 2) * .08; ecs.spawn({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, kind: 2 }); } return total; }
+export function scriptedBossPhase(stage: number) { const phase = clampInt(stage, 0, 65535) % 4; const program = Uint16Array.of(instruction(NeonOpcode.LOADI, 0), phase, instruction(NeonOpcode.EMIT, 0), 1, instruction(NeonOpcode.HALT)); return new NeonVM().run(program).events[0]?.value ?? 0; }
+function bounded(value: number) { return clampInt(value, 0, 4096); }
+function clampInt(value: number, min: number, max: number) { return Math.floor(Math.max(min, Math.min(max, Number.isFinite(value) ? value : 0))); }

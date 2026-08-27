@@ -1,0 +1,3 @@
+import { DenseQNetwork } from '../../ai/neural/DenseQNetwork';
+import { NeuralQAgent } from '../../ai/neural/NeuralQAgent';
+export class TacticsBrain { private readonly agent:NeuralQAgent;private previous?:number[];private action=0;constructor(random:()=>number=Math.random){this.agent=new NeuralQAgent(new DenseQNetwork(6,16,4,random),random);}decide(input:readonly number[],reward:number){const state=input.map(value=>Math.max(-1,Math.min(1,Number.isFinite(value)?value:0)));if(state.length!==6)throw new Error('Tactics brain requires six sensors');if(this.previous)this.agent.learn({state:this.previous,action:this.action,reward,nextState:state});this.action=this.agent.choose(state,0.08);this.previous=state;return this.action;}metrics(){return this.agent.metrics();}}

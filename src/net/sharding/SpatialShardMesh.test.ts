@@ -1,0 +1,12 @@
+import { describe, expect, it } from 'vitest';
+import { decodeShardEnvelope, encodeShardEnvelope, SpatialShardMesh, virtualCoordinate } from './SpatialShardMesh';
+import { ShardTransportBridge } from './ShardTransportBridge';
+import { UnifiedTransport, type TransportBackend } from '../transport/UnifiedTransport';
+
+function mesh(order = ['alpha', 'beta', 'gamma', 'delta']) { const result = new SpatialShardMesh(16); order.forEach(id => result.upsertPeer({ id, capacity: 1 })); return result; }
+describe('spatial peer sharding', () => {
+  it('converges regardless of peer insertion order', () => { expect(mesh().convergenceDigest(10_000)).toBe(mesh(['delta', 'beta', 'alpha', 'gamma']).convergenceDigest(10_000)); });
+  it('assigns unique replicas and bounds movement after churn', () => { const target = mesh(), coordinates = Array.from({ length: 10_000 }, (_, index) => virtualCoordinate(index)), first = target.assign({ x: 5, y: 3, z: -2 }, 3); expect(new Set(first.owners).size).toBe(3); const moved = target.movementAfter(coordinates, () => target.removePeer('delta')); expect(moved).toBeGreaterThan(0); expect(moved).toBeLessThan(coordinates.length); });
+  it('validates bounded transport envelopes', () => { const envelope = { version: 1 as const, type: 'SHARD_STATE' as const, coordinate: { x: 1, y: 2, z: 3 }, owner: 'alpha', stateRoot: 'a'.repeat(64), payloadHash: 'b'.repeat(64) }; expect(decodeShardEnvelope(encodeShardEnvelope(envelope))).toEqual(envelope); expect(() => decodeShardEnvelope(new TextEncoder().encode('{"type":"EVAL"}'))).toThrow('Invalid shard envelope'); });
+  it('routes shard state over an established reliable transport', async () => { const sent: Uint8Array[] = [], backend: TransportBackend = { kind: 'WEBRTC', sendDatagram: async () => true, sendReliable: async bytes => { sent.push(bytes); return true; }, close: async () => {} }, sender = new UnifiedTransport(backend), receiver = new UnifiedTransport(backend), received: string[] = [], receiverBridge = new ShardTransportBridge(receiver, envelope => received.push(envelope.owner)), senderBridge = new ShardTransportBridge(sender, () => {}), envelope = { version: 1 as const, type: 'SHARD_STATE' as const, coordinate: { x: 1, y: 2, z: 3 }, owner: 'alpha', stateRoot: 'a'.repeat(64), payloadHash: 'b'.repeat(64) }; await senderBridge.broadcast(envelope); receiver.receive(sent[0] as Uint8Array, true); expect(received).toEqual(['alpha']); senderBridge.close(); receiverBridge.close(); });
+});

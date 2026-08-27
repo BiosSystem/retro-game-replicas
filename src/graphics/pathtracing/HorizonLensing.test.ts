@@ -1,0 +1,3 @@
+import { describe, expect, it } from 'vitest';
+import { generateLensingField, gravitationalLensUv } from './HorizonLensing';
+describe('event horizon lensing', () => { it('captures rays inside the horizon and bends exterior rays', () => { expect(gravitationalLensUv(.5, .5).captured).toBe(true); const mapped = gravitationalLensUv(.7, .5); expect(mapped.captured).toBe(false); expect(mapped.u).toBeGreaterThan(.7); }); it('generates deterministic bounded lens fields', () => { const a = generateLensingField(128, 72), b = generateLensingField(128, 72); expect(a.checksum).toBe(b.checksum); expect(a.uv).toHaveLength(18_432); }); });

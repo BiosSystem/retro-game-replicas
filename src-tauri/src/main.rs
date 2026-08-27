@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-  retro_game_replicas_lib::run();
+  biossystem_neon_arcade_lib::run();
 }

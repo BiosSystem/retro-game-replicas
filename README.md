@@ -1,60 +1,95 @@
-<p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Universal+Retro+Arcade;11+Classic+Games;Tauri+v2+Multi-Platform;BiosSystem+Kernel" alt="Retro Arcade Typing Title" />
-</p>
+# BiosSystem Neon Arcade
 
-<p align="center">
-  <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=rust,ts,vite,html" alt="Tech Stack" />
-  </a>
-</p>
+> A procedural retro-futurist arcade platform with 26 original games, a generated Meta-Arcade Hall, and no bundled ROMs or copied game assets.
 
-<p align="center">
-  <img src="https://img.shields.io/github/v/release/BiosSystem/retro-game-replicas?color=00ff72&style=flat-square" alt="Version">
-  <img src="https://img.shields.io/badge/Tauri-v2-blue?style=flat-square" alt="Tauri">
-  <img src="https://img.shields.io/badge/Phaser-4.1-orange?style=flat-square" alt="Phaser">
-  <img src="https://img.shields.io/github/license/BiosSystem/retro-game-replicas?style=flat-square" alt="License">
-  <img src="https://img.shields.io/github/stars/BiosSystem/retro-game-replicas?style=flat-square&color=00ff72" alt="Stars">
-</p>
+[![Build](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml/badge.svg)](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml)
+[![Release](https://img.shields.io/github/v/release/BiosSystem/retro-game-replicas?color=00ff72)](https://github.com/BiosSystem/retro-game-replicas/releases)
+[![License](https://img.shields.io/github/license/BiosSystem/retro-game-replicas?color=00ff72)](LICENSE)
 
-<p align="center">
-  <strong>🌐 Part of the <a href="https://bios-system.net">BiosSystem Suite</a></strong>
-</p>
+**BiosSystem Neon Arcade** keeps the existing `BiosSystem/retro-game-replicas` repository slug for continuity. Build original arcade replicas, procedurally generated Neon worlds, and a cabinet-style launcher from one TypeScript codebase.
 
-## 🚀 Elevator Pitch
+## Quick start
 
-**Universal Retro Arcade** is a premium, open-source collection of 11 classic and 2000s-era game replicas. Built from scratch using modern web technologies (Phaser 4, TypeScript, Vite) and packaged natively for all platforms via Tauri v2.
+Require Node.js 24 or a compatible current Node runtime.
 
-Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLSL CRT shaders, and local persistence - without needing external emulators or illegal ROMs.
-
-## ✨ Features
-
-- **11 Built-In Games** - Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, and Cyber Chasm.
-- **Hardware Gamepad Support** - Plug-and-play support for Xbox and PlayStation controllers via the HTML5 Gamepad API.
-- **Hardware-Accelerated Post-FX** - Toggle GLSL CRT scanlines, chromatic aberration, and barrel distortion (`Ctrl+Shift+C`).
-- **Cross-Platform Native** - Less than 15MB binary size for desktop (macOS, Windows), with native Android APK support.
-- **Self-Contained Architecture** - Zero external ROMs. High-score tracking via IndexedDB.
-
-## ⚡ Quick Start
-
-**1. Install Prerequisites:**
-- [Node.js 20+](https://nodejs.org/)
-- [Rust toolchain](https://rustup.rs/)
-- Tauri CLI: `npm install -g @tauri-apps/cli`
-
-**2. Setup & Run:**
 ```bash
 git clone https://github.com/BiosSystem/retro-game-replicas.git
 cd retro-game-replicas
-npm install
-npm run tauri dev
+npm ci
+npm run dev
 ```
 
-## 📖 Deep Technical Details
+Open the Vite address printed by the development server. Build and verify the production web app with:
 
-For comprehensive details on architecture (IPC bridge, capability scoping), deployment, security mechanisms, and the complete feature matrix, please visit the Developer Wiki:
+```bash
+npm run lint
+npm test
+npm run build
+npm run test:regression
+npm run test:cross-browser
+```
 
-**👉 [View the Developer Wiki](docs/WIKI.md)**
+Install Rust only when building the Tauri desktop shell:
 
----
+```bash
+npm run tauri dev
+# or
+npm run tauri build
+```
 
-*Copyright © 2026 BiosSystem | Powered by BiosSystem Kernel*
+## Feature matrix
+
+| Area | Current implementation |
+|---|---|
+| Arcade catalog | 26 original games plus the generated Meta-Arcade Hall |
+| Runtime | Phaser 4, TypeScript, Vite, lazy game-scene loading, fixed 60 Hz Arcade Physics |
+| Input | Keyboard, touch, Xbox, PlayStation, generic controllers, local Player 1 and Player 2 actions |
+| Game flow | Difficulty selection, solo and supported local multiplayer modes, pause, restart, shared Game Over, high-score entry, achievements |
+| Rendering | 640x480 pixel-art canvas, integer 4:3 or 16:9 framing, CRT presets, procedural backgrounds, particles, and generated effects |
+| Audio | Web Audio chiptune tracker, generated effects, spatial cabinet audio, optional AudioWorklet and Wasm DSP paths |
+| Persistence | Local score ledgers, preferences, deterministic replays, IndexedDB Neon Epoch save states, generated save previews |
+| Connectivity | Manual direct WebRTC peers, local-first verified score gossip, presence mesh, optional spatial voice |
+| Extensibility | Validated declarative stage mods, visual graph compiler, signed packages, procedural sound patches |
+| Delivery | Offline PWA, hardened Nginx container, loopback-only Compose template, optional Tauri desktop shell |
+
+## Games
+
+**Classic cabinet replicas:** Snake Evolution, Neon Pong, Neon Vector, Neon Breakout, Froggie Crosser, Space Defenders, Tetris Pulse, Minesweeper, Pixel Runner, Brave Bird, and Cyber Chasm.
+
+**Modern arcade games:** Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, and Neon Kombat.
+
+**Procedural Neon worlds:** Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, Neon Genesis, Neon OS, The Singularity, Event Horizon, and Neon Epoch.
+
+**Hub:** Meta-Arcade Hall generates a walkable DDA-rendered cabinet space with spatial audio and optional connected-peer presence.
+
+## Visual and performance model
+
+Render the core arcade experience at 640x480 with pixel-art sampling. Select Clean Pixel, Arcade CRT 1980s, Trinitron 1990s, or Bypass. The CRT path supports scanlines, bloom, curvature, chromatic aberration, phosphor masks, and vignette with a source-canvas fallback.
+
+Generate gameplay graphics, sprites, particles, previews, levels, worlds, music, and sound effects from code. Several advanced systems, including WebGPU compute, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD, activate only after capability checks. Deterministic CPU and browser-safe fallbacks remain the baseline path.
+
+The latest production build contains 186 modules, a 106.55 kB initial bootstrap bundle, and a deferred 1,352.40 kB Phaser runtime chunk.
+
+## Fun Zone container hosting
+
+Build the web app as a dedicated origin. Keep it at the origin root because the PWA and service worker use root-relative paths.
+
+```bash
+cp compose.example.yaml compose.yaml
+docker compose up --build -d
+curl --fail http://127.0.0.1:8080/healthz
+```
+
+The tracked Compose template binds only to loopback, uses an unprivileged read-only Nginx runtime, drops Linux capabilities, and enables `no-new-privileges`. Route the public domain to `127.0.0.1:8080` through an HTTPS reverse proxy. Do not embed the app in an iframe because the production security policy denies framing.
+
+## Documentation
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Developer how-to](docs/WIKI_HOWTO.md)
+- [Contributing](CONTRIBUTING.md)
+- [Engine contracts and measured subsystem notes](docs/ENGINE_OVERHAUL.md)
+- [Security policy](SECURITY.md)
+
+## License and attribution
+
+Release source under the [MIT License](LICENSE). Use the original implementations and generated assets in this repository. Do not add third-party game ROMs, copied sprites, copied music, or executable community JavaScript.

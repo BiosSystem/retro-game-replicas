@@ -2,21 +2,98 @@ name: Publish Releases & Packages
 
 on:
   push:
+    branches:
+      - master
     tags:
       - 'v*'
+  pull_request:
+    branches:
+      - master
   workflow_dispatch:
 
 permissions:
-  contents: write
-  packages: write
+  contents: read
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
+  validate:
+    name: Validate Web and Tauri Sources
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Tauri System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Install Frontend Dependencies
+        run: npm ci
+
+      - name: Install Browser Engines
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Run TypeScript Analysis
+        run: npm run lint
+
+      - name: Run Unit and Integration Tests
+        run: npm test
+
+      - name: Build Production Bundle
+        run: npm run build
+
+      - name: Run Chromium Regression Tests
+        run: npm run test:regression
+
+      - name: Run Firefox and WebKit Smoke Tests
+        run: npm run test:cross-browser
+
+      - name: Build Validation Container
+        run: docker build --tag biossystem-neon-arcade-validation .
+
+      - name: Smoke Test Container Headers
+        run: |
+          docker run --detach --name biossystem-neon-arcade-validation --publish 127.0.0.1:8080:8080 biossystem-neon-arcade-validation
+          for attempt in {1..20}; do
+            curl --fail --silent http://127.0.0.1:8080/ > /tmp/arcade-shell.html && break
+            sleep 1
+          done
+          grep --fixed-strings '<main class="arcade-cabinet"' /tmp/arcade-shell.html
+          curl --fail --silent --output /dev/null http://127.0.0.1:8080/healthz
+          test "$(docker inspect --format '{{.Config.User}}' biossystem-neon-arcade-validation)" = '10001:10001'
+          curl --fail --silent --show-error --dump-header /tmp/arcade-headers.txt --output /dev/null http://127.0.0.1:8080/
+          grep --ignore-case '^Content-Security-Policy:' /tmp/arcade-headers.txt
+          grep --ignore-case '^Cross-Origin-Opener-Policy: same-origin' /tmp/arcade-headers.txt
+          grep --ignore-case '^Cross-Origin-Embedder-Policy: require-corp' /tmp/arcade-headers.txt
+          grep --ignore-case '^X-Content-Type-Options: nosniff' /tmp/arcade-headers.txt
+
+      - name: Stop Validation Container
+        if: always()
+        run: docker rm --force biossystem-neon-arcade-validation || true
+
+      - name: Check Tauri Sources
+        run: cargo check --locked --manifest-path src-tauri/Cargo.toml
+
   publish-packages:
     name: Publish GitHub Container Package (GHCR) for Cloud Compute (AWS/GCP)
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: validate
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
@@ -46,7 +123,11 @@ jobs:
 
   publish-releases:
     name: Compile Real Tauri Desktop Apps (${{ matrix.os }})
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: validate
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
     strategy:
       matrix:
         os: [ubuntu-22.04, windows-latest, macos-latest]
@@ -65,13 +146,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
+          cache: npm
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install Frontend Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build Real Tauri Desktop App
         uses: tauri-apps/tauri-action@v0
@@ -79,7 +161,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: 'Universal Retro Arcade ${{ github.ref_name }}'
+          releaseName: 'BiosSystem Neon Arcade ${{ github.ref_name }}'
           releaseBody: 'Official compiled native desktop release for Windows, macOS, and Linux.'
           releaseDraft: false
           prerelease: false

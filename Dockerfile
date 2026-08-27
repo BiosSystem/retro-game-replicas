@@ -1,21 +1,24 @@
 # Syntax: docker/dockerfile:1
-FROM node:24-alpine AS builder
+FROM node:24.14.1-alpine3.23 AS builder
 
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 RUN npm run build
 
-FROM nginx:alpine
+FROM nginx:1.28.3-alpine3.23
 COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Configure Nginx to listen on port 8080 and set appropriate permissions for non-root execution
-RUN sed -i 's/listen\( \)*80;/listen 8080;/g' /etc/nginx/conf.d/default.conf && \
+RUN addgroup -S -g 10001 appgroup && \
+    adduser -S -D -H -u 10001 -G appgroup appuser && \
     touch /var/run/nginx.pid && \
-    chown -R nginx:nginx /var/run/nginx.pid /var/cache/nginx /var/log/nginx /usr/share/nginx/html
+    chown -R 10001:10001 /var/run/nginx.pid /var/cache/nginx /var/log/nginx /usr/share/nginx/html
 
-USER nginx
+USER 10001:10001
 EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:8080/healthz || exit 1
 CMD ["nginx", "-g", "daemon off;"]

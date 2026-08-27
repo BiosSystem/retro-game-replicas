@@ -1,0 +1,23 @@
+export interface ChunkCoordinate { x: number; y: number; z: number; }
+export interface ShardPeer { id: string; capacity: number; }
+export interface ShardAssignment { region: ChunkCoordinate; owners: string[]; }
+export interface ShardEnvelope { version: 1; type: 'SHARD_STATE'; coordinate: ChunkCoordinate; owner: string; stateRoot: string; payloadHash: string; }
+
+export class SpatialShardMesh {
+  private readonly peers = new Map<string, ShardPeer>();
+  private readonly regionSize: number;
+  constructor(regionSize = 16) { if (!Number.isInteger(regionSize) || regionSize < 1 || regionSize > 1024) throw new Error('Invalid shard region size'); this.regionSize = regionSize; }
+  upsertPeer(peer: ShardPeer): void { if (!/^[A-Za-z0-9:_-]{1,48}$/.test(peer.id) || !Number.isFinite(peer.capacity) || peer.capacity < .25 || peer.capacity > 16) throw new Error('Invalid shard peer'); this.peers.set(peer.id, { ...peer }); }
+  removePeer(id: string): boolean { return this.peers.delete(id); }
+  peerCount(): number { return this.peers.size; }
+  assign(coordinate: ChunkCoordinate, replicas = 2): ShardAssignment { validateCoordinate(coordinate); if (!this.peers.size) throw new Error('No connected shard peers'); const region = { x: Math.floor(coordinate.x / this.regionSize), y: Math.floor(coordinate.y / this.regionSize), z: Math.floor(coordinate.z / this.regionSize) }, count = Math.max(1, Math.min(this.peers.size, Math.floor(replicas))), owners = [...this.peers.values()].map(peer => ({ id: peer.id, score: rendezvous(region, peer) })).sort((a, b) => b.score - a.score || a.id.localeCompare(b.id)).slice(0, count).map(item => item.id); return { region, owners }; }
+  convergenceDigest(count = 1_000_000, replicas = 2): number { const total = Math.max(1, Math.min(1_000_000, Math.floor(count))); let digest = 2166136261; for (let index = 0; index < total; index++) { const coordinate = virtualCoordinate(index), assignment = this.assign(coordinate, replicas); for (const owner of assignment.owners) digest = Math.imul(digest ^ hash(owner) ^ assignment.region.x ^ assignment.region.y << 7 ^ assignment.region.z << 13, 16777619); } return digest >>> 0; }
+  movementAfter(coordinates: readonly ChunkCoordinate[], mutate: () => void, replicas = 2): number { if (coordinates.length > 100_000) throw new Error('Shard movement sample exceeds 100,000 coordinates'); const before = coordinates.map(coordinate => this.assign(coordinate, replicas).owners.join('|')); mutate(); let moved = 0; coordinates.forEach((coordinate, index) => { if (this.assign(coordinate, replicas).owners.join('|') !== before[index]) moved++; }); return moved; }
+}
+
+export function encodeShardEnvelope(envelope: ShardEnvelope): Uint8Array<ArrayBuffer> { validateCoordinate(envelope.coordinate); if (envelope.version !== 1 || envelope.type !== 'SHARD_STATE' || !/^[A-Za-z0-9:_-]{1,48}$/.test(envelope.owner) || !/^[a-f0-9]{64}$/.test(envelope.stateRoot) || !/^[a-f0-9]{64}$/.test(envelope.payloadHash)) throw new Error('Invalid shard envelope'); return new TextEncoder().encode(JSON.stringify(envelope)); }
+export function decodeShardEnvelope(bytes: Uint8Array): ShardEnvelope { if (bytes.byteLength > 4096) throw new Error('Shard envelope exceeds 4 KiB'); try { const value: unknown = JSON.parse(new TextDecoder().decode(bytes)); if (!value || typeof value !== 'object') throw new Error('shape'); const envelope = value as ShardEnvelope; encodeShardEnvelope(envelope); return structuredClone(envelope); } catch { throw new Error('Invalid shard envelope'); } }
+export function virtualCoordinate(index: number): ChunkCoordinate { const value = Math.max(0, Math.floor(index)); return { x: value % 1000 - 500, y: Math.floor(value / 1000) % 64 - 32, z: Math.floor(value / 64_000) - 8 }; }
+function rendezvous(region: ChunkCoordinate, peer: ShardPeer) { const mixed = mix(hash(peer.id) ^ Math.imul(region.x, 73856093) ^ Math.imul(region.y, 19349663) ^ Math.imul(region.z, 83492791)); return (mixed >>> 0) * peer.capacity; }
+function hash(text: string) { let value = 2166136261; for (let index = 0; index < text.length; index++) value = Math.imul(value ^ text.charCodeAt(index), 16777619); return value >>> 0; } function mix(value: number) { value ^= value >>> 16; value = Math.imul(value, 0x7feb352d); value ^= value >>> 15; value = Math.imul(value, 0x846ca68b); return (value ^ value >>> 16) >>> 0; }
+function validateCoordinate(value: ChunkCoordinate) { if (!value || !Number.isSafeInteger(value.x) || !Number.isSafeInteger(value.y) || !Number.isSafeInteger(value.z) || Math.abs(value.x) > 1_000_000_000 || Math.abs(value.y) > 1_000_000_000 || Math.abs(value.z) > 1_000_000_000) throw new Error('Invalid chunk coordinate'); }
