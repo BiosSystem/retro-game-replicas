@@ -29,7 +29,7 @@ export default class NeonChronoScene extends Phaser.Scene {
     this.ring = new TemporalRing(8); this.branches = new TimelineBrancher(); this.state = initialChronoState(); this.clones.clear(); this.frame = 0; this.rewinding = false; this.chamber = generateChronoChamber(0); this.ring.record(0, packChronoState(this.state));
     this.gfx = this.add.graphics(); this.hud = this.add.text(10, 8, '', { fontFamily: 'Courier', fontSize: '12px', color: '#ffffff' }).setDepth(5);
     this.add.text(320, 20, 'NEON CHRONO // CAUSALITY LAB', { fontFamily: 'Courier', fontSize: '18px', color: '#00ffcc', fontStyle: 'bold' }).setOrigin(.5).setDepth(5);
-    this.add.text(320, 462, 'MOVE WASD  JUMP SPACE  REWIND R  SPAWN CLONE C  EXIT ESC', { fontFamily: 'Courier', fontSize: '11px', color: '#88aacc' }).setOrigin(.5).setDepth(5);
+    this.add.text(320, 462, 'MOVE WASD  JUMP SPACE  REWIND R  SPAWN CLONE C  PAUSE ESC', { fontFamily: 'Courier', fontSize: '11px', color: '#88aacc' }).setOrigin(.5).setDepth(5);
     this.input.keyboard?.on('keydown-C', () => this.spawnClone()); this.input.keyboard?.on('keydown-ESC', () => this.scene.start('LobbyScene')); AudioEngine.playTrack('chrono');
   }
 

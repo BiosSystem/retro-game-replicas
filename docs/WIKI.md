@@ -7,7 +7,7 @@ Use this document as the concise architecture, deployment, and security overview
 - Run one Phaser 4 game instance inside a TypeScript and Vite frontend.
 - Load the lobby and persistent utility scenes at startup, then import game scenes only when selected.
 - Sample keyboard, touch, gamepad, and optional network input through shared managers once per animation frame.
-- Route controller menu actions through common overlay contracts and preserve the source scene payload through Pause Restart.
+- Route controller menu actions and keyboard Escape through common overlay contracts, preserve the source scene payload through Pause Restart, and let foreground overlays retain their own close actions.
 - Render the 640x480 game canvas into an optional WebGL CRT output surface and scale both through the same display frame.
 - Generate graphics, stages, previews, particles, and audio at runtime.
 - Package the production frontend inside a minimal Tauri v2 shell with only `core:default` permissions and an unprivileged Nginx container option.

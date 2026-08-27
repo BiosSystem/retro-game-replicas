@@ -30,5 +30,6 @@ This document outlines the architectural evolution and feature improvements for 
 - [x] Unify controller-only cabinet navigation, achievements, high-score entry, and active game-over restart paths.
 - [x] Preserve difficulty and arcade mode through Pause Restart.
 - [x] Add Game Over restart and safe lobby exit controls for keyboard and controllers.
+- [x] Route keyboard Escape through shared Pause without intercepting foreground overlays.
 - [x] Add a loopback-only hardened Compose template for Fun Zone hosting.
 - [ ] Run the production Compose smoke test on a host with Docker Engine before public deployment.

@@ -40,7 +40,7 @@ export default class NeonEpochScene extends Phaser.Scene {
     this.gfx = this.add.graphics();
     this.hud = this.add.text(12, 10, '', { fontFamily: 'Courier', fontSize: '11px', color: '#dfffee', lineSpacing: 4 }).setDepth(5);
     this.add.text(320, 25, 'NEON EPOCH // PROCEDURAL VOLUMETRIC WORLD', { fontFamily: 'Courier', fontSize: '16px', color: '#8effc1', fontStyle: 'bold' }).setOrigin(0.5).setDepth(5);
-    this.add.text(320, 462, 'WASD TRAVERSE  Q/E TURN  ESC EXIT', { fontFamily: 'Courier', fontSize: '11px', color: '#9db7aa' }).setOrigin(0.5).setDepth(5);
+    this.add.text(320, 462, 'WASD TRAVERSE  Q/E TURN  ESC PAUSE', { fontFamily: 'Courier', fontSize: '11px', color: '#9db7aa' }).setOrigin(0.5).setDepth(5);
     this.input.keyboard?.on('keydown-ESC', () => this.scene.start('LobbyScene'));
     AudioEngine.playTrack('odyssey');
     void this.initializeSpatialAudio();

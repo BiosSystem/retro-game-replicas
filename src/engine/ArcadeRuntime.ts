@@ -8,6 +8,8 @@ import { CrtShaderPipeline, parseCrtPreset } from './graphics/CrtShaderPipeline'
 import { DisplayScaler, parseDisplayAspect } from './graphics/DisplayScaler';
 import type { QualityTier } from '../graphics/PooledParticleSystem';
 
+const OVERLAY_SCENES = new Set(['PauseScene', 'SettingsScene', 'NameEntryScene', 'AchievementsScene', 'GameOverScene']);
+
 export class ArcadeRuntime {
   private readonly game: Phaser.Game;
   private frameCount = 0;
@@ -36,6 +38,7 @@ export class ArcadeRuntime {
     this.applyPreferences();
     this.bindVisibility();
     this.bindInputStatus();
+    this.bindKeyboardPause();
     window.addEventListener('arcade-settings-change', () => this.applyPreferences());
     this.frameRequest = requestAnimationFrame(this.measureFrames);
   }
@@ -90,6 +93,18 @@ export class ArcadeRuntime {
     if ('ontouchstart' in window) this.setText('runtime-input', 'TOUCH');
   }
 
+  private bindKeyboardPause() {
+    window.addEventListener('keydown', event => {
+      if (event.code !== 'Escape' || event.repeat || this.hasForegroundOverlay()) return;
+      const active = this.activeGameScene();
+      if (!active) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      active.scene.pause();
+      active.scene.launch('PauseScene', { scene: active.scene.key });
+    }, true);
+  }
+
   private applyPreferences() {
     const preferences = new PreferenceStore(localStorage).load();
     const storedPreset = localStorage.getItem('arcade_crt_preset');
@@ -110,9 +125,17 @@ export class ArcadeRuntime {
   private pollGamepadPause() {
     const pressed = InputManager.getGamepadFrames().some(pad => Boolean(pad.buttons & (1 << 9)));
     if (pressed && !this.startPressed) {
-      const active = this.game.scene.getScenes(true).find(scene => !['LobbyScene', 'PauseScene', 'SettingsScene', 'NameEntryScene', 'AchievementsScene'].includes(scene.scene.key));
+      const active = this.activeGameScene();
       if (active && !this.game.scene.isActive('PauseScene')) { active.scene.pause(); active.scene.launch('PauseScene', { scene: active.scene.key }); }
     }
     this.startPressed = pressed;
+  }
+
+  private hasForegroundOverlay() {
+    return [...OVERLAY_SCENES].some(key => this.game.scene.isActive(key));
+  }
+
+  private activeGameScene() {
+    return this.game.scene.getScenes(true).find(scene => scene.scene.key !== 'LobbyScene' && !OVERLAY_SCENES.has(scene.scene.key));
   }
 }

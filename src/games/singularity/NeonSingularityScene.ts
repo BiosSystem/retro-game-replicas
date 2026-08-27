@@ -16,7 +16,7 @@ export default class NeonSingularityScene extends Phaser.Scene {
     this.gfx = this.add.graphics();
     this.hud = this.add.text(12, 10, '', { fontFamily: 'Courier', fontSize: '11px', color: '#ffffff', lineSpacing: 4 }).setDepth(4);
     this.add.text(320, 25, 'THE SINGULARITY // INFINITE GENERATED WORLDS', { fontFamily: 'Courier', fontSize: '17px', color: '#ff66dd', fontStyle: 'bold' }).setOrigin(.5).setDepth(4);
-    this.add.text(320, 460, 'SPACE NEW WORLD  O NEON OS  X XR  ESC EXIT', { fontFamily: 'Courier', fontSize: '11px', color: '#88aacc' }).setOrigin(.5).setDepth(4);
+    this.add.text(320, 460, 'SPACE NEW WORLD  O NEON OS  X XR  ESC PAUSE', { fontFamily: 'Courier', fontSize: '11px', color: '#88aacc' }).setOrigin(.5).setDepth(4);
     this.input.keyboard?.on('keydown-SPACE', () => {
       this.seed++;
       this.core = singularityCore(this.seed);

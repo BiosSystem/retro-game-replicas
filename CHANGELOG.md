@@ -11,6 +11,7 @@
 - Add a safe Game Over exit path. Use east face button, Select, or Escape to stop the finished game and return to the lobby.
 
 ### Changed
+- Route keyboard Escape through shared Pause for every active game and exclude foreground overlays, including Game Over, from global pause interception.
 - Preserve active difficulty and multiplayer mode when restarting a game from Pause.
 - Route lobby controller actions through the shared InputManager frame instead of a second scene-local gamepad poll.
 - Route Player 1 controller direction and face-button transitions through an opt-in compatibility bridge for the keyboard-owned Snake, Tetris, Frogger, Brave Bird, Cyber Chasm, and Neon Singularity replicas, then release synthetic input on scene shutdown.

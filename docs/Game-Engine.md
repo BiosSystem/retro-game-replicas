@@ -16,13 +16,13 @@ Universal Retro Arcade uses a TypeScript and Phaser 4 frontend wrapped by a mini
 
 ## Scene lifecycle
 
-Start `LobbyScene`, pause, settings, achievement, name-entry, and Game Over utilities with the Phaser instance. Resolve selected games through the lazy scene lifecycle, import each scene chunk only when requested, mount it once, and start it with the selected difficulty and arcade mode. Game Over restarts through south or Space and exits safely to the lobby through east, Select, or Escape. Copy the paused source scene data before Pause Restart so difficulty, local co-op, versus, stage, and score values remain intact.
+Start `LobbyScene`, pause, settings, achievement, name-entry, and Game Over utilities with the Phaser instance. Resolve selected games through the lazy scene lifecycle, import each scene chunk only when requested, mount it once, and start it with the selected difficulty and arcade mode. Capture keyboard Escape before scene-local handlers to open Pause from active gameplay, but leave foreground overlays responsible for their own Escape behavior. Game Over restarts through south or Space and exits safely to the lobby through east, Select, or Escape. Copy the paused source scene data before Pause Restart so difficulty, local co-op, versus, stage, and score values remain intact.
 
 Suspend hidden gameplay through the shared runtime. Guard the active Phaser animation callback with a finite 50 ms delta cap while preserving normal high-refresh intervals. Keep physics fixed at 60 Hz.
 
 ## Input
 
-Poll keyboard and gamepads once per animation frame through the shared input layer. Map standard PlayStation, Xbox, and generic controllers into bitmasks, press and release edges, radial stick deadzones, and bounded trigger thresholds. Use south to confirm, north to open Achievements in the lobby, east or Select to return, and Start to open Cabinet Control or Pause. Route local Player 1, Player 2, and optional network state through the same scene-facing actions.
+Poll keyboard and gamepads once per animation frame through the shared input layer. Map standard PlayStation, Xbox, and generic controllers into bitmasks, press and release edges, radial stick deadzones, and bounded trigger thresholds. Use south to confirm, north to open Achievements in the lobby, east or Select to return, Escape or Start to open Pause during active play, and Start to open Cabinet Control from the lobby. Route local Player 1, Player 2, and optional network state through the same scene-facing actions.
 
 ## Rendering
 
