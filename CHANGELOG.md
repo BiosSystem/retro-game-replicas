@@ -9,6 +9,7 @@
 - Add controller access to the Achievements overlay. Use the north face button from the lobby to open it, then the east face button or Select to close it.
 
 ### Changed
+- Preserve active difficulty and multiplayer mode when restarting a game from Pause.
 - Route lobby controller actions through the shared InputManager frame instead of a second scene-local gamepad poll.
 - Route Player 1 controller direction and face-button transitions through an opt-in compatibility bridge for the keyboard-owned Snake, Tetris, Frogger, Brave Bird, Cyber Chasm, and Neon Singularity replicas, then release synthetic input on scene shutdown.
 - Add a browser regression that launches Snake with a normalized connected controller and verifies the legacy keyboard path receives its direction.

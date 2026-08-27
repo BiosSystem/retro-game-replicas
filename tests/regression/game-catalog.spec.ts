@@ -140,6 +140,30 @@ test('navigate a paused legacy game from a connected gamepad without duplicate i
   })).toBe('UP');
 });
 
+test('retain active launch settings when restarting from Pause', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#app canvas').first().waitFor();
+  await launchFromLobby(page, 2);
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('AsteroidsScene'))).toBe(true);
+  await page.evaluate(() => {
+    const manager = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene;
+    const source = manager.getScene('AsteroidsScene') as { scene: { restart(data: object): void; pause(): void; launch(key: string, data: object): void } };
+    source.scene.restart({ difficulty: 'EXPERT', mode: 'COOP' });
+    source.scene.pause();
+    source.scene.launch('PauseScene', { scene: 'AsteroidsScene' });
+  });
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('PauseScene'))).toBe(true);
+  await page.evaluate(() => {
+    const pause = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('PauseScene') as unknown as { selectedIndex: number; select(): void };
+    pause.selectedIndex = 1;
+    pause.select();
+  });
+  await expect.poll(() => page.evaluate(() => {
+    const source = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('AsteroidsScene') as { difficulty: string; mode: string };
+    return { difficulty: source.difficulty, mode: source.mode };
+  })).toEqual({ difficulty: 'EXPERT', mode: 'COOP' });
+});
+
 test('enter and submit high-score initials from a connected gamepad', async ({ page }) => {
   await page.addInitScript(() => {
     const buttons = Array.from({ length: 17 }, () => ({ pressed: false, touched: false, value: 0 }));

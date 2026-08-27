@@ -85,12 +85,10 @@ export default class PauseScene extends Phaser.Scene {
                 this.resume();
                 break;
             case 1:
-                this.scene.stop('PauseScene');
                 const src = this.scene.get(this.sourceScene);
-                if (src) {
-                    // Need to cleanly restart physics
-                    src.scene.restart();
-                }
+                const restartData = { ...(src?.scene.settings.data ?? {}) };
+                this.scene.stop('PauseScene');
+                if (src) src.scene.restart(restartData);
                 break;
             case 2:
                 this.scene.pause();
