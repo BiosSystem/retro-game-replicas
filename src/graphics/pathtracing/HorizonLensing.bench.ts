@@ -1,0 +1,1 @@
+import { bench, describe } from 'vitest'; import { generateLensingField } from './HorizonLensing'; describe('gravitational lensing field', () => { bench('map one 512 square lensing frame', () => { generateLensingField(512, 512); }); });

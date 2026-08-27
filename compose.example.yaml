@@ -1,0 +1,20 @@
+name: biossystem-neon-arcade
+
+services:
+  fun-zone:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: biossystem/retro-game-replicas:local
+    restart: unless-stopped
+    init: true
+    read_only: true
+    ports:
+      - "127.0.0.1:8080:8080"
+    tmpfs:
+      - /var/run:size=1m,uid=10001,gid=10001,mode=0755
+      - /var/cache/nginx:size=16m,uid=10001,gid=10001,mode=0755
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true

@@ -50,30 +50,38 @@ export const GAME_REGISTRY = [
 ]
 ```
 
-## Step 3 - Add a Thumbnail
+## Step 3 - Add a Procedural Preview
 
-Drop a `200x150` PNG into `public/assets/thumbnails/` named `mygame.png`. This image appears on the lobby game tile.
+Render the game preview through code in the lobby or scene. Keep the repository free of imported game art and do not add thumbnail image assets.
 
 ## Step 4 - Implement Gamepad Support
 
-Inside your `create()` method, subscribe to the `GamepadManager`:
+Inside `update()`, read semantic controller actions from `InputManager`:
 
 ```typescript
-import { GamepadManager } from '../lobby/GamepadManager'
+import { InputManager } from '../engine/InputManager'
 
-create() {
-  GamepadManager.on('dpad-up', () => this.moveUp())
-  GamepadManager.on('dpad-down', () => this.moveDown())
-  GamepadManager.on('button-a', () => this.action())
+update() {
+  if (InputManager.isP1Down('UP')) this.moveUp()
+  if (InputManager.isP1Down('DOWN')) this.moveDown()
+  if (InputManager.isP1Down('FIRE')) this.action()
 }
 ```
 
-## Step 5 - Emit `game-over` on Loss
+## Step 5 - Launch Game Over on Loss
 
-When the player loses, emit the event so the router returns to the lobby:
+When the player loses, pause the source and launch the shared overlay. Preserve restart data for stage and mode-aware games:
 
 ```typescript
-this.events.emit('game-over', { score: this.score })
+this.scene.pause()
+this.scene.launch('GameOverScene', {
+  scene: this.scene.key,
+  title: 'SYSTEM OVERLOAD',
+  score: this.score,
+  difficulty: this.difficulty,
+  restartData: { difficulty: this.difficulty, mode: this.mode },
+  submitScore: true,
+})
 ```
 
 ## Step 6 - Add to the Game List Table in README
@@ -86,4 +94,4 @@ Open `README.md` and add a row to the **Game List** table with the correct genre
 npm run dev
 ```
 
-Open `http://localhost:5173` and navigate to your new game tile. Verify keyboard and gamepad controls work correctly, and that the game-over event returns you to the lobby cleanly.
+Open `http://localhost:5173` and navigate to your new game tile. Verify keyboard and gamepad controls work correctly, the shared Game Over overlay can restart the source scene, and Pause Restart preserves the launch data cleanly.

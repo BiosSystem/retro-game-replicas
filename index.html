@@ -3,10 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Retro Snake</title>
+    <meta name="theme-color" content="#05080d" />
+    <meta name="application-name" content="BiosSystem Neon Arcade" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>BiosSystem Neon Arcade</title>
   </head>
   <body>
-    <div id="app"></div>
+    <section id="bios-post" aria-live="polite" aria-label="BIOS startup self test"><pre data-post-output></pre></section>
+    <main class="arcade-cabinet" aria-label="BiosSystem Neon Arcade cabinet">
+      <header class="cabinet-marquee">
+        <span class="marquee-kicker">BIOSSYSTEM // ARCADE CORE</span>
+        <strong>BIOSSYSTEM NEON ARCADE</strong>
+        <span class="marquee-status"><i aria-hidden="true"></i> SYSTEM READY</span>
+      </header>
+      <section class="cabinet-screen" aria-label="Game display">
+        <div class="screen-bezel"><div id="app"></div></div>
+      </section>
+      <pre id="runtime-telemetry" class="runtime-telemetry" hidden aria-live="polite"></pre>
+      <footer class="cabinet-console">
+        <div class="console-stat"><span>ENGINE</span><b>PHASER 4</b></div>
+        <div class="console-stat"><span>FRAME</span><b id="runtime-fps">-- FPS</b></div>
+        <button id="netplay-toggle" class="console-stat console-button" type="button"><span>LINK</span><b>NETPLAY</b></button>
+        <button id="save-state-toggle" class="console-stat console-button" type="button"><span>MEMORY</span><b>SAVE STATES</b></button>
+        <button id="leaderboard-toggle" class="console-stat console-button" type="button"><span>SCORES</span><b>LEADERBOARD</b></button>
+        <button id="mod-manager-toggle" class="console-brand" type="button" aria-label="Open mod manager">M</button>
+        <div class="console-stat console-stat-right"><span>INPUT</span><b id="runtime-input">KEYBOARD</b></div>
+        <div class="console-stat console-stat-right"><span>STATE</span><b id="runtime-state">ACTIVE</b></div>
+      </footer>
+    </main>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

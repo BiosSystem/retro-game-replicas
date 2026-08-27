@@ -1,74 +1,29 @@
 import './style.css';
-import Phaser from 'phaser';
-import LobbyScene from './scenes/LobbyScene';
-import SnakeScene from './scenes/SnakeScene';
-import PongScene from './scenes/PongScene';
-import AsteroidsScene from './scenes/AsteroidsScene';
-import BreakoutScene from './scenes/BreakoutScene';
-import FroggerScene from './scenes/FroggerScene';
-import InvadersScene from './scenes/InvadersScene';
-import TetrisScene from './scenes/TetrisScene';
-import MinesweeperScene from './scenes/MinesweeperScene';
-import RunnerScene from './scenes/RunnerScene';
-import BirdScene from './scenes/BirdScene';
-import CyberScene from './scenes/CyberScene';
-import PauseScene from './scenes/PauseScene';
-import NameEntryScene from './scenes/NameEntryScene';
-import SettingsScene from './scenes/SettingsScene';
-import AchievementsScene from './scenes/AchievementsScene';
 
-import { InputManager } from './engine/InputManager';
-import { AudioEngine } from './engine/AudioEngine';
+if (import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    void import('./engine/OfflineRuntime').then(module => module.installOfflineRuntime());
+  }, { once: true });
+} else {
+  document.documentElement.dataset.offline = 'development';
+}
 
-const config: Phaser.Types.Core.GameConfig = {
-  type: Phaser.AUTO,
-  parent: 'app',
-  width: 640,
-  height: 480,
-  scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH
-  },
-  backgroundColor: '#0a0a0a',
-  pixelArt: true,
-  fps: {
-    target: 60,
-    forceSetTimeOut: true,
-  },
-  physics: {
-    default: 'arcade',
-    arcade: {
-      debug: false
+async function bootArcade() {
+  const boot = document.getElementById('bios-post');
+  const firstBoot = sessionStorage.getItem('bios_post_complete') !== 'true';
+  if (boot && firstBoot) {
+    boot.classList.add('bios-post-visible');
+    const output = boot.querySelector('[data-post-output]');
+    const lines = ['BIOSSYSTEM ARCADE BIOS v3.0', 'ROM CHECK ........ OK', 'VECTOR UNIT ...... OK', 'AUDIO DSP ........ OK', 'RAM 640K ......... OK', 'BOOTING ARCADE CORE'];
+    for (const line of lines) {
+      if (output) output.textContent += `${line}\n`;
+      await new Promise(resolve => window.setTimeout(resolve, 150));
     }
-  },
-  scene: [
-    LobbyScene, 
-    SnakeScene, 
-    PongScene, 
-    AsteroidsScene, 
-    BreakoutScene, 
-    FroggerScene, 
-    InvadersScene, 
-    TetrisScene, 
-    MinesweeperScene, 
-    RunnerScene, 
-    BirdScene,
-    CyberScene,
-    PauseScene,
-    NameEntryScene,
-    SettingsScene,
-    AchievementsScene
-  ]
-};
+    sessionStorage.setItem('bios_post_complete', 'true');
+    await new Promise(resolve => window.setTimeout(resolve, 250));
+  }
+  boot?.classList.remove('bios-post-visible');
+  await import('./bootstrap');
+}
 
-const game = new Phaser.Game(config);
-(window as any).game = game;
-
-import { SaveManager } from './engine/SaveManager';
-
-// Initialize custom engines
-InputManager.initialize();
-SaveManager.initialize();
-window.addEventListener('click', () => {
-  AudioEngine.initialize();
-}, { once: true });
+void bootArcade();

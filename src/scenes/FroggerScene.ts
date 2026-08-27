@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
-import { SaveManager } from '../engine/SaveManager';
 import { VFXManager } from '../engine/VFXManager';
+import { InputManager } from '../engine/InputManager';
 
 const TILE = 32;
 
@@ -76,6 +76,8 @@ export default class FroggerScene extends Phaser.Scene {
       this.scene.pause();
       this.scene.launch('PauseScene', { scene: this.scene.key });
     });
+    InputManager.setLegacyGamepadKeyboardBridge(true, this.scene.key);
+    this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridge(false, this.scene.key));
   }
 
   move(dx: number, dy: number) {
@@ -193,14 +195,7 @@ export default class FroggerScene extends Phaser.Scene {
       this.physics.pause();
       VFXManager.screenShake(this, 0.02, 300);
       
-      const banner = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.85).setInteractive();
-      this.add.text(320, 240, `${reason}\nFINAL SCORE: ${this.score}\nCLICK TO RESTART`, { fontFamily: 'Courier', fontSize: '28px', color: '#ff0055', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
-      banner.on('pointerdown', () => { if (SaveManager.isHighScore('FroggerScene', this.difficulty, this.score)) {
       this.scene.pause();
-      this.scene.launch('NameEntryScene', { scene: this.scene.key, difficulty: this.difficulty, score: this.score });
-    } else {
-      SaveManager.submitScore('FroggerScene', this.difficulty, this.score);
-      this.scene.restart({ difficulty: this.difficulty });
-    } });
+      this.scene.launch('GameOverScene', { scene: this.scene.key, title: reason, score: this.score, difficulty: this.difficulty, submitScore: true, color: '#ff0055' });
   }
 }

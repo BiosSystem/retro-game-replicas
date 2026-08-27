@@ -1,0 +1,1 @@
+import{bench,describe}from'vitest';import{traceAcoustics}from'./AcousticTracer';const sdf=(p:{x:number;y:number;z:number})=>Math.min(Math.hypot(p.x,p.y,p.z)-12,Math.hypot(p.x-20,p.y+4,p.z)-5);describe('acoustic ray tracing',()=>{bench('trace 64 acoustic rays',()=>{traceAcoustics({x:-20,y:2,z:0},{x:30,y:1,z:4},sdf);});});

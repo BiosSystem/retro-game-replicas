@@ -1,10 +1,17 @@
 /*
  * Copyright (c) 2026 by BiosSystem Open Source Community. All Rights Reserved.
- * Universal Retro Arcade | https://github.com/BiosSystem/retro-game-replicas
+ * BiosSystem Neon Arcade | https://github.com/BiosSystem/retro-game-replicas
  */
 import Phaser from 'phaser';
 import { SaveManager } from '../engine/SaveManager';
 import { AchievementManager } from '../engine/AchievementManager';
+import { AudioEngine } from '../engine/AudioEngine';
+import { InputManager } from '../engine/InputManager';
+import { GamepadButton } from '../engine/input/GamepadHandler';
+import { AttractController, CreditLedger } from '../ui/menu/ArcadeSession';
+import { mountGameScene } from '../ui/menu/SceneLifecycle';
+import type { ArcadeMode } from '../multiplayer/CoopSession';
+import { ARCADE_DIFFICULTIES, ARCADE_GAMES } from './ArcadeCatalog';
 type MenuMode = 'GAME_SELECT' | 'DIFFICULTY_SELECT';
 
 const PALETTE = {
@@ -19,26 +26,8 @@ const PALETTE = {
 };
 
 export default class LobbyScene extends Phaser.Scene {
-  private games = [
-    { name: 'SNAKE EVOLUTION',  scene: 'SnakeScene',       icon: '🐍' },
-    { name: 'NEON PONG',        scene: 'PongScene',         icon: '🏓' },
-    { name: 'ASTRO DRIFT',      scene: 'AsteroidsScene',    icon: '🚀' },
-    { name: 'BRICK BREAKER',    scene: 'BreakoutScene',     icon: '🧱' },
-    { name: 'FROGGIE CROSSER',  scene: 'FroggerScene',      icon: '🐸' },
-    { name: 'SPACE DEFENDERS',  scene: 'InvadersScene',     icon: '👾' },
-    { name: 'TETRIS PULSE',     scene: 'TetrisScene',       icon: '🟦' },
-    { name: 'MINESWEEPER',      scene: 'MinesweeperScene',  icon: '💣' },
-    { name: 'PIXEL RUNNER',     scene: 'RunnerScene',       icon: '🏃' },
-    { name: 'BRAVE BIRD',       scene: 'BirdScene',         icon: '🐦' },
-    { name: 'CYBER CHASM',      scene: 'CyberScene',        icon: '⚡' },
-  ];
-
-  private difficulties = [
-    { name: 'EASY',    id: 'EASY',   color: PALETTE.accent,  desc: 'Relaxed pace, forgiving AI.' },
-    { name: 'NORMAL',  id: 'NORMAL', color: PALETTE.primary, desc: 'Balanced arcade challenge.' },
-    { name: 'HARD',    id: 'HARD',   color: PALETTE.warn,    desc: 'High speed, aggressive AI.' },
-    { name: 'EXPERT',  id: 'EXPERT', color: PALETTE.danger,  desc: 'Maximum velocity. Extreme.' },
-  ];
+  private readonly games = ARCADE_GAMES;
+  private readonly difficulties = ARCADE_DIFFICULTIES;
 
   private selectedGameIndex  = 0;
   private selectedDiffIndex  = 1;
@@ -51,6 +40,15 @@ export default class LobbyScene extends Phaser.Scene {
   private starGfx!: Phaser.GameObjects.Graphics;
   private biosFlash!: Phaser.GameObjects.Text;
   private secretBuffer = '';
+  private credits!: CreditLedger;
+  private attract!: AttractController;
+  private creditText!: Phaser.GameObjects.Text;
+  private attractText!: Phaser.GameObjects.Text;
+  private previewGfx!: Phaser.GameObjects.Graphics;
+  private nextAttractCycle = 0;
+  private selectionCursor!: Phaser.GameObjects.Text;
+  private arcadeMode: ArcadeMode = 'SOLO';
+  private modeText!: Phaser.GameObjects.Text;
 
   constructor() { super('LobbyScene'); }
 
@@ -59,11 +57,12 @@ export default class LobbyScene extends Phaser.Scene {
     this.diffItems   = [];
     this.mode        = 'GAME_SELECT';
     this.secretBuffer = '';
+    this.credits = new CreditLedger(localStorage);
+    this.attract = new AttractController(30_000, this.time.now);
+    this.nextAttractCycle = this.time.now + 30_000;
     this.input.keyboard?.removeAllListeners();
 
-    // Reset gamepad flags
-    this.gamepadConnected = false;
-    this.padLastState = { up: false, down: false, button: false, back: false };
+    this.padLastState = { up: false, down: false, button: false, back: false, start: false, achievements: false };
 
     this.buildStarfield();
     this.buildScanlines();
@@ -72,44 +71,15 @@ export default class LobbyScene extends Phaser.Scene {
     this.buildFooter();
     this.buildDiffModal();
     this.buildBiosFlash();
-    this.buildCrtShader();
+    this.buildCoinOp();
+    this.buildPreview();
+    this.modeText = this.add.text(616, 420, '', { fontFamily: 'Courier', fontSize: '12px', color: PALETTE.warn }).setOrigin(1, 0.5);
+    this.updateModeText();
     this.bindKeys();
-    this.bindGamepad();
+    AudioEngine.playTrack('plaza');
   }
 
-  private gamepadConnected = false;
-  private padLastState = { up: false, down: false, button: false, back: false };
-  private isCrtEnabled = false;
-
-  private buildCrtShader() {
-    // We'll apply built-in Phaser FX for the CRT look
-    this.isCrtEnabled = localStorage.getItem('arcade_crt') === 'true';
-    if (this.isCrtEnabled) {
-      this.applyCrt();
-    }
-  }
-
-  private applyCrt() {
-    const filters = this.cameras.main.filters.internal;
-    filters.clear();
-    filters.addBarrel(1.02);
-    filters.addVignette(0.5, 0.5, 0.7);
-    const color = filters.addColorMatrix();
-    if (color && color.colorMatrix) {
-      color.colorMatrix.sepia();
-      color.colorMatrix.saturate(2);
-    }
-  }
-
-  private toggleCrt() {
-    this.isCrtEnabled = !this.isCrtEnabled;
-    localStorage.setItem('arcade_crt', this.isCrtEnabled ? 'true' : 'false');
-    if (this.isCrtEnabled) {
-      this.applyCrt();
-    } else {
-      this.cameras.main.filters.internal.clear();
-    }
-  }
+  private padLastState = { up: false, down: false, button: false, back: false, start: false, achievements: false };
 
 
   private buildStarfield() {
@@ -140,14 +110,14 @@ export default class LobbyScene extends Phaser.Scene {
     line.lineStyle(1, 0x00ff6e, 0.4);
     line.lineBetween(40, 108, 600, 108);
 
-    this.add.text(320, 30, '▸ UNIVERSAL RETRO ARCADE ◂', {
+    this.add.text(320, 30, '▸ BIOSSYSTEM NEON ARCADE ◂', {
       fontFamily: "'Share Tech Mono', Courier",
       fontSize: '30px',
       color: PALETTE.primary,
       fontStyle: 'bold',
     }).setOrigin(0.5);
 
-    this.add.text(320, 66, 'BIOSYSTEM ENGINE — SELECT YOUR GAME', {
+    this.add.text(320, 66, 'BIOSYSTEM ENGINE - SELECT YOUR GAME', {
       fontFamily: "'Share Tech Mono', Courier",
       fontSize: '13px',
       color: PALETTE.dim,
@@ -164,11 +134,11 @@ export default class LobbyScene extends Phaser.Scene {
   private buildGameList() {
     this.games.forEach((game, i) => {
       const isSelected = i === this.selectedGameIndex;
-      const y          = 132 + i * 28;
+      const y          = 92 + i * 13;
 
       const label  = `${game.icon}  ${game.name}`;
       const color  = isSelected ? PALETTE.white : PALETTE.dim;
-      const fsize  = isSelected ? '20px' : '18px';
+      const fsize  = isSelected ? '17px' : '15px';
 
       const item = this.add.text(320, y, label, {
         fontFamily: "'Share Tech Mono', Courier",
@@ -186,13 +156,13 @@ export default class LobbyScene extends Phaser.Scene {
       
       const scoreItem = this.add.text(490, y, `HI: ${maxData.score} [${maxData.name}]`, {
         fontFamily: "'Share Tech Mono', Courier",
-        fontSize: '14px',
+        fontSize: '11px',
         color: PALETTE.muted,
       }).setOrigin(0, 0.5);
 
       if (isSelected) {
         item.setScale(1.06);
-        this.add.text(140, y, '▶', {
+        this.selectionCursor = this.add.text(140, y, '▶', {
           fontFamily: 'Courier',
           fontSize: '18px',
           color: PALETTE.primary,
@@ -205,12 +175,40 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   private buildFooter() {
-    this.add.text(320, 458, '↑↓ NAVIGATE   SPACE SELECT   S SETTINGS   A ACHIEVEMENTS', {
+    this.add.text(320, 458, 'UP/DOWN MOVE  SPACE SELECT  Y ACH  M MODE  C COIN  S/START SETTINGS', {
       fontFamily: "'Share Tech Mono', Courier",
       fontSize: '11px',
       color: PALETTE.muted,
       letterSpacing: 1,
     }).setOrigin(0.5);
+  }
+
+  private buildCoinOp() {
+    this.creditText = this.add.text(24, 438, '', { fontFamily: 'Courier', fontSize: '13px', color: PALETTE.warn }).setOrigin(0, 0.5);
+    this.attractText = this.add.text(616, 438, '', { fontFamily: 'Courier', fontSize: '12px', color: PALETTE.accent }).setOrigin(1, 0.5);
+    this.updateCreditText();
+  }
+
+  private buildPreview() {
+    this.previewGfx = this.add.graphics().setDepth(5);
+    this.drawPreview(0);
+  }
+
+  private drawPreview(phase: number) {
+    const x = 76;
+    const y = 275;
+    const pulse = Math.sin(phase * 0.006) * 5;
+    this.previewGfx.clear().lineStyle(1, 0x00ffcc, 0.45).strokeRoundedRect(24, 225, 104, 100, 4);
+    this.previewGfx.lineStyle(2, 0x00ff6e, 0.9);
+    const mode = this.selectedGameIndex % 3;
+    if (mode === 0) this.previewGfx.strokeTriangle(x, y - 16 + pulse, x - 13, y + 13, x + 13, y + 13);
+    else if (mode === 1) { this.previewGfx.strokeCircle(x, y, 18 + pulse * 0.2); this.previewGfx.lineBetween(42, y + pulse, 110, y - pulse); }
+    else { this.previewGfx.strokeRect(x - 18, y - 18, 36, 36); this.previewGfx.lineBetween(x - 24, y, x + 24, y); }
+  }
+
+  private updateCreditText() {
+    const state = this.credits.snapshot();
+    this.creditText?.setText(state.freePlay ? 'FREE PLAY' : `CREDITS ${state.credits.toString().padStart(2, '0')}`);
   }
 
   private buildDiffModal() {
@@ -248,7 +246,7 @@ export default class LobbyScene extends Phaser.Scene {
       this.diffContainer.add(item);
     });
 
-    this.diffDescText = this.add.text(320, 380, this.difficulties[this.selectedDiffIndex].desc, {
+    this.diffDescText = this.add.text(320, 380, this.difficulties[this.selectedDiffIndex].description, {
       fontFamily: "'Share Tech Mono', Courier",
       fontSize: '13px',
       color: PALETTE.muted,
@@ -262,7 +260,7 @@ export default class LobbyScene extends Phaser.Scene {
 
   private buildBiosFlash() {
     this.biosFlash = this.add.text(320, 240,
-      '⚡ BIOSYSTEM KERNEL ⚡\nTauri Quantum Core v2.0 — Active',
+      '⚡ BIOSYSTEM KERNEL ⚡\nTauri Quantum Core v2.0 - Active',
       {
         fontFamily: "'Share Tech Mono', Courier",
         fontSize: '18px',
@@ -286,13 +284,17 @@ export default class LobbyScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-A',     () => {
         if (this.mode !== 'DIFFICULTY_SELECT') this.scene.launch('AchievementsScene');
     });
+    this.input.keyboard?.on('keydown-C', () => { this.registerActivity(); this.credits.insertCoin(); this.updateCreditText(); AudioEngine.playEffect('COIN'); });
+    this.input.keyboard?.on('keydown-F', () => { this.registerActivity(); this.credits.toggleFreePlay(); this.updateCreditText(); AudioEngine.playEffect('POWER_UP'); });
+    this.input.keyboard?.on('keydown-M', () => {
+      const modes: ArcadeMode[] = ['SOLO', 'COOP', 'VERSUS'];
+      this.arcadeMode = modes[(modes.indexOf(this.arcadeMode) + 1) % modes.length];
+      this.updateModeText(); AudioEngine.playEffect('POWER_UP');
+    });
 
     this.input.keyboard?.on('keydown', (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'c') {
-        this.toggleCrt();
-        return;
-      }
-
+      this.registerActivity();
+      this.attractText.setText('');
       this.secretBuffer = (this.secretBuffer + e.key.toUpperCase()).slice(-10);
       if (this.secretBuffer.includes('BIOS')) {
         this.secretBuffer = '';
@@ -301,34 +303,34 @@ export default class LobbyScene extends Phaser.Scene {
     });
   }
 
-  private bindGamepad() {
-    this.input.gamepad?.once('connected', () => {
-      this.gamepadConnected = true;
-      this.add.text(320, 90, '🎮 GAMEPAD CONNECTED', {
-        fontFamily: "'Share Tech Mono', Courier",
-        fontSize: '14px',
-        color: PALETTE.primary,
-        fontStyle: 'bold',
-      }).setOrigin(0.5).setAlpha(0.8);
-    });
-  }
-
   update() {
-    if (this.gamepadConnected && this.input.gamepad && this.input.gamepad.total > 0) {
-      const pad = this.input.gamepad.getPad(0);
-      if (!pad) return;
+    this.drawPreview(this.time.now);
+    if (this.attract.isActive(this.time.now)) {
+      this.attractText.setText('ATTRACT MODE');
+      if (this.time.now >= this.nextAttractCycle) {
+        this.nextAttractCycle = this.time.now + 4000;
+        this.updateGameSelection(1);
+      }
+    }
+    const pad = InputManager.getGamepadFrames()[0];
+    if (pad) {
+      const up = Boolean(pad.buttons & GamepadButton.DPAD_UP) || pad.leftY < -0.5;
+      const down = Boolean(pad.buttons & GamepadButton.DPAD_DOWN) || pad.leftY > 0.5;
+      const button = Boolean(pad.buttons & GamepadButton.SOUTH);
+      const back = Boolean(pad.buttons & (GamepadButton.EAST | GamepadButton.SELECT));
+      const start = Boolean(pad.buttons & GamepadButton.START);
+      const achievements = Boolean(pad.buttons & GamepadButton.NORTH);
 
-      const up = pad.up || pad.leftStick.y < -0.5;
-      const down = pad.down || pad.leftStick.y > 0.5;
-      const button = !!(pad.A || pad.B || pad.X || pad.Y);
-      const back = !!(pad.B || pad.L1);
+      if (up && !this.padLastState.up) { this.registerActivity(); this.handleUp(); }
+      if (down && !this.padLastState.down) { this.registerActivity(); this.handleDown(); }
+      if (button && !this.padLastState.button) { this.registerActivity(); this.handleSpace(); }
+      if (back && !this.padLastState.back) { this.registerActivity(); this.handleEsc(); }
+      if (start && !this.padLastState.start && this.mode !== 'DIFFICULTY_SELECT') this.scene.launch('SettingsScene', { scene: this.scene.key });
+      if (achievements && !this.padLastState.achievements && this.mode !== 'DIFFICULTY_SELECT') this.scene.launch('AchievementsScene');
 
-      if (up && !this.padLastState.up) this.handleUp();
-      if (down && !this.padLastState.down) this.handleDown();
-      if (button && !this.padLastState.button) this.handleSpace();
-      if (back && !this.padLastState.back) this.handleEsc();
-
-      this.padLastState = { up, down, button, back };
+      this.padLastState = { up, down, button, back, start, achievements };
+    } else {
+      this.padLastState = { up: false, down: false, button: false, back: false, start: false, achievements: false };
     }
   }
 
@@ -354,12 +356,34 @@ export default class LobbyScene extends Phaser.Scene {
       this.diffContainer.setVisible(true).setScale(0.88).setAlpha(0);
       this.tweens.add({ targets: this.diffContainer, scale: 1, alpha: 1, duration: 180, ease: 'Back.easeOut' });
     } else {
+      if (!this.credits.consume()) {
+        this.diffDescText.setText('INSERT COIN - PRESS C');
+        AudioEngine.playTone(120, 'square', 0.15);
+        return;
+      }
+      this.updateCreditText();
       const game = this.games[this.selectedGameIndex];
       const diff = this.difficulties[this.selectedDiffIndex];
       this.cameras.main.fade(200, 0, 0, 0);
-      this.time.delayedCall(200, () => {
+      this.time.delayedCall(200, async () => {
+          InputManager.configureArcadeMode(this.arcadeMode, ['AsteroidsScene', 'RunnerScene', 'PongScene'].includes(game.scene));
           AchievementManager.recordPlay(game.scene);
-          this.scene.start(game.scene, { difficulty: diff.id });
+          if (game.scene === 'InvadersScene') AudioEngine.playTrack('space');
+          else if (game.scene === 'RunnerScene') AudioEngine.playTrack('sprint');
+          else if (game.scene === 'RacerScene') AudioEngine.playTrack('racer');
+          else if (game.scene === 'RaycasterScene') AudioEngine.playTrack('caster');
+          else if (game.scene === 'TacticsScene') AudioEngine.playTrack('tactics');
+          else if (game.scene === 'LabyrinthScene') AudioEngine.playTrack('labyrinth');
+          else if (game.scene === 'DanmakuScene') AudioEngine.playTrack('danmaku');
+          else if (game.scene === 'KombatScene') AudioEngine.playTrack('kombat');
+          else if (game.scene === 'OdysseyScene') AudioEngine.playTrack('odyssey');
+          else if (game.scene === 'AsteroidsScene') AudioEngine.playTrack('vector');
+          else AudioEngine.stopTrack();
+          await mountGameScene({
+            has: key => Boolean(this.scene.manager.keys[key]),
+            add: (key, SceneClass) => this.scene.add(key, SceneClass, false),
+            start: (key, sceneData) => this.scene.start(key, sceneData),
+          }, game.scene, { difficulty: diff.id, mode: this.arcadeMode });
       });
     }
   }
@@ -383,6 +407,7 @@ export default class LobbyScene extends Phaser.Scene {
 
     this.gameItems[prev].setColor(PALETTE.dim).setScale(1).setFontSize('18px');
     this.gameItems[this.selectedGameIndex].setColor(PALETTE.white).setScale(1.06).setFontSize('20px');
+    this.selectionCursor?.setY(92 + this.selectedGameIndex * 13);
 
     this.tweens.add({ targets: this.gameItems[this.selectedGameIndex], scale: 1.1, duration: 80, yoyo: true });
   }
@@ -394,8 +419,15 @@ export default class LobbyScene extends Phaser.Scene {
 
     this.selectedDiffIndex = Phaser.Math.Wrap(prev + change, 0, this.difficulties.length);
     this.diffItems[this.selectedDiffIndex].setColor(PALETTE.white).setScale(1.08);
-    this.diffDescText.setText(this.difficulties[this.selectedDiffIndex].desc);
+    this.diffDescText.setText(this.difficulties[this.selectedDiffIndex].description);
 
     this.tweens.add({ targets: this.diffItems[this.selectedDiffIndex], scale: 1.14, duration: 80, yoyo: true });
   }
+
+  private registerActivity() {
+    this.attract.registerInput(this.time.now);
+    this.nextAttractCycle = this.time.now + 30_000;
+  }
+
+  private updateModeText() { this.modeText?.setText(`MODE ${this.arcadeMode}`); }
 }

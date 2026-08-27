@@ -81,7 +81,6 @@ export default class PongScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number) {
-    InputManager.update();
     const dtAdjust = delta / 16.666;
 
     if (InputManager.isP1Down('UP')) this.paddle1.y -= this.playerSpeed * dtAdjust;

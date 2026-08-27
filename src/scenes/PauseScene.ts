@@ -1,10 +1,13 @@
 import Phaser from 'phaser';
+import { InputManager } from '../engine/InputManager';
+import { readGamepadMenuInput, type GamepadMenuState } from '../engine/input/GamepadMenuInput';
 
 export default class PauseScene extends Phaser.Scene {
     private sourceScene!: string;
     private options = ['RESUME', 'RESTART', 'SETTINGS', 'QUIT'];
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
+    private gamepadState: GamepadMenuState = { up: false, down: false, left: false, right: false, confirm: false, back: false };
 
     constructor() {
         super('PauseScene');
@@ -15,6 +18,8 @@ export default class PauseScene extends Phaser.Scene {
     }
 
     create() {
+        InputManager.setLegacyGamepadKeyboardBridgeSuspended(true, this.scene.key);
+        this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridgeSuspended(false, this.scene.key));
         // Semi-transparent overlay
         this.add.rectangle(320, 240, 640, 480, 0x000000, 0.75);
 
@@ -50,6 +55,15 @@ export default class PauseScene extends Phaser.Scene {
         });
     }
 
+    update() {
+        const next = readGamepadMenuInput(InputManager.getGamepadFrames());
+        if (next.up && !this.gamepadState.up) this.navigate(-1);
+        if (next.down && !this.gamepadState.down) this.navigate(1);
+        if (next.confirm && !this.gamepadState.confirm) this.select();
+        if (next.back && !this.gamepadState.back) this.resume();
+        this.gamepadState = next;
+    }
+
     private navigate(dir: number) {
         this.selectedIndex += dir;
         if (this.selectedIndex < 0) this.selectedIndex = this.options.length - 1;
@@ -71,15 +85,13 @@ export default class PauseScene extends Phaser.Scene {
                 this.resume();
                 break;
             case 1:
-                this.scene.stop('PauseScene');
                 const src = this.scene.get(this.sourceScene);
-                if (src) {
-                    // Need to cleanly restart physics
-                    src.scene.restart();
-                }
+                const restartData = { ...(src?.scene.settings.data ?? {}) };
+                this.scene.stop('PauseScene');
+                if (src) src.scene.restart(restartData);
                 break;
             case 2:
-                // Launch settings over the pause menu
+                this.scene.pause();
                 this.scene.launch('SettingsScene', { scene: 'PauseScene' });
                 break;
             case 3:

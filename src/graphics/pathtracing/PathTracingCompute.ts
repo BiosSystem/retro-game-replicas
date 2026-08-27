@@ -1,0 +1,11 @@
+export type PathTracingTier = 'WEBGPU_COMPUTE' | 'EXPERIMENTAL_RAY_TRACING';
+export function detectPathTracingTier(features: ReadonlySet<string>): PathTracingTier { return features.has('ray-tracing') ? 'EXPERIMENTAL_RAY_TRACING' : 'WEBGPU_COMPUTE'; }
+export const PATH_TRACING_WGSL = `
+struct Params { width: u32, height: u32, frame: u32, sphereCount: u32 }
+@group(0) @binding(0) var outputTexture: texture_storage_2d<rgba16float, write>;
+@group(0) @binding(1) var<uniform> params: Params;
+fn random(state: ptr<function, u32>) -> f32 { (*state) = (*state) ^ ((*state) << 13u); (*state) = (*state) ^ ((*state) >> 17u); (*state) = (*state) ^ ((*state) << 5u); return f32(*state) / 4294967296.0; }
+@compute @workgroup_size(8, 8)
+fn main(@builtin(global_invocation_id) id: vec3u) { if (id.x >= params.width || id.y >= params.height) { return; } var state = id.x ^ (id.y * params.width) ^ params.frame; var throughput = vec3f(1.0); var radiance = vec3f(0.0); var direction = normalize(vec3f((vec2f(id.xy) / vec2f(params.width, params.height) - 0.5) * vec2f(1.6, -0.9), 1.0)); for (var bounce = 0u; bounce < 6u; bounce++) { let rough = vec3f(random(&state), random(&state), random(&state)) - 0.5; let refracted = refract(direction, vec3f(0.0, 1.0, 0.0), 0.6667); let reflected = reflect(direction, vec3f(0.0, 1.0, 0.0)); direction = normalize(select(reflected + rough * 0.2, refracted + rough * 0.03, bounce == 1u)); radiance += throughput * vec3f(0.008, 0.014, 0.035); throughput *= vec3f(0.72, 0.78, 0.9); } textureStore(outputTexture, vec2i(id.xy), vec4f(radiance, 1.0)); }`;
+interface Device { createShaderModule(input: { code: string }): unknown; createComputePipelineAsync(input: unknown): Promise<unknown>; }
+export async function compilePathTracingPipeline(): Promise<'COMPILED' | 'UNAVAILABLE'> { if (typeof navigator === 'undefined') return 'UNAVAILABLE'; const gpu = (navigator as Navigator & { gpu?: { requestAdapter(): Promise<{ requestDevice(): Promise<Device> } | null> } }).gpu; if (!gpu) return 'UNAVAILABLE'; const adapter = await gpu.requestAdapter(); if (!adapter) return 'UNAVAILABLE'; const device = await adapter.requestDevice(); const module = device.createShaderModule({ code: PATH_TRACING_WGSL }); await device.createComputePipelineAsync({ layout: 'auto', compute: { module, entryPoint: 'main' } }); return 'COMPILED'; }

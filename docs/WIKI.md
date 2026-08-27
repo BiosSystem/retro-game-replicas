@@ -1,69 +1,58 @@
-# Universal Retro Arcade - Technical Wiki
+# BiosSystem Neon Arcade Technical Wiki
 
-Welcome to the Universal Retro Arcade Developer Wiki. This document provides a comprehensive technical overview of the architecture, features, deployment, and security models of the project.
+Use this document as the concise architecture, deployment, and security overview. Use [ARCHITECTURE.md](ARCHITECTURE.md) for the current runtime map, [WIKI_HOWTO.md](WIKI_HOWTO.md) for development procedures, and `ENGINE_OVERHAUL.md` for detailed subsystem contracts and measured verification results.
 
-## 🏗️ Architecture
+## Architecture
 
-The Universal Retro Arcade employs a modern, multi-platform architecture bridging a Rust-based shell with a high-performance web frontend.
+- Run one Phaser 4 game instance inside a TypeScript and Vite frontend.
+- Load the lobby and persistent utility scenes at startup, then import game scenes only when selected.
+- Sample keyboard, touch, gamepad, and optional network input through shared managers once per animation frame.
+- Route controller menu actions and keyboard Escape through common overlay contracts. Close a visible marked DOM utility panel before Pause, preserve the source scene payload through Pause Restart, and let Phaser foreground overlays retain their own close actions.
+- Render the 640x480 game canvas into an optional WebGL CRT output surface and scale both through the same display frame.
+- Generate graphics, stages, previews, particles, and audio at runtime.
+- Package the production frontend inside a minimal Tauri v2 shell with only `core:default` permissions and an unprivileged Nginx container option.
 
-### Core Components
-- **Tauri v2 Shell (Rust)**: The native application container that provides the IPC bridge, Filesystem API, and capability scoping.
-- **Web Frontend (TypeScript + Vite)**: The user interface layer, managing the arcade lobby, routing, gamepad input, and score management.
-- **Phaser 4 Game Engines**: The core game logic running 11 distinct replica games in high-performance WebGL/Canvas contexts.
-- **Post-Processing**: A GLSL CRT shader pipeline providing visual effects like chromatic aberration and barrel distortion.
-- **Local Storage**: IndexedDB is used to persist high scores and game states locally.
+The Rust shell exposes no custom IPC commands and performs no filesystem score access. Keep local score boards and preferences in `localStorage`. Keep Wasm save states and verified connected-peer claims in IndexedDB with bounded memory fallbacks where implemented.
 
-### Data Flow
-1. The **Arcade Lobby** routes users to specific games via the **Game Router**.
-2. Input is managed by the **Gamepad Manager**, which feeds state to the active **Phaser 4** engine.
-3. Rendering output is piped through the **Post-Processing** stack before reaching the screen.
-4. **Score Manager** tracks high scores and persists them via **IndexedDB** and the **High Score Table**.
-5. The **Tauri Shell** interacts with the frontend via **IPC**, restricted by **Capability Scoping**.
+## Product scope
 
-## ✨ Features
+- Provide 26 built-in games plus the generated Meta-Arcade hall.
+- Support solo, cooperative, competitive, relay, keyboard, touch, and gamepad play where each scene permits it.
+- Provide four CRT presets, selectable 4:3 or 16:9 frames, and adaptive visual quality.
+- Provide generated chiptune, effects, spatial audio, and capability-gated AudioWorklet processing.
+- Provide local-first leaderboards, manual direct-peer netplay, signed peer-score gossip, replay validation, save states, and offline PWA operation.
+- Provide declarative signed mods without executing community JavaScript.
 
-The application is a fully self-contained arcade experience with no external ROM dependencies.
+Treat WebGPU, WebXR, WebCodecs, WebTransport, SharedArrayBuffer, AudioWorklet, and Wasm SIMD as capability-gated paths. Keep deterministic CPU, WebRTC, message-block, scalar Wasm, or source-canvas fallbacks available.
 
-- **11 Built-In Games**: Snake, Pong, Asteroids, Breakout, Frogger, Space Invaders, Tetris, Minesweeper, Runner, Flappy Bird, and Cyber Chasm.
-- **Hardware Gamepad Support**: Plug-and-play Xbox and PlayStation controller support via the HTML5 Gamepad API.
-- **GLSL CRT Shader**: Hardware-accelerated post-processing pipeline (Toggle with `Ctrl+Shift+C`).
-- **Persistent High-Score Board**: Per-game difficulty high scores saved locally.
-- **B-I-O-S Easter Egg**: A diagnostic overlay activated by typing `B-I-O-S`.
+## Development and verification
 
-## 🚀 Deployment
+Use Node.js 24 in release automation. Install the Rust toolchain only for Tauri work.
 
-The project is configured for rapid development and multi-platform deployment using Node.js 20+ and Rust.
-
-### Development Stack
-- Node.js & npm (for Vite and TypeScript compilation)
-- Rust toolchain & Cargo (for Tauri shell compilation)
-- `@tauri-apps/cli` for managing builds and development servers.
-
-### Build Instructions
-To launch the development server:
 ```bash
-npm run tauri dev
+npm ci
+npm run lint
+npm test
+npm run build
+npm run test:regression
+npm run test:cross-browser
 ```
 
-To build a release binary:
+Run the native source gate when Cargo is installed:
+
 ```bash
-npm run tauri build
+cargo check --locked --manifest-path src-tauri/Cargo.toml
 ```
-Compiled artifacts are output to `src-tauri/target/release/bundle/`.
 
-### Supported Platforms
-- **macOS** (arm64/x64): Native desktop app via Metal (.dmg)
-- **Windows** (x64): Standalone installer using WebView2 (.exe)
-- **Android** (arm64): Touch-optimized mobile build (.apk)
-- **Cloud/Headless**: Remote high-score tracking server (.tar.gz)
+Build native packages with `npm run tauri build`. Build the container from `Dockerfile`; it installs the generated PWA under an unprivileged UID 10001 Nginx runtime with CSP, cross-origin isolation, security headers, and a `/healthz` probe. Copy `compose.example.yaml` to the ignored local `compose.yaml` to bind the service to localhost with a read-only root filesystem, dropped capabilities, no-new-privileges, and memory-backed runtime directories. Start it with `docker compose up --build -d` and probe it with `curl --fail http://127.0.0.1:8080/healthz`. Publish it through an HTTPS reverse proxy on a dedicated origin. Keep the application at `/` and do not iframe it under the current frame-denial policy.
 
-## 🔒 Security
+## Security boundary
 
-Universal Retro Arcade enforces strict client sandboxing to ensure a secure local execution environment.
+- Validate and bound every imported mod, replay, save state, peer message, and score claim.
+- Keep Tauri capabilities minimal and enforce a production CSP.
+- Keep the hosted shell cross-origin isolated for SharedArrayBuffer support.
+- Request microphone access only from the explicit voice control.
+- Treat local scores as local data and peer scores as signed connected-peer claims, not authoritative global records.
+- Keep central score synchronization disabled until BiosSystem publishes an authenticated service contract.
 
-### Security Mechanisms
-- **Tauri v2 IPC Scoping**: API interactions between the Phaser frontend and Rust backend are strictly scoped with restricted capabilities configuration.
-- **IndexedDB State Verification**: High scores and game states are bounds-checked at runtime to prevent local storage tampering.
-- **Shader Bounds Enforcement**: GLSL post-processing scanline shaders are bounds-checked to prevent WebGL resource memory overflow.
-
-For detailed security policies and reporting guidelines, refer to the [Security Policy](SECURITY.md) in the root repository.
+Report vulnerabilities through [SECURITY.md](../SECURITY.md).

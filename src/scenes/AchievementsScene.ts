@@ -1,13 +1,18 @@
 import Phaser from 'phaser';
 import { AchievementManager, ACHIEVEMENTS } from '../engine/AchievementManager';
 import { AudioEngine } from '../engine/AudioEngine';
+import { InputManager } from '../engine/InputManager';
+import { readGamepadMenuInput, type GamepadMenuState } from '../engine/input/GamepadMenuInput';
 
 export default class AchievementsScene extends Phaser.Scene {
+    private gamepadState: GamepadMenuState = idleMenuState();
+
     constructor() {
         super('AchievementsScene');
     }
 
     create() {
+        this.gamepadState = idleMenuState();
         const bg = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.9);
         bg.setInteractive();
         
@@ -44,17 +49,27 @@ export default class AchievementsScene extends Phaser.Scene {
             y += 70;
         }
 
-        this.add.text(320, 440, 'ESC TO CLOSE', {
+        this.add.text(320, 440, 'ESC / B / SELECT TO CLOSE', {
             fontFamily: "'Share Tech Mono', Courier",
             fontSize: '14px',
             color: '#888888'
         }).setOrigin(0.5);
 
         this.time.delayedCall(100, () => {
-            this.input.keyboard?.on('keydown-ESC', () => {
-                AudioEngine.playTone(400, 'square', 0.1);
-                this.scene.stop('AchievementsScene');
-            });
+            this.input.keyboard?.on('keydown-ESC', () => this.close());
         });
     }
+
+    update() {
+        const next = readGamepadMenuInput(InputManager.getGamepadFrames());
+        if (next.back && !this.gamepadState.back) this.close();
+        this.gamepadState = next;
+    }
+
+    private close() {
+        AudioEngine.playTone(400, 'square', 0.1);
+        this.scene.stop('AchievementsScene');
+    }
 }
+
+function idleMenuState(): GamepadMenuState { return { up: false, down: false, left: false, right: false, confirm: false, back: false }; }

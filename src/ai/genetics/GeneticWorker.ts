@@ -1,0 +1,2 @@
+import { evolvePopulation, type Habitat } from './GeneticEngine';
+self.onmessage = (event: MessageEvent<{ id: number; buffer: ArrayBuffer; habitat: Habitat; seed: number; mutationRate: number }>) => { const result = evolvePopulation(new Float32Array(event.data.buffer), event.data.habitat, event.data.seed, event.data.mutationRate); self.postMessage({ id: event.data.id, buffer: result.population.buffer, bestFitness: result.bestFitness, meanFitness: result.meanFitness, diversity: result.diversity }, { transfer: [result.population.buffer] }); };
