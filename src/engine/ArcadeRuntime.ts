@@ -95,7 +95,15 @@ export class ArcadeRuntime {
 
   private bindKeyboardPause() {
     window.addEventListener('keydown', event => {
-      if (event.code !== 'Escape' || event.repeat || this.hasForegroundOverlay()) return;
+      if (event.code !== 'Escape' || event.repeat) return;
+      const utilityOverlay = this.activeUtilityOverlay();
+      if (utilityOverlay) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        utilityOverlay.hidden = true;
+        return;
+      }
+      if (this.hasForegroundOverlay()) return;
       const active = this.activeGameScene();
       if (!active) return;
       event.preventDefault();
@@ -133,6 +141,10 @@ export class ArcadeRuntime {
 
   private hasForegroundOverlay() {
     return [...OVERLAY_SCENES].some(key => this.game.scene.isActive(key));
+  }
+
+  private activeUtilityOverlay() {
+    return document.querySelector<HTMLElement>('[data-arcade-overlay]:not([hidden])');
   }
 
   private activeGameScene() {

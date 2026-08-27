@@ -11,6 +11,7 @@
 - Add a safe Game Over exit path. Use east face button, Select, or Escape to stop the finished game and return to the lobby.
 
 ### Changed
+- Close visible DOM utility panels through the shared Escape priority path before active games can receive Pause or legacy lobby navigation.
 - Route keyboard Escape through shared Pause for every active game and exclude foreground overlays, including Game Over, from global pause interception.
 - Preserve active difficulty and multiplayer mode when restarting a game from Pause.
 - Route lobby controller actions through the shared InputManager frame instead of a second scene-local gamepad poll.

@@ -174,6 +174,18 @@ test('open Pause with Escape in an advanced scene without returning to the lobby
   await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('LobbyScene'))).toBe(false);
 });
 
+test('close an open utility panel before pausing the active game', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#app canvas').first().waitFor();
+  await launchFromLobby(page, 0);
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('SnakeScene'))).toBe(true);
+  await page.evaluate(() => { (document.querySelector<HTMLElement>('.save-state-panel')!).hidden = false; });
+  await page.keyboard.press('Escape');
+  await expect.poll(() => page.locator('.save-state-panel').evaluate(element => (element as HTMLElement).hidden)).toBe(true);
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('PauseScene'))).toBe(false);
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('SnakeScene'))).toBe(true);
+});
+
 test('enter and submit high-score initials from a connected gamepad', async ({ page }) => {
   await page.addInitScript(() => {
     const buttons = Array.from({ length: 17 }, () => ({ pressed: false, touched: false, value: 0 }));

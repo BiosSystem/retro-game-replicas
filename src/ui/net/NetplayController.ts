@@ -14,7 +14,7 @@ export class NetplayController {
   private readonly peers: PeerLink[] = []; private readonly gossip = new ScoreGossip(); private readonly identity = createSwarmIdentity(); private readonly scoreStore = new SwarmScoreStore(); private readonly voice = new SpatialVoiceMixer(); private readonly dna = new DnaGossip(); private localVoice?: MediaStream; private listener = { x: 320, y: 240, angle: 0 };
   constructor() {
     this.peer = this.createPeer();
-    this.root = document.createElement('aside'); this.root.className = 'netplay-panel'; this.root.hidden = true;
+    this.root = document.createElement('aside'); this.root.className = 'netplay-panel'; this.root.hidden = true; this.root.dataset.arcadeOverlay = 'true';
     this.root.innerHTML = `<header><div><small>BIOSSYSTEM DIRECT LINK</small><h2>P2P NETPLAY</h2></div><button type="button" data-close>X</button></header><p>Exchange one room code per direct peer. Add up to eight links for positional audio and Meta-Arcade presence. Voice requests microphone access only when enabled.</p><div class="netplay-actions"><button type="button" data-peer>ADD MESH PEER</button><button type="button" data-host>CREATE HOST CODE</button><button type="button" data-join>ACCEPT HOST CODE</button><button type="button" data-answer>ACCEPT ANSWER</button><button type="button" data-voice>VOICE OFF</button></div><textarea data-code spellcheck="false" aria-label="WebRTC room code" placeholder="Paste ARC1 room code"></textarea><output data-status>IDLE</output>`;
     document.body.appendChild(this.root); this.bind(); void this.hydrateScores(); requestAnimationFrame(() => this.tick());
   }

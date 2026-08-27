@@ -12,6 +12,7 @@ export class SwarmLeaderboardUi {
     this.root = document.createElement('aside');
     this.root.className = 'leaderboard-center';
     this.root.hidden = true;
+    this.root.dataset.arcadeOverlay = 'true';
     this.root.setAttribute('aria-label', 'Arcade leaderboard center');
     this.root.innerHTML = `
       <header>

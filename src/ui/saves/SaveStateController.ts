@@ -16,6 +16,7 @@ export class SaveStateController {
     this.root = document.createElement('aside');
     this.root.className = 'save-state-panel';
     this.root.hidden = true;
+    this.root.dataset.arcadeOverlay = 'true';
     this.root.innerHTML = `<header><div><small>BIOSSYSTEM WASM MEMORY BANK</small><h2>NEON EPOCH SAVE STATES</h2></div><button type="button" data-close aria-label="Close save states">X</button></header><p>Launch Neon Epoch to capture or restore a manual slot. Autosave refreshes during play.</p><div class="save-slot-grid">${SLOTS.map(slot => `<article data-save-slot="${slot.id}"><div class="save-preview"><img alt="${slot.label} generated preview" hidden><span>EMPTY SLOT</span></div><strong>${slot.label}</strong><small data-meta>NO STATE</small><div>${slot.manual ? '<button type="button" data-action="save">SAVE</button>' : ''}<button type="button" data-action="load">LOAD</button><button type="button" data-action="delete">DELETE</button></div></article>`).join('')}</div><output data-status>READY</output>`;
     document.body.appendChild(this.root);
     this.bind();

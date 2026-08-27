@@ -1,7 +1,7 @@
 # AGENT_STATE: Retro Game Project
 
 ## Current Objective & Milestone
-- Active Task: Unify keyboard Escape into the shared Pause flow.
+- Active Task: Protect open DOM utility panels from global Pause input.
 - Target Status: Completed
 
 ## Verified Working Systems & Mechanics (Do NOT Break/Repeat)
@@ -13,6 +13,7 @@
 - [x] Achievements opens from the lobby with the north face button and closes with east face button or Select. Verified by: Chromium controller overlay regression and catalog suite.
 - [x] Pause Restart preserves the source scene's active difficulty and multiplayer mode instead of falling back to defaults. Verified by: Chromium Expert co-op Neon Asteroids pause-restart regression.
 - [x] Escape opens the shared Pause overlay in every active game while Pause, Game Over, Settings, Achievements, and Name Entry retain their own Escape behavior. Controller Start cannot pause the foreground Game Over overlay. Verified by: focused Chromium advanced-scene Escape and controller Game Over regressions.
+- [x] Escape closes a marked open DOM utility panel before gameplay receives the key, preserving the active game and preventing accidental Pause or lobby navigation. Verified by: focused Chromium save-state-panel regression.
 - [x] Fun Zone hosting uses a loopback-only Compose template with read-only root filesystem, dropped capabilities, no-new-privileges, and memory-backed Nginx runtime paths. Verified by: Compose schema review and existing CI container smoke workflow.
 - [x] Overlay suspension releases legacy synthetic keys and restores the active bridge after close. Verified by: Chromium controller pause-menu regression.
 - [x] Production browser shell builds with 186 modules, including responsive cabinet scaling, CRT fallback, IndexedDB save states, offline shell, and local-first leaderboards. Verified by: production build and cross-browser smoke suite.
@@ -42,9 +43,9 @@
   - Reason Abandoned: Keep the versioned Compose template and rely on the repository CI container smoke workflow until a Docker-enabled host is available.
 
 ## Active Architecture & Engine Hypothesis
-- Current Approach: Keep one requestAnimationFrame-owned InputManager snapshot as the authoritative controller source. Let native shared-input scenes consume Player 1 state directly. Capture keyboard Escape in the runtime before scene-local handlers, open shared Pause only over active gameplay, and leave foreground overlays in control of their own close behavior. Use an owner-scoped synthetic keyboard bridge only for legacy scenes, suspend it for foreground overlays, route every active classic loss path plus edge-safe two-axis menu, name-entry, Game Over, and achievement-overlay actions through shared scene contracts, provide Game Over restart and lobby exit controls, copy source launch data before Pause Restart, and ship the web shell through the loopback-only Compose template.
+- Current Approach: Keep one requestAnimationFrame-owned InputManager snapshot as the authoritative controller source. Let native shared-input scenes consume Player 1 state directly. Capture keyboard Escape in the runtime before scene-local handlers. Close the first visible DOM utility panel marked with `data-arcade-overlay`, open shared Pause only over active gameplay, and leave Phaser foreground overlays in control of their own close behavior. Use an owner-scoped synthetic keyboard bridge only for legacy scenes, suspend it for foreground overlays, route every active classic loss path plus edge-safe two-axis menu, name-entry, Game Over, and achievement-overlay actions through shared scene contracts, provide Game Over restart and lobby exit controls, copy source launch data before Pause Restart, and ship the web shell through the loopback-only Compose template.
 
 ## Engine & Asset Registry
 - Target Framework/Engine: Phaser 4, TypeScript, Vite, WebGL canvas post-processing, Web Audio API, WebAssembly, and IndexedDB.
 - Asset Pipelines: Procedural canvas graphics, generated shader effects, Web Audio synthesis, generated procedural levels, no imported third-party game assets.
-- Performance Baseline: Target 60 FPS with valid high-refresh deltas preserved, 50 ms maximum frame delta, strict integer 640x480 display scaling where possible, 186 production modules, a 105.95 kB initial bootstrap, and a deferred 1,352.40 kB Phaser runtime.
+- Performance Baseline: Target 60 FPS with valid high-refresh deltas preserved, 50 ms maximum frame delta, strict integer 640x480 display scaling where possible, 186 production modules, a 106.52 kB initial bootstrap, and a deferred 1,352.40 kB Phaser runtime.
