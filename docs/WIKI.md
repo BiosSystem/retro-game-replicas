@@ -6,10 +6,11 @@ Use this document as the concise architecture, deployment, and security overview
 
 - Run one Phaser 4 game instance inside a TypeScript and Vite frontend.
 - Load the lobby and persistent utility scenes at startup, then import game scenes only when selected.
-- Sample keyboard, touch, gamepad, and optional network input through shared managers.
+- Sample keyboard, touch, gamepad, and optional network input through shared managers once per animation frame.
+- Route controller menu actions through common overlay contracts and preserve the source scene payload through Pause Restart.
 - Render the 640x480 game canvas into an optional WebGL CRT output surface and scale both through the same display frame.
 - Generate graphics, stages, previews, particles, and audio at runtime.
-- Package the production frontend inside a minimal Tauri v2 shell with only `core:default` permissions.
+- Package the production frontend inside a minimal Tauri v2 shell with only `core:default` permissions and an unprivileged Nginx container option.
 
 The Rust shell exposes no custom IPC commands and performs no filesystem score access. Keep local score boards and preferences in `localStorage`. Keep Wasm save states and verified connected-peer claims in IndexedDB with bounded memory fallbacks where implemented.
 
@@ -43,7 +44,7 @@ Run the native source gate when Cargo is installed:
 cargo check --locked --manifest-path src-tauri/Cargo.toml
 ```
 
-Build native packages with `npm run tauri build`. Build the container from `Dockerfile`; it installs the generated PWA under an unprivileged UID 10001 Nginx runtime with CSP, cross-origin isolation, security headers, and a `/healthz` probe. Use `compose.yaml` to bind the service to localhost with a read-only root filesystem, dropped capabilities, no-new-privileges, and memory-backed runtime directories. Publish it through an HTTPS reverse proxy on a dedicated origin. Keep the application at `/` and do not iframe it under the current frame-denial policy.
+Build native packages with `npm run tauri build`. Build the container from `Dockerfile`; it installs the generated PWA under an unprivileged UID 10001 Nginx runtime with CSP, cross-origin isolation, security headers, and a `/healthz` probe. Copy `compose.example.yaml` to the ignored local `compose.yaml` to bind the service to localhost with a read-only root filesystem, dropped capabilities, no-new-privileges, and memory-backed runtime directories. Start it with `docker compose up --build -d` and probe it with `curl --fail http://127.0.0.1:8080/healthz`. Publish it through an HTTPS reverse proxy on a dedicated origin. Keep the application at `/` and do not iframe it under the current frame-denial policy.
 
 ## Security boundary
 

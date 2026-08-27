@@ -16,13 +16,13 @@ Universal Retro Arcade uses a TypeScript and Phaser 4 frontend wrapped by a mini
 
 ## Scene lifecycle
 
-Start `LobbyScene`, pause, settings, achievement, and name-entry utilities with the Phaser instance. Resolve selected games through the lazy scene lifecycle, import each scene chunk only when requested, mount it once, and start it with the selected difficulty and arcade mode.
+Start `LobbyScene`, pause, settings, achievement, name-entry, and Game Over utilities with the Phaser instance. Resolve selected games through the lazy scene lifecycle, import each scene chunk only when requested, mount it once, and start it with the selected difficulty and arcade mode. Copy the paused source scene data before Pause Restart so difficulty, local co-op, versus, stage, and score values remain intact.
 
 Suspend hidden gameplay through the shared runtime. Guard the active Phaser animation callback with a finite 50 ms delta cap while preserving normal high-refresh intervals. Keep physics fixed at 60 Hz.
 
 ## Input
 
-Poll keyboard and gamepads once per animation frame through the shared input layer. Map standard PlayStation, Xbox, and generic controllers into bitmasks, press and release edges, radial stick deadzones, and bounded trigger thresholds. Route local Player 1, Player 2, and optional network state through the same scene-facing actions.
+Poll keyboard and gamepads once per animation frame through the shared input layer. Map standard PlayStation, Xbox, and generic controllers into bitmasks, press and release edges, radial stick deadzones, and bounded trigger thresholds. Use south to confirm, north to open Achievements in the lobby, east or Select to return, and Start to open Cabinet Control or Pause. Route local Player 1, Player 2, and optional network state through the same scene-facing actions.
 
 ## Rendering
 
@@ -39,3 +39,7 @@ Store top-ten score boards per game and difficulty locally. Store bounded Wasm s
 ## Tauri boundary
 
 Expose no custom Rust commands. Read no scores from the native filesystem. Keep the shell responsible for packaging and window creation only. Enforce the production CSP in `src-tauri/tauri.conf.json` and keep capabilities in `src-tauri/capabilities/default.json` minimal.
+
+## Fun Zone container
+
+Copy `compose.example.yaml` to the ignored host-local `compose.yaml` before starting the Nginx container. Bind the service only to loopback, keep the root filesystem read-only, drop every Linux capability, enable no-new-privileges, and mount only the Nginx PID and cache paths as memory-backed temporary filesystems. Terminate HTTPS at a reverse proxy and preserve the container response headers.

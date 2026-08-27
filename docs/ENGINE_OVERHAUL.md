@@ -754,6 +754,10 @@ Serve the web artifact from an unprivileged Nginx worker. Apply CSP, COOP, COEP,
 
 Keep the Docker context limited to the frontend build inputs. Exclude `.git`, installed dependencies, existing bundles, documentation, browser reports, local scripts, tests, and the complete Tauri tree. Never send the multi-gigabyte Rust target cache to the Docker daemon for a web-only image.
 
+## Fun Zone Compose deployment
+
+Track `compose.example.yaml` and keep host-specific `compose.yaml` ignored. Copy the example before starting the service. Bind only `127.0.0.1:8080`, run the UID 10001 Nginx image with a read-only root filesystem, drop all Linux capabilities, enable no-new-privileges, and mount only `/var/run` and `/var/cache/nginx` as bounded temporary filesystems. Keep TLS termination and public routing in the host reverse proxy. Probe `/healthz` before publishing the origin.
+
 Enable a matching Tauri CSP with the minimum asset protocol and IPC sources required by the shell. Keep `core:default` as the only capability and expose no custom Rust commands. Track `Cargo.lock` and keep package, npm lock, Tauri, Cargo, and changelog versions synchronized.
 
 Current release-hardening verification:

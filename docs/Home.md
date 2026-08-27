@@ -29,6 +29,7 @@ retro-game-replicas/
 |  `- ui/              Cabinet drawers and runtime controls
 |- src-tauri/           Minimal Tauri shell and capability policy
 |- tests/               Chromium regression and cross-browser smoke suites
+|- compose.example.yaml Tracked loopback-only hardened web service template
 |- Dockerfile           Reproducible web container build
 `- nginx.conf           Production shell and security header policy
 ```

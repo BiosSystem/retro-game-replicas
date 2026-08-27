@@ -125,7 +125,7 @@ Enjoy pixel-perfect gameplay with full gamepad support, hardware-accelerated GLS
 - **Multi-Stage Combat** - Clear endless Space Defenders waves with combo multipliers, adaptive enemy fire, and shield drops.
 - **Persistent Arcade Ledger** - Keep the top ten scores for every game and difficulty with safe v2 migration.
 - **Cabinet Customization** - Switch among neon, classic woodgrain, cyber, and Amber phosphor themes and remap Player 1 fire control.
-- **Fast Initial Entry** - Load a 3.17 kB JavaScript entry, defer the Phaser runtime, and fetch each game scene only when selected.
+- **Fast Initial Entry** - Load a 3.31 kB JavaScript entry and 105.22 kB bootstrap, defer the Phaser runtime, and fetch each game scene only when selected.
 - **Cross-Platform Packaging** - Build web, Windows, macOS, and Linux artifacts through the guarded release workflow, then treat Android packaging as unverified until a dedicated mobile gate exists.
 - **Self-Contained Architecture** - Load zero external ROMs or web fonts and persist high scores locally.
 
@@ -160,11 +160,12 @@ Press `M` or `O` from the cabinet to open the Mod Manager. Import only declarati
 Run the web arcade as a dedicated HTTPS origin such as `fun.bios-system.net`. Keep the application at the origin root because its PWA manifest, service worker, cached navigation shell, and generated asset URLs use root-relative paths. Do not mount the current build below `/fun-zone/` without first adding an explicit Vite base path and matching service-worker scope.
 
 ```bash
+cp compose.example.yaml compose.yaml
 docker compose up --build -d
 curl --fail http://127.0.0.1:8080/healthz
 ```
 
-Route the public hostname to `127.0.0.1:8080` through the website reverse proxy or tunnel and terminate TLS there. Preserve `Cross-Origin-Opener-Policy`, `Cross-Origin-Embedder-Policy`, CSP, and the other Nginx response headers. Do not embed the current build in an iframe because the production policy intentionally sends `frame-ancestors 'none'` and `X-Frame-Options: DENY`.
+Copy the tracked `compose.example.yaml` to the ignored local `compose.yaml` before hosting. The template binds only to loopback, runs the Nginx image read-only, drops Linux capabilities, enables no-new-privileges, and provides writable in-memory cache and PID paths. Route the public hostname to `127.0.0.1:8080` through the website reverse proxy or tunnel and terminate TLS there. Preserve `Cross-Origin-Opener-Policy`, `Cross-Origin-Embedder-Policy`, CSP, and the other Nginx response headers. Do not embed the current build in an iframe because the production policy intentionally sends `frame-ancestors 'none'` and `X-Frame-Options: DENY`.
 
 ---
 

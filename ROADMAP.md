@@ -25,3 +25,9 @@ This document outlines the architectural evolution and feature improvements for 
 - [x] Gate tagged releases behind deterministic frontend, Chromium, cross-browser, and locked Tauri verification.
 - [x] Enforce production Nginx security headers, cross-origin isolation, and a compatible Tauri CSP.
 - [x] Synchronize web, Tauri, Rust, changelog, and roadmap release metadata at 2.0.0.
+
+## v2.1.0 (Phase 5) - Cabinet Reliability and Fun Zone Hosting
+- [x] Unify controller-only cabinet navigation, achievements, high-score entry, and active game-over restart paths.
+- [x] Preserve difficulty and arcade mode through Pause Restart.
+- [x] Add a loopback-only hardened Compose template for Fun Zone hosting.
+- [ ] Run the production Compose smoke test on a host with Docker Engine before public deployment.
