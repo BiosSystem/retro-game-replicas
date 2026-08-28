@@ -1,10 +1,15 @@
 # AGENT_STATE: Retro Game Project
 
 ## Current Objective & Milestone
-- Active Task: Publish authentic current-game screenshots in the README.
-- Target Status: Completed
+- Active Task: Finalize BiosSystem Neon Arcade documentation, repository metadata, validation, and release staging.
+- Target Status: In-Progress
 
 ## Verified Working Systems & Mechanics (Do NOT Break/Repeat)
+- [x] Pull Request #13 merged into `master` with the authentic gameplay gallery and passed every required GitHub check. Local `master` matches merge commit `2f76190`. Verified by: GitHub pull request state, remote branch pruning, and local commit comparison.
+- [x] The architecture and developer guides map Neon Vector, Tetris Pulse, Neon Cyber-Caster, Neon Danmaku, Neon Epoch, and Meta-Arcade Hall to their active lazy-loaded scene implementations and engine roles. Verified by: catalog and scene-registry source audit.
+- [x] GitHub presents the BiosSystem Neon Arcade description and the retro-gaming, Phaser 4, arcade engine, game development, TypeScript, and Rust discovery topics. Verified by: GitHub repository metadata query.
+- [x] The rebranding release notes are staged with architecture highlights and links to authentic README gameplay captures. Leave the version tag unset until an unused tag is authorized. Verified by: release-note link and image-path audit.
+- [x] The final rebranding sweep passes TypeScript static analysis, 278 Vitest tests across 96 files, the locked Cargo test profile, and the 186-module production build. Verified by: `npm run lint`, `npm test`, `cargo test --locked --manifest-path src-tauri/Cargo.toml`, and `npm run build`.
 - [x] Animation-frame controller sampling normalizes standard Xbox, PlayStation, and generic layouts with bitmask edges and radial stick deadzones. Verified by: 278 Vitest tests, Chromium regression suite, and production build.
 - [x] Legacy keyboard-owned scenes receive scene-scoped synthetic controller transitions and release them on shutdown. Verified by: Snake connected-controller regression.
 - [x] Pause and Cabinet Control read shared normalized controller menu input. D-pad or stick navigates, south confirms, and east or Select returns. Verified by: Chromium controller pause-menu regression.
@@ -25,6 +30,9 @@
 - [x] Local release baseline passes with 278 Vitest tests across 96 files, 44 Chromium workflows, six Firefox and WebKit smoke workflows, lint, TypeScript build, and zero high-severity npm audit findings. Verify new browser mechanics with focused regressions before the next full release matrix.
 
 ## Failed Attempts & Discarded Implementations
+- [!] Attempt: Stage a new rebranding draft release using tag `v1.0.0`.
+  - Failure: GitHub already contains a published `v1.0.0` release and the current npm and Cargo manifests declare version `2.0.0`.
+  - Reason Abandoned: Preserve published release history and wait for explicit authorization to stage the rebranded draft as `v2.0.0` or another unused tag.
 - [!] Attempt: Run locked Cargo analysis after installing only Rust and Playwright browser dependencies.
   - Failure: The Ubuntu runner could not resolve the native `gdk-3.0` development package required by Tauri.
   - Reason Abandoned: Install the explicit Tauri Linux development libraries in the validation job before compiling Rust sources.

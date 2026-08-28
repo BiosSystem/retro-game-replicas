@@ -1,6 +1,7 @@
 ## [Unreleased]
 
 ### Added
+- Add staged rebranding release notes with architecture highlights and direct links to authentic gameplay captures.
 - Add a README gallery captured directly from the current lobby, Neon Vector, Tetris Pulse, Neon Cyber-Caster, Neon Danmaku, and Neon Epoch runtime surfaces.
 - Add a loopback-only hardened Compose template for Fun Zone web hosting.
 - Add a user-initiated Fullscreen control to Cabinet Control with standard browser API detection, failure-safe state reporting, and no new dependency or asset.
@@ -12,6 +13,8 @@
 - Add a safe Game Over exit path. Use east face button, Select, or Escape to stop the finished game and return to the lobby.
 
 ### Changed
+- Document the featured game lineup, scene-key contracts, runtime roles, and primary engine systems in the architecture and developer guides.
+- Finalize the GitHub repository description and discovery topics for the BiosSystem Neon Arcade identity.
 - Install the native Tauri Linux development libraries before locked Cargo analysis in the GitHub release gate.
 - Quote the Vitest browser-tree exclusion so Linux CI and Windows development discover the same 96 unit-test files.
 - Rebrand the public product, desktop package, PWA manifest, runtime cabinet title, and delivery labels as BiosSystem Neon Arcade while retaining the existing repository slug and container publication path.
