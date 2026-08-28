@@ -5,6 +5,7 @@
 - Target Status: In-Progress
 - Default Target Branch: `master`
 - Feature Branch Pattern: `feat/v2.1-<system>`
+- Active Pull Request: `https://github.com/BiosSystem/retro-game-replicas/pull/16`
 
 ## Verified Working Systems & Mechanics (Do NOT Break/Repeat)
 - [x] The v2.1 P0 profiler measures frame timing, input event latency, InputManager polling cost, heap peak, and audio-underrun signals through bounded rings without changing deterministic game state. It classifies representative scenes into low, medium, and high-load budgets and reports PASS or WARN through the runtime HUD. Verified by: four targeted PerformanceBaseline tests and TypeScript static analysis.
