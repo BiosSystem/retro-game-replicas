@@ -15,6 +15,7 @@ test('open and filter the local-first leaderboard center', async ({ page }) => {
   await expect(panel).toBeVisible();
   await expect(panel).toContainText('ACE');
   await expect(panel).toContainText('4,200');
+  await expect(panel.locator('.leaderboard-avatar')).toHaveCount(2);
   await panel.locator('[data-source="PEER"]').click();
   await expect(panel.locator('[data-list]')).toContainText('NO SCORES IN THIS VIEW');
   await page.keyboard.press('KeyL');

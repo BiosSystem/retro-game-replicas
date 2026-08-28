@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import { SaveManager } from '../engine/SaveManager';
 import { InputManager } from '../engine/InputManager';
 import { readGamepadMenuInput, type GamepadMenuState } from '../engine/input/GamepadMenuInput';
+import { createNeonPanel } from '../ui/arcade/NeonUi';
+import { drawRetroAvatar, RetroProfileStore } from '../ui/profile/RetroProfile';
 
 export default class NameEntryScene extends Phaser.Scene {
     private sourceScene!: string;
@@ -32,6 +34,10 @@ export default class NameEntryScene extends Phaser.Scene {
         this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridgeSuspended(false, this.scene.key));
         // Overlay background
         this.add.rectangle(320, 240, 640, 480, 0x000022, 0.9);
+        const panel = createNeonPanel(this, 320, 250, 500, 350, 0xffff00, .92).setScale(.96).setAlpha(0);
+        this.tweens.add({ targets: panel, scale: 1, alpha: 1, duration: 160, ease: 'Back.Out' });
+        const profile = new RetroProfileStore(localStorage).load();
+        const avatar = this.add.graphics(); drawRetroAvatar(avatar, 175, 262, 88, profile.avatarSeed);
         
         this.add.text(320, 100, 'NEW HIGH SCORE!', {
             fontFamily: "'Share Tech Mono', Courier",
@@ -128,6 +134,7 @@ export default class NameEntryScene extends Phaser.Scene {
         } else {
             // Done
             const name = this.initials.join('');
+            new RetroProfileStore(localStorage).setName(name);
             SaveManager.submitScore(this.sourceScene, this.difficulty, this.score, name);
             this.scene.stop('NameEntryScene');
             

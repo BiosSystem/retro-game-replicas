@@ -6,11 +6,11 @@ Use `master` as the protected integration target. Create focused branches with t
 
 ## Active milestone
 
-- Workstream: P1 Advanced CRT and scanline pipeline
-- Branch: `feat/v2.1-crt-calibration`
+- Workstream: P1 Next-level graphics, UI, and player identity
+- Branch: `feat/v2.1-nextlevel-graphics-ui`
 - Status: Implemented and verified
-- Scope: Stable scanline phase, gamma-aware phosphor response, overscan calibration, shader program caching, and adaptive quality controls
-- Boundary: Keep the CRT as a presentation-only pass and observe its cost through the P0 telemetry and bundle budgets
+- Scope: Generated Nine Slice panels, animated controls, deterministic pixel avatars, local profiles, leaderboard identities, and unified featured-game HUDs
+- Boundary: Add no third-party raster assets or runtime network dependency. Keep the complete production bundle within the 1.85 MiB target
 
 ## Prioritized engineering queue
 
@@ -27,10 +27,11 @@ Use `master` as the protected integration target. Create focused branches with t
 
 1. Establish the P0 benchmark baseline and publish the measurement protocol. Completed on `feat/v2.1-performance-baseline`.
 2. Implement CRT calibration and shader-cache improvements behind existing runtime presets. Completed on `feat/v2.1-crt-calibration` with 284 Vitest tests, 56 Chromium regressions, locked Cargo validation, and a 0.0642 ms measured CRT CPU submission mean.
-3. Implement input profile persistence and calibration before enabling the optional WebHID adapter.
-4. Add each new cabinet as an isolated scene milestone with its own deterministic rule module.
-5. Optimize the audio scheduler only after collecting baseline underrun and allocation evidence.
-6. Run the complete release matrix and document migration notes before cutting v2.1.0.
+3. Implement the generated UI, local profile, and featured-game HUD architecture. Completed on `feat/v2.1-nextlevel-graphics-ui` with 287 Vitest tests, 57 Chromium regressions, locked Cargo validation, and a 1,852,248-byte production output.
+4. Implement input profile persistence and calibration before enabling the optional WebHID adapter.
+5. Add each new cabinet as an isolated scene milestone with its own deterministic rule module.
+6. Optimize the audio scheduler only after collecting baseline underrun and allocation evidence.
+7. Run the complete release matrix and document migration notes before cutting v2.1.0.
 
 ## Release requirements
 

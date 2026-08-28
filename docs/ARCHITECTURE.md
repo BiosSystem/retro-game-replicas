@@ -35,6 +35,7 @@ flowchart LR
 | Scenes | Lobby, game selection, lazy scene registry, pause, settings, achievements, Game Over | `src/scenes/`, `src/sceneRegistry.ts` |
 | Gameplay | Original arcade replicas and Neon game modules | `src/scenes/`, `src/games/` |
 | Rendering | Canvas pixel art, CRT pass, display scaling, pooled particles, ray and voxel systems | `src/engine/graphics/`, `src/graphics/` |
+| Arcade UI | Generated Nine Slice panels, glow controls, unified HUD frames, profile scenes, and pixel avatars | `src/ui/arcade/`, `src/ui/profile/`, `src/scenes/ProfileScene.ts` |
 | Audio | Generated tracker music, effects, spatial audio, optional Worklet and Wasm DSP | `src/audio/`, `src/engine/AudioEngine.ts` |
 | Persistence | Preferences, scores, replay ledgers, bounded save-state serialization | `src/engine/persistence/`, `src/engine/ScoreLedger.ts` |
 | Networking | Manual WebRTC peers, rollback, signed scores, CRDT and shard contracts | `src/net/`, `src/ui/net/` |
@@ -58,6 +59,22 @@ Load these modules only after selection. Preserve deterministic and browser-safe
 ## Rendering and assets
 
 Render native play at 640x480 and scale it with integer 4:3 or 16:9 framing when possible. The CRT output pass exposes Clean Pixel, Arcade CRT 1980s, Trinitron 1990s, and Bypass presets. Each controls source-row-stable scanlines, gamma-aware bloom, lens curvature, chromatic aberration, phosphor shadow mask, vignette, and bounded overscan. Cache linked programs per WebGL context while keeping textures and buffers instance-owned. Let AUTO quality follow the shared telemetry tier or pin HIGH, MEDIUM, or LOW through Cabinet Control.
+
+### UI and profile hierarchy
+
+```text
+Lobby, overlays, and featured games
+  -> NeonUi generated texture and Nine Slice panels
+     -> WebGL Nine Slice batching
+     -> Canvas rectangle fallback
+  -> ArcadeHud score, stage, combo, health, and status contract
+  -> RetroProfileStore bounded local identity
+     -> deterministic pixel recipe
+     -> Phaser Graphics avatar in lobby and profile scenes
+     -> generated leaderboard avatar
+```
+
+Keep player identity local to `bios_arcade_profile_v1`. Sanitize names and seeds before persistence. Generate every avatar from its stored seed and use no remote image service. Render one shared generated panel texture per Phaser texture manager. Reuse one HUD frame per featured scene and avoid per-frame object creation.
 
 Keep assets procedural. Game scenes draw with Phaser primitives, generated buffers, shaders, typed arrays, and Web Audio nodes. Do not add ROM loading or imported copyrighted game art. Optional WebGPU, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD paths must retain deterministic browser-safe fallbacks.
 

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { VFXManager } from '../engine/VFXManager';
 import { InputManager } from '../engine/InputManager';
+import { ArcadeHud } from '../ui/arcade/NeonUi';
 
 const COLS = 10;
 const ROWS = 20;
@@ -11,7 +12,7 @@ export default class TetrisScene extends Phaser.Scene {
   private activePiece: any = null;
   private timer = 0;
   private score = 0;
-  private scoreText!: Phaser.GameObjects.Text;
+  private scoreHud!: ArcadeHud;
   private baseInterval = 800;
   private dropInterval = 800;
   private particles!: Phaser.GameObjects.Particles.ParticleEmitter;
@@ -33,10 +34,12 @@ export default class TetrisScene extends Phaser.Scene {
     }
     this.dropInterval = this.baseInterval;
     this.gameOver = false;
+    this.score = 0;
 
     // UI
     this.add.text(320, 20, 'TETRIS: PULSE', { fontFamily: 'Courier', fontSize: '24px', color: '#00ffff' }).setOrigin(0.5);
-    this.scoreText = this.add.text(450, 100, 'SCORE: 0', { fontFamily: 'Courier', fontSize: '20px', color: '#ffffff' });
+    this.scoreHud = new ArcadeHud(this, 420, 70, 205, 0x00ffff);
+    this.scoreHud.set({ score: 0, stage: 1, status: this.difficulty });
     this.add.text(450, 140, 'ARROWS: MOVE\nUP: ROTATE\nSPACE: DROP\nESC: LOBBY', { fontFamily: 'Courier', fontSize: '14px', color: '#aaaaaa' });
 
     const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
@@ -176,7 +179,7 @@ export default class TetrisScene extends Phaser.Scene {
     }
     if (linesCleared > 0) {
         this.score += [0, 100, 300, 500, 800][linesCleared];
-        this.scoreText.setText('SCORE: ' + this.score);
+        this.scoreHud.set({ score: this.score, stage: Math.floor(this.score / 1000) + 1, combo: linesCleared, status: this.difficulty });
         this.dropInterval = Math.max(100, this.baseInterval - (this.score / 10));
         this.cameras.main.flash(200, 255, 255, 255, false);
     }

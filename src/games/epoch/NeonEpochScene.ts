@@ -7,10 +7,11 @@ import { SimdPhysicsCore } from '../../engine/physics/simd';
 import { arcadeSaveStates, epochSaveBridge, type EpochSaveProvider } from '../../engine/persistence/SaveStateServices';
 import { captureSaveThumbnail } from '../../engine/persistence/SaveStateThumbnail';
 import { epochCore, epochDiagnostics, epochWeather } from './EpochSystems';
+import { ArcadeHud } from '../../ui/arcade/NeonUi';
 
 export default class NeonEpochScene extends Phaser.Scene {
   private gfx!: Phaser.GameObjects.Graphics;
-  private hud!: Phaser.GameObjects.Text;
+  private hud!: ArcadeHud;
   private readonly seed = 173;
   private core = epochCore(this.seed);
   private cameraX = 0;
@@ -38,8 +39,7 @@ export default class NeonEpochScene extends Phaser.Scene {
     this.heading = 0;
     this.elapsed = 0;
     this.gfx = this.add.graphics();
-    this.hud = this.add.text(12, 10, '', { fontFamily: 'Courier', fontSize: '11px', color: '#dfffee', lineSpacing: 4 }).setDepth(5);
-    this.add.text(320, 25, 'NEON EPOCH // PROCEDURAL VOLUMETRIC WORLD', { fontFamily: 'Courier', fontSize: '16px', color: '#8effc1', fontStyle: 'bold' }).setOrigin(0.5).setDepth(5);
+    this.hud = new ArcadeHud(this, 8, 8, 624, 0x8effc1);
     this.add.text(320, 462, 'WASD TRAVERSE  Q/E TURN  ESC PAUSE', { fontFamily: 'Courier', fontSize: '11px', color: '#9db7aa' }).setOrigin(0.5).setDepth(5);
     this.input.keyboard?.on('keydown-ESC', () => this.scene.start('LobbyScene'));
     AudioEngine.playTrack('odyssey');
@@ -162,7 +162,7 @@ export default class NeonEpochScene extends Phaser.Scene {
       if (value) graphics.fillStyle(0x18bfff, 0.12 + value / 512).fillRect(x * (640 / this.core.fluid.width), 411 - value * 0.04, 14, 20 + value * 0.04);
     }
     graphics.fillStyle(0xffffff, 0.9).fillCircle(320, 247, 3).lineStyle(1, 0x8effc1, 0.7).strokeCircle(320, 247, 8);
-    this.hud.setText(`SPLATS ${this.core.cloud.count.toLocaleString()}  WORLD ${this.core.splatChecksum.toString(16).padStart(8, '0')}  ARCH ${this.core.architectures}\nRAIN ${(weather.rain * 100).toFixed(0)}%  WIND ${weather.wind.toFixed(1)} m/s  TEMP ${weather.temperature.toFixed(1)} C  FLUID ${this.core.fluid.mass()}\nPOSITION ${this.cameraX.toFixed(1)}, ${this.cameraZ.toFixed(1)}  SAVE ${this.saveStates.backend}`);
+    this.hud.set({ score: this.core.cloud.count, stage: this.core.architectures, health: 100 - weather.rain * 40, status: `${weather.temperature.toFixed(1)} C  WIND ${weather.wind.toFixed(1)}  SAVE ${this.saveStates.backend}` });
   }
 
   async epochDiagnostics() {

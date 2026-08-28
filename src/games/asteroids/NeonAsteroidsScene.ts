@@ -6,6 +6,7 @@ import { fractureSizes, predictIntercept, unlockedWeapons, type WeaponMode } fro
 import { CoopSession, type ArcadeMode } from '../../multiplayer/CoopSession';
 import type { PlayerId } from '../../multiplayer/MultiInput';
 import { ProceduralStageGenerator, type StageDefinition } from '../../generators/ProceduralStageGenerator';
+import { ArcadeHud } from '../../ui/arcade/NeonUi';
 
 export default class NeonAsteroidsScene extends Phaser.Scene {
   private ship!: Phaser.Physics.Arcade.Image;
@@ -21,7 +22,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
   private weapon: WeaponMode = 'SPREAD';
   private shield = false;
   private difficulty = 'NORMAL';
-  private hud!: Phaser.GameObjects.Text;
+  private hud!: ArcadeHud;
   private stagePending = false;
   private mode: ArcadeMode = 'SOLO';
   private session!: CoopSession;
@@ -39,7 +40,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     this.createTextures();
     this.add.grid(320, 240, 640, 480, 32, 32, 0x02000c, 1, 0x632cff, 0.1);
     this.add.text(320, 18, 'NEON VECTOR ASTEROIDS', { fontFamily: 'Courier', fontSize: '20px', color: '#ff2ec4', fontStyle: 'bold' }).setOrigin(0.5);
-    this.hud = this.add.text(12, 12, '', { fontFamily: 'Courier', fontSize: '13px', color: '#00ffcc' });
+    this.hud = new ArcadeHud(this, 8, 38, 624, 0xff2ec4);
     this.add.text(628, 12, 'ARROWS THRUST  SPACE FIRE  Q WEAPON  ESC PAUSE', { fontFamily: 'Courier', fontSize: '10px', color: '#8888aa' }).setOrigin(1, 0);
 
     this.ship = this.physics.add.image(320, 260, 'vector-ship').setDamping(true).setDrag(0.985).setMaxVelocity(320);
@@ -154,7 +155,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     this.scene.launch('GameOverScene', { scene: this.scene.key, title: 'VECTOR CORE LOST', score: this.score, difficulty: `${this.difficulty}-${this.mode}`, restartData: { difficulty: this.difficulty, mode: this.mode }, submitScore: true, color: '#ff2ec4' });
   }
 
-  private updateHud() { const state = this.session?.snapshot(); this.hud?.setText(`SCORE ${this.score}  STAGE ${this.stage}  ${this.mode} X${state?.multiplier ?? 1}  MIN ${this.mineralCount}  ${this.weapon}${this.shield ? ' SHIELD' : ''}`); }
+  private updateHud() { const state = this.session?.snapshot(); this.hud?.set({ score: this.score, stage: this.stage, health: ((state?.lives[1] ?? 3) + (this.ship2 ? state?.lives[2] ?? 3 : 0)) / (this.ship2 ? 6 : 3) * 100, combo: state?.multiplier, status: `${this.mode}  MIN ${this.mineralCount}  ${this.weapon}${this.shield ? ' SHIELD' : ''}` }); }
 
   private moveShip(ship: Phaser.Physics.Arcade.Image, player: PlayerId) {
     const inverted = this.stageDefinition?.modifier === 'INVERTED_CONTROLS' ? -1 : 1;

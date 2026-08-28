@@ -1,6 +1,7 @@
 import { SaveManager } from '../../engine/SaveManager';
 import type { ScoreClaim } from '../../net/swarm/ScoreGossip';
 import { leaderboardGames, rankScores, type LeaderboardSource } from './LeaderboardModel';
+import { avatarSvgDataUri, RetroProfileStore } from '../profile/RetroProfile';
 
 export class SwarmLeaderboardUi {
   private readonly root: HTMLElement;
@@ -34,7 +35,7 @@ export class SwarmLeaderboardUi {
       </div>
       <div class="leaderboard-table-wrap">
         <table>
-          <thead><tr><th>#</th><th>PLAYER</th><th>GAME</th><th>MODE</th><th>SCORE</th><th>SOURCE</th></tr></thead>
+          <thead><tr><th>IDENT</th><th>#</th><th>PLAYER</th><th>GAME</th><th>MODE</th><th>SCORE</th><th>SOURCE</th></tr></thead>
           <tbody data-list></tbody>
         </table>
       </div>
@@ -82,9 +83,12 @@ export class SwarmLeaderboardUi {
     select.value = selected;
     this.root.querySelectorAll<HTMLButtonElement>('[data-source]').forEach(button => button.classList.toggle('active', button.dataset.source === this.source));
     const rows = rankScores(localBoards, this.peerClaims, { game: this.game || undefined, source: this.source, limit: 50 });
+    const profile = new RetroProfileStore(localStorage).load();
     const body = this.pick<HTMLTableSectionElement>('[data-list]');
     body.replaceChildren(...rows.map((entry, index) => {
       const row = document.createElement('tr');
+      const avatarCell = document.createElement('td'); const avatar = document.createElement('img');
+      avatar.src = avatarSvgDataUri(entry.player === profile.name ? profile.avatarSeed : entry.player); avatar.alt = `${entry.player} avatar`; avatar.className = 'leaderboard-avatar'; avatarCell.appendChild(avatar); row.appendChild(avatarCell);
       const values = [String(index + 1).padStart(2, '0'), entry.player, displayGame(entry.game), entry.difficulty, entry.score.toLocaleString(), entry.source === 'PEER' ? 'PEER VERIFIED' : 'DEVICE'];
       for (const value of values) {
         const cell = document.createElement('td');
@@ -97,7 +101,7 @@ export class SwarmLeaderboardUi {
     if (!rows.length) {
       const row = document.createElement('tr');
       const cell = document.createElement('td');
-      cell.colSpan = 6;
+      cell.colSpan = 7;
       cell.textContent = 'NO SCORES IN THIS VIEW';
       row.appendChild(cell);
       body.appendChild(row);
