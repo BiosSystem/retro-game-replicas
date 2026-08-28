@@ -2,13 +2,16 @@
 
 ## Current Objective & Milestone
 - Active Task: Finalize BiosSystem Neon Arcade documentation, repository metadata, validation, and release staging.
-- Target Status: In-Progress
+- Target Status: Completed
 
 ## Verified Working Systems & Mechanics (Do NOT Break/Repeat)
-- [x] Pull Request #13 merged into `master` with the authentic gameplay gallery and passed every required GitHub check. Local `master` matches merge commit `2f76190`. Verified by: GitHub pull request state, remote branch pruning, and local commit comparison.
+- [x] Pull Request #14 merged into `master` at `f6ca2fb` with administrator authorization, its feature branch was deleted remotely, and the complete rebranding documentation sweep is live. Verified by: GitHub pull request state, remote branch pruning, and local default-branch synchronization.
+- [x] BiosSystem Neon Arcade v2.0.0 is published at `https://github.com/BiosSystem/retro-game-replicas/releases/tag/v2.0.0`. The `v2.0.0` tag resolves to merged commit `f6ca2fb` and the release is neither a draft nor a prerelease. Verified by: local tag resolution and GitHub release metadata.
+- [x] The v2.0.0 release commit passes 278 Vitest tests across 96 files and the complete locked Cargo test profile with zero failures. The preceding GitHub gate also passed TypeScript analysis, production build, Chromium regression, Firefox and WebKit smoke coverage, container build and headers, and locked Tauri analysis. Verified by: post-merge local sanity gates and GitHub Actions run `33156017429`.
+- [x] Pull Request #13 merged into `master` at `2f76190` with the authentic gameplay gallery and passed every required GitHub check. Verified by: GitHub pull request state and commit history.
 - [x] The architecture and developer guides map Neon Vector, Tetris Pulse, Neon Cyber-Caster, Neon Danmaku, Neon Epoch, and Meta-Arcade Hall to their active lazy-loaded scene implementations and engine roles. Verified by: catalog and scene-registry source audit.
 - [x] GitHub presents the BiosSystem Neon Arcade description and the retro-gaming, Phaser 4, arcade engine, game development, TypeScript, and Rust discovery topics. Verified by: GitHub repository metadata query.
-- [x] The rebranding release notes are staged with architecture highlights and links to authentic README gameplay captures. Leave the version tag unset until an unused tag is authorized. Verified by: release-note link and image-path audit.
+- [x] The published v2.0.0 release notes include architecture highlights and links to authentic README gameplay captures. Verified by: GitHub release body, release-note links, and image-path audit.
 - [x] The final rebranding sweep passes TypeScript static analysis, 278 Vitest tests across 96 files, the locked Cargo test profile, and the 186-module production build. Verified by: `npm run lint`, `npm test`, `cargo test --locked --manifest-path src-tauri/Cargo.toml`, and `npm run build`.
 - [x] Animation-frame controller sampling normalizes standard Xbox, PlayStation, and generic layouts with bitmask edges and radial stick deadzones. Verified by: 278 Vitest tests, Chromium regression suite, and production build.
 - [x] Legacy keyboard-owned scenes receive scene-scoped synthetic controller transitions and release them on shutdown. Verified by: Snake connected-controller regression.
