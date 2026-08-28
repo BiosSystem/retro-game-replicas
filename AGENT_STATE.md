@@ -5,7 +5,7 @@
 - Target Status: Completed
 - Default Target Branch: `master`
 - Feature Branch Pattern: `feat/v2.1-<system>`
-- Active Pull Request: Pending creation from `feat/v2.1-crt-calibration`.
+- Active Pull Request: `https://github.com/BiosSystem/retro-game-replicas/pull/17`
 
 ## Verified Working Systems & Mechanics (Do NOT Break/Repeat)
 - [x] Pull Request #16 merged into `master` at `e125297` with administrator authorization and its feature branch was deleted remotely. Verified by: GitHub pull request state, remote branch pruning, and local default-branch synchronization.
