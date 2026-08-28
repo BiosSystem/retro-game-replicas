@@ -57,7 +57,7 @@ Load these modules only after selection. Preserve deterministic and browser-safe
 
 ## Rendering and assets
 
-Render native play at 640x480 and scale it with integer 4:3 or 16:9 framing when possible. The CRT output pass exposes Clean Pixel, Arcade CRT 1980s, Trinitron 1990s, and Bypass presets. Each controls scanlines, bloom, lens curvature, chromatic aberration, phosphor shadow mask, and vignette.
+Render native play at 640x480 and scale it with integer 4:3 or 16:9 framing when possible. The CRT output pass exposes Clean Pixel, Arcade CRT 1980s, Trinitron 1990s, and Bypass presets. Each controls source-row-stable scanlines, gamma-aware bloom, lens curvature, chromatic aberration, phosphor shadow mask, vignette, and bounded overscan. Cache linked programs per WebGL context while keeping textures and buffers instance-owned. Let AUTO quality follow the shared telemetry tier or pin HIGH, MEDIUM, or LOW through Cabinet Control.
 
 Keep assets procedural. Game scenes draw with Phaser primitives, generated buffers, shaders, typed arrays, and Web Audio nodes. Do not add ROM loading or imported copyrighted game art. Optional WebGPU, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD paths must retain deterministic browser-safe fallbacks.
 

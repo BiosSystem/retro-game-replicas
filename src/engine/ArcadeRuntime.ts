@@ -4,7 +4,7 @@ import { AdaptiveQualityController } from '../graphics/PooledParticleSystem';
 import { InputManager } from './InputManager';
 import { FrameTelemetry, TelemetryHud } from './FrameTelemetry';
 import { ReplayRuntime } from './replay/ReplayRuntime';
-import { CrtShaderPipeline, parseCrtPreset } from './graphics/CrtShaderPipeline';
+import { CrtShaderPipeline, parseCrtOverscan, parseCrtPreset, parseCrtQuality, parseCrtScanlinePhase, type CrtQualityPreference } from './graphics/CrtShaderPipeline';
 import { DisplayScaler, parseDisplayAspect } from './graphics/DisplayScaler';
 import type { QualityTier } from '../graphics/PooledParticleSystem';
 import { PerformanceBaselineMonitor } from './PerformanceBaseline';
@@ -27,6 +27,7 @@ export class ArcadeRuntime {
   private lastFrameAt = performance.now();
   private reducedMotion = false;
   private readonly replay: ReplayRuntime;
+  private crtQualityPreference: CrtQualityPreference = 'AUTO';
 
   constructor(game: Phaser.Game) {
     this.game = game;
@@ -68,7 +69,7 @@ export class ArcadeRuntime {
       this.frameCount = 0;
       this.sampleStarted = time;
     }
-    this.crt.render(time, this.qualityTier, this.reducedMotion);
+    this.crt.render(time, this.crtQualityPreference === 'AUTO' ? this.qualityTier : this.crtQualityPreference, this.reducedMotion);
     this.frameRequest = requestAnimationFrame(this.measureFrames);
   };
 
@@ -130,8 +131,11 @@ export class ArcadeRuntime {
     const storedPreset = localStorage.getItem('arcade_crt_preset');
     const preset = parseCrtPreset(storedPreset, localStorage.getItem('arcade_crt') === 'true' ? 'ARCADE_CRT_1980S' : 'BYPASS');
     this.crt.setPreset(preset);
+    this.crtQualityPreference = parseCrtQuality(localStorage.getItem('arcade_crt_quality'));
+    this.crt.setCalibration({ overscan: parseCrtOverscan(localStorage.getItem('arcade_crt_overscan')), scanlinePhase: parseCrtScanlinePhase(localStorage.getItem('arcade_crt_scanline_phase')) });
     this.displayScaler.setAspect(parseDisplayAspect(localStorage.getItem('arcade_display_aspect')));
     document.documentElement.dataset.crtPreset = preset.toLowerCase();
+    document.documentElement.dataset.crtQuality = this.crtQualityPreference.toLowerCase();
     document.documentElement.classList.toggle('motion-reduced', localStorage.getItem('arcade_reduced_motion') === 'true');
     document.documentElement.dataset.cabinetTheme = preferences.theme.toLowerCase();
     this.reducedMotion = localStorage.getItem('arcade_reduced_motion') === 'true' || matchMedia('(prefers-reduced-motion: reduce)').matches;

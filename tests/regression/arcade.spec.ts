@@ -30,8 +30,8 @@ test('persist and render the performance baseline telemetry control', async ({ p
   await page.evaluate(() => {
     const game = (window as typeof window & { game: { scene: { start(key: string, data: unknown): void; getScene(key: string): unknown } } }).game;
     game.scene.start('SettingsScene', { scene: 'LobbyScene' });
-    const settings = game.scene.getScene('SettingsScene') as { selectedIndex: number; selectOption(): void };
-    settings.selectedIndex = 6;
+    const settings = game.scene.getScene('SettingsScene') as { options: string[]; selectedIndex: number; selectOption(): void };
+    settings.selectedIndex = settings.options.indexOf('TELEMETRY');
     settings.selectOption();
   });
   await expect.poll(() => page.evaluate(() => localStorage.getItem('arcade_telemetry'))).toBe('true');
@@ -42,16 +42,36 @@ test('persist and render the performance baseline telemetry control', async ({ p
   await expect(telemetry).toContainText('AUDIO XRUN');
 });
 
+test('persist CRT quality, overscan, and scanline phase calibration', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#app canvas').first().waitFor();
+  await page.evaluate(() => {
+    const game = (window as typeof window & { game: { scene: { start(key: string, data: unknown): void; getScene(key: string): unknown } } }).game;
+    game.scene.start('SettingsScene', { scene: 'LobbyScene' });
+    const settings = game.scene.getScene('SettingsScene') as { options: string[]; selectedIndex: number; selectOption(): void };
+    for (const option of ['CRT QUALITY', 'CRT OVERSCAN', 'SCANLINE PHASE']) {
+      settings.selectedIndex = settings.options.indexOf(option);
+      settings.selectOption();
+    }
+  });
+  await expect.poll(() => page.evaluate(() => ({ quality: localStorage.getItem('arcade_crt_quality'), overscan: localStorage.getItem('arcade_crt_overscan'), phase: localStorage.getItem('arcade_crt_scanline_phase') }))).toEqual({ quality: 'HIGH', overscan: '0.02', phase: '0.25' });
+  await expect(page.locator('html')).toHaveAttribute('data-crt-quality', 'high');
+});
+
 test('launch the generated Neon Retro Racer scene', async ({ page }) => { await page.goto('/'); await page.locator('#app canvas').first().waitFor(); await page.evaluate(() => { const lobby = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { updateGameSelection(change: number): void; handleSpace(): void }; for (let index = 0; index < 11; index++) lobby.updateGameSelection(1); lobby.handleSpace(); }); await page.waitForTimeout(250); await page.evaluate(() => ((window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { handleSpace(): void }).handleSpace()); await expect.poll(() => page.evaluate(() => Boolean((window as typeof window & { game?: { scene: { isActive(key: string): boolean } } }).game?.scene.isActive('RacerScene'))), { timeout: 10000 }).toBe(true); });
 
 test('render the WebGL CRT surface inside a 16:9 integer frame', async ({ page }) => {
-  await page.addInitScript(() => { localStorage.setItem('arcade_crt_preset', 'ARCADE_CRT_1980S'); localStorage.setItem('arcade_display_aspect', '16:9'); });
+  await page.addInitScript(() => { localStorage.setItem('arcade_crt_preset', 'ARCADE_CRT_1980S'); localStorage.setItem('arcade_crt_quality', 'LOW'); localStorage.setItem('arcade_crt_overscan', '0.04'); localStorage.setItem('arcade_crt_scanline_phase', '0.5'); localStorage.setItem('arcade_display_aspect', '16:9'); });
   await page.goto('/');
   const source = page.locator('#app canvas[data-arcade-surface="game"]');
   const output = page.locator('#app canvas[data-arcade-surface="crt"]');
   await source.waitFor();
   await expect(output).toBeVisible();
   await expect(page.locator('#app')).toHaveAttribute('data-display-aspect', '16x9');
+  await expect(page.locator('html')).toHaveAttribute('data-crt-quality', 'low');
+  await expect(output).toHaveAttribute('data-crt-quality', 'low');
+  await expect(output).toHaveAttribute('data-crt-overscan', '0.040');
+  await expect(output).toHaveAttribute('data-crt-program-compiles', '1');
   await expect.poll(() => output.getAttribute('data-crt-submit-mean-ms'), { timeout: 5000 }).not.toBeNull();
   const sourceBox = await source.boundingBox();
   const outputBox = await output.boundingBox();

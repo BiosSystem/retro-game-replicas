@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { AudioEngine } from '../engine/AudioEngine';
 import { PreferenceStore, type CabinetTheme } from '../engine/PreferenceStore';
-import { CRT_PRESETS, nextCrtPreset, parseCrtPreset } from '../engine/graphics/CrtShaderPipeline';
+import { CRT_PRESETS, nextCrtOverscan, nextCrtPreset, nextCrtQuality, nextCrtScanlinePhase, parseCrtOverscan, parseCrtPreset, parseCrtQuality, parseCrtScanlinePhase } from '../engine/graphics/CrtShaderPipeline';
 import { parseDisplayAspect } from '../engine/graphics/DisplayScaler';
 import { FullscreenController } from '../engine/FullscreenController';
 import { InputManager } from '../engine/InputManager';
@@ -9,7 +9,7 @@ import { readGamepadMenuInput, type GamepadMenuState } from '../engine/input/Gam
 
 export default class SettingsScene extends Phaser.Scene {
     private sourceScene!: string;
-    private options = ['RESUME', 'FULLSCREEN', 'CABINET THEME', 'REBIND FIRE', 'CRT PRESET', 'DISPLAY ASPECT', 'TELEMETRY', 'REDUCE MOTION', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
+    private options = ['RESUME', 'FULLSCREEN', 'CABINET THEME', 'REBIND FIRE', 'CRT PRESET', 'CRT QUALITY', 'CRT OVERSCAN', 'SCANLINE PHASE', 'DISPLAY ASPECT', 'TELEMETRY', 'REDUCE MOTION', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
     private fullscreen: FullscreenController | null = null;
@@ -32,7 +32,7 @@ export default class SettingsScene extends Phaser.Scene {
         const bg = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.8);
         bg.setInteractive(); // block clicks
         
-        this.add.text(320, 78, 'CABINET CONTROL', {
+        this.add.text(320, 46, 'CABINET CONTROL', {
             fontFamily: "'Share Tech Mono', Courier",
             fontSize: '36px',
             color: '#00ffcc',
@@ -43,10 +43,10 @@ export default class SettingsScene extends Phaser.Scene {
         this.menuItems = [];
 
         this.options.forEach((opt, idx) => {
-            const y = 112 + (idx * 27);
+            const y = 78 + (idx * 24);
             const text = this.add.text(320, y, opt, {
                 fontFamily: "'Share Tech Mono', Courier",
-                fontSize: '20px',
+                fontSize: '17px',
                 color: '#ffffff'
             }).setOrigin(0.5);
             this.menuItems.push(text);
@@ -99,6 +99,9 @@ export default class SettingsScene extends Phaser.Scene {
         if (option === 'FULLSCREEN') return `${option}: ${this.fullscreen?.status() ?? 'UNAVAILABLE'}`;
         if (option === 'REBIND FIRE') return `${option}: ${preferences.bindings.FIRE[0]}`;
         if (option === 'CRT PRESET') return `${option}: ${CRT_PRESETS[this.currentCrtPreset()].label.toUpperCase()}`;
+        if (option === 'CRT QUALITY') return `${option}: ${parseCrtQuality(localStorage.getItem('arcade_crt_quality'))}`;
+        if (option === 'CRT OVERSCAN') return `${option}: ${Math.round(parseCrtOverscan(localStorage.getItem('arcade_crt_overscan')) * 100)}%`;
+        if (option === 'SCANLINE PHASE') return `${option}: ${parseCrtScanlinePhase(localStorage.getItem('arcade_crt_scanline_phase')).toFixed(2)}`;
         if (option === 'DISPLAY ASPECT') return `${option}: ${parseDisplayAspect(localStorage.getItem('arcade_display_aspect'))}`;
         if (option === 'TELEMETRY') return `${option}: ${localStorage.getItem('arcade_telemetry') === 'true' ? 'ON' : 'OFF'}`;
         if (option === 'REDUCE MOTION') return `${option}: ${localStorage.getItem('arcade_reduced_motion') === 'true' ? 'ON' : 'OFF'}`;
@@ -132,6 +135,18 @@ export default class SettingsScene extends Phaser.Scene {
             const preset = nextCrtPreset(this.currentCrtPreset());
             localStorage.setItem('arcade_crt_preset', preset);
             localStorage.setItem('arcade_crt', preset === 'BYPASS' ? 'false' : 'true');
+            window.dispatchEvent(new Event('arcade-settings-change'));
+            this.updateMenu();
+        } else if (opt === 'CRT QUALITY') {
+            localStorage.setItem('arcade_crt_quality', nextCrtQuality(parseCrtQuality(localStorage.getItem('arcade_crt_quality'))));
+            window.dispatchEvent(new Event('arcade-settings-change'));
+            this.updateMenu();
+        } else if (opt === 'CRT OVERSCAN') {
+            localStorage.setItem('arcade_crt_overscan', nextCrtOverscan(parseCrtOverscan(localStorage.getItem('arcade_crt_overscan'))).toString());
+            window.dispatchEvent(new Event('arcade-settings-change'));
+            this.updateMenu();
+        } else if (opt === 'SCANLINE PHASE') {
+            localStorage.setItem('arcade_crt_scanline_phase', nextCrtScanlinePhase(parseCrtScanlinePhase(localStorage.getItem('arcade_crt_scanline_phase'))).toString());
             window.dispatchEvent(new Event('arcade-settings-change'));
             this.updateMenu();
         } else if (opt === 'DISPLAY ASPECT') {

@@ -1,6 +1,7 @@
 ## [Unreleased]
 
 ### Added
+- Add v2.1 CRT calibration with source-row-stable scanlines, gamma-aware phosphor response, bounded overscan, linked-program caching, adaptive quality controls, and persistent Cabinet Control settings.
 - Add the v2.1 P0 performance baseline with bounded runtime sampling, representative scene budgets, persistent telemetry controls, and reproducible bundle-size validation.
 - Add the prioritized v2.1.0 roadmap for performance baselines, advanced CRT calibration, procedural cabinets, remappable Gamepad and optional WebHID input, and audio scheduling optimization.
 - Add staged rebranding release notes with architecture highlights and direct links to authentic gameplay captures.
