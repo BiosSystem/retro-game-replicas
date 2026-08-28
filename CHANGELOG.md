@@ -1,6 +1,7 @@
 ## [Unreleased]
 
 ### Added
+- Add the v2.1 P0 performance baseline with bounded runtime sampling, representative scene budgets, persistent telemetry controls, and reproducible bundle-size validation.
 - Add the prioritized v2.1.0 roadmap for performance baselines, advanced CRT calibration, procedural cabinets, remappable Gamepad and optional WebHID input, and audio scheduling optimization.
 - Add staged rebranding release notes with architecture highlights and direct links to authentic gameplay captures.
 - Add a README gallery captured directly from the current lobby, Neon Vector, Tetris Pulse, Neon Cyber-Caster, Neon Danmaku, and Neon Epoch runtime surfaces.

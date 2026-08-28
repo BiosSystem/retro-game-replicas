@@ -7,6 +7,7 @@ import { ReplayRuntime } from './replay/ReplayRuntime';
 import { CrtShaderPipeline, parseCrtPreset } from './graphics/CrtShaderPipeline';
 import { DisplayScaler, parseDisplayAspect } from './graphics/DisplayScaler';
 import type { QualityTier } from '../graphics/PooledParticleSystem';
+import { PerformanceBaselineMonitor } from './PerformanceBaseline';
 
 const OVERLAY_SCENES = new Set(['PauseScene', 'SettingsScene', 'NameEntryScene', 'AchievementsScene', 'GameOverScene']);
 
@@ -18,6 +19,7 @@ export class ArcadeRuntime {
   private startPressed = false;
   private readonly quality = new AdaptiveQualityController();
   private readonly telemetry = new FrameTelemetry();
+  private readonly baseline = new PerformanceBaselineMonitor();
   private readonly telemetryHud: TelemetryHud | null;
   private readonly crt: CrtShaderPipeline;
   private readonly displayScaler: DisplayScaler;
@@ -39,6 +41,7 @@ export class ArcadeRuntime {
     this.bindVisibility();
     this.bindInputStatus();
     this.bindKeyboardPause();
+    this.bindPerformanceSignals();
     window.addEventListener('arcade-settings-change', () => this.applyPreferences());
     this.frameRequest = requestAnimationFrame(this.measureFrames);
   }
@@ -46,7 +49,9 @@ export class ArcadeRuntime {
   private measureFrames = (time: number) => {
     this.telemetry.record(time - this.lastFrameAt);
     this.lastFrameAt = time;
+    const inputStarted = performance.now();
     InputManager.update(time);
+    this.baseline.recordInputPoll(performance.now() - inputStarted);
     this.replay.sample();
     this.pollGamepadPause();
     this.frameCount += 1;
@@ -58,7 +63,7 @@ export class ArcadeRuntime {
       this.setText('runtime-fps', `${fps} FPS`);
       document.documentElement.dataset.quality = tier.toLowerCase();
       document.documentElement.style.setProperty('--adaptive-resolution', this.quality.resolutionScale.toString());
-      const snapshot = this.telemetry.snapshot();
+      const snapshot = this.baseline.snapshot(this.telemetry.snapshot(), this.activeGameScene()?.scene.key ?? 'LobbyScene');
       this.telemetryHud?.update(snapshot, tier, this.game.scene.getScenes(true).length);
       this.frameCount = 0;
       this.sampleStarted = time;
@@ -93,6 +98,13 @@ export class ArcadeRuntime {
     if ('ontouchstart' in window) this.setText('runtime-input', 'TOUCH');
   }
 
+  private bindPerformanceSignals() {
+    const recordInput = (event: Event) => this.baseline.recordInputEvent(event.timeStamp, performance.now());
+    window.addEventListener('keydown', recordInput, true);
+    window.addEventListener('pointerdown', recordInput, true);
+    window.addEventListener('arcade-audio-underrun', () => this.baseline.recordAudioUnderrun());
+  }
+
   private bindKeyboardPause() {
     window.addEventListener('keydown', event => {
       if (event.code !== 'Escape' || event.repeat) return;
@@ -123,6 +135,7 @@ export class ArcadeRuntime {
     document.documentElement.classList.toggle('motion-reduced', localStorage.getItem('arcade_reduced_motion') === 'true');
     document.documentElement.dataset.cabinetTheme = preferences.theme.toLowerCase();
     this.reducedMotion = localStorage.getItem('arcade_reduced_motion') === 'true' || matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.telemetryHud?.setVisible(localStorage.getItem('arcade_telemetry') === 'true');
   }
 
   private setText(id: string, value: string) {
