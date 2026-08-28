@@ -24,6 +24,8 @@ Run the Cargo command only when Rust is installed. Build native desktop packages
 
 ## Add a game module
 
+Follow the complete [Add a Game](Adding-Games.md) checklist. Keep these registration rules synchronized:
+
 1. Create a scene under `src/games/<game>/`, or use `src/scenes/` only for a foundational cabinet-style replica.
 2. Keep deterministic game rules and testable systems in a sibling `*Systems.ts` module. Add a matching Vitest file when the rules are nontrivial.
 3. Register a lazy loader in `src/sceneRegistry.ts`.

@@ -13,6 +13,7 @@ BiosSystem Neon Arcade uses a TypeScript and Phaser 4 frontend wrapped by a mini
 | Save states and peer claims | IndexedDB with bounded fallbacks |
 | Offline delivery | Content-versioned service worker and web app manifest |
 | Verification | Vitest plus Playwright Chromium, Firefox, and WebKit gates |
+| Cabinet UI | Generated Nine Slice panels, shared HUD frames, and deterministic local profiles |
 
 ## Scene lifecycle
 
@@ -27,6 +28,12 @@ Poll keyboard and gamepads once per animation frame through the shared input lay
 ## Rendering
 
 Render gameplay at 640x480 with pixel-art sampling. Wrap the source with an optional WebGL CRT output surface. Keep 4:3 and 16:9 frame calculations separate from gameplay coordinates. Generate sprites, previews, particles, levels, shaders, and visual effects from code.
+
+Generate one shared Nine Slice panel texture per Phaser texture manager. Use the WebGL Nine Slice object when available and retain the Canvas rectangle fallback. Reuse `ArcadeHud` for featured-game score, stage, combo, health, and status values without allocating display objects each frame.
+
+## Player profile
+
+Store one sanitized player name and deterministic avatar seed under `bios_arcade_profile_v1`. Generate the pixel avatar locally and reuse it in the lobby, Profile scene, Name Entry, and leaderboard. Keep profile rendering independent from remote image services and account systems.
 
 ## Audio
 

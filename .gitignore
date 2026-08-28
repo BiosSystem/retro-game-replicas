@@ -26,4 +26,8 @@ playwright-report
 *.sln
 *.sw?
 
+# Local workspace notes
 docs/local/
+.workspace/
+*.private.md
+LOCAL_NOTES.md

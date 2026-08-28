@@ -5,16 +5,18 @@ Use these references when extending the project:
 - [Architecture and Game Engine](Game-Engine.md)
 - [Current Runtime Architecture](ARCHITECTURE.md)
 - [Developer How-To](WIKI_HOWTO.md)
+- [Add a Game](Adding-Games.md)
 - [Engine Overhaul Contracts](ENGINE_OVERHAUL.md)
-- [Adding a New Game](Adding-Games.md)
+- [v2.1 Roadmap](ROADMAP.md)
 - [CRT Shader Pipeline](CRT-Shader.md)
 - [Modding](MODDING.md)
 - [Open Source Research](OPEN_SOURCE_RESEARCH.md)
+- [Attribution and Licenses](ATTRIBUTIONS.md)
 
 ## Project structure
 
 ```text
-biossystem-neon-arcade/  # Product name. Keep the GitHub repository slug unchanged.
+retro-game-replicas/   # Repository checkout for BiosSystem Neon Arcade
 |- build/              Production bundle and release configuration
 |- docs/               Architecture and contributor references
 |- public/             Manifest icons and static shell resources
@@ -37,3 +39,5 @@ biossystem-neon-arcade/  # Product name. Keep the GitHub repository slug unchang
 ```
 
 Run `npm ci`, then use the scripts declared in `package.json`. Keep generated assets procedural and preserve capability fallbacks for browsers without advanced APIs.
+
+Open Player Profile with P or the west controller button. Store the bounded name and deterministic avatar seed locally. Reuse the generated identity in the lobby, score entry, and leaderboard without downloading profile imagery.

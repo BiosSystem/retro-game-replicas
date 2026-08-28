@@ -48,6 +48,7 @@ Open the Vite address printed by the development server. Build and verify the pr
 npm run lint
 npm test
 npm run build
+npm run baseline
 npm run test:regression
 npm run test:cross-browser
 ```
@@ -68,6 +69,7 @@ npm run tauri build
 | Runtime | Phaser 4, TypeScript, Vite, lazy game-scene loading, fixed 60 Hz Arcade Physics |
 | Input | Keyboard, touch, Xbox, PlayStation, generic controllers, local Player 1 and Player 2 actions |
 | Game flow | Difficulty selection, solo and supported local multiplayer modes, pause, restart, shared Game Over, high-score entry, achievements |
+| Cabinet UI | Generated Nine Slice panels, animated controls, deterministic local player profiles, procedural avatars, and shared HUD frames |
 | Rendering | 640x480 pixel-art canvas, integer 4:3 or 16:9 framing, CRT presets, generated Nine Slice UI, procedural avatars, backgrounds, particles, and effects |
 | Audio | Web Audio chiptune tracker, generated effects, spatial cabinet audio, optional AudioWorklet and Wasm DSP paths |
 | Persistence | Local score ledgers, preferences, deterministic replays, IndexedDB Neon Epoch save states, generated save previews |
@@ -95,6 +97,10 @@ Generate gameplay graphics, sprites, particles, previews, levels, worlds, music,
 
 The latest production build contains 191 modules, a 119.10 kB initial bootstrap bundle, a deferred 1,352.40 kB Phaser runtime chunk, and no downloaded UI or avatar asset payload.
 
+## Verification status
+
+The current v2.1 development candidate passes TypeScript analysis, 287 Vitest checks across 99 files, 57 Chromium gameplay and visual regressions, Firefox and WebKit smoke coverage, the production bundle budget, the hardened container validation, and the locked Tauri test profile. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the latest hosted result.
+
 ## Fun Zone container hosting
 
 Build the web app as a dedicated origin. Keep it at the origin root because the PWA and service worker use root-relative paths.
@@ -110,7 +116,9 @@ The tracked Compose template binds only to loopback, uses an unprivileged read-o
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
+- [Roadmap](docs/ROADMAP.md)
 - [Developer how-to](docs/WIKI_HOWTO.md)
+- [Add a game](docs/Adding-Games.md)
 - [Contributing](CONTRIBUTING.md)
 - [Engine contracts and measured subsystem notes](docs/ENGINE_OVERHAUL.md)
 - [Attribution and license register](docs/ATTRIBUTIONS.md)

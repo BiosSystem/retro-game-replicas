@@ -9,6 +9,8 @@ Use this document as the concise architecture, deployment, and security overview
 - Sample keyboard, touch, gamepad, and optional network input through shared managers once per animation frame.
 - Route controller menu actions and keyboard Escape through common overlay contracts. Close a visible marked DOM utility panel before Pause, preserve the source scene payload through Pause Restart, and let Phaser foreground overlays retain their own close actions.
 - Render the 640x480 game canvas into an optional WebGL CRT output surface and scale both through the same display frame.
+- Render cabinet overlays with generated Nine Slice panels and reuse the shared HUD contract in featured games.
+- Keep the player name and deterministic pixel avatar seed in bounded local storage and generate every profile image on-device.
 - Generate graphics, stages, previews, particles, and audio at runtime.
 - Package the production frontend inside a minimal Tauri v2 shell with only `core:default` permissions and an unprivileged Nginx container option.
 
@@ -19,6 +21,7 @@ The Rust shell exposes no custom IPC commands and performs no filesystem score a
 - Provide 26 built-in games plus the generated Meta-Arcade hall.
 - Support solo, cooperative, competitive, relay, keyboard, touch, and gamepad play where each scene permits it.
 - Provide four CRT presets, selectable 4:3 or 16:9 frames, and adaptive visual quality.
+- Provide generated cabinet panels, animated controls, local player profiles, procedural avatars, and shared featured-game HUDs.
 - Provide generated chiptune, effects, spatial audio, and capability-gated AudioWorklet processing.
 - Provide local-first leaderboards, manual direct-peer netplay, signed peer-score gossip, replay validation, save states, and offline PWA operation.
 - Provide declarative signed mods without executing community JavaScript.
