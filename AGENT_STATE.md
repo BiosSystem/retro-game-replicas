@@ -1,12 +1,16 @@
 # AGENT_STATE: Retro Game Project
 
 ## Current Objective & Milestone
-- Active Task: V2_1_DEVELOPMENT_CYCLE - Establish the performance baseline, then deliver CRT, cabinet, input mapping, and audio optimization milestones in priority order.
+- Active Task: V2_1_DEVELOPMENT_CYCLE - Complete P0 bounded runtime and bundle performance baselines, then advance to P1 CRT calibration after merge.
 - Target Status: In-Progress
 - Default Target Branch: `master`
 - Feature Branch Pattern: `feat/v2.1-<system>`
 
 ## Verified Working Systems & Mechanics (Do NOT Break/Repeat)
+- [x] The v2.1 P0 profiler measures frame timing, input event latency, InputManager polling cost, heap peak, and audio-underrun signals through bounded rings without changing deterministic game state. It classifies representative scenes into low, medium, and high-load budgets and reports PASS or WARN through the runtime HUD. Verified by: four targeted PerformanceBaseline tests and TypeScript static analysis.
+- [x] Cabinet Control persists the Telemetry toggle and renders the active load class, budget state, input metrics, audio underruns, and heap state. The `B-I-O-S` keyboard sequence remains available. Verified by: focused Chromium settings integration and the complete browser matrix.
+- [x] The reproducible production baseline passes with 69 generated files, 1,841,094 total bytes, a 109,619-byte bootstrap, and a 1,352,405-byte deferred Phaser runtime. Verified by: `npm run baseline` and fixed byte budgets.
+- [x] The P0 feature branch passes TypeScript analysis, 282 Vitest tests across 97 files, 55 Chromium gameplay and visual regressions, and the complete locked Cargo test profile. Verified by: local release commands against the production bundle.
 - [x] The v2.0.0 tag workflow passed source validation, Chromium regression, Firefox and WebKit smoke coverage, container security checks, locked Tauri analysis, GHCR publication, and Linux, Windows, and macOS packaging. The release contains AppImage, DEB, RPM, EXE, MSI, DMG, and macOS app archive assets. Verified by: GitHub Actions run `33162206545` and the final seven-asset GitHub release inventory.
 - [x] Remove obsolete one-off patch scripts after confirming they contain broad migration replacements for already completed Gamepad and ledger work. Keep no ignore rule or archived copy because neither script is a safe recurring utility. Verified by: source inspection and completely clean working-tree check.
 - [x] Pull Request #14 merged into `master` at `f6ca2fb` with administrator authorization, its feature branch was deleted remotely, and the complete rebranding documentation sweep is live. Verified by: GitHub pull request state, remote branch pruning, and local default-branch synchronization.
@@ -37,6 +41,9 @@
 - [x] Local release baseline passes with 278 Vitest tests across 96 files, 44 Chromium workflows, six Firefox and WebKit smoke workflows, lint, TypeScript build, and zero high-severity npm audit findings. Verify new browser mechanics with focused regressions before the next full release matrix.
 
 ## Failed Attempts & Discarded Implementations
+- [!] Attempt: Traverse the Windows production bundle with `URL.pathname` as a filesystem path.
+  - Failure: Node resolved the decoded pathname as `D:\\D:\\...\\dist` and the baseline script failed with `ENOENT` after a successful build.
+  - Reason Abandoned: Convert the file URL through `fileURLToPath` before passing it to filesystem and path APIs.
 - [!] Attempt: Query the published GHCR package version directly through the current GitHub CLI token.
   - Failure: The GitHub Packages API returned HTTP 403 because the token lacks the `read:packages` scope.
   - Reason Abandoned: Trust the successful authenticated GHCR build-and-push job and its explicit `latest` and `v2.0.0` tag configuration. Do not broaden token scopes solely for a redundant read check.
@@ -75,7 +82,7 @@
   - Reason Abandoned: Quote the exclusion pattern in the package script so PowerShell and POSIX shells pass the same literal Vitest option.
 
 ## Active Architecture & Engine Hypothesis
-- Current Approach: Use the published v2.0.0 behavior and performance profile as the stable baseline. Target protected `master` through focused v2.1 feature branches. Measure before optimizing, extend the existing CRT, InputManager, procedural scene, and Web Audio contracts, retain deterministic fallbacks, and deliver each priority through unit, browser, container, and locked Cargo gates.
+- Current Approach: Use the published v2.0.0 behavior as the stable baseline. Sample frame timing, input event delay, InputManager polling cost, heap peak, and audio-underrun events through fixed-capacity rings outside deterministic gameplay. Classify active scenes into low, medium, and high-load budgets, expose telemetry visibility through Cabinet Control, enforce production bundle budgets, and keep rendering, input, audio, and game-state ownership separated.
 
 ## Engine & Asset Registry
 - Target Framework/Engine: Phaser 4, TypeScript, Vite, WebGL canvas post-processing, Web Audio API, WebAssembly, and IndexedDB.

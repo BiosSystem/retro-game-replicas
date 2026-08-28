@@ -67,6 +67,8 @@ Use typed arrays, fixed-capacity rings, pooled particles, bounded ECS storage, a
 
 Profile gameplay with the built-in telemetry overlay, then run the benchmark and test commands defined in `package.json`. Treat capability-gated compute paths as optimizations, not required runtime dependencies.
 
+`PerformanceBaselineMonitor` enriches the fixed-capacity frame ring with bounded input event, input polling, heap peak, and audio-underrun measurements. It classifies active scenes into low, medium, or high-load budgets without modifying simulation state. Cabinet Control persists telemetry visibility, while the `B-I-O-S` sequence remains available for temporary inspection. Run `npm run baseline` to rebuild the production distribution and enforce bundle-size budgets.
+
 ## State machines and storage
 
 The lobby manages game selection, difficulty selection, and supported local arcade modes. Every game can invoke shared Pause and Game Over utilities. Restart copies the source launch payload so difficulty and mode survive. Keyboard Escape closes a visible utility panel first, opens Pause during active play, and retains overlay-specific close behavior.

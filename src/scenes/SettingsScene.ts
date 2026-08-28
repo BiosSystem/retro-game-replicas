@@ -9,7 +9,7 @@ import { readGamepadMenuInput, type GamepadMenuState } from '../engine/input/Gam
 
 export default class SettingsScene extends Phaser.Scene {
     private sourceScene!: string;
-    private options = ['RESUME', 'FULLSCREEN', 'CABINET THEME', 'REBIND FIRE', 'CRT PRESET', 'DISPLAY ASPECT', 'REDUCE MOTION', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
+    private options = ['RESUME', 'FULLSCREEN', 'CABINET THEME', 'REBIND FIRE', 'CRT PRESET', 'DISPLAY ASPECT', 'TELEMETRY', 'REDUCE MOTION', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
     private fullscreen: FullscreenController | null = null;
@@ -43,7 +43,7 @@ export default class SettingsScene extends Phaser.Scene {
         this.menuItems = [];
 
         this.options.forEach((opt, idx) => {
-            const y = 128 + (idx * 31);
+            const y = 112 + (idx * 27);
             const text = this.add.text(320, y, opt, {
                 fontFamily: "'Share Tech Mono', Courier",
                 fontSize: '20px',
@@ -100,6 +100,7 @@ export default class SettingsScene extends Phaser.Scene {
         if (option === 'REBIND FIRE') return `${option}: ${preferences.bindings.FIRE[0]}`;
         if (option === 'CRT PRESET') return `${option}: ${CRT_PRESETS[this.currentCrtPreset()].label.toUpperCase()}`;
         if (option === 'DISPLAY ASPECT') return `${option}: ${parseDisplayAspect(localStorage.getItem('arcade_display_aspect'))}`;
+        if (option === 'TELEMETRY') return `${option}: ${localStorage.getItem('arcade_telemetry') === 'true' ? 'ON' : 'OFF'}`;
         if (option === 'REDUCE MOTION') return `${option}: ${localStorage.getItem('arcade_reduced_motion') === 'true' ? 'ON' : 'OFF'}`;
         return option;
     }
@@ -141,6 +142,11 @@ export default class SettingsScene extends Phaser.Scene {
         } else if (opt === 'REDUCE MOTION') {
             const isEnabled = localStorage.getItem('arcade_reduced_motion') === 'true';
             localStorage.setItem('arcade_reduced_motion', isEnabled ? 'false' : 'true');
+            window.dispatchEvent(new Event('arcade-settings-change'));
+            this.updateMenu();
+        } else if (opt === 'TELEMETRY') {
+            const isEnabled = localStorage.getItem('arcade_telemetry') === 'true';
+            localStorage.setItem('arcade_telemetry', isEnabled ? 'false' : 'true');
             window.dispatchEvent(new Event('arcade-settings-change'));
             this.updateMenu();
         } else if (opt === 'VOLUME +10%') {
