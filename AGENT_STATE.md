@@ -1,10 +1,13 @@
 # AGENT_STATE: Retro Game Project
 
 ## Current Objective & Milestone
-- Active Task: Finalize BiosSystem Neon Arcade documentation, repository metadata, validation, and release staging.
-- Target Status: Completed
+- Active Task: V2_1_DEVELOPMENT_CYCLE - Establish the performance baseline, then deliver CRT, cabinet, input mapping, and audio optimization milestones in priority order.
+- Target Status: In-Progress
+- Default Target Branch: `master`
+- Feature Branch Pattern: `feat/v2.1-<system>`
 
 ## Verified Working Systems & Mechanics (Do NOT Break/Repeat)
+- [x] Remove obsolete one-off patch scripts after confirming they contain broad migration replacements for already completed Gamepad and ledger work. Keep no ignore rule or archived copy because neither script is a safe recurring utility. Verified by: source inspection and completely clean working-tree check.
 - [x] Pull Request #14 merged into `master` at `f6ca2fb` with administrator authorization, its feature branch was deleted remotely, and the complete rebranding documentation sweep is live. Verified by: GitHub pull request state, remote branch pruning, and local default-branch synchronization.
 - [x] BiosSystem Neon Arcade v2.0.0 is published at `https://github.com/BiosSystem/retro-game-replicas/releases/tag/v2.0.0`. The `v2.0.0` tag resolves to merged commit `f6ca2fb` and the release is neither a draft nor a prerelease. Verified by: local tag resolution and GitHub release metadata.
 - [x] The v2.0.0 release commit passes 278 Vitest tests across 96 files and the complete locked Cargo test profile with zero failures. The preceding GitHub gate also passed TypeScript analysis, production build, Chromium regression, Firefox and WebKit smoke coverage, container build and headers, and locked Tauri analysis. Verified by: post-merge local sanity gates and GitHub Actions run `33156017429`.
@@ -68,7 +71,7 @@
   - Reason Abandoned: Quote the exclusion pattern in the package script so PowerShell and POSIX shells pass the same literal Vitest option.
 
 ## Active Architecture & Engine Hypothesis
-- Current Approach: Deliver BiosSystem Neon Arcade from the existing `BiosSystem/retro-game-replicas` repository and GHCR image path. Keep one requestAnimationFrame-owned InputManager snapshot as the authoritative controller source. Let native shared-input scenes consume Player 1 state directly. Capture keyboard Escape in the runtime before scene-local handlers. Close the first visible DOM utility panel marked with `data-arcade-overlay`, block controller Start while such a panel is visible, open shared Pause only over active gameplay, and leave Phaser foreground overlays in control of their own close behavior. Use an owner-scoped synthetic keyboard bridge only for legacy scenes, suspend it for foreground overlays, route every active classic loss path plus edge-safe two-axis menu, name-entry, Game Over, and achievement-overlay actions through shared scene contracts, provide Game Over restart and lobby exit controls, copy source launch data before Pause Restart, and ship the web shell through the loopback-only Compose template.
+- Current Approach: Use the published v2.0.0 behavior and performance profile as the stable baseline. Target protected `master` through focused v2.1 feature branches. Measure before optimizing, extend the existing CRT, InputManager, procedural scene, and Web Audio contracts, retain deterministic fallbacks, and deliver each priority through unit, browser, container, and locked Cargo gates.
 
 ## Engine & Asset Registry
 - Target Framework/Engine: Phaser 4, TypeScript, Vite, WebGL canvas post-processing, Web Audio API, WebAssembly, and IndexedDB.
