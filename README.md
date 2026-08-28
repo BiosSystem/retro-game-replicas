@@ -8,6 +8,29 @@
 
 **BiosSystem Neon Arcade** keeps the existing `BiosSystem/retro-game-replicas` repository slug for continuity. Build original arcade replicas, procedurally generated Neon worlds, and a cabinet-style launcher from one TypeScript codebase.
 
+## Live game gallery
+
+Capture every image below directly from the current production build. Show procedural runtime graphics only, with no mockups, imported ROM art, or third-party game assets.
+
+<p align="center">
+  <img src="docs/images/screenshots/lobby.png" alt="BiosSystem Neon Arcade live game-selection lobby" width="800">
+</p>
+<p align="center"><sub>Browse the complete 27-entry cabinet catalog from the live BiosSystem Neon Arcade lobby.</sub></p>
+
+<table>
+  <tr>
+    <td width="50%" align="center"><img src="docs/images/screenshots/neon-vector.png" alt="Live Neon Vector gameplay with procedural asteroids"><br><sub>Neon Vector - procedural asteroid combat</sub></td>
+    <td width="50%" align="center"><img src="docs/images/screenshots/tetris-pulse.png" alt="Live Tetris Pulse gameplay"><br><sub>Tetris Pulse - classic grid play</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/images/screenshots/neon-cyber-caster.png" alt="Live Neon Cyber-Caster raycasting gameplay"><br><sub>Neon Cyber-Caster - generated DDA dungeon</sub></td>
+    <td width="50%" align="center"><img src="docs/images/screenshots/neon-danmaku.png" alt="Live Neon Danmaku projectile pattern"><br><sub>Neon Danmaku - pooled projectile simulation</sub></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><img src="docs/images/screenshots/neon-epoch.png" alt="Live Neon Epoch procedural volumetric world" width="640"><br><sub>Neon Epoch - procedural volumetric world</sub></td>
+  </tr>
+</table>
+
 ## Quick start
 
 Require Node.js 24 or a compatible current Node runtime.

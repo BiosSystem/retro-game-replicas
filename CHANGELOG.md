@@ -1,6 +1,7 @@
 ## [Unreleased]
 
 ### Added
+- Add a README gallery captured directly from the current lobby, Neon Vector, Tetris Pulse, Neon Cyber-Caster, Neon Danmaku, and Neon Epoch runtime surfaces.
 - Add a loopback-only hardened Compose template for Fun Zone web hosting.
 - Add a user-initiated Fullscreen control to Cabinet Control with standard browser API detection, failure-safe state reporting, and no new dependency or asset.
 - Add normalized controller menu controls for Pause and Cabinet Control. D-pad or left stick navigates, the south face button confirms, and east face button or Select returns.
