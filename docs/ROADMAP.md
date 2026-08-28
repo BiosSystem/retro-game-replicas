@@ -13,6 +13,7 @@ Use `master` as the protected integration target. Create focused branches with t
 | P1 | Additional arcade cabinets | Add two original procedural cabinet scenes through the lazy catalog and shared Pause, Game Over, score, difficulty, input, and audio contracts | Add deterministic systems tests and catalog launch coverage. Use no ROMs, copied art, copied audio, or external asset bloat |
 | P1 | Gamepad and WebHID mapping | Add user-remappable profiles, stick and trigger calibration, controller fingerprint persistence, hot-plug diagnostics, and an optional capability-gated WebHID adapter | Retain the Gamepad API fallback. Require explicit user activation for WebHID. Verify Xbox, PlayStation, generic, keyboard, touch, and dual-player isolation |
 | P2 | Audio engine optimization | Reduce graph churn with reusable nodes, bounded voice allocation, scheduler lookahead tuning, AudioWorklet ring-buffer telemetry, and deterministic suspend and resume behavior | Record underrun and voice-count metrics. Preserve generated audio, autoplay-safe initialization, spatial DSP fallback, and zero steady-state allocation spikes |
+| P2 | Release pipeline maintenance | Track native Node.js 24 action support and remove the forced compatibility path when Docker publication actions adopt it | Keep GHCR `latest` and version tags, all seven native release assets, and the complete release validation matrix intact |
 
 ## Delivery sequence
 

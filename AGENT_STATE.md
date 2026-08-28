@@ -7,6 +7,7 @@
 - Feature Branch Pattern: `feat/v2.1-<system>`
 
 ## Verified Working Systems & Mechanics (Do NOT Break/Repeat)
+- [x] The v2.0.0 tag workflow passed source validation, Chromium regression, Firefox and WebKit smoke coverage, container security checks, locked Tauri analysis, GHCR publication, and Linux, Windows, and macOS packaging. The release contains AppImage, DEB, RPM, EXE, MSI, DMG, and macOS app archive assets. Verified by: GitHub Actions run `33162206545` and the final seven-asset GitHub release inventory.
 - [x] Remove obsolete one-off patch scripts after confirming they contain broad migration replacements for already completed Gamepad and ledger work. Keep no ignore rule or archived copy because neither script is a safe recurring utility. Verified by: source inspection and completely clean working-tree check.
 - [x] Pull Request #14 merged into `master` at `f6ca2fb` with administrator authorization, its feature branch was deleted remotely, and the complete rebranding documentation sweep is live. Verified by: GitHub pull request state, remote branch pruning, and local default-branch synchronization.
 - [x] BiosSystem Neon Arcade v2.0.0 is published at `https://github.com/BiosSystem/retro-game-replicas/releases/tag/v2.0.0`. The `v2.0.0` tag resolves to merged commit `f6ca2fb` and the release is neither a draft nor a prerelease. Verified by: local tag resolution and GitHub release metadata.
@@ -36,6 +37,9 @@
 - [x] Local release baseline passes with 278 Vitest tests across 96 files, 44 Chromium workflows, six Firefox and WebKit smoke workflows, lint, TypeScript build, and zero high-severity npm audit findings. Verify new browser mechanics with focused regressions before the next full release matrix.
 
 ## Failed Attempts & Discarded Implementations
+- [!] Attempt: Query the published GHCR package version directly through the current GitHub CLI token.
+  - Failure: The GitHub Packages API returned HTTP 403 because the token lacks the `read:packages` scope.
+  - Reason Abandoned: Trust the successful authenticated GHCR build-and-push job and its explicit `latest` and `v2.0.0` tag configuration. Do not broaden token scopes solely for a redundant read check.
 - [!] Attempt: Stage a new rebranding draft release using tag `v1.0.0`.
   - Failure: GitHub already contains a published `v1.0.0` release and the current npm and Cargo manifests declare version `2.0.0`.
   - Reason Abandoned: Preserve published release history and wait for explicit authorization to stage the rebranded draft as `v2.0.0` or another unused tag.
