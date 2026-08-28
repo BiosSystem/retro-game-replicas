@@ -54,6 +54,21 @@ export default class NeonExampleScene extends Phaser.Scene {
 }
 ```
 
+## Trace the active catalog
+
+Start with `src/scenes/ArcadeCatalog.ts` when auditing names, order, icons, and public scene keys. Follow each key into `src/sceneRegistry.ts` to find its lazy-loaded implementation. Confirm the featured modules through these mappings:
+
+| Public game | Scene key | Implementation |
+|---|---|---|
+| Neon Vector | `AsteroidsScene` | `src/games/asteroids/NeonAsteroidsScene.ts` |
+| Tetris Pulse | `TetrisScene` | `src/scenes/TetrisScene.ts` |
+| Neon Cyber-Caster | `RaycasterScene` | `src/games/raycaster/NeonCyberCasterScene.ts` |
+| Neon Danmaku | `DanmakuScene` | `src/games/danmaku/NeonDanmakuScene.ts` |
+| Neon Epoch | `EpochScene` | `src/games/epoch/NeonEpochScene.ts` |
+| Meta-Arcade Hall | `MetaArcadeScene` | `src/hub/MetaArcadeScene.ts` |
+
+Do not infer the active implementation from a duplicate legacy filename. Resolve it through the registry and keep the catalog, registry, tests, README, and architecture table synchronized.
+
 ## Bind inputs correctly
 
 Use semantic actions such as `UP`, `DOWN`, `LEFT`, `RIGHT`, and `FIRE` through `InputManager`. The runtime normalizes standard Xbox, PlayStation, and generic layouts every animation frame. Use `MultiInput` and the local multiplayer modules for Player 2 rather than binding raw browser keys inside a shared scene.

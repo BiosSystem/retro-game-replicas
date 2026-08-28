@@ -40,6 +40,21 @@ flowchart LR
 | Networking | Manual WebRTC peers, rollback, signed scores, CRDT and shard contracts | `src/net/`, `src/ui/net/` |
 | Extensibility | Declarative mod validation, signed package handling, visual graph bytecode | `src/mods/`, `src/ui/mods/`, `src/ui/studio/` |
 
+## Featured catalog architecture
+
+The lobby exposes 27 lazy-loaded entries. Treat `src/scenes/ArcadeCatalog.ts` as the display contract and `src/sceneRegistry.ts` as the executable registration contract. Keep every scene key identical across both files.
+
+| Catalog entry | Scene key | Runtime role | Primary systems |
+|---|---|---|---|
+| Neon Vector | `AsteroidsScene` | Procedural vector survival for solo, co-op, and competitive sessions | Infinite stage generation, shared multiplayer session state, weapon and shield pickups, pooled particles, generated vector art |
+| Tetris Pulse | `TetrisScene` | Cabinet puzzle loop with increasing speed and shared overlay integration | Grid collision, line clearing, deterministic scoring, semantic input compatibility, shared Game Over flow |
+| Neon Cyber-Caster | `RaycasterScene` | First-person procedural dungeon combat | Deterministic BSP dungeons, DDA ray casting, sprite projection, bounded collision, generated wall shading |
+| Neon Danmaku | `DanmakuScene` | Adaptive bullet-pattern survival benchmark | Fixed-capacity 100,000-projectile ECS, typed arrays, scripted boss phases, adaptive AI director, render-budget sampling |
+| Neon Epoch | `EpochScene` | Procedural simulation and graphics showcase | Generated Gaussian splat cloud, capability-gated Wasm SIMD physics, procedural weather and fluid state, IndexedDB save slots and autosave |
+| Meta-Arcade Hall | `MetaArcadeScene` | Walkable in-world cabinet hub | Generated hall layout, DDA navigation, cabinet scene routing, spatial audio, bounded optional peer presence |
+
+Load these modules only after selection. Preserve deterministic and browser-safe fallbacks when an optional acceleration path is unavailable.
+
 ## Rendering and assets
 
 Render native play at 640x480 and scale it with integer 4:3 or 16:9 framing when possible. The CRT output pass exposes Clean Pixel, Arcade CRT 1980s, Trinitron 1990s, and Bypass presets. Each controls scanlines, bloom, lens curvature, chromatic aberration, phosphor shadow mask, and vignette.
