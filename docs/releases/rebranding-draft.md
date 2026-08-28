@@ -1,7 +1,5 @@
 # BiosSystem Neon Arcade Rebranding Release
 
-> Draft release notes. Assign an unused version tag before publication. The current manifests declare `2.0.0`, while GitHub already contains a published `v1.0.0` release.
-
 ## Enter BiosSystem Neon Arcade
 
 Rename Retro Gaming Replicas to BiosSystem Neon Arcade. Keep the established `BiosSystem/retro-game-replicas` repository and GHCR paths stable while presenting one consistent product identity across the web runtime, PWA, Tauri desktop package, documentation, and release metadata.
