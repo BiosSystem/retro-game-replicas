@@ -1,7 +1,7 @@
 # AGENT_STATE: Retro Game Project
 
 ## Current Objective & Milestone
-- Active Task: Restore Linux Tauri source validation in the GitHub release gate.
+- Active Task: Publish authentic current-game screenshots in the README.
 - Target Status: Completed
 
 ## Verified Working Systems & Mechanics (Do NOT Break/Repeat)
@@ -18,6 +18,7 @@
 - [x] Public runtime, PWA manifest, Tauri package metadata, release labels, architecture guide, developer how-to, and contribution guide use BiosSystem Neon Arcade while GitHub and GHCR repository paths remain stable. Verified by: lint, 278 Vitest tests, production build, and Chromium offline PWA regression.
 - [x] The npm unit-test command quotes its browser-tree exclusion so POSIX and Windows shells pass the same literal Vitest glob. Verified by: 96 files and 278 Vitest tests through the quoted command.
 - [x] The Linux validation job installs the GTK, WebKitGTK, AppIndicator, and SVG development libraries required by Tauri before locked Cargo analysis. Verified by: failure isolation against the Ubuntu 22.04 runner and parity with the desktop release job dependency set.
+- [x] The README shows a live lobby and five representative game frames captured from the current production build through Phaser's Canvas fallback. Verified by: focused Playwright capture run and visual inspection of every 640x480 output.
 - [x] Fun Zone hosting uses a loopback-only Compose template with read-only root filesystem, dropped capabilities, no-new-privileges, and memory-backed Nginx runtime paths. Verified by: Compose schema review and existing CI container smoke workflow.
 - [x] Overlay suspension releases legacy synthetic keys and restores the active bridge after close. Verified by: Chromium controller pause-menu regression.
 - [x] Production browser shell builds with 186 modules, including responsive cabinet scaling, CRT fallback, IndexedDB save states, offline shell, and local-first leaderboards. Verified by: production build and cross-browser smoke suite.
