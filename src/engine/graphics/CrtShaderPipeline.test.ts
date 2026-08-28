@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { CRT_FRAGMENT_SHADER, CRT_PRESETS, CrtShaderPipeline, compileCrtProgram, effectiveUniforms, nextCrtPreset, parseCrtPreset } from './CrtShaderPipeline';
+import { CRT_FRAGMENT_SHADER, CRT_PRESETS, CrtProgramCache, CrtShaderPipeline, compileCrtProgram, effectiveUniforms, nextCrtOverscan, nextCrtPreset, nextCrtQuality, nextCrtScanlinePhase, parseCrtOverscan, parseCrtPreset, parseCrtQuality, parseCrtScanlinePhase, sanitizeCrtCalibration } from './CrtShaderPipeline';
 
 describe('WebGL CRT shader pipeline', () => {
   it('exposes four bounded runtime presets', () => {
@@ -11,9 +11,38 @@ describe('WebGL CRT shader pipeline', () => {
   });
 
   it('keeps every requested post-process stage uniform-driven', () => {
-    for (const uniform of ['uScanlineIntensity', 'uBloomIntensity', 'uCurvature', 'uAberrationPixels', 'uShadowMaskIntensity', 'uVignetteIntensity']) expect(CRT_FRAGMENT_SHADER).toContain(uniform);
+    for (const uniform of ['uScanlineIntensity', 'uBloomIntensity', 'uCurvature', 'uAberrationPixels', 'uShadowMaskIntensity', 'uVignetteIntensity', 'uGamma', 'uOverscan', 'uScanlinePhase']) expect(CRT_FRAGMENT_SHADER).toContain(uniform);
     expect(CRT_FRAGMENT_SHADER).toContain('gl_FragCoord.x');
     expect(CRT_FRAGMENT_SHADER).toContain('texture2D');
+    expect(CRT_FRAGMENT_SHADER).toContain('floor(uv.y * uResolution.y)');
+    expect(CRT_FRAGMENT_SHADER).not.toContain('uTime *');
+  });
+
+  it('bounds persistent quality, overscan, and stable scanline phase controls', () => {
+    expect(parseCrtQuality('invalid')).toBe('AUTO');
+    expect(nextCrtQuality('LOW')).toBe('AUTO');
+    expect(parseCrtOverscan('9')).toBe(.08);
+    expect(nextCrtOverscan(.08)).toBe(0);
+    expect(parseCrtScanlinePhase('9')).toBe(.75);
+    expect(nextCrtScanlinePhase(.75)).toBe(0);
+    expect(sanitizeCrtCalibration({ overscan: -1, scanlinePhase: Number.NaN })).toEqual({ overscan: 0, scanlinePhase: 0 });
+  });
+
+  it('compiles identical shader sources once per WebGL context', () => {
+    const shader = {} as WebGLShader; const program = {} as WebGLProgram;
+    const gl = {
+      VERTEX_SHADER: 1, FRAGMENT_SHADER: 2, COMPILE_STATUS: 3, LINK_STATUS: 4,
+      createShader: vi.fn(() => shader), shaderSource: vi.fn(), compileShader: vi.fn(), getShaderParameter: vi.fn(() => true), deleteShader: vi.fn(),
+      createProgram: vi.fn(() => program), attachShader: vi.fn(), linkProgram: vi.fn(), getProgramParameter: vi.fn(() => true), deleteProgram: vi.fn(),
+    } as unknown as WebGLRenderingContext;
+    const before = CrtProgramCache.compileCount;
+    expect(CrtProgramCache.acquire(gl, 'vertex-cache', 'fragment-cache')).toBe(program);
+    expect(CrtProgramCache.acquire(gl, 'vertex-cache', 'fragment-cache')).toBe(program);
+    expect(gl.createProgram).toHaveBeenCalledTimes(1);
+    expect(CrtProgramCache.compileCount).toBe(before + 1);
+    CrtProgramCache.release(gl, 'vertex-cache', 'fragment-cache');
+    CrtProgramCache.invalidate(gl);
+    expect(gl.deleteProgram).toHaveBeenCalledWith(program);
   });
 
   it('reduces expensive uniforms under adaptive quality pressure', () => {

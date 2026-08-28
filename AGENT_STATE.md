@@ -1,13 +1,18 @@
 # AGENT_STATE: Retro Game Project
 
 ## Current Objective & Milestone
-- Active Task: V2_1_DEVELOPMENT_CYCLE - Complete P0 bounded runtime and bundle performance baselines, then advance to P1 CRT calibration after merge.
-- Target Status: In-Progress
+- Active Task: V2_1_DEVELOPMENT_CYCLE - Package the verified P1 advanced CRT calibration milestone from `feat/v2.1-crt-calibration`.
+- Target Status: Completed
 - Default Target Branch: `master`
 - Feature Branch Pattern: `feat/v2.1-<system>`
-- Active Pull Request: `https://github.com/BiosSystem/retro-game-replicas/pull/16`
+- Active Pull Request: Pending creation from `feat/v2.1-crt-calibration`.
 
 ## Verified Working Systems & Mechanics (Do NOT Break/Repeat)
+- [x] Pull Request #16 merged into `master` at `e125297` with administrator authorization and its feature branch was deleted remotely. Verified by: GitHub pull request state, remote branch pruning, and local default-branch synchronization.
+- [x] The presentation-only CRT pass supports source-row-stable scanlines, gamma-aware phosphor response, 0% through 8% overscan calibration, four scanline phases, and per-context linked-program reuse without affecting deterministic game state. Verified by: seven targeted CRT tests and the complete Chromium rendering matrix.
+- [x] Cabinet Control persists CRT AUTO, HIGH, MEDIUM, and LOW quality preferences plus overscan and scanline phase. AUTO consumes the P0 adaptive runtime tier while fixed modes support repeatable profiling. Verified by: Cabinet Control persistence coverage and runtime DOM diagnostics.
+- [x] The P1 production baseline passes with 69 generated files, 1,844,715 total bytes, a 113,240-byte bootstrap, and a 1,352,405-byte deferred Phaser runtime. The WebGL CRT CPU submission mean measured 0.0642 ms under the complete browser run. Verified by: `npm run baseline` and Chromium telemetry output.
+- [x] The P1 feature branch passes TypeScript analysis, 284 Vitest tests across 97 files, 56 Chromium gameplay and visual regressions, the production build, and the complete locked Cargo test profile. Verified by: local release commands against the production bundle.
 - [x] The v2.1 P0 profiler measures frame timing, input event latency, InputManager polling cost, heap peak, and audio-underrun signals through bounded rings without changing deterministic game state. It classifies representative scenes into low, medium, and high-load budgets and reports PASS or WARN through the runtime HUD. Verified by: four targeted PerformanceBaseline tests and TypeScript static analysis.
 - [x] Cabinet Control persists the Telemetry toggle and renders the active load class, budget state, input metrics, audio underruns, and heap state. The `B-I-O-S` keyboard sequence remains available. Verified by: focused Chromium settings integration and the complete browser matrix.
 - [x] The reproducible production baseline passes with 69 generated files, 1,841,094 total bytes, a 109,619-byte bootstrap, and a 1,352,405-byte deferred Phaser runtime. Verified by: `npm run baseline` and fixed byte budgets.
@@ -42,6 +47,9 @@
 - [x] Local release baseline passes with 278 Vitest tests across 96 files, 44 Chromium workflows, six Firefox and WebKit smoke workflows, lint, TypeScript build, and zero high-severity npm audit findings. Verify new browser mechanics with focused regressions before the next full release matrix.
 
 ## Failed Attempts & Discarded Implementations
+- [!] Attempt: Publish the first CRT CPU submission metric only after a complete 60-frame sample window.
+  - Failure: A full-catalog Chromium run initialized and compiled the CRT surface but reached the five-second readiness deadline before the rolling metric appeared.
+  - Reason Abandoned: Publish the first valid sample immediately for readiness diagnostics, then retain the 60-frame rolling average for steady-state profiling without per-frame DOM writes.
 - [!] Attempt: Traverse the Windows production bundle with `URL.pathname` as a filesystem path.
   - Failure: Node resolved the decoded pathname as `D:\\D:\\...\\dist` and the baseline script failed with `ENOENT` after a successful build.
   - Reason Abandoned: Convert the file URL through `fileURLToPath` before passing it to filesystem and path APIs.
@@ -83,9 +91,9 @@
   - Reason Abandoned: Quote the exclusion pattern in the package script so PowerShell and POSIX shells pass the same literal Vitest option.
 
 ## Active Architecture & Engine Hypothesis
-- Current Approach: Use the published v2.0.0 behavior as the stable baseline. Sample frame timing, input event delay, InputManager polling cost, heap peak, and audio-underrun events through fixed-capacity rings outside deterministic gameplay. Classify active scenes into low, medium, and high-load budgets, expose telemetry visibility through Cabinet Control, enforce production bundle budgets, and keep rendering, input, audio, and game-state ownership separated.
+- Current Approach: Keep the verified P0 telemetry and P1 presentation-only CRT contracts stable. Advance next to persistent input profile calibration and preserve the Gamepad API fallback before adding an explicitly activated optional WebHID adapter.
 
 ## Engine & Asset Registry
 - Target Framework/Engine: Phaser 4, TypeScript, Vite, WebGL canvas post-processing, Web Audio API, WebAssembly, and IndexedDB.
 - Asset Pipelines: Procedural canvas graphics, generated shader effects, Web Audio synthesis, generated procedural levels, no imported third-party game assets.
-- Performance Baseline: Target 60 FPS with valid high-refresh deltas preserved, 50 ms maximum frame delta, strict integer 640x480 display scaling where possible, 186 production modules, a 106.55 kB initial bootstrap, and a deferred 1,352.40 kB Phaser runtime.
+- Performance Baseline: Target 60 FPS with valid high-refresh deltas preserved, 50 ms maximum frame delta, strict integer 640x480 display scaling where possible, 187 production modules, a 113.24 kB initial bootstrap, a deferred 1,352.40 kB Phaser runtime, and a measured 0.0642 ms CRT CPU submission mean.

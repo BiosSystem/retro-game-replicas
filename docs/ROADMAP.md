@@ -6,11 +6,11 @@ Use `master` as the protected integration target. Create focused branches with t
 
 ## Active milestone
 
-- Workstream: P0 Baseline and telemetry
-- Branch: `feat/v2.1-performance-baseline`
+- Workstream: P1 Advanced CRT and scanline pipeline
+- Branch: `feat/v2.1-crt-calibration`
 - Status: Implemented and verified
-- Scope: Runtime measurement, persistent telemetry control, representative load budgets, and reproducible bundle validation
-- Boundary: Keep rendering, audio, input, and deterministic game-state implementations unchanged while observing their runtime cost
+- Scope: Stable scanline phase, gamma-aware phosphor response, overscan calibration, shader program caching, and adaptive quality controls
+- Boundary: Keep the CRT as a presentation-only pass and observe its cost through the P0 telemetry and bundle budgets
 
 ## Prioritized engineering queue
 
@@ -26,7 +26,7 @@ Use `master` as the protected integration target. Create focused branches with t
 ## Delivery sequence
 
 1. Establish the P0 benchmark baseline and publish the measurement protocol. Completed on `feat/v2.1-performance-baseline`.
-2. Implement CRT calibration and shader-cache improvements behind existing runtime presets.
+2. Implement CRT calibration and shader-cache improvements behind existing runtime presets. Completed on `feat/v2.1-crt-calibration` with 284 Vitest tests, 56 Chromium regressions, locked Cargo validation, and a 0.0642 ms measured CRT CPU submission mean.
 3. Implement input profile persistence and calibration before enabling the optional WebHID adapter.
 4. Add each new cabinet as an isolated scene milestone with its own deterministic rule module.
 5. Optimize the audio scheduler only after collecting baseline underrun and allocation evidence.
