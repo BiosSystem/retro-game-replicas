@@ -4,6 +4,14 @@
 
 Use `master` as the protected integration target. Create focused branches with the `feat/v2.1-<system>` or `fix/v2.1-<system>` pattern. Preserve the v2.0.0 release commit as the performance and behavior baseline.
 
+## Active milestone
+
+- Workstream: P0 Baseline and telemetry
+- Branch: `feat/v2.1-performance-baseline`
+- Status: Implemented and verified
+- Scope: Runtime measurement, persistent telemetry control, representative load budgets, and reproducible bundle validation
+- Boundary: Keep rendering, audio, input, and deterministic game-state implementations unchanged while observing their runtime cost
+
 ## Prioritized engineering queue
 
 | Priority | Workstream | Planned outcome | Acceptance gate |
@@ -17,7 +25,7 @@ Use `master` as the protected integration target. Create focused branches with t
 
 ## Delivery sequence
 
-1. Establish the P0 benchmark baseline and publish the measurement protocol.
+1. Establish the P0 benchmark baseline and publish the measurement protocol. Completed on `feat/v2.1-performance-baseline`.
 2. Implement CRT calibration and shader-cache improvements behind existing runtime presets.
 3. Implement input profile persistence and calibration before enabling the optional WebHID adapter.
 4. Add each new cabinet as an isolated scene milestone with its own deterministic rule module.

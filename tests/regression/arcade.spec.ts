@@ -24,6 +24,24 @@ test('expose the user-initiated fullscreen cabinet control', async ({ page }) =>
   })).toMatch(/^FULLSCREEN: (READY|UNAVAILABLE)$/);
 });
 
+test('persist and render the performance baseline telemetry control', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#app canvas').first().waitFor();
+  await page.evaluate(() => {
+    const game = (window as typeof window & { game: { scene: { start(key: string, data: unknown): void; getScene(key: string): unknown } } }).game;
+    game.scene.start('SettingsScene', { scene: 'LobbyScene' });
+    const settings = game.scene.getScene('SettingsScene') as { selectedIndex: number; selectOption(): void };
+    settings.selectedIndex = 6;
+    settings.selectOption();
+  });
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('arcade_telemetry'))).toBe('true');
+  const telemetry = page.locator('#runtime-telemetry');
+  await expect(telemetry).toBeVisible();
+  await expect(telemetry).toContainText('BASELINE LOW');
+  await expect(telemetry).toContainText('INPUT EVENT');
+  await expect(telemetry).toContainText('AUDIO XRUN');
+});
+
 test('launch the generated Neon Retro Racer scene', async ({ page }) => { await page.goto('/'); await page.locator('#app canvas').first().waitFor(); await page.evaluate(() => { const lobby = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { updateGameSelection(change: number): void; handleSpace(): void }; for (let index = 0; index < 11; index++) lobby.updateGameSelection(1); lobby.handleSpace(); }); await page.waitForTimeout(250); await page.evaluate(() => ((window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { handleSpace(): void }).handleSpace()); await expect.poll(() => page.evaluate(() => Boolean((window as typeof window & { game?: { scene: { isActive(key: string): boolean } } }).game?.scene.isActive('RacerScene'))), { timeout: 10000 }).toBe(true); });
 
 test('render the WebGL CRT surface inside a 16:9 integer frame', async ({ page }) => {

@@ -1,3 +1,5 @@
+import type { PerformanceSnapshot } from './PerformanceBaseline';
+
 export interface TelemetrySnapshot { fps: number; meanFrameMs: number; p95FrameMs: number; droppedFramePercent: number; samples: number; }
 
 export class FrameTelemetry {
@@ -28,13 +30,9 @@ export class TelemetryHud {
       if (this.sequence === 'BIOS') this.setVisible(!this.visible);
     });
   }
-  update(snapshot: TelemetrySnapshot, quality: string, sceneCount: number) {
-    this.root.textContent = `BIOS RUNTIME TELEMETRY\nFPS ${snapshot.fps.toFixed(1)}  FRAME ${snapshot.meanFrameMs.toFixed(2)} MS  P95 ${snapshot.p95FrameMs.toFixed(2)} MS\nDROPPED ${snapshot.droppedFramePercent.toFixed(1)}%  QUALITY ${quality}  SCENES ${sceneCount}\nSAMPLES ${snapshot.samples}  HEAP ${readHeapMegabytes()}`;
+  update(snapshot: PerformanceSnapshot, quality: string, sceneCount: number) {
+    const heap = snapshot.heapMegabytes === null ? 'N/A' : `${snapshot.heapMegabytes.toFixed(1)} MB`;
+    this.root.textContent = `BIOS RUNTIME TELEMETRY\nBASELINE ${snapshot.scenario}  STATUS ${snapshot.status}\nFPS ${snapshot.fps.toFixed(1)}  FRAME ${snapshot.meanFrameMs.toFixed(2)} MS  P95 ${snapshot.p95FrameMs.toFixed(2)} MS\nDROPPED ${snapshot.droppedFramePercent.toFixed(1)}%  QUALITY ${quality}  SCENES ${sceneCount}\nINPUT EVENT ${snapshot.inputEventP95Ms.toFixed(2)} MS  POLL ${snapshot.inputPollP95Ms.toFixed(2)} MS\nAUDIO XRUN ${snapshot.audioUnderruns}  SAMPLES ${snapshot.samples}  HEAP ${heap}`;
   }
   setVisible(visible: boolean) { this.visible = visible; this.root.hidden = !visible; }
-}
-
-function readHeapMegabytes() {
-  const memory = (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory;
-  return memory ? `${(memory.usedJSHeapSize / 1048576).toFixed(1)} MB` : 'N/A';
 }
