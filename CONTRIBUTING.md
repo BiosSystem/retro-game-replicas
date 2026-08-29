@@ -21,7 +21,7 @@ Preserve arcade mode through scene restart
 Document the save-state validation boundary
 ```
 
-Do not use conventional commit prefixes, or em dashes. Use the `BiosSystem` author identity for project-owned commits.
+Write concise imperative commit subjects, such as `Improve controller calibration`. Use the `BiosSystem` author identity for project-owned commits.
 
 ## Required checks
 
@@ -50,7 +50,7 @@ Run the Compose smoke test on a Docker-enabled host when Docker, Nginx, Compose,
 - Add or update Vitest coverage for deterministic rules.
 - Add or update Playwright coverage for observable browser behavior.
 - Include build and test results.
-- Update `README.md`, `docs/ARCHITECTURE.md`, `docs/WIKI_HOWTO.md`, and `docs/ROADMAP.md` when the architecture or developer workflow changes.
+- Update `README.md`, `CHANGELOG.md`, `docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, and `docs/WIKI_HOWTO.md` when architecture, behavior, or developer workflows change.
 - Preserve capability fallbacks for WebGPU, WebXR, WebCodecs, AudioWorklet, SharedArrayBuffer, and Wasm SIMD paths.
 - Keep security limits, validation, and asset-generation rules intact.
 

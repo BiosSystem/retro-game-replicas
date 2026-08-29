@@ -1,4 +1,6 @@
-# BiosSystem Neon Arcade Rebranding Release
+# BiosSystem Neon Arcade v2.0.0 Release Notes
+
+Published at https://github.com/BiosSystem/retro-game-replicas/releases/tag/v2.0.0.
 
 ## Enter BiosSystem Neon Arcade
 

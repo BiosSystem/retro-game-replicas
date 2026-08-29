@@ -9,7 +9,7 @@ import { DisplayScaler, parseDisplayAspect } from './graphics/DisplayScaler';
 import type { QualityTier } from '../graphics/PooledParticleSystem';
 import { PerformanceBaselineMonitor } from './PerformanceBaseline';
 
-const OVERLAY_SCENES = new Set(['PauseScene', 'SettingsScene', 'NameEntryScene', 'AchievementsScene', 'GameOverScene']);
+const OVERLAY_SCENES = new Set(['PauseScene', 'SettingsScene', 'NameEntryScene', 'AchievementsScene', 'GameOverScene', 'ProfileScene']);
 
 export class ArcadeRuntime {
   private readonly game: Phaser.Game;
@@ -109,6 +109,9 @@ export class ArcadeRuntime {
   private bindKeyboardPause() {
     window.addEventListener('keydown', event => {
       if (event.code !== 'Escape' || event.repeat) return;
+      if (this.game.scene.isActive('ProfileScene')) {
+        event.preventDefault(); event.stopImmediatePropagation(); this.game.scene.stop('ProfileScene'); return;
+      }
       const utilityOverlay = this.activeUtilityOverlay();
       if (utilityOverlay) {
         event.preventDefault();

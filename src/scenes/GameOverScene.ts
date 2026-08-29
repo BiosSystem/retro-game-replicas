@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { InputManager } from '../engine/InputManager';
 import { SaveManager } from '../engine/SaveManager';
 import { readGamepadMenuInput, type GamepadMenuState } from '../engine/input/GamepadMenuInput';
+import { createNeonPanel } from '../ui/arcade/NeonUi';
 
 interface GameOverData {
   scene: string;
@@ -29,6 +30,8 @@ export default class GameOverScene extends Phaser.Scene {
     this.confirmed = false;
     const scoreLine = Number.isFinite(this.gameOverData.score) ? `\nSCORE ${Math.floor(this.gameOverData.score as number)}` : '';
     const panel = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.86).setInteractive();
+    const dialog = createNeonPanel(this, 320, 240, 510, 250, Number.parseInt((this.gameOverData.color ?? '#ff2ec4').slice(1), 16), .94).setScale(.92).setAlpha(0);
+    this.tweens.add({ targets: dialog, scale: 1, alpha: 1, duration: 180, ease: 'Back.Out' });
     this.add.text(320, 240, `${this.gameOverData.title}${scoreLine}\nPRESS FIRE TO RESTART\nESC / B / SELECT TO QUIT`, { fontFamily: 'Courier', fontSize: '24px', color: this.gameOverData.color ?? '#ff2ec4', align: 'center', fontStyle: 'bold' }).setOrigin(0.5);
     panel.on('pointerdown', () => this.continue());
     this.time.delayedCall(150, () => {

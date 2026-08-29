@@ -48,6 +48,7 @@ Open the Vite address printed by the development server. Build and verify the pr
 npm run lint
 npm test
 npm run build
+npm run baseline
 npm run test:regression
 npm run test:cross-browser
 ```
@@ -68,7 +69,8 @@ npm run tauri build
 | Runtime | Phaser 4, TypeScript, Vite, lazy game-scene loading, fixed 60 Hz Arcade Physics |
 | Input | Keyboard, touch, Xbox, PlayStation, generic controllers, local Player 1 and Player 2 actions |
 | Game flow | Difficulty selection, solo and supported local multiplayer modes, pause, restart, shared Game Over, high-score entry, achievements |
-| Rendering | 640x480 pixel-art canvas, integer 4:3 or 16:9 framing, CRT presets, procedural backgrounds, particles, and generated effects |
+| Cabinet UI | Generated Nine Slice panels, animated controls, deterministic local player profiles, procedural avatars, and shared HUD frames |
+| Rendering | 640x480 pixel-art canvas, integer 4:3 or 16:9 framing, CRT presets, generated Nine Slice UI, procedural avatars, backgrounds, particles, and effects |
 | Audio | Web Audio chiptune tracker, generated effects, spatial cabinet audio, optional AudioWorklet and Wasm DSP paths |
 | Persistence | Local score ledgers, preferences, deterministic replays, IndexedDB Neon Epoch save states, generated save previews |
 | Connectivity | Manual direct WebRTC peers, local-first verified score gossip, presence mesh, optional spatial voice |
@@ -89,9 +91,15 @@ npm run tauri build
 
 Render the core arcade experience at 640x480 with pixel-art sampling. Select Clean Pixel, Arcade CRT 1980s, Trinitron 1990s, or Bypass. Calibrate stable scanline phase and 0% to 8% overscan, then select AUTO, HIGH, MEDIUM, or LOW quality. The CRT path supports gamma-aware bloom, curvature, chromatic aberration, phosphor masks, vignette, program caching, and a source-canvas fallback.
 
+Open Player Profile with P or the west controller button. Keep one deterministic avatar seed and bounded player name on the device. Reroll the procedural pixel avatar without downloading an image. Reuse the identity in the lobby, high-score entry, and leaderboard center. Render featured-game score, stage, combo, health, and status values through the shared generated HUD contract.
+
 Generate gameplay graphics, sprites, particles, previews, levels, worlds, music, and sound effects from code. Several advanced systems, including WebGPU compute, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD, activate only after capability checks. Deterministic CPU and browser-safe fallbacks remain the baseline path.
 
-The latest production build contains 186 modules, a 106.55 kB initial bootstrap bundle, and a deferred 1,352.40 kB Phaser runtime chunk.
+The latest production build contains 191 modules, a 119.10 kB initial bootstrap bundle, a deferred 1,352.40 kB Phaser runtime chunk, and no downloaded UI or avatar asset payload.
+
+## Verification status
+
+The current v2.1 development candidate passes TypeScript analysis, 287 Vitest checks across 99 files, 57 Chromium gameplay and visual regressions, Firefox and WebKit smoke coverage, the production bundle budget, the hardened container validation, and the locked Tauri test profile. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the latest hosted result.
 
 ## Fun Zone container hosting
 
@@ -108,11 +116,14 @@ The tracked Compose template binds only to loopback, uses an unprivileged read-o
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
+- [Roadmap](docs/ROADMAP.md)
 - [Developer how-to](docs/WIKI_HOWTO.md)
+- [Add a game](docs/Adding-Games.md)
 - [Contributing](CONTRIBUTING.md)
 - [Engine contracts and measured subsystem notes](docs/ENGINE_OVERHAUL.md)
+- [Attribution and license register](docs/ATTRIBUTIONS.md)
 - [Security policy](SECURITY.md)
 
 ## License and attribution
 
-Release source under the [MIT License](LICENSE). Use the original implementations and generated assets in this repository. Do not add third-party game ROMs, copied sprites, copied music, or executable community JavaScript.
+Release source under the [MIT License](LICENSE). Use the original implementations and generated assets in this repository. Review the attribution register before adding third-party software or content. Do not add third-party game ROMs, copied sprites, copied music, or executable community JavaScript.

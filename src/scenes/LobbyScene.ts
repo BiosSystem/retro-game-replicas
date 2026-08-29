@@ -12,6 +12,8 @@ import { AttractController, CreditLedger } from '../ui/menu/ArcadeSession';
 import { mountGameScene } from '../ui/menu/SceneLifecycle';
 import type { ArcadeMode } from '../multiplayer/CoopSession';
 import { ARCADE_DIFFICULTIES, ARCADE_GAMES } from './ArcadeCatalog';
+import { createNeonPanel } from '../ui/arcade/NeonUi';
+import { drawRetroAvatar, RetroProfileStore } from '../ui/profile/RetroProfile';
 type MenuMode = 'GAME_SELECT' | 'DIFFICULTY_SELECT';
 
 const PALETTE = {
@@ -62,7 +64,7 @@ export default class LobbyScene extends Phaser.Scene {
     this.nextAttractCycle = this.time.now + 30_000;
     this.input.keyboard?.removeAllListeners();
 
-    this.padLastState = { up: false, down: false, button: false, back: false, start: false, achievements: false };
+    this.padLastState = { up: false, down: false, button: false, back: false, start: false, achievements: false, profile: false };
 
     this.buildStarfield();
     this.buildScanlines();
@@ -73,13 +75,14 @@ export default class LobbyScene extends Phaser.Scene {
     this.buildBiosFlash();
     this.buildCoinOp();
     this.buildPreview();
+    this.buildProfile();
     this.modeText = this.add.text(616, 420, '', { fontFamily: 'Courier', fontSize: '12px', color: PALETTE.warn }).setOrigin(1, 0.5);
     this.updateModeText();
     this.bindKeys();
     AudioEngine.playTrack('plaza');
   }
 
-  private padLastState = { up: false, down: false, button: false, back: false, start: false, achievements: false };
+  private padLastState = { up: false, down: false, button: false, back: false, start: false, achievements: false, profile: false };
 
 
   private buildStarfield() {
@@ -175,12 +178,19 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   private buildFooter() {
-    this.add.text(320, 458, 'UP/DOWN MOVE  SPACE SELECT  Y ACH  M MODE  C COIN  S/START SETTINGS', {
+    this.add.text(320, 458, 'MOVE  FIRE SELECT  Y ACH  X PROFILE  M MODE  C COIN  START SETTINGS', {
       fontFamily: "'Share Tech Mono', Courier",
       fontSize: '11px',
       color: PALETTE.muted,
       letterSpacing: 1,
     }).setOrigin(0.5);
+  }
+
+  private buildProfile() {
+    const profile = new RetroProfileStore(localStorage).load();
+    createNeonPanel(this, 590, 57, 76, 76, 0xff2ec4, .72).setDepth(6);
+    const avatar = this.add.graphics().setDepth(7); drawRetroAvatar(avatar, 590, 53, 48, profile.avatarSeed);
+    this.add.text(590, 87, profile.name, { fontFamily: 'Courier', fontSize: '10px', color: '#ffffff' }).setOrigin(.5).setDepth(7);
   }
 
   private buildCoinOp() {
@@ -284,6 +294,9 @@ export default class LobbyScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-A',     () => {
         if (this.mode !== 'DIFFICULTY_SELECT') this.scene.launch('AchievementsScene');
     });
+    this.input.keyboard?.on('keydown-P', () => {
+      if (this.mode !== 'DIFFICULTY_SELECT') this.scene.launch('ProfileScene');
+    });
     this.input.keyboard?.on('keydown-C', () => { this.registerActivity(); this.credits.insertCoin(); this.updateCreditText(); AudioEngine.playEffect('COIN'); });
     this.input.keyboard?.on('keydown-F', () => { this.registerActivity(); this.credits.toggleFreePlay(); this.updateCreditText(); AudioEngine.playEffect('POWER_UP'); });
     this.input.keyboard?.on('keydown-M', () => {
@@ -320,6 +333,7 @@ export default class LobbyScene extends Phaser.Scene {
       const back = Boolean(pad.buttons & (GamepadButton.EAST | GamepadButton.SELECT));
       const start = Boolean(pad.buttons & GamepadButton.START);
       const achievements = Boolean(pad.buttons & GamepadButton.NORTH);
+      const profile = Boolean(pad.buttons & GamepadButton.WEST);
 
       if (up && !this.padLastState.up) { this.registerActivity(); this.handleUp(); }
       if (down && !this.padLastState.down) { this.registerActivity(); this.handleDown(); }
@@ -327,10 +341,11 @@ export default class LobbyScene extends Phaser.Scene {
       if (back && !this.padLastState.back) { this.registerActivity(); this.handleEsc(); }
       if (start && !this.padLastState.start && this.mode !== 'DIFFICULTY_SELECT') this.scene.launch('SettingsScene', { scene: this.scene.key });
       if (achievements && !this.padLastState.achievements && this.mode !== 'DIFFICULTY_SELECT') this.scene.launch('AchievementsScene');
+      if (profile && !this.padLastState.profile && this.mode !== 'DIFFICULTY_SELECT') this.scene.launch('ProfileScene');
 
-      this.padLastState = { up, down, button, back, start, achievements };
+      this.padLastState = { up, down, button, back, start, achievements, profile };
     } else {
-      this.padLastState = { up: false, down: false, button: false, back: false, start: false, achievements: false };
+      this.padLastState = { up: false, down: false, button: false, back: false, start: false, achievements: false, profile: false };
     }
   }
 

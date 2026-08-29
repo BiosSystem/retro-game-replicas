@@ -6,14 +6,16 @@ import { parseDisplayAspect } from '../engine/graphics/DisplayScaler';
 import { FullscreenController } from '../engine/FullscreenController';
 import { InputManager } from '../engine/InputManager';
 import { readGamepadMenuInput, type GamepadMenuState } from '../engine/input/GamepadMenuInput';
+import { createNeonPanel } from '../ui/arcade/NeonUi';
 
 export default class SettingsScene extends Phaser.Scene {
     private sourceScene!: string;
-    private options = ['RESUME', 'FULLSCREEN', 'CABINET THEME', 'REBIND FIRE', 'CRT PRESET', 'CRT QUALITY', 'CRT OVERSCAN', 'SCANLINE PHASE', 'DISPLAY ASPECT', 'TELEMETRY', 'REDUCE MOTION', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
+    private options = ['RESUME', 'FULLSCREEN', 'CABINET THEME', 'REBIND FIRE', 'CRT PRESET', 'CRT QUALITY', 'CRT OVERSCAN', 'SCANLINE PHASE', 'DISPLAY ASPECT', 'TELEMETRY', 'REDUCE MOTION', 'SOUND', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
     private fullscreen: FullscreenController | null = null;
     private gamepadState: GamepadMenuState = { up: false, down: false, left: false, right: false, confirm: false, back: false };
+    private selectionGlow!: Phaser.GameObjects.Container;
 
     constructor() {
         super('SettingsScene');
@@ -31,6 +33,8 @@ export default class SettingsScene extends Phaser.Scene {
         // Overlay background
         const bg = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.8);
         bg.setInteractive(); // block clicks
+        createNeonPanel(this, 320, 250, 500, 430, 0x00ffcc, .9);
+        this.selectionGlow = createNeonPanel(this, 320, 78, 360, 22, 0xffff00, .34);
         
         this.add.text(320, 46, 'CABINET CONTROL', {
             fontFamily: "'Share Tech Mono', Courier",
@@ -82,6 +86,7 @@ export default class SettingsScene extends Phaser.Scene {
                 item.setText(label);
             }
         });
+        this.tweens.add({ targets: this.selectionGlow, y: 78 + this.selectedIndex * 24, duration: 90, ease: 'Quad.Out' });
     }
 
     update() {
@@ -105,6 +110,7 @@ export default class SettingsScene extends Phaser.Scene {
         if (option === 'DISPLAY ASPECT') return `${option}: ${parseDisplayAspect(localStorage.getItem('arcade_display_aspect'))}`;
         if (option === 'TELEMETRY') return `${option}: ${localStorage.getItem('arcade_telemetry') === 'true' ? 'ON' : 'OFF'}`;
         if (option === 'REDUCE MOTION') return `${option}: ${localStorage.getItem('arcade_reduced_motion') === 'true' ? 'ON' : 'OFF'}`;
+        if (option === 'SOUND') return `${option}: ${localStorage.getItem('retro_sound_muted') === 'true' ? 'OFF' : 'ON'}`;
         return option;
     }
 
@@ -163,6 +169,11 @@ export default class SettingsScene extends Phaser.Scene {
             const isEnabled = localStorage.getItem('arcade_telemetry') === 'true';
             localStorage.setItem('arcade_telemetry', isEnabled ? 'false' : 'true');
             window.dispatchEvent(new Event('arcade-settings-change'));
+            this.updateMenu();
+        } else if (opt === 'SOUND') {
+            const muted = localStorage.getItem('retro_sound_muted') === 'true';
+            localStorage.setItem('retro_sound_muted', muted ? 'false' : 'true');
+            AudioEngine.setVolume(muted ? parseFloat(localStorage.getItem('retro_master_volume') || '0.5') : 0);
             this.updateMenu();
         } else if (opt === 'VOLUME +10%') {
             const vol = Math.min(1.0, parseFloat(localStorage.getItem('retro_master_volume') || '0.5') + 0.1);

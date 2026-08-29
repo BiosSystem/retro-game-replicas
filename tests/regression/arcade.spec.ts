@@ -12,6 +12,16 @@ test('install the active Phaser frame delta guard', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('data-frame-delta-cap', '50ms');
 });
 
+test('persist and reroll the procedural player profile', async ({ page }) => {
+  await page.goto('/'); await page.locator('#app canvas').first().waitFor(); await page.keyboard.press('KeyP');
+  await expect.poll(() => page.evaluate(() => Boolean((window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('ProfileScene')))).toBe(true);
+  const before = await page.evaluate(() => localStorage.getItem('bios_arcade_profile_v1'));
+  await page.keyboard.press('KeyR');
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('bios_arcade_profile_v1'))).not.toBe(before);
+  await page.keyboard.press('Escape');
+  await expect.poll(() => page.evaluate(() => Boolean((window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('ProfileScene')))).toBe(false);
+});
+
 test('expose the user-initiated fullscreen cabinet control', async ({ page }) => {
   await page.goto('/');
   await page.locator('#app canvas').first().waitFor();

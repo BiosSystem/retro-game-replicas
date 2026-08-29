@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 ### Added
+- Consolidate the active roadmap and refresh the README, architecture, wiki, contribution, game-authoring, release, credit, and attribution documents against the verified v2.1 runtime.
+- Add generated Nine Slice cabinet panels, animated glow controls, persistent procedural player avatars, profile and leaderboard identity surfaces, and unified HUD frames for five featured games without external asset payloads.
+
 - Add v2.1 CRT calibration with source-row-stable scanlines, gamma-aware phosphor response, bounded overscan, linked-program caching, adaptive quality controls, and persistent Cabinet Control settings.
 - Add the v2.1 P0 performance baseline with bounded runtime sampling, representative scene budgets, persistent telemetry controls, and reproducible bundle-size validation.
 - Add the prioritized v2.1.0 roadmap for performance baselines, advanced CRT calibration, procedural cabinets, remappable Gamepad and optional WebHID input, and audio scheduling optimization.
@@ -14,6 +17,10 @@
 - Route Snake Evolution, Tetris Pulse, and Space Defenders loss states through the shared Game Over overlay for consistent controller restart and high-score handling.
 - Add controller access to the Achievements overlay. Use the north face button from the lobby to open it, then the east face button or Select to close it.
 - Add a safe Game Over exit path. Use east face button, Select, or Escape to stop the finished game and return to the lobby.
+
+### Removed
+
+- Remove obsolete one-off migration scripts, duplicate historical roadmap and history files, and private process-state documentation from the public source tree.
 
 ### Changed
 - Document the featured game lineup, scene-key contracts, runtime roles, and primary engine systems in the architecture and developer guides.
