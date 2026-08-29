@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+### Added
+- Add Neon Relay signal defense and Prism Spiral orbital survival as lazy-loaded procedural cabinets with local co-op input, deterministic wave scaling, shared score multipliers, generated vector graphics, and shared Pause and Game Over flows.
+
+### Changed
+- Expand the cabinet catalog from 27 to 29 entries and document both new scene contracts, registration points, and production bundle measurements.
+
 ## [v2.1.0] - 2026-08-29
 
 ### Added

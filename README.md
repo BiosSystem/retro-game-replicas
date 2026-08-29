@@ -1,6 +1,6 @@
 # BiosSystem Neon Arcade
 
-> A procedural retro-futurist arcade platform with 26 original games, a generated Meta-Arcade Hall, and no bundled ROMs or copied game assets.
+> A procedural retro-futurist arcade platform with 28 original games, a generated Meta-Arcade Hall, and no bundled ROMs or copied game assets.
 
 [![Build](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml/badge.svg)](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml)
 [![Release](https://img.shields.io/github/v/release/BiosSystem/retro-game-replicas?color=00ff72)](https://github.com/BiosSystem/retro-game-replicas/releases)
@@ -15,7 +15,7 @@ Capture every image below directly from the current production build. Show proce
 <p align="center">
   <img src="docs/images/screenshots/lobby.png" alt="BiosSystem Neon Arcade lobby with the 2026 Overdrive presentation enabled" width="800">
 </p>
-<p align="center"><sub>Browse the complete 27-entry cabinet catalog from the live BiosSystem Neon Arcade lobby.</sub></p>
+<p align="center"><sub>Browse the complete 29-entry cabinet catalog from the live BiosSystem Neon Arcade lobby.</sub></p>
 
 <table>
   <tr>
@@ -65,7 +65,7 @@ npm run tauri build
 
 | Area | Current implementation |
 |---|---|
-| Arcade catalog | 26 original games plus the generated Meta-Arcade Hall |
+| Arcade catalog | 28 original games plus the generated Meta-Arcade Hall |
 | Runtime | Phaser 4, TypeScript, Vite, lazy game-scene loading, fixed 60 Hz Arcade Physics |
 | Input | Keyboard, touch, Xbox, PlayStation, Nintendo, 8BitDo, arcade encoders, generic controllers, local Player 1 and Player 2 actions |
 | Game flow | Difficulty selection, solo and supported local multiplayer modes, pause, restart, shared Game Over, high-score entry, achievements |
@@ -81,7 +81,7 @@ npm run tauri build
 
 **Classic cabinet replicas:** Snake Evolution, Neon Pong, Neon Vector, Neon Breakout, Froggie Crosser, Space Defenders, Tetris Pulse, Minesweeper, Pixel Runner, Brave Bird, and Cyber Chasm.
 
-**Modern arcade games:** Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, and Neon Kombat.
+**Modern arcade games:** Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Relay, and Prism Spiral.
 
 **Procedural Neon worlds:** Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, Neon Genesis, Neon OS, The Singularity, Event Horizon, and Neon Epoch.
 
@@ -99,7 +99,7 @@ Open Cabinet Control, then Controller Setup, to view live controller inputs and 
 
 Generate gameplay graphics, sprites, particles, previews, levels, worlds, music, and sound effects from code. Several advanced systems, including WebGPU compute, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD, activate only after capability checks. Deterministic CPU and browser-safe fallbacks remain the baseline path.
 
-The latest production build contains 191 modules, a 119.10 kB initial bootstrap bundle, a deferred 1,352.40 kB Phaser runtime chunk, and no downloaded UI or avatar asset payload.
+The latest production build contains 201 modules, a 124.92 kB initial bootstrap bundle, a deferred 1,352.40 kB Phaser runtime chunk, and no downloaded UI or avatar asset payload.
 
 ## Verification status
 

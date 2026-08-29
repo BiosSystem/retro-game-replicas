@@ -67,6 +67,8 @@ Start with `src/scenes/ArcadeCatalog.ts` when auditing names, order, icons, and 
 | Neon Cyber-Caster | `RaycasterScene` | `src/games/raycaster/NeonCyberCasterScene.ts` |
 | Neon Danmaku | `DanmakuScene` | `src/games/danmaku/NeonDanmakuScene.ts` |
 | Neon Epoch | `EpochScene` | `src/games/epoch/NeonEpochScene.ts` |
+| Neon Relay | `RelayScene` | `src/games/cabinets/NeonRelayScene.ts` |
+| Prism Spiral | `SpiralScene` | `src/games/cabinets/NeonSpiralScene.ts` |
 | Meta-Arcade Hall | `MetaArcadeScene` | `src/hub/MetaArcadeScene.ts` |
 
 Do not infer the active implementation from a duplicate legacy filename. Resolve it through the registry and keep the catalog, registry, tests, README, and architecture table synchronized.

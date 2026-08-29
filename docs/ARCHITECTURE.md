@@ -51,7 +51,7 @@ Input polling duration remains part of `PerformanceBaselineMonitor` and the runt
 
 ## Featured catalog architecture
 
-The lobby exposes 27 lazy-loaded entries. Treat `src/scenes/ArcadeCatalog.ts` as the display contract and `src/sceneRegistry.ts` as the executable registration contract. Keep every scene key identical across both files.
+The lobby exposes 29 lazy-loaded entries. Treat `src/scenes/ArcadeCatalog.ts` as the display contract and `src/sceneRegistry.ts` as the executable registration contract. Keep every scene key identical across both files.
 
 | Catalog entry | Scene key | Runtime role | Primary systems |
 |---|---|---|---|
@@ -60,6 +60,8 @@ The lobby exposes 27 lazy-loaded entries. Treat `src/scenes/ArcadeCatalog.ts` as
 | Neon Cyber-Caster | `RaycasterScene` | First-person procedural dungeon combat | Deterministic BSP dungeons, DDA ray casting, sprite projection, bounded collision, generated wall shading |
 | Neon Danmaku | `DanmakuScene` | Adaptive bullet-pattern survival benchmark | Fixed-capacity 100,000-projectile ECS, typed arrays, scripted boss phases, adaptive AI director, render-budget sampling |
 | Neon Epoch | `EpochScene` | Procedural simulation and graphics showcase | Generated Gaussian splat cloud, capability-gated Wasm SIMD physics, procedural weather and fluid state, IndexedDB save slots and autosave |
+| Neon Relay | `RelayScene` | Lane-based signal defense for solo or local co-op | Deterministic wave schedule, procedural drones, semantic two-player input, shared score multipliers, pooled screen entities |
+| Prism Spiral | `SpiralScene` | Orbital survival for solo or local co-op | Deterministic polar wave schedule, wrap-safe angular collision, semantic two-player input, shared score multipliers, procedural vector geometry |
 | Meta-Arcade Hall | `MetaArcadeScene` | Walkable in-world cabinet hub | Generated hall layout, DDA navigation, cabinet scene routing, spatial audio, bounded optional peer presence |
 
 Load these modules only after selection. Preserve deterministic and browser-safe fallbacks when an optional acceleration path is unavailable.

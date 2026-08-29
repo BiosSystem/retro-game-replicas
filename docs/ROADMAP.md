@@ -32,10 +32,10 @@ Use `master` as the protected integration target. Create focused branches with t
 
 ## Active milestone
 
-- Workstream: v2.2 discovery and baseline refresh
-- Branch: `master`
-- Status: Ready
-- Scope: Reconfirm representative scene performance, select the next isolated cabinet or audio-scheduler workstream, and retain the v2.1.0 controller and visual contracts
+- Workstream: P1 additional procedural cabinets
+- Branch: `feat/v2.2-procedural-cabinets`
+- Status: In progress
+- Scope: Add Neon Relay and Prism Spiral as lazy, original scenes with deterministic wave rules, semantic local co-op input, shared overlays, generated rendering, and no asset payload
 
 ## Prioritized engineering queue
 
