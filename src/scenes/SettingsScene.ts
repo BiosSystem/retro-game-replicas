@@ -11,7 +11,7 @@ import { nextVisualMode, readVisualMode, writeVisualMode } from '../graphics/Vis
 
 export default class SettingsScene extends Phaser.Scene {
     private sourceScene!: string;
-    private options = ['RESUME', 'FULLSCREEN', 'CABINET THEME', 'REBIND FIRE', 'CRT PRESET', 'VISUAL MODE', 'CRT QUALITY', 'CRT OVERSCAN', 'SCANLINE PHASE', 'DISPLAY ASPECT', 'TELEMETRY', 'REDUCE MOTION', 'SOUND', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
+    private options = ['RESUME', 'FULLSCREEN', 'CABINET THEME', 'REBIND FIRE', 'CONTROLLER SETUP', 'CRT PRESET', 'VISUAL MODE', 'CRT QUALITY', 'CRT OVERSCAN', 'SCANLINE PHASE', 'DISPLAY ASPECT', 'TELEMETRY', 'REDUCE MOTION', 'SOUND', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
     private fullscreen: FullscreenController | null = null;
@@ -139,6 +139,9 @@ export default class SettingsScene extends Phaser.Scene {
                 window.dispatchEvent(new Event('arcade-settings-change'));
                 this.updateMenu();
             });
+        } else if (opt === 'CONTROLLER SETUP') {
+            this.scene.launch('ControllerConfigScene', { scene: this.scene.key });
+            this.scene.pause();
         } else if (opt === 'CRT PRESET') {
             const preset = nextCrtPreset(this.currentCrtPreset());
             localStorage.setItem('arcade_crt_preset', preset);

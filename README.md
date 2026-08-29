@@ -67,7 +67,7 @@ npm run tauri build
 |---|---|
 | Arcade catalog | 26 original games plus the generated Meta-Arcade Hall |
 | Runtime | Phaser 4, TypeScript, Vite, lazy game-scene loading, fixed 60 Hz Arcade Physics |
-| Input | Keyboard, touch, Xbox, PlayStation, generic controllers, local Player 1 and Player 2 actions |
+| Input | Keyboard, touch, Xbox, PlayStation, Nintendo, 8BitDo, arcade encoders, generic controllers, local Player 1 and Player 2 actions |
 | Game flow | Difficulty selection, solo and supported local multiplayer modes, pause, restart, shared Game Over, high-score entry, achievements |
 | Cabinet UI | Generated Nine Slice panels, animated controls, deterministic local player profiles, procedural avatars, and shared HUD frames |
 | Rendering | 640x480 pixel-art canvas, integer 4:3 or 16:9 framing, CRT presets, generated Nine Slice UI, procedural avatars, backgrounds, particles, and effects |
@@ -95,13 +95,15 @@ Use Cabinet Control to switch between Classic 1980s and 2026 Overdrive visuals. 
 
 Open Player Profile with P or the west controller button. Keep one deterministic avatar seed and bounded player name on the device. Reroll the procedural pixel avatar without downloading an image. Reuse the identity in the lobby, high-score entry, and leaderboard center. Render featured-game score, stage, combo, health, and status values through the shared generated HUD contract.
 
+Open Cabinet Control, then Controller Setup, to view live controller inputs and adjust a per-controller scaled-radial or radial deadzone, trigger threshold, and Fire binding. Profiles use a vendor and product fingerprint when available, prevent duplicate bindings, and stay local to the browser. WebHID support is optional and activates only after selecting Connect WebHID from the controller overlay. Disconnecting the primary controller during an active game opens Pause automatically.
+
 Generate gameplay graphics, sprites, particles, previews, levels, worlds, music, and sound effects from code. Several advanced systems, including WebGPU compute, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD, activate only after capability checks. Deterministic CPU and browser-safe fallbacks remain the baseline path.
 
 The latest production build contains 191 modules, a 119.10 kB initial bootstrap bundle, a deferred 1,352.40 kB Phaser runtime chunk, and no downloaded UI or avatar asset payload.
 
 ## Verification status
 
-The current v2.1 development candidate passes TypeScript analysis, 290 Vitest checks across 100 files, 57 Chromium gameplay and visual regressions, six Firefox and WebKit smoke checks, the production bundle budget, the hardened container validation, and the locked Tauri test profile. The current visual-pipeline output is 1,856,795 bytes, below the 1.86 MB target. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the latest hosted result.
+The current v2.1 development candidate passes TypeScript analysis, 295 Vitest checks across 102 files, 58 Chromium gameplay and visual regressions, six Firefox and WebKit smoke checks, the production bundle budget, the hardened container validation, and the locked Tauri test profile. The unified-input build is 1,867,197 bytes under the repository's enforced production budget. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the latest hosted result.
 
 ## Fun Zone container hosting
 

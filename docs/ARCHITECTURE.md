@@ -26,12 +26,20 @@ flowchart LR
 
 `ArcadeRuntime` owns frame-level telemetry, visibility handling, controller sampling, global Pause input, CRT preferences, and display scaling. `PhaserDeltaGuard` bounds invalid or long frame gaps to 50 ms while preserving normal high-refresh deltas. Active games use shared pause and game-over contracts. Foreground Phaser overlays and marked DOM utility panels take input priority over gameplay.
 
+### Unified controller input
+
+`GamepadHandler` polls `navigator.getGamepads()` from the runtime animation-frame owner. It detects PlayStation, Xbox, Nintendo, 8BitDo, arcade encoder, and generic fingerprints, then loads a local profile from `bios_arcade_controller_profiles_v1`. Profiles contain radial or scaled-radial stick deadzones, trigger thresholds, and conflict-free canonical button bindings for movement, Fire, Coin, and Start. The handler produces the existing bitmask plus normalized action state, preserving every game scene's input contract.
+
+`ControllerConfigScene` is a generated Nine Slice Cabinet Control overlay. It shows live button states, both trigger thresholds, stick position, and the calibrated deadzone ring. It changes calibration, captures a Fire binding from the next pressed button, resets a controller profile, and exposes WebHID only through explicit user activation. `WebHidTransport` reopens only previously authorized devices and sends raw report events for user-mapped custom controllers. It never requests access automatically.
+
+Input polling duration remains part of `PerformanceBaselineMonitor` and the runtime telemetry HUD. Connection changes emit short toast notifications. A primary controller disconnect pauses only the foreground game through the shared Pause scene, never the lobby or an active utility overlay.
+
 ## Subsystems
 
 | Layer | Responsibility | Key locations |
 |---|---|---|
 | Core | Phaser bootstrap, frame guard, game loop, progression, replay, score ledger | `src/bootstrap.ts`, `src/engine/` |
-| Input | Keyboard, touch, standard gamepad normalization, local multiplayer routing | `src/engine/InputManager.ts`, `src/engine/input/`, `src/multiplayer/` |
+| Input | Keyboard, touch, controller profiles, standard gamepad normalization, explicit WebHID transport, hot-plug recovery, local multiplayer routing | `src/core/input/`, `src/engine/InputManager.ts`, `src/engine/input/`, `src/multiplayer/` |
 | Scenes | Lobby, game selection, lazy scene registry, pause, settings, achievements, Game Over | `src/scenes/`, `src/sceneRegistry.ts` |
 | Gameplay | Original arcade replicas and Neon game modules | `src/scenes/`, `src/games/` |
 | Rendering | Canvas pixel art, CRT pass, display scaling, pooled CPU particles, GPU destruction particles, bounded dynamic lights, ray and voxel systems | `src/engine/graphics/`, `src/graphics/` |

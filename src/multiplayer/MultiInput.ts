@@ -1,7 +1,7 @@
 export type PlayerId = 1 | 2;
 export type PlayerAction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FIRE';
 export type PlayerInputState = Record<PlayerAction, boolean>;
-export interface PadSnapshot { index: number; connected: boolean; axes: readonly number[]; buttons?: readonly boolean[]; buttonMask?: number; }
+export interface PadSnapshot { index: number; connected: boolean; axes: readonly number[]; buttons?: readonly boolean[]; buttonMask?: number; actions?: PlayerInputState; }
 
 const KEYBOARD: Record<PlayerId, Record<PlayerAction, string[]>> = {
   1: { UP: ['KeyW'], DOWN: ['KeyS'], LEFT: ['KeyA'], RIGHT: ['KeyD'], FIRE: ['Space'] },
@@ -29,12 +29,13 @@ export class MultiInput {
     const pad = pads.find(candidate => candidate.index === padIndex);
     const down = (action: PlayerAction) => KEYBOARD[player][action].some(code => this.keys.has(code));
     const pressed = (index: number) => Boolean(pad && ((pad.buttonMask ?? 0) & (1 << index) || pad.buttons?.[index]));
+    const mapped = pad?.actions;
     return {
-      UP: down('UP') || pressed(12) || (pad?.axes[1] ?? 0) < -0.5,
-      DOWN: down('DOWN') || pressed(13) || (pad?.axes[1] ?? 0) > 0.5,
-      LEFT: down('LEFT') || pressed(14) || (pad?.axes[0] ?? 0) < -0.5,
-      RIGHT: down('RIGHT') || pressed(15) || (pad?.axes[0] ?? 0) > 0.5,
-      FIRE: down('FIRE') || pressed(0) || pressed(1) || pressed(2) || pressed(3),
+      UP: down('UP') || mapped?.UP || pressed(12) || (pad?.axes[1] ?? 0) < -0.5,
+      DOWN: down('DOWN') || mapped?.DOWN || pressed(13) || (pad?.axes[1] ?? 0) > 0.5,
+      LEFT: down('LEFT') || mapped?.LEFT || pressed(14) || (pad?.axes[0] ?? 0) < -0.5,
+      RIGHT: down('RIGHT') || mapped?.RIGHT || pressed(15) || (pad?.axes[0] ?? 0) > 0.5,
+      FIRE: down('FIRE') || mapped?.FIRE || pressed(0) || pressed(1) || pressed(2) || pressed(3),
     };
   }
 }

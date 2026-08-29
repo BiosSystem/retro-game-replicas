@@ -3,11 +3,16 @@ import { MultiInput, type PlayerInputState } from '../multiplayer/MultiInput';
 import { ArcadeModeRouter } from '../multiplayer/ArcadeModeRouter';
 import type { ArcadeMode } from '../multiplayer/CoopSession';
 import { GamepadButton, GamepadHandler, type GamepadFrame } from './input/GamepadHandler';
+import { InputProfileStore } from '../core/input/InputProfileStore';
+import { WebHidTransport } from '../core/input/WebHidTransport';
+import type { ArcadeInputAction, ControllerProfile } from '../core/input/ControllerProfile';
 
 export class InputManager {
     private static keys: Set<string> = new Set();
     private static connectedPads: Set<number> = new Set();
-    private static gamepads = new GamepadHandler();
+    private static profiles = new InputProfileStore(storagePort());
+    private static gamepads = new GamepadHandler({ getProfile: id => this.profiles.load(id) });
+    private static webHid = new WebHidTransport();
     private static bindings: Record<ControlAction, string[]>;
     private static multi = new MultiInput();
     private static modeRouter = new ArcadeModeRouter();
@@ -38,15 +43,19 @@ export class InputManager {
             const gp = e.gamepad;
             this.connectedPads.add(gp.index);
             this.updateIndicator();
-            console.log(`Gamepad connected: ${gp.id}`);
+            this.notifyController('CONNECTED', gp.id, gp.index);
         });
 
         window.addEventListener('gamepaddisconnected', (e: GamepadEvent) => {
             const gp = e.gamepad;
+            const wasPrimary = this.multi.getPadSlots()[1] === gp.index;
             this.connectedPads.delete(gp.index);
             this.updateIndicator();
-            console.log(`Gamepad disconnected: ${gp.id}`);
+            this.notifyController('DISCONNECTED', gp.id, gp.index);
+            if (wasPrimary) window.dispatchEvent(new CustomEvent('arcade-primary-controller-disconnected', { detail: { id: gp.id, index: gp.index } }));
         });
+
+        void this.webHid.restoreAuthorizedDevices();
 
         this.checkAndInjectVirtualPad();
         this.injectIndicator();
@@ -138,7 +147,7 @@ export class InputManager {
         if (this.modeRouter.tick(performance.now())) this.updateIndicator();
         const frames = this.gamepads.poll(frameTime);
         const snapshots = frames.map(pad => ({
-            index: pad.index, connected: pad.connected, axes: [pad.leftX, pad.leftY, pad.rightX, pad.rightY], buttonMask: pad.buttons
+            index: pad.index, connected: pad.connected, axes: [pad.leftX, pad.leftY, pad.rightX, pad.rightY], buttonMask: pad.buttons, actions: pad.actions
         }));
         const detected = new Set(snapshots.map(pad => pad.index));
         if (detected.size !== this.connectedPads.size || [...detected].some(index => !this.connectedPads.has(index))) {
@@ -191,6 +200,12 @@ export class InputManager {
     }
     public static getP1Mask() { return (this.isP1Down('UP') ? 1 : 0) | (this.isP1Down('DOWN') ? 2 : 0) | (this.isP1Down('LEFT') ? 4 : 0) | (this.isP1Down('RIGHT') ? 8 : 0) | (this.isP1Down('FIRE') ? 16 : 0); }
     public static getGamepadFrames(): readonly GamepadFrame[] { return this.gamepads.getFrames(); }
+    public static controllerProfile(id: string) { return this.profiles.load(id); }
+    public static saveControllerProfile(id: string, profile: Partial<ControllerProfile>) { const saved = this.profiles.save(id, profile); window.dispatchEvent(new Event('arcade-settings-change')); return saved; }
+    public static bindControllerAction(id: string, action: ArcadeInputAction, buttons: number[]) { const saved = this.profiles.bind(id, action, buttons); window.dispatchEvent(new Event('arcade-settings-change')); return saved; }
+    public static resetControllerProfile(id: string) { const reset = this.profiles.reset(id); window.dispatchEvent(new Event('arcade-settings-change')); return reset; }
+    public static webHidSupported() { return WebHidTransport.supported(); }
+    public static connectWebHid() { return this.webHid.connectFromUserGesture(); }
 
     public static configureArcadeMode(mode: ArcadeMode, nativeDualControl = false) {
         this.modeRouter.configure(mode, nativeDualControl, performance.now());
@@ -204,6 +219,10 @@ export class InputManager {
 
     private static refreshBindings() {
         this.bindings = new PreferenceStore(localStorage).load().bindings;
+    }
+
+    private static notifyController(state: 'CONNECTED' | 'DISCONNECTED', id: string, index: number) {
+        window.dispatchEvent(new CustomEvent('arcade-controller-status', { detail: { state, id, index } }));
     }
 
     private static legacyGamepadKeyboardBridgeActive() {
@@ -236,6 +255,12 @@ export class InputManager {
         }
         this.legacyGamepadState = emptyPlayerState();
     }
+}
+
+function storagePort() {
+    if (typeof localStorage !== 'undefined') return localStorage;
+    const memory = new Map<string, string>();
+    return { getItem: (key: string) => memory.get(key) ?? null, setItem: (key: string, value: string) => memory.set(key, value) };
 }
 
 function maskFor(action: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FIRE') { return { UP: 1, DOWN: 2, LEFT: 4, RIGHT: 8, FIRE: 16 }[action]; }
