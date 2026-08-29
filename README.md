@@ -13,21 +13,21 @@
 Capture every image below directly from the current production build. Show procedural runtime graphics only, with no mockups, imported ROM art, or third-party game assets.
 
 <p align="center">
-  <img src="docs/images/screenshots/lobby.png" alt="BiosSystem Neon Arcade live game-selection lobby" width="800">
+  <img src="docs/images/screenshots/lobby.png" alt="BiosSystem Neon Arcade lobby with the 2026 Overdrive presentation enabled" width="800">
 </p>
 <p align="center"><sub>Browse the complete 27-entry cabinet catalog from the live BiosSystem Neon Arcade lobby.</sub></p>
 
 <table>
   <tr>
-    <td width="50%" align="center"><img src="docs/images/screenshots/neon-vector.png" alt="Live Neon Vector gameplay with procedural asteroids"><br><sub>Neon Vector - procedural asteroid combat</sub></td>
-    <td width="50%" align="center"><img src="docs/images/screenshots/tetris-pulse.png" alt="Live Tetris Pulse gameplay"><br><sub>Tetris Pulse - classic grid play</sub></td>
+    <td width="50%" align="center"><img src="docs/images/screenshots/neon-vector.png" alt="Neon Vector running with Overdrive glow, scanlines, and procedural asteroid combat"><br><sub>Neon Vector - Overdrive vector combat</sub></td>
+    <td width="50%" align="center"><img src="docs/images/screenshots/tetris-pulse.png" alt="Tetris Pulse with crisp pixel blocks in the Overdrive CRT presentation"><br><sub>Tetris Pulse - crisp grid play</sub></td>
   </tr>
   <tr>
-    <td width="50%" align="center"><img src="docs/images/screenshots/neon-cyber-caster.png" alt="Live Neon Cyber-Caster raycasting gameplay"><br><sub>Neon Cyber-Caster - generated DDA dungeon</sub></td>
-    <td width="50%" align="center"><img src="docs/images/screenshots/neon-danmaku.png" alt="Live Neon Danmaku projectile pattern"><br><sub>Neon Danmaku - pooled projectile simulation</sub></td>
+    <td width="50%" align="center"><img src="docs/images/screenshots/neon-cyber-caster.png" alt="Neon Cyber-Caster generated DDA dungeon under the Overdrive display pipeline"><br><sub>Neon Cyber-Caster - generated DDA dungeon</sub></td>
+    <td width="50%" align="center"><img src="docs/images/screenshots/neon-danmaku.png" alt="Neon Danmaku with dense pooled projectiles and Overdrive glow"><br><sub>Neon Danmaku - projectile pattern combat</sub></td>
   </tr>
   <tr>
-    <td colspan="2" align="center"><img src="docs/images/screenshots/neon-epoch.png" alt="Live Neon Epoch procedural volumetric world" width="640"><br><sub>Neon Epoch - procedural volumetric world</sub></td>
+    <td colspan="2" align="center"><img src="docs/images/screenshots/neon-epoch.png" alt="Neon Epoch procedural world rendered through the 2026 Overdrive pipeline" width="640"><br><sub>Neon Epoch - procedural world and Overdrive lighting</sub></td>
   </tr>
 </table>
 
