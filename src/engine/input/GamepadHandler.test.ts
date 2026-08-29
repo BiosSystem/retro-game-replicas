@@ -58,4 +58,15 @@ describe('animation-frame gamepad handler', () => {
     expect(handler.poll()).toEqual([]);
     expect(handler.getFrame(4)).toBeUndefined();
   });
+
+  it('applies persisted controller calibration and remapped fire buttons during polling', () => {
+    const handler = new GamepadHandler({
+      getGamepads: () => [pad({ axes: [0.12, 0, 0, 0], pressed: [5], values: { 6: 0.6 } })],
+      getProfile: () => ({ deadzoneMode: 'SCALED_RADIAL', deadzone: 0.2, triggerThreshold: 0.7, bindings: { UP: [12], DOWN: [13], LEFT: [14], RIGHT: [15], FIRE: [5], COIN: [8], START: [9] } }),
+    });
+    const frame = handler.poll()[0];
+    expect(frame.leftX).toBe(0);
+    expect(frame.actions?.FIRE).toBe(true);
+    expect(frame.buttons & GamepadButton.LEFT_TRIGGER).toBe(0);
+  });
 });

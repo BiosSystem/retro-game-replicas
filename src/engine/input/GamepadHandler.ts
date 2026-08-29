@@ -18,11 +18,12 @@ export const GamepadButton = {
   HOME: 1 << 16,
 } as const;
 
-export type GamepadFamily = 'PLAYSTATION' | 'XBOX' | 'GENERIC';
+export type GamepadFamily = 'PLAYSTATION' | 'XBOX' | 'NINTENDO' | 'EIGHTBITDO' | 'ARCADE' | 'GENERIC';
 
 export interface GamepadFrame {
   index: number;
   id: string;
+  fingerprint?: string;
   family: GamepadFamily;
   connected: boolean;
   timestamp: number;
@@ -35,12 +36,14 @@ export interface GamepadFrame {
   rightY: number;
   leftTrigger: number;
   rightTrigger: number;
+  actions?: { UP: boolean; DOWN: boolean; LEFT: boolean; RIGHT: boolean; FIRE: boolean; COIN: boolean; START: boolean };
 }
 
 export interface GamepadHandlerOptions {
   deadzone?: number;
   buttonThreshold?: number;
   getGamepads?: () => readonly (Gamepad | null)[];
+  getProfile?: (id: string) => ControllerProfile;
 }
 
 const STANDARD_BUTTONS = Array.from({ length: 17 }, (_, index) => index);
@@ -48,9 +51,7 @@ const PLAYSTATION_RAW_BUTTONS = [1, 2, 0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1
 
 export function identifyGamepadFamily(id: string): GamepadFamily {
   const normalized = id.toLowerCase();
-  if (/playstation|dualshock|dualsense|sony/.test(normalized)) return 'PLAYSTATION';
-  if (/xbox|xinput|microsoft/.test(normalized)) return 'XBOX';
-  return 'GENERIC';
+  return fingerprintController(normalized).family;
 }
 
 export function applyRadialDeadzone(x: number, y: number, deadzone = 0.16) {
@@ -66,6 +67,7 @@ export class GamepadHandler {
   private readonly deadzone: number;
   private readonly buttonThreshold: number;
   private readonly provider: () => readonly (Gamepad | null)[];
+  private readonly profileProvider: (id: string) => ControllerProfile;
   private readonly frames = new Map<number, GamepadFrame>();
   private frameList: readonly GamepadFrame[] = [];
 
@@ -73,6 +75,7 @@ export class GamepadHandler {
     this.deadzone = clamp(options.deadzone ?? 0.16, 0, 0.75);
     this.buttonThreshold = clamp(options.buttonThreshold ?? 0.5, 0.01, 1);
     this.provider = options.getGamepads ?? (() => typeof navigator !== 'undefined' && navigator.getGamepads ? navigator.getGamepads() : []);
+    this.profileProvider = options.getProfile ?? (() => ({ deadzoneMode: 'SCALED_RADIAL', deadzone: this.deadzone, triggerThreshold: this.buttonThreshold, bindings: { UP: [12], DOWN: [13], LEFT: [14], RIGHT: [15], FIRE: [0, 1, 2, 3], COIN: [8], START: [9] } }));
   }
 
   poll(frameTime = now()) {
@@ -83,18 +86,27 @@ export class GamepadHandler {
       if (!pad?.connected) continue;
       seen.add(pad.index);
       const family = identifyGamepadFamily(pad.id);
+      const fingerprint = fingerprintController(pad.id);
+      const profile = this.profileProvider(pad.id);
       const mapping = pad.mapping === 'standard' || family !== 'PLAYSTATION' ? STANDARD_BUTTONS : PLAYSTATION_RAW_BUTTONS;
       let buttons = 0;
       for (let canonical = 0; canonical < mapping.length; canonical++) {
+        if (canonical === 6 || canonical === 7) continue;
         const button = pad.buttons[mapping[canonical]];
         if (button && (button.pressed || button.value >= this.buttonThreshold)) buttons |= 1 << canonical;
       }
       const previous = this.frames.get(pad.index)?.buttons ?? 0;
-      const left = applyRadialDeadzone(pad.axes[0] ?? 0, pad.axes[1] ?? 0, this.deadzone);
-      const right = applyRadialDeadzone(pad.axes[2] ?? 0, pad.axes[3] ?? 0, this.deadzone);
+      const left = applyStickDeadzone(pad.axes[0] ?? 0, pad.axes[1] ?? 0, profile.deadzone, profile.deadzoneMode);
+      const right = applyStickDeadzone(pad.axes[2] ?? 0, pad.axes[3] ?? 0, profile.deadzone, profile.deadzoneMode);
+      const leftTrigger = clamp(pad.buttons[mapping[6]]?.value ?? 0, 0, 1);
+      const rightTrigger = clamp(pad.buttons[mapping[7]]?.value ?? 0, 0, 1);
+      if (triggerToDigital(leftTrigger, profile.triggerThreshold)) buttons |= GamepadButton.LEFT_TRIGGER;
+      if (triggerToDigital(rightTrigger, profile.triggerThreshold)) buttons |= GamepadButton.RIGHT_TRIGGER;
+      const actions = profileActionState(profile, buttons, [left.x, left.y, right.x, right.y]);
       const frame: GamepadFrame = {
         index: pad.index,
         id: pad.id,
+        fingerprint: fingerprint.id,
         family,
         connected: true,
         timestamp: Number.isFinite(pad.timestamp) && pad.timestamp > 0 ? pad.timestamp : frameTime,
@@ -105,8 +117,9 @@ export class GamepadHandler {
         leftY: left.y,
         rightX: right.x,
         rightY: right.y,
-        leftTrigger: clamp(pad.buttons[mapping[6]]?.value ?? 0, 0, 1),
-        rightTrigger: clamp(pad.buttons[mapping[7]]?.value ?? 0, 0, 1),
+        leftTrigger,
+        rightTrigger,
+        actions,
       };
       this.frames.set(pad.index, frame);
       next.push(frame);
@@ -125,3 +138,4 @@ export class GamepadHandler {
 function clamp(value: number, minimum: number, maximum: number) { return Math.max(minimum, Math.min(maximum, Number.isFinite(value) ? value : 0)); }
 function clampAxis(value: number) { return clamp(value, -1, 1); }
 function now() { return typeof performance === 'undefined' ? Date.now() : performance.now(); }
+import { applyStickDeadzone, fingerprintController, profileActionState, triggerToDigital, type ControllerProfile } from '../../core/input/ControllerProfile';

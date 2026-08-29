@@ -44,6 +44,7 @@ export class ArcadeRuntime {
     this.bindInputStatus();
     this.bindKeyboardPause();
     this.bindPerformanceSignals();
+    this.bindControllerStatus();
     window.addEventListener('arcade-settings-change', () => this.applyPreferences());
     this.frameRequest = requestAnimationFrame(this.measureFrames);
   }
@@ -105,6 +106,27 @@ export class ArcadeRuntime {
     window.addEventListener('keydown', recordInput, true);
     window.addEventListener('pointerdown', recordInput, true);
     window.addEventListener('arcade-audio-underrun', () => this.baseline.recordAudioUnderrun());
+  }
+
+  private bindControllerStatus() {
+    window.addEventListener('arcade-controller-status', event => {
+      const detail = (event as CustomEvent<{ state: 'CONNECTED' | 'DISCONNECTED'; id: string }>).detail;
+      this.showControllerToast(`${detail.state === 'CONNECTED' ? 'CONTROLLER CONNECTED' : 'CONTROLLER DISCONNECTED'}: ${detail.id.slice(0, 32)}`);
+    });
+    window.addEventListener('arcade-primary-controller-disconnected', () => {
+      if (this.hasForegroundOverlay()) return;
+      const active = this.activeGameScene();
+      if (!active) return;
+      active.scene.pause();
+      active.scene.launch('PauseScene', { scene: active.scene.key });
+    });
+  }
+
+  private showControllerToast(text: string) {
+    const toast = document.getElementById('controller-toast') ?? document.body.appendChild(Object.assign(document.createElement('div'), { id: 'controller-toast' }));
+    toast.textContent = text;
+    toast.classList.add('visible');
+    window.setTimeout(() => toast.classList.remove('visible'), 2600);
   }
 
   private bindKeyboardPause() {

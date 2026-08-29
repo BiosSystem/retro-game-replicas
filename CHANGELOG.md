@@ -1,6 +1,7 @@
 ## [Unreleased]
 
 ### Added
+- Add controller fingerprint profiles, scaled-radial and radial stick calibration, trigger thresholds, conflict-free button remapping, live calibration UI, hot-plug recovery, and explicit WebHID report transport.
 - Add persisted Classic 1980s and 2026 Overdrive visual modes with generated GPU spark particles, a bounded per-scene light pool, selective effect glow, camera trauma, and display-only hit-stop while preserving deterministic gameplay.
 - Consolidate the active roadmap and refresh the README, architecture, wiki, contribution, game-authoring, release, credit, and attribution documents against the verified v2.1 runtime.
 - Add generated Nine Slice cabinet panels, animated glow controls, persistent procedural player avatars, profile and leaderboard identity surfaces, and unified HUD frames for five featured games without external asset payloads.

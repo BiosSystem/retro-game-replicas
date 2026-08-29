@@ -6,6 +6,7 @@ import GameOverScene from './scenes/GameOverScene';
 import SettingsScene from './scenes/SettingsScene';
 import AchievementsScene from './scenes/AchievementsScene';
 import ProfileScene from './scenes/ProfileScene';
+import ControllerConfigScene from './scenes/ControllerConfigScene';
 import { InputManager } from './engine/InputManager';
 import { AudioEngine } from './engine/AudioEngine';
 import { ArcadeRuntime } from './engine/ArcadeRuntime';
@@ -24,7 +25,7 @@ const game = new Phaser.Game({
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   backgroundColor: '#0a0a0a', pixelArt: true, fps: { target: 60 },
   physics: { default: 'arcade', arcade: { debug: false, fixedStep: true, fps: 60 } },
-  scene: [LobbyScene, PauseScene, NameEntryScene, GameOverScene, SettingsScene, AchievementsScene, ProfileScene],
+  scene: [LobbyScene, PauseScene, NameEntryScene, GameOverScene, SettingsScene, AchievementsScene, ProfileScene, ControllerConfigScene],
 });
 
 (window as typeof window & { game?: Phaser.Game }).game = game;

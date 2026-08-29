@@ -68,6 +68,27 @@ test('persist CRT quality, overscan, and scanline phase calibration', async ({ p
   await expect(page.locator('html')).toHaveAttribute('data-crt-quality', 'high');
 });
 
+test('detect a synthetic controller and open the live calibration overlay', async ({ page }) => {
+  await page.addInitScript(() => {
+    const buttons = Array.from({ length: 17 }, () => ({ pressed: false, touched: false, value: 0 }));
+    Object.defineProperty(navigator, 'getGamepads', { configurable: true, value: () => [{ axes: [0.28, -0.12, 0, 0], buttons, connected: true, id: 'Vendor: 054c Product: 0ce6 DualSense', index: 0, mapping: 'standard', timestamp: performance.now() }] });
+  });
+  await page.goto('/');
+  await page.locator('#app canvas').first().waitFor();
+  await page.evaluate(() => {
+    const game = (window as typeof window & { game: { scene: { start(key: string, data: unknown): void; getScene(key: string): unknown } } }).game;
+    game.scene.start('SettingsScene', { scene: 'LobbyScene' });
+    const settings = game.scene.getScene('SettingsScene') as { options: string[]; selectedIndex: number; selectOption(): void };
+    settings.selectedIndex = settings.options.indexOf('CONTROLLER SETUP');
+    settings.selectOption();
+  });
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('ControllerConfigScene'))).toBe(true);
+  await expect.poll(() => page.evaluate(() => {
+    const scene = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('ControllerConfigScene') as { status: { text: string } };
+    return scene.status.text;
+  })).toContain('PLAYSTATION');
+});
+
 test('launch the generated Neon Retro Racer scene', async ({ page }) => { await page.goto('/'); await page.locator('#app canvas').first().waitFor(); await page.evaluate(() => { const lobby = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { updateGameSelection(change: number): void; handleSpace(): void }; for (let index = 0; index < 11; index++) lobby.updateGameSelection(1); lobby.handleSpace(); }); await page.waitForTimeout(250); await page.evaluate(() => ((window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { handleSpace(): void }).handleSpace()); await expect.poll(() => page.evaluate(() => Boolean((window as typeof window & { game?: { scene: { isActive(key: string): boolean } } }).game?.scene.isActive('RacerScene'))), { timeout: 10000 }).toBe(true); });
 
 test('render the WebGL CRT surface inside a 16:9 integer frame', async ({ page }) => {
