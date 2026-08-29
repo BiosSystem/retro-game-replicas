@@ -34,8 +34,9 @@ Use `master` as the protected integration target. Create focused branches with t
 
 - Workstream: P1 additional procedural cabinets
 - Branch: `feat/v2.2-procedural-cabinets`
-- Status: In progress
+- Status: Implemented locally and ready for protected-branch review
 - Scope: Add Neon Relay and Prism Spiral as lazy, original scenes with deterministic wave rules, semantic local co-op input, shared overlays, generated rendering, and no asset payload
+- Verification: 298 Vitest tests across 103 files, static analysis, production build, enforced bundle baseline, full catalog launch coverage, and a dedicated local co-op browser regression
 
 ## Prioritized engineering queue
 
