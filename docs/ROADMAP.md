@@ -1,8 +1,8 @@
 # BiosSystem Neon Arcade Roadmap
 
-## v2.1.0 development cycle
+## v2.2.0 development cycle
 
-Use `master` as the protected integration target. Create focused branches with the `feat/v2.1-<system>` or `fix/v2.1-<system>` pattern. Preserve the v2.0.0 release commit as the performance and behavior baseline.
+Use `master` as the protected integration target. Create focused branches with the `feat/v2.2-<system>` or `fix/v2.2-<system>` pattern. Preserve the v2.1.0 release commit as the performance and behavior baseline.
 
 ## Completed milestone
 
@@ -21,14 +21,21 @@ Use `master` as the protected integration target. Create focused branches with t
 - Boundary: Preserve fixed-step game logic, hitboxes, scene clocks, replay timing, CPU particle fallback, and the current no-external-asset policy
 - Verification: 290 Vitest tests across 100 files, 57 Chromium regressions, 6 Firefox and WebKit smoke checks, locked Cargo tests, and a 1,856,795-byte production output
 
-## Active milestone
+## Completed milestone
 
 - Workstream: P1 unified controller input and optional WebHID
 - Branch: `feat/v2.1-unified-input-webhid`
-- Status: Verified and ready for review
+- Status: Merged and released in v2.1.0
 - Scope: Controller fingerprint profiles, radial and scaled-radial calibration, trigger thresholds, conflict-free bindings, generated live calibration UI, hot-plug pause recovery, and explicit WebHID report transport
 - Boundary: Retain the standard Gamepad API as the default offline input path. Require a user gesture for WebHID access and preserve keyboard, touch, replay, multiplayer, and legacy-scene input contracts
 - Verification: 295 Vitest tests across 102 files, 58 Chromium regressions, 6 Firefox and WebKit smoke checks, locked Cargo tests, and the standard repository production baseline
+
+## Active milestone
+
+- Workstream: v2.2 discovery and baseline refresh
+- Branch: `master`
+- Status: Ready
+- Scope: Reconfirm representative scene performance, select the next isolated cabinet or audio-scheduler workstream, and retain the v2.1.0 controller and visual contracts
 
 ## Prioritized engineering queue
 
@@ -49,7 +56,7 @@ Use `master` as the protected integration target. Create focused branches with t
 4. Implement controller profile persistence, calibration, hot-plug recovery, and the optional WebHID report transport before adding new cabinets.
 5. Add each new cabinet as an isolated scene milestone with its own deterministic rule module.
 6. Optimize the audio scheduler only after collecting baseline underrun and allocation evidence.
-7. Run the complete release matrix and document migration notes before cutting v2.1.0.
+7. Run the complete release matrix and document migration notes before cutting v2.1.0. Completed with the v2.1.0 release.
 
 ## Release requirements
 

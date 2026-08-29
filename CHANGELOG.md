@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [v2.1.0] - 2026-08-29
+
 ### Added
 - Add controller fingerprint profiles, scaled-radial and radial stick calibration, trigger thresholds, conflict-free button remapping, live calibration UI, hot-plug recovery, and explicit WebHID report transport.
 - Add persisted Classic 1980s and 2026 Overdrive visual modes with generated GPU spark particles, a bounded per-scene light pool, selective effect glow, camera trauma, and display-only hit-stop while preserving deterministic gameplay.
