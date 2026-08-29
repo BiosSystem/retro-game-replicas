@@ -91,6 +91,8 @@ npm run tauri build
 
 Render the core arcade experience at 640x480 with pixel-art sampling. Select Clean Pixel, Arcade CRT 1980s, Trinitron 1990s, or Bypass. Calibrate stable scanline phase and 0% to 8% overscan, then select AUTO, HIGH, MEDIUM, or LOW quality. The CRT path supports gamma-aware bloom, curvature, chromatic aberration, phosphor masks, vignette, program caching, and a source-canvas fallback.
 
+Use Cabinet Control to switch between Classic 1980s and 2026 Overdrive visuals. Classic selects the authentic CRT baseline. Overdrive adds bounded dynamic scene lights, a single pooled GPU particle render node, selective glow for effects, directional camera feedback, and a display-only 30 to 50 ms hit-stop on major impacts. These effects never alter fixed-step simulation, collision bounds, input timing, or replay state. Canvas and headless renderers keep the established pooled-particle fallback.
+
 Open Player Profile with P or the west controller button. Keep one deterministic avatar seed and bounded player name on the device. Reroll the procedural pixel avatar without downloading an image. Reuse the identity in the lobby, high-score entry, and leaderboard center. Render featured-game score, stage, combo, health, and status values through the shared generated HUD contract.
 
 Generate gameplay graphics, sprites, particles, previews, levels, worlds, music, and sound effects from code. Several advanced systems, including WebGPU compute, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD, activate only after capability checks. Deterministic CPU and browser-safe fallbacks remain the baseline path.
@@ -99,7 +101,7 @@ The latest production build contains 191 modules, a 119.10 kB initial bootstrap 
 
 ## Verification status
 
-The current v2.1 development candidate passes TypeScript analysis, 287 Vitest checks across 99 files, 57 Chromium gameplay and visual regressions, Firefox and WebKit smoke coverage, the production bundle budget, the hardened container validation, and the locked Tauri test profile. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the latest hosted result.
+The current v2.1 development candidate passes TypeScript analysis, 290 Vitest checks across 100 files, 57 Chromium gameplay and visual regressions, six Firefox and WebKit smoke checks, the production bundle budget, the hardened container validation, and the locked Tauri test profile. The current visual-pipeline output is 1,856,795 bytes, below the 1.86 MB target. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the latest hosted result.
 
 ## Fun Zone container hosting
 

@@ -128,6 +128,7 @@ canvas { max-width: 100%; max-height: 100%; display: block; image-rendering: pix
 [data-cabinet-theme="amber"] .cabinet-marquee { border-bottom-color: #ffc04c; }
 [data-cabinet-theme="amber"] .console-stat b, [data-cabinet-theme="amber"] .marquee-status { color: #ffc04c; }
 .impact-chromatic canvas { filter: drop-shadow(3px 0 #ff0055) drop-shadow(-3px 0 #00ffff); }
+#app.impact-directional .arcade-display-surface { transform: translate(var(--impact-offset-x, 0), var(--impact-offset-y, 0)) !important; }
 [data-quality="medium"] #app::after { opacity: .75; }
 [data-quality="low"] #app::after { display: none; }
 [data-quality="low"] canvas { filter: none !important; }

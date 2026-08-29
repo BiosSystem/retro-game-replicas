@@ -8,6 +8,7 @@ import { CrtShaderPipeline, parseCrtOverscan, parseCrtPreset, parseCrtQuality, p
 import { DisplayScaler, parseDisplayAspect } from './graphics/DisplayScaler';
 import type { QualityTier } from '../graphics/PooledParticleSystem';
 import { PerformanceBaselineMonitor } from './PerformanceBaseline';
+import { readVisualMode } from '../graphics/VisualMode';
 
 const OVERLAY_SCENES = new Set(['PauseScene', 'SettingsScene', 'NameEntryScene', 'AchievementsScene', 'GameOverScene', 'ProfileScene']);
 
@@ -139,6 +140,7 @@ export class ArcadeRuntime {
     this.displayScaler.setAspect(parseDisplayAspect(localStorage.getItem('arcade_display_aspect')));
     document.documentElement.dataset.crtPreset = preset.toLowerCase();
     document.documentElement.dataset.crtQuality = this.crtQualityPreference.toLowerCase();
+    document.documentElement.dataset.visualMode = readVisualMode(localStorage).toLowerCase();
     document.documentElement.classList.toggle('motion-reduced', localStorage.getItem('arcade_reduced_motion') === 'true');
     document.documentElement.dataset.cabinetTheme = preferences.theme.toLowerCase();
     this.reducedMotion = localStorage.getItem('arcade_reduced_motion') === 'true' || matchMedia('(prefers-reduced-motion: reduce)').matches;

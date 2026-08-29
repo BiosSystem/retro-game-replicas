@@ -7,10 +7,11 @@ import { FullscreenController } from '../engine/FullscreenController';
 import { InputManager } from '../engine/InputManager';
 import { readGamepadMenuInput, type GamepadMenuState } from '../engine/input/GamepadMenuInput';
 import { createNeonPanel } from '../ui/arcade/NeonUi';
+import { nextVisualMode, readVisualMode, writeVisualMode } from '../graphics/VisualMode';
 
 export default class SettingsScene extends Phaser.Scene {
     private sourceScene!: string;
-    private options = ['RESUME', 'FULLSCREEN', 'CABINET THEME', 'REBIND FIRE', 'CRT PRESET', 'CRT QUALITY', 'CRT OVERSCAN', 'SCANLINE PHASE', 'DISPLAY ASPECT', 'TELEMETRY', 'REDUCE MOTION', 'SOUND', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
+    private options = ['RESUME', 'FULLSCREEN', 'CABINET THEME', 'REBIND FIRE', 'CRT PRESET', 'VISUAL MODE', 'CRT QUALITY', 'CRT OVERSCAN', 'SCANLINE PHASE', 'DISPLAY ASPECT', 'TELEMETRY', 'REDUCE MOTION', 'SOUND', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
     private fullscreen: FullscreenController | null = null;
@@ -33,8 +34,8 @@ export default class SettingsScene extends Phaser.Scene {
         // Overlay background
         const bg = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.8);
         bg.setInteractive(); // block clicks
-        createNeonPanel(this, 320, 250, 500, 430, 0x00ffcc, .9);
-        this.selectionGlow = createNeonPanel(this, 320, 78, 360, 22, 0xffff00, .34);
+        createNeonPanel(this, 320, 250, 500, 450, 0x00ffcc, .9);
+        this.selectionGlow = createNeonPanel(this, 320, 72, 360, 20, 0xffff00, .34);
         
         this.add.text(320, 46, 'CABINET CONTROL', {
             fontFamily: "'Share Tech Mono', Courier",
@@ -47,7 +48,7 @@ export default class SettingsScene extends Phaser.Scene {
         this.menuItems = [];
 
         this.options.forEach((opt, idx) => {
-            const y = 78 + (idx * 24);
+            const y = 72 + (idx * 22);
             const text = this.add.text(320, y, opt, {
                 fontFamily: "'Share Tech Mono', Courier",
                 fontSize: '17px',
@@ -86,7 +87,7 @@ export default class SettingsScene extends Phaser.Scene {
                 item.setText(label);
             }
         });
-        this.tweens.add({ targets: this.selectionGlow, y: 78 + this.selectedIndex * 24, duration: 90, ease: 'Quad.Out' });
+        this.tweens.add({ targets: this.selectionGlow, y: 72 + this.selectedIndex * 22, duration: 90, ease: 'Quad.Out' });
     }
 
     update() {
@@ -104,6 +105,7 @@ export default class SettingsScene extends Phaser.Scene {
         if (option === 'FULLSCREEN') return `${option}: ${this.fullscreen?.status() ?? 'UNAVAILABLE'}`;
         if (option === 'REBIND FIRE') return `${option}: ${preferences.bindings.FIRE[0]}`;
         if (option === 'CRT PRESET') return `${option}: ${CRT_PRESETS[this.currentCrtPreset()].label.toUpperCase()}`;
+        if (option === 'VISUAL MODE') return `${option}: ${readVisualMode(localStorage) === 'OVERDRIVE_2026' ? '2026 OVERDRIVE' : 'CLASSIC 1980S'}`;
         if (option === 'CRT QUALITY') return `${option}: ${parseCrtQuality(localStorage.getItem('arcade_crt_quality'))}`;
         if (option === 'CRT OVERSCAN') return `${option}: ${Math.round(parseCrtOverscan(localStorage.getItem('arcade_crt_overscan')) * 100)}%`;
         if (option === 'SCANLINE PHASE') return `${option}: ${parseCrtScanlinePhase(localStorage.getItem('arcade_crt_scanline_phase')).toFixed(2)}`;
@@ -141,6 +143,13 @@ export default class SettingsScene extends Phaser.Scene {
             const preset = nextCrtPreset(this.currentCrtPreset());
             localStorage.setItem('arcade_crt_preset', preset);
             localStorage.setItem('arcade_crt', preset === 'BYPASS' ? 'false' : 'true');
+            window.dispatchEvent(new Event('arcade-settings-change'));
+            this.updateMenu();
+        } else if (opt === 'VISUAL MODE') {
+            const mode = nextVisualMode(readVisualMode(localStorage));
+            writeVisualMode(localStorage, mode);
+            localStorage.setItem('arcade_crt_preset', mode === 'OVERDRIVE_2026' ? 'TRINITRON_1990S' : 'ARCADE_CRT_1980S');
+            localStorage.setItem('arcade_crt', 'true');
             window.dispatchEvent(new Event('arcade-settings-change'));
             this.updateMenu();
         } else if (opt === 'CRT QUALITY') {
