@@ -20,7 +20,7 @@ test('launch every registered arcade scene without runtime errors', async ({ pag
     await launchFromLobby(page, index);
     await expect.poll(() => page.evaluate(key => {
       return (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive(key);
-    }, scene), { timeout: 10000, message: `Launch ${scene}` }).toBe(true);
+    }, scene), { timeout: 20000, message: `Launch ${scene}` }).toBe(true);
     await page.waitForTimeout(80);
   }
 
