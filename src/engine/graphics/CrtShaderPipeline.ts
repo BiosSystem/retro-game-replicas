@@ -3,6 +3,8 @@ export type CrtPipelineStatus = 'READY' | 'ACTIVE' | 'BYPASSED' | 'UNAVAILABLE' 
 export type CrtQuality = 'HIGH' | 'MEDIUM' | 'LOW';
 export type CrtQualityPreference = 'AUTO' | CrtQuality;
 
+import { isVisualFrameFrozen } from '../../graphics/VisualFrameFreeze';
+
 export interface CrtCalibration {
   overscan: number;
   scanlinePhase: number;
@@ -166,6 +168,8 @@ export class CrtShaderPipeline {
   render(_timeMs: number, quality: CrtQuality = 'HIGH', _reducedMotion = false) {
     if (this.presetName === 'BYPASS') { this.showSource('BYPASSED'); return false; }
     if (!this.gl || !this.program || !this.texture || !this.vertexBuffer || !this.uniforms) { this.showSource(this.status === 'READY' ? 'UNAVAILABLE' : this.status); return false; }
+    // Preserve the current output frame during visual-only hit-stop. Simulation keeps advancing.
+    if (this.status === 'ACTIVE' && isVisualFrameFrozen(_timeMs)) return true;
     const width = Math.max(1, this.sourceCanvas.width);
     const height = Math.max(1, this.sourceCanvas.height);
     if (this.outputCanvas.width !== width || this.outputCanvas.height !== height) { this.outputCanvas.width = width; this.outputCanvas.height = height; }

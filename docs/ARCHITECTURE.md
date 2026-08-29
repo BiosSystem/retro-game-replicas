@@ -34,7 +34,7 @@ flowchart LR
 | Input | Keyboard, touch, standard gamepad normalization, local multiplayer routing | `src/engine/InputManager.ts`, `src/engine/input/`, `src/multiplayer/` |
 | Scenes | Lobby, game selection, lazy scene registry, pause, settings, achievements, Game Over | `src/scenes/`, `src/sceneRegistry.ts` |
 | Gameplay | Original arcade replicas and Neon game modules | `src/scenes/`, `src/games/` |
-| Rendering | Canvas pixel art, CRT pass, display scaling, pooled particles, ray and voxel systems | `src/engine/graphics/`, `src/graphics/` |
+| Rendering | Canvas pixel art, CRT pass, display scaling, pooled CPU particles, GPU destruction particles, bounded dynamic lights, ray and voxel systems | `src/engine/graphics/`, `src/graphics/` |
 | Arcade UI | Generated Nine Slice panels, glow controls, unified HUD frames, profile scenes, and pixel avatars | `src/ui/arcade/`, `src/ui/profile/`, `src/scenes/ProfileScene.ts` |
 | Audio | Generated tracker music, effects, spatial audio, optional Worklet and Wasm DSP | `src/audio/`, `src/engine/AudioEngine.ts` |
 | Persistence | Preferences, scores, replay ledgers, bounded save-state serialization | `src/engine/persistence/`, `src/engine/ScoreLedger.ts` |
@@ -75,6 +75,14 @@ Lobby, overlays, and featured games
 ```
 
 Keep player identity local to `bios_arcade_profile_v1`. Sanitize names and seeds before persistence. Generate every avatar from its stored seed and use no remote image service. Render one shared generated panel texture per Phaser texture manager. Reuse one HUD frame per featured scene and avoid per-frame object creation.
+
+### Visual modes and feedback pipeline
+
+Cabinet Control persists `arcade_visual_mode` with two explicit visual modes. `CLASSIC_1980S` selects the Arcade CRT 1980s preset and disables the modern GPU feedback layer. `OVERDRIVE_2026` selects the Trinitron 1990s CRT baseline and activates opt-in Phaser WebGL effects. Both modes run the same scene logic, fixed-step physics, hitboxes, scores, and input state.
+
+`SpriteGPULayer` owns one Phaser particle emitter render node, one generated 14 by 14 spark texture, and at most twelve short-lived Phaser lights per scene. It reuses particle capacity and light slots for explosions and hits, applies lighting only to renderable sprite and image objects, and has no Arcade Physics bodies. The emitter receives a selective glow filter while HUD objects stay outside the filter target. Canvas and headless renderers retain the pooled Graphics particle fallback.
+
+`VFXManager` keeps camera shake and chromatic feedback visual-only. Critical impacts request a bounded 30 to 50 ms display-frame hold through `CrtShaderPipeline`, which retains the last submitted WebGL frame without pausing the Phaser scene, physics world, timers, or replay clock. If the CRT path is bypassed or unavailable, the game continues with the existing camera shake and particle fallback.
 
 Keep assets procedural. Game scenes draw with Phaser primitives, generated buffers, shaders, typed arrays, and Web Audio nodes. Do not add ROM loading or imported copyrighted game art. Optional WebGPU, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD paths must retain deterministic browser-safe fallbacks.
 
