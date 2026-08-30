@@ -1,6 +1,9 @@
 ## [Unreleased]
 
+## [v2.3.0] - 2026-08-30
+
 ### Added
+- Add deterministic versus rules for Tetris garbage attacks, 60-tick state-hash exchange, and a fifteen-second reconnect forfeit clock as the scene-integration boundary for live netplay.
 - Add a bounded Shader Workshop with five factory CRT profiles, persisted local tuning, JSON import and export, and validated curvature, scanline, bloom, mask, persistence, convergence, and vignette controls.
 - Add a Cabinet Netplay Lobby with host and challenger slots, controller badges, ready toggles, sanitized ambiguity-safe room input, full manual invite exchange, and explicit reconnect or failure status.
 - Add a toggleable bezel network HUD with rolling RTT, jitter, packet-loss, rollback-depth, and zero to two frame input-delay recommendation telemetry.

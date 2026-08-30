@@ -1,0 +1,2 @@
+import { describe, expect, it } from 'vitest'; import { VersusMatchCoordinator } from './VersusMatchCoordinator';
+describe('versus match lifecycle', () => it('runs countdown, round, and best-of-three states', () => { const match = new VersusMatchCoordinator(); for (let tick = 0; tick < 180; tick++) match.tick(); expect(match.snapshot().phase).toBe('PLAYING'); expect(match.roundWinner(0)).toBe('ROUND_OVER'); match.rematch(); expect(match.snapshot().phase).toBe('COUNTDOWN'); }));
