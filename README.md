@@ -101,9 +101,9 @@ Generate gameplay graphics, sprites, particles, previews, levels, worlds, music,
 
 Neon Breaker keeps classic paddle and ball collision inside the fixed 60 Hz Arcade Physics world, then routes impact sparks through the pooled CPU and Overdrive GPU particle paths. Cyber-Racer advances its speed, lane, score, boost, and ghost race in fixed 60 Hz ticks while rendering a generated pseudo-3D road, horizon palette, city skyline, and bounded engine-exhaust light pulses. Both preserve stable scene keys, unified controller mappings, local profile-backed high scores, and Classic mode fallbacks.
 
-Open NETPLAY to create a direct manual WebRTC room code. Select Copy Invite to place a fragment-only lobby link on the clipboard for a peer. The browser does not send that fragment to the web host. The v2.3 rollback core uses fixed binary snapshots and a twelve-frame input window, starting with versioned state contracts for Neon Vector and Tetris Pulse. Offline cabinet play remains the default while individual games adopt deterministic rollback simulations.
+Open NETPLAY to enter the Cabinet Netplay Lobby. Host and challenger seats show connection, controller, and ready status. Use the six-character room label to organize the session, then exchange the full fragment-only invite for manual WebRTC SDP negotiation. The browser does not send that fragment to the web host. Enable NETPLAY HUD in Cabinet Control to show RTT, jitter, packet loss, rollback depth, and the recommended zero to two frame input delay. The v2.3 rollback core uses fixed binary snapshots and a twelve-frame input window, starting with versioned state contracts for Neon Vector and Tetris Pulse. Offline cabinet play remains the default while individual games adopt deterministic rollback simulations.
 
-The latest production build contains 202 modules, a 125.01 kB initial bootstrap bundle, a deferred 1,352.40 kB Phaser runtime chunk, and no downloaded UI or avatar asset payload.
+The latest production build contains 206 modules, a 109.58 kB initial bootstrap bundle, a deferred 1,352.40 kB Phaser runtime chunk, and no downloaded UI or avatar asset payload.
 
 ## Verification status
 

@@ -13,7 +13,6 @@ import { ArcadeRuntime } from './engine/ArcadeRuntime';
 import { SaveManager } from './engine/SaveManager';
 import { installModApi } from './mods/ModRuntime';
 import { installModManager } from './ui/mods/ModManagerController';
-import { installNetplayController } from './ui/net/NetplayController';
 import { arcadeCompute } from './engine/compute/ComputePipeline';
 import { installVisualModStudio } from './ui/studio/VisualModStudio';
 import { installSwarmLeaderboard } from './ui/swarm/SwarmLeaderboardUi';
@@ -37,8 +36,14 @@ SaveManager.initialize();
 installModApi(window);
 installModManager();
 installSaveStateController();
-const netplay = installNetplayController();
-(window as typeof window & { arcadeSwarm?: { merge(value: unknown): Promise<unknown>; top(): unknown } }).arcadeSwarm = { merge: value => netplay.mergeScores(value as import('./net/swarm/ScoreGossip').GossipEnvelope), top: () => netplay.swarmTop() };
+const netplay = import('./ui/net/NetplayController').then(module => module.installNetplayController());
+document.getElementById('netplay-toggle')?.addEventListener('click', event => { event.stopImmediatePropagation(); void netplay.then(controller => controller.toggle(true)); }, { once: true });
+void netplay.then(controller => {
+  (window as typeof window & { arcadeSwarm?: { merge(value: unknown): Promise<unknown>; top(): unknown } }).arcadeSwarm = {
+    merge: value => controller.mergeScores(value as import('./net/swarm/ScoreGossip').GossipEnvelope),
+    top: () => controller.swarmTop(),
+  };
+});
 installVisualModStudio();
 installSwarmLeaderboard();
 void arcadeCompute.initialize().then(backend => { document.documentElement.dataset.compute = backend.toLowerCase(); });
