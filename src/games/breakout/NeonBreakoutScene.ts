@@ -26,7 +26,7 @@ export default class NeonBreakoutScene extends Phaser.Scene {
     const speed = { EASY: 260, NORMAL: 330, HARD: 410, EXPERT: 490 }[this.difficulty] ?? 330;
     this.ballSpeed = speed; this.paddleSpeed = this.difficulty === 'EXPERT' ? 390 : 430; this.score = 0; this.stage = 1; this.lives = 3; this.finished = false; this.stagePending = false; this.laserUntil = 0; this.stickyUntil = 0;
     this.createTextures(); this.add.grid(320, 240, 640, 480, 32, 32, 0x02070d, 1, 0x00ffaa, 0.08);
-    this.add.text(320, 15, 'NEON BREAKOUT // ARKANOID CORE', { fontFamily: 'Courier', fontSize: '19px', color: '#00ffcc', fontStyle: 'bold' }).setOrigin(0.5);
+    this.add.text(320, 15, 'NEON BREAKER // VECTOR BREAKOUT', { fontFamily: 'Courier', fontSize: '19px', color: '#00ffcc', fontStyle: 'bold' }).setOrigin(0.5);
     this.scoreText = this.add.text(12, 40, '', { fontFamily: 'Courier', fontSize: '13px', color: '#ffffff' });
     this.add.text(628, 42, 'MOVE A/D OR ARROWS  FIRE SPACE/ENTER  G GHOST  ESC PAUSE', { fontFamily: 'Courier', fontSize: '9px', color: '#779999' }).setOrigin(1, 0);
     this.paddle = this.physics.add.image(320, 442, 'neon-paddle').setImmovable(true).setCollideWorldBounds(true); (this.paddle.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
@@ -60,7 +60,7 @@ export default class NeonBreakoutScene extends Phaser.Scene {
   }
 
   private spawnBall(x = this.paddle?.x ?? 320, y = 410, vx = this.ballSpeed * 0.45, vy = -this.ballSpeed) { const ball = this.balls.create(x, y, 'neon-ball') as Phaser.Physics.Arcade.Image; ball.setBounce(1).setCollideWorldBounds(true).setVelocity(vx, vy); const body = ball.body as Phaser.Physics.Arcade.Body; body.setAllowGravity(false).setBoundsRectangle(new Phaser.Geom.Rectangle(0, 0, 640, 540)); return ball; }
-  private hitPaddle(ball: Phaser.Physics.Arcade.Image) { if (this.time.now < this.stickyUntil) { ball.setVelocity(0).setData('stuck', true).setData('stickOffset', Phaser.Math.Clamp(ball.x - this.paddle.x, -42, 42)); return; } const body = this.paddle.body as Phaser.Physics.Arcade.Body; const reflected = reflectFromPaddle({ ballX: ball.x, paddleX: this.paddle.x, paddleWidth: this.paddle.displayWidth, paddleVelocity: body.velocity.x, speed: this.ballSpeed }); ball.setVelocity(reflected.vx, reflected.vy); VFXManager.playHit(this, ball.x, ball.y); }
+  private hitPaddle(ball: Phaser.Physics.Arcade.Image) { if (this.time.now < this.stickyUntil) { ball.setVelocity(0).setData('stuck', true).setData('stickOffset', Phaser.Math.Clamp(ball.x - this.paddle.x, -42, 42)); return; } const body = this.paddle.body as Phaser.Physics.Arcade.Body; const reflected = reflectFromPaddle({ ballX: ball.x, paddleX: this.paddle.x, paddleWidth: this.paddle.displayWidth, paddleVelocity: body.velocity.x, speed: this.ballSpeed }); ball.setVelocity(reflected.vx, reflected.vy); VFXManager.playHit(this, ball.x, ball.y); AudioEngine.playTone(180 + Math.abs(reflected.hit) * 260, 'square', 0.045); }
 
   private hitBrick(ball: Phaser.Physics.Arcade.Image, brick: Phaser.Physics.Arcade.Image) { this.damageBrick(brick); const velocity = (ball.body as Phaser.Physics.Arcade.Body).velocity; if (Math.abs(velocity.y) < this.ballSpeed * 0.3) ball.setVelocityY((velocity.y < 0 ? -1 : 1) * this.ballSpeed * 0.45); }
   private laserHit(laser: Phaser.Physics.Arcade.Image, brick: Phaser.Physics.Arcade.Image) { laser.destroy(); this.damageBrick(brick); }

@@ -79,9 +79,9 @@ npm run tauri build
 
 ## Games
 
-**Classic cabinet replicas:** Snake Evolution, Neon Pong, Neon Vector, Neon Breakout, Froggie Crosser, Space Defenders, Tetris Pulse, Minesweeper, Pixel Runner, Brave Bird, and Cyber Chasm.
+**Classic cabinet replicas:** Snake Evolution, Neon Pong, Neon Vector, Neon Breaker, Froggie Crosser, Space Defenders, Tetris Pulse, Minesweeper, Pixel Runner, Brave Bird, and Cyber Chasm.
 
-**Modern arcade games:** Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Relay, and Prism Spiral.
+**Modern arcade games:** Cyber-Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Relay, and Prism Spiral.
 
 **Procedural Neon worlds:** Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, Neon Genesis, Neon OS, The Singularity, Event Horizon, and Neon Epoch.
 
@@ -98,6 +98,8 @@ Open Player Profile with P or the west controller button. Keep one deterministic
 Open Cabinet Control, then Controller Setup, to view live controller inputs and adjust a per-controller scaled-radial or radial deadzone, trigger threshold, and Fire binding. Profiles use a vendor and product fingerprint when available, prevent duplicate bindings, and stay local to the browser. WebHID support is optional and activates only after selecting Connect WebHID from the controller overlay. Disconnecting the primary controller during an active game opens Pause automatically.
 
 Generate gameplay graphics, sprites, particles, previews, levels, worlds, music, and sound effects from code. The audio engine bounds concurrent generated effects to 24 voices, bounds tracker source scheduling to 48 active sources, and reports shared-worklet buffer underruns into runtime telemetry. Several advanced systems, including WebGPU compute, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD, activate only after capability checks. Deterministic CPU and browser-safe fallbacks remain the baseline path.
+
+Neon Breaker keeps classic paddle and ball collision inside the fixed 60 Hz Arcade Physics world, then routes impact sparks through the pooled CPU and Overdrive GPU particle paths. Cyber-Racer advances its speed, lane, score, boost, and ghost race in fixed 60 Hz ticks while rendering a generated pseudo-3D road, horizon palette, city skyline, and bounded engine-exhaust light pulses. Both preserve stable scene keys, unified controller mappings, local profile-backed high scores, and Classic mode fallbacks.
 
 The latest production build contains 202 modules, a 125.01 kB initial bootstrap bundle, a deferred 1,352.40 kB Phaser runtime chunk, and no downloaded UI or avatar asset payload.
 

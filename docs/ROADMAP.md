@@ -34,9 +34,18 @@ Use `master` as the protected integration target. Create focused branches with t
 
 - Workstream: P1 additional procedural cabinets
 - Branch: `feat/v2.2-procedural-cabinets`
-- Status: Implemented locally and ready for protected-branch review
+- Status: Merged into `master` and verified
 - Scope: Add Neon Relay and Prism Spiral as lazy, original scenes with deterministic wave rules, semantic local co-op input, shared overlays, generated rendering, and no asset payload
 - Verification: 298 Vitest tests across 103 files, static analysis, production build, enforced bundle baseline, full catalog launch coverage, and a dedicated local co-op browser regression
+
+## Active milestone
+
+- Workstream: P1 flagship cabinet Overdrive upgrade
+- Branch: `feat/v2.2-breaker-racer-overdrive`
+- Status: In progress
+- Scope: Upgrade the existing Neon Breaker and Cyber-Racer cabinets with deterministic racer stepping, generated horizon and city variation, pooled point-light exhaust feedback, and cabinet-facing catalog and Meta-Arcade labels.
+- Boundary: Preserve stable scene keys, local high-score identity, unified input mappings, generated assets, fixed 60 Hz Arcade Physics, and Classic mode fallbacks.
+- Local verification: 302 Vitest tests across 104 files, TypeScript analysis, locked Cargo tests, a 1,883,711-byte bundle baseline, and two focused Chromium cabinet-flow tests.
 
 ## Completed milestone
 

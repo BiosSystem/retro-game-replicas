@@ -23,6 +23,11 @@ export class VFXManager {
         this.applyDirectionalTrauma(scene, x, y, 0.45);
     }
 
+    static playEngineExhaust(scene: Phaser.Scene, x: number, y: number, color = 0xff2ec4) {
+        this.getPool(scene).particles.emit({ x, y, count: this.scaleCount(5), speedMin: 18, speedMax: 76, lifeMs: 260, color, size: 3 });
+        this.getPool(scene).gpu.burst({ x, y, color, count: this.scaleCount(7) });
+    }
+
     static screenShake(scene: Phaser.Scene, intensity = 0.015, duration = 150) {
         scene.cameras.main.shake(duration, intensity);
         if (this.isOverdrive()) {
