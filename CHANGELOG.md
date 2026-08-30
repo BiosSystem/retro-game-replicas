@@ -1,5 +1,14 @@
 ## [Unreleased]
 
+### Added
+- Add a fixed-capacity deterministic state contract with caller-owned binary snapshots and FNV state hashes for rollback-safe arcade simulations.
+- Add versioned Neon Vector and Tetris Pulse snapshot codecs covering bounded player, projectile, board, and active-piece state without scene-object serialization.
+- Add a twelve-frame typed input ring and in-place rollback coordinator that restores the prior snapshot and resimulates only after divergent remote input arrives.
+- Add secure short room identities and copyable fragment lobby invites around the manual direct WebRTC SDP flow. The fragment remains local to the browser request path and can serve as a QR payload when its SDP size fits QR capacity.
+
+### Changed
+- Upgrade Docker login, metadata, and build-push workflow actions to their Node 24-compatible published majors.
+
 ## [v2.2.0] - 2026-08-30
 
 ### Added

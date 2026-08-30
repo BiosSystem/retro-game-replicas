@@ -7,15 +7,17 @@ import { SwarmScoreStore } from '../../net/swarm/SwarmScoreStore';
 import { SpatialVoiceMixer } from '../../net/voice/SpatialVoiceMixer';
 import { DnaGossip, type DnaEnvelope } from '../../meta/dna/DnaGossip';
 import type { DnaPayload } from '../../meta/dna/AvatarDna';
+import { createRoomId, createRoomInvite, readRoomInvite } from '../../core/netplay/WebRtcLobby';
 
 export class NetplayController {
   private readonly root: HTMLElement; private peer: PeerLink;
   private readonly mesh = new PresenceMesh(); private readonly peerId = `peer-${Math.random().toString(36).slice(2,10)}`; private hubState?: Omit<PresenceState, 'peerId' | 'frame'>; private presenceFrame = 0;
   private readonly peers: PeerLink[] = []; private readonly gossip = new ScoreGossip(); private readonly identity = createSwarmIdentity(); private readonly scoreStore = new SwarmScoreStore(); private readonly voice = new SpatialVoiceMixer(); private readonly dna = new DnaGossip(); private localVoice?: MediaStream; private listener = { x: 320, y: 240, angle: 0 };
+  private roomId = '';
   constructor() {
     this.peer = this.createPeer();
     this.root = document.createElement('aside'); this.root.className = 'netplay-panel'; this.root.hidden = true; this.root.dataset.arcadeOverlay = 'true';
-    this.root.innerHTML = `<header><div><small>BIOSSYSTEM DIRECT LINK</small><h2>P2P NETPLAY</h2></div><button type="button" data-close>X</button></header><p>Exchange one room code per direct peer. Add up to eight links for positional audio and Meta-Arcade presence. Voice requests microphone access only when enabled.</p><div class="netplay-actions"><button type="button" data-peer>ADD MESH PEER</button><button type="button" data-host>CREATE HOST CODE</button><button type="button" data-join>ACCEPT HOST CODE</button><button type="button" data-answer>ACCEPT ANSWER</button><button type="button" data-voice>VOICE OFF</button></div><textarea data-code spellcheck="false" aria-label="WebRTC room code" placeholder="Paste ARC1 room code"></textarea><output data-status>IDLE</output>`;
+    this.root.innerHTML = `<header><div><small>BIOSSYSTEM DIRECT LINK</small><h2>P2P NETPLAY</h2></div><button type="button" data-close>X</button></header><p>Exchange one room code per direct peer. Add up to eight links for positional audio and Meta-Arcade presence. Voice requests microphone access only when enabled.</p><div class="netplay-actions"><button type="button" data-peer>ADD MESH PEER</button><button type="button" data-host>CREATE HOST CODE</button><button type="button" data-copy>COPY INVITE</button><button type="button" data-join>ACCEPT HOST CODE</button><button type="button" data-answer>ACCEPT ANSWER</button><button type="button" data-voice>VOICE OFF</button></div><textarea data-code spellcheck="false" aria-label="WebRTC room code or lobby invite" placeholder="Paste ARC1 room code or lobby invite"></textarea><small data-room></small><output data-status>IDLE</output>`;
     document.body.appendChild(this.root); this.bind(); void this.hydrateScores(); requestAnimationFrame(() => this.tick());
   }
   toggle(force?: boolean) { this.root.hidden = force === undefined ? !this.root.hidden : !force; }
@@ -23,9 +25,10 @@ export class NetplayController {
   swarmTop(){return this.gossip.top(undefined,10);}
   private bind() {
     document.getElementById('netplay-toggle')?.addEventListener('click', () => this.toggle()); this.pick('[data-close]').addEventListener('click', () => this.toggle(false));
-    this.pick('[data-host]').addEventListener('click', () => void this.run(async () => this.write(await this.peer.createHostCode())));
-    this.pick('[data-join]').addEventListener('click', () => void this.run(async () => this.write(await this.peer.acceptHostCode(this.read()))));
-    this.pick('[data-answer]').addEventListener('click', () => void this.run(async () => { await this.peer.acceptAnswerCode(this.read()); }));
+    this.pick('[data-host]').addEventListener('click', () => void this.run(async () => { this.roomId = createRoomId(); this.write(await this.peer.createHostCode()); this.room(this.roomId); }));
+    this.pick('[data-copy]').addEventListener('click', () => void this.copyInvite());
+    this.pick('[data-join]').addEventListener('click', () => void this.run(async () => this.write(await this.peer.acceptHostCode(this.signalingCode()))));
+    this.pick('[data-answer]').addEventListener('click', () => void this.run(async () => { await this.peer.acceptAnswerCode(this.signalingCode()); }));
     this.pick('[data-peer]').addEventListener('click', () => { this.peer = this.createPeer(); this.write(''); this.status('NEW PEER READY'); });
     this.pick('[data-voice]').addEventListener('click', () => void this.toggleVoice());
     this.mesh.addEventListener('presence', event => window.dispatchEvent(new CustomEvent('arcade-hub-presence', { detail: (event as CustomEvent).detail })));
@@ -35,6 +38,7 @@ export class NetplayController {
     window.addEventListener('keydown', event => { if (event.code === 'KeyN' && !(event.target as HTMLElement | null)?.matches('input, textarea, select')) this.toggle(); if (event.code === 'Escape' && !this.root.hidden) this.toggle(false); });
   }
   private async run(action: () => Promise<void>) { try { this.status('NEGOTIATING'); await action(); this.status(this.peer.getStatus()); } catch (error) { this.status(error instanceof Error ? error.message : 'NETPLAY ERROR'); } }
+  private async copyInvite() { try { const signalingCode = this.signalingCode(); if (!this.roomId) this.roomId = createRoomId(); const invite = createRoomInvite(window.location.href, this.roomId, signalingCode); await navigator.clipboard.writeText(invite); this.room(this.roomId); this.status('LOBBY INVITE COPIED'); } catch (error) { this.status(error instanceof Error ? error.message : 'COPY FAILED'); } }
   private frame = 0;
   private tick() { const frame = ++this.frame; if (this.peer.getStatus() === 'CONNECTED') { const buttons = (InputManager.isP1Down('UP') ? 1 : 0) | (InputManager.isP1Down('DOWN') ? 2 : 0) | (InputManager.isP1Down('LEFT') ? 4 : 0) | (InputManager.isP1Down('RIGHT') ? 8 : 0) | (InputManager.isP1Down('FIRE') ? 16 : 0); const axisX = buttons & 4 ? -127 : buttons & 8 ? 127 : 0; const axisY = buttons & 1 ? -127 : buttons & 2 ? 127 : 0; this.peer.sendInput({ frame, buttons, axisX, axisY, checksum: inputChecksum(frame, buttons, axisX, axisY) }); } if (this.hubState && frame % 6 === 0) this.mesh.broadcast({ peerId: this.peerId, ...this.hubState, frame: ++this.presenceFrame }); this.voice.update(this.listener.x, this.listener.y, this.listener.angle); requestAnimationFrame(() => this.tick()); }
   private createPeer() { const peer = new PeerLink(loadIceConfiguration()), voiceId = `voice-${this.peers.length}`; this.peers.push(peer); this.mesh.add(peer); if (this.localVoice) peer.attachLocalAudio(this.localVoice); peer.addEventListener('voice', event => this.voice.add(voiceId, (event as CustomEvent<MediaStream>).detail)); peer.addEventListener('status', event => this.status((event as CustomEvent<PeerStatus>).detail)); peer.addEventListener('input', event => { const input = (event as CustomEvent<NetInputFrame>).detail; InputManager.setNetworkPlayerState({ UP: Boolean(input.buttons & 1), DOWN: Boolean(input.buttons & 2), LEFT: Boolean(input.buttons & 4), RIGHT: Boolean(input.buttons & 8), FIRE: Boolean(input.buttons & 16) }); }); peer.addEventListener('control', event => { const detail=(event as CustomEvent).detail as { type?:unknown;state?:{x?:unknown;y?:unknown} }; if(detail?.type==='HUB_PRESENCE'&&Number.isFinite(detail.state?.x)&&Number.isFinite(detail.state?.y))this.voice.setPosition(voiceId,Number(detail.state?.x),Number(detail.state?.y));this.mesh.receive(detail);void this.receiveGossip(detail);void this.receiveDna(detail); }); return peer; }
@@ -47,8 +51,10 @@ export class NetplayController {
   private broadcast(value:unknown){for(const peer of this.peers)peer.sendControl(value);}
   private emitBoard(){window.dispatchEvent(new CustomEvent('arcade-swarm-board',{detail:this.gossip.top(undefined,10)}));}
   private read() { return (this.pick('[data-code]') as HTMLTextAreaElement).value.trim(); }
+  private signalingCode() { const invite = readRoomInvite(this.read()); if (!invite) throw new Error('Paste a valid ARC1 room code or lobby invite'); if (invite.roomId) { this.roomId = invite.roomId; this.room(this.roomId); } return invite.signalingCode; }
   private write(value: string) { (this.pick('[data-code]') as HTMLTextAreaElement).value = value; }
   private status(value: string) { this.pick('[data-status]').textContent = value; }
+  private room(value: string) { this.pick('[data-room]').textContent = value ? `ROOM ${value}` : ''; }
   private pick(selector: string) { const element = this.root.querySelector<HTMLElement>(selector); if (!element) throw new Error(`Missing netplay element: ${selector}`); return element; }
 }
 

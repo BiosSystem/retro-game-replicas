@@ -73,7 +73,7 @@ npm run tauri build
 | Rendering | 640x480 pixel-art canvas, integer 4:3 or 16:9 framing, CRT presets, generated Nine Slice UI, procedural avatars, backgrounds, particles, and effects |
 | Audio | Web Audio chiptune tracker with cached pulse waves and bounded source scheduling, capped generated effects, spatial cabinet audio, and optional AudioWorklet and Wasm DSP paths |
 | Persistence | Local score ledgers, preferences, deterministic replays, IndexedDB Neon Epoch save states, generated save previews |
-| Connectivity | Manual direct WebRTC peers, local-first verified score gossip, presence mesh, optional spatial voice |
+| Connectivity | Manual direct WebRTC peers, copyable lobby invites, fixed snapshot rollback core, local-first verified score gossip, presence mesh, optional spatial voice |
 | Extensibility | Validated declarative stage mods, visual graph compiler, signed packages, procedural sound patches |
 | Delivery | Offline PWA, hardened Nginx container, loopback-only Compose template, optional Tauri desktop shell |
 
@@ -101,11 +101,13 @@ Generate gameplay graphics, sprites, particles, previews, levels, worlds, music,
 
 Neon Breaker keeps classic paddle and ball collision inside the fixed 60 Hz Arcade Physics world, then routes impact sparks through the pooled CPU and Overdrive GPU particle paths. Cyber-Racer advances its speed, lane, score, boost, and ghost race in fixed 60 Hz ticks while rendering a generated pseudo-3D road, horizon palette, city skyline, and bounded engine-exhaust light pulses. Both preserve stable scene keys, unified controller mappings, local profile-backed high scores, and Classic mode fallbacks.
 
+Open NETPLAY to create a direct manual WebRTC room code. Select Copy Invite to place a fragment-only lobby link on the clipboard for a peer. The browser does not send that fragment to the web host. The v2.3 rollback core uses fixed binary snapshots and a twelve-frame input window, starting with versioned state contracts for Neon Vector and Tetris Pulse. Offline cabinet play remains the default while individual games adopt deterministic rollback simulations.
+
 The latest production build contains 202 modules, a 125.01 kB initial bootstrap bundle, a deferred 1,352.40 kB Phaser runtime chunk, and no downloaded UI or avatar asset payload.
 
 ## Verification status
 
-The v2.1.0 release passed TypeScript analysis, 295 Vitest checks across 102 files, 58 Chromium gameplay and visual regressions, six Firefox and WebKit smoke checks, the production bundle budget, hardened container validation, and the locked Tauri test profile. The current `master` integration passes 301 Vitest checks across 104 files, TypeScript analysis, a production build, the enforced bundle baseline, procedural-cabinet browser coverage, Neon Epoch spatial-audio browser coverage, and the complete hosted validation workflow. The current build is 1,882,229 bytes, with a 125.01 kB initial bootstrap bundle and a deferred 1,352.40 kB Phaser runtime chunk. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the protected-branch result.
+The v2.1.0 release passed TypeScript analysis, 295 Vitest checks across 102 files, 58 Chromium gameplay and visual regressions, six Firefox and WebKit smoke checks, the production bundle budget, hardened container validation, and the locked Tauri test profile. The v2.2.0 release passed 302 Vitest checks across 104 files, TypeScript analysis, the production bundle baseline, hosted browser coverage, hardened container validation, locked Cargo checks, and cross-platform desktop packaging. The active v2.3 branch passes 308 Vitest checks across 107 files, TypeScript analysis, locked Cargo tests, and a 1,885,438-byte production baseline. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the protected-branch result.
 
 ## Fun Zone container hosting
 
