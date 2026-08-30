@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [v2.2.0] - 2026-08-30
+
 ### Added
 - Add Neon Relay signal defense and Prism Spiral orbital survival as lazy-loaded procedural cabinets with local co-op input, deterministic wave scaling, shared score multipliers, generated vector graphics, and shared Pause and Game Over flows.
 - Add a fixed-capacity generated-effect allocator, bounded tracker source scheduling, cached tracker pulse waves, and shared AudioWorklet underrun telemetry for Neon Epoch.
