@@ -4,7 +4,7 @@ test.beforeEach(async ({ page }) => { await page.addInitScript(() => { let state
 
 test('render stable cabinet and creation overlays', async ({ page }) => { await page.goto('/?mods=1'); await expect(page.locator('.arcade-cabinet')).toBeVisible(); await expect(page.locator('#mod-manager')).toBeVisible(); await expect(page.locator('[data-preview]')).toBeVisible(); const first = await pixels(page); await page.waitForTimeout(100); const second = await pixels(page); expect(pixelRatio(first, second)).toBeLessThan(0.002); });
 
-test('open bounded netplay handshake panel', async ({ page }) => { await page.goto('/'); await page.locator('#app canvas').first().waitFor(); await page.locator('#netplay-toggle').click(); await expect(page.locator('.netplay-panel')).toBeVisible(); await expect(page.locator('.netplay-panel')).toContainText('P2P NETPLAY'); });
+test('open the cabinet netplay lobby', async ({ page }) => { await page.goto('/'); await page.locator('#app canvas').first().waitFor(); await page.locator('#netplay-toggle').click(); await expect(page.locator('.netplay-panel')).toBeVisible(); await expect(page.locator('.netplay-panel')).toContainText('NETPLAY LOBBY'); });
 
 test('install the active Phaser frame delta guard', async ({ page }) => {
   await page.goto('/');

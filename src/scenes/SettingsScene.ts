@@ -11,7 +11,7 @@ import { nextVisualMode, readVisualMode, writeVisualMode } from '../graphics/Vis
 
 export default class SettingsScene extends Phaser.Scene {
     private sourceScene!: string;
-    private options = ['RESUME', 'FULLSCREEN', 'CABINET THEME', 'REBIND FIRE', 'CONTROLLER SETUP', 'CRT PRESET', 'VISUAL MODE', 'CRT QUALITY', 'CRT OVERSCAN', 'SCANLINE PHASE', 'DISPLAY ASPECT', 'TELEMETRY', 'REDUCE MOTION', 'SOUND', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
+    private options = ['RESUME', 'FULLSCREEN', 'CABINET THEME', 'REBIND FIRE', 'CONTROLLER SETUP', 'CRT PRESET', 'VISUAL MODE', 'CRT QUALITY', 'CRT OVERSCAN', 'SCANLINE PHASE', 'DISPLAY ASPECT', 'TELEMETRY', 'NETPLAY HUD', 'REDUCE MOTION', 'SOUND', 'VOLUME +10%', 'VOLUME -10%', 'BGM +10%', 'BGM -10%', 'WIPE SAVE DATA'];
     private selectedIndex = 0;
     private menuItems: Phaser.GameObjects.Text[] = [];
     private fullscreen: FullscreenController | null = null;
@@ -34,12 +34,12 @@ export default class SettingsScene extends Phaser.Scene {
         // Overlay background
         const bg = this.add.rectangle(320, 240, 640, 480, 0x000000, 0.8);
         bg.setInteractive(); // block clicks
-        createNeonPanel(this, 320, 250, 500, 450, 0x00ffcc, .9);
-        this.selectionGlow = createNeonPanel(this, 320, 72, 360, 20, 0xffff00, .34);
+        createNeonPanel(this, 320, 246, 500, 468, 0x00ffcc, .9);
+        this.selectionGlow = createNeonPanel(this, 320, 60, 360, 18, 0xffff00, .34);
         
-        this.add.text(320, 46, 'CABINET CONTROL', {
+        this.add.text(320, 32, 'CABINET CONTROL', {
             fontFamily: "'Share Tech Mono', Courier",
-            fontSize: '36px',
+            fontSize: '28px',
             color: '#00ffcc',
             fontStyle: 'bold'
         }).setOrigin(0.5);
@@ -48,10 +48,10 @@ export default class SettingsScene extends Phaser.Scene {
         this.menuItems = [];
 
         this.options.forEach((opt, idx) => {
-            const y = 72 + (idx * 22);
+            const y = 60 + (idx * 20);
             const text = this.add.text(320, y, opt, {
                 fontFamily: "'Share Tech Mono', Courier",
-                fontSize: '17px',
+                fontSize: '15px',
                 color: '#ffffff'
             }).setOrigin(0.5);
             this.menuItems.push(text);
@@ -87,7 +87,7 @@ export default class SettingsScene extends Phaser.Scene {
                 item.setText(label);
             }
         });
-        this.tweens.add({ targets: this.selectionGlow, y: 72 + this.selectedIndex * 22, duration: 90, ease: 'Quad.Out' });
+        this.tweens.add({ targets: this.selectionGlow, y: 60 + this.selectedIndex * 20, duration: 90, ease: 'Quad.Out' });
     }
 
     update() {
@@ -111,6 +111,7 @@ export default class SettingsScene extends Phaser.Scene {
         if (option === 'SCANLINE PHASE') return `${option}: ${parseCrtScanlinePhase(localStorage.getItem('arcade_crt_scanline_phase')).toFixed(2)}`;
         if (option === 'DISPLAY ASPECT') return `${option}: ${parseDisplayAspect(localStorage.getItem('arcade_display_aspect'))}`;
         if (option === 'TELEMETRY') return `${option}: ${localStorage.getItem('arcade_telemetry') === 'true' ? 'ON' : 'OFF'}`;
+        if (option === 'NETPLAY HUD') return `${option}: ${localStorage.getItem('arcade_netplay_telemetry') === 'true' ? 'ON' : 'OFF'}`;
         if (option === 'REDUCE MOTION') return `${option}: ${localStorage.getItem('arcade_reduced_motion') === 'true' ? 'ON' : 'OFF'}`;
         if (option === 'SOUND') return `${option}: ${localStorage.getItem('retro_sound_muted') === 'true' ? 'OFF' : 'ON'}`;
         return option;
@@ -180,6 +181,11 @@ export default class SettingsScene extends Phaser.Scene {
         } else if (opt === 'TELEMETRY') {
             const isEnabled = localStorage.getItem('arcade_telemetry') === 'true';
             localStorage.setItem('arcade_telemetry', isEnabled ? 'false' : 'true');
+            window.dispatchEvent(new Event('arcade-settings-change'));
+            this.updateMenu();
+        } else if (opt === 'NETPLAY HUD') {
+            const isEnabled = localStorage.getItem('arcade_netplay_telemetry') === 'true';
+            localStorage.setItem('arcade_netplay_telemetry', isEnabled ? 'false' : 'true');
             window.dispatchEvent(new Event('arcade-settings-change'));
             this.updateMenu();
         } else if (opt === 'SOUND') {

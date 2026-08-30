@@ -84,6 +84,15 @@ All v2.2.0 milestones are complete and released. The release includes procedural
 - Boundary: Retain current offline Phaser scene behavior until game-specific deterministic state loops adopt the new codec boundary. Keep manual peer consent and do not introduce a matchmaking service or a mandatory network path.
 - Local verification: 308 Vitest tests across 107 files, TypeScript analysis, locked Cargo tests, a 1,885,438-byte bundle baseline, and direct Chromium startup coverage. The complete browser matrix is deferred to protected remote CI because the local sandbox intermittently denies later Chromium process launches.
 
+## Active milestone
+
+- Workstream: P1 cabinet netplay lobby and telemetry HUD
+- Branch: `feat/v2.3-netplay-lobby-ui`
+- Status: Implemented locally and awaiting protected-branch validation
+- Scope: Add host and challenger lobby seats, sanitized room input, manual invite exchange, ready states, recovery status, rolling network telemetry, adaptive input-delay recommendations, and a persisted bezel HUD setting.
+- Boundary: Preserve manual direct signaling, do not represent a six-character label as a standalone SDP transport, and keep the telemetry UI separate from deterministic game state and rendering.
+- Local verification: 312 Vitest tests across 109 files, TypeScript analysis, 62 Chromium catalog, visual, and gameplay tests, locked Cargo tests, and a 1,894,501-byte production baseline. The Chromium matrix completed in 5.6 minutes against the production preview.
+
 ## Historical v2.1 delivery sequence
 
 1. Establish the P0 benchmark baseline and publish the measurement protocol. Completed on `feat/v2.1-performance-baseline`.

@@ -45,6 +45,8 @@ Neon Vector and Tetris Pulse each have a versioned binary codec with fixed capac
 
 `WebRtcLobby` produces a secure short room identity and a copyable fragment invite around the existing `ARC1` manual SDP exchange. The fragment keeps SDP out of HTTP requests. A client can encode an invite as QR only when the SDP payload fits QR capacity, which manual serverless offers do not guarantee. No discovery service, matchmaking server, automatic microphone request, or network requirement is introduced.
 
+`NetplayController` presents the Cabinet Netplay Lobby as a DOM overlay outside Phaser scene ownership. It renders host and challenger seats, controller-state badges, ready toggles, six-character ambiguity-safe room identifiers, a full manual SDP invite field, and recovery state. `NetworkTelemetry` retains a typed rolling 60-sample latency window, calculates jitter and transport receipt loss, clamps visible rollback depth to eight frames, and recommends zero to two local input-delay frames. `NetplayTelemetryHud` remains a toggleable bezel overlay and never enters the game render surface or fixed simulation clock.
+
 ## Subsystems
 
 | Layer | Responsibility | Key locations |
