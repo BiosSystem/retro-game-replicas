@@ -17,7 +17,8 @@ flowchart LR
   CRT --> Display[Browser canvas or Tauri webview]
   Logic --> Audio[Web Audio tracker, SFX, spatial DSP]
   Logic --> State[LocalStorage, IndexedDB, replay ledger]
-  Logic --> Peer[Optional manual WebRTC and signed peer protocols]
+  Logic --> Rollback[Fixed snapshot ring and 12-frame rollback coordinator]
+  Rollback --> Peer[Optional manual WebRTC DataChannel and signed peer protocols]
 ```
 
 ## Core loop and scene lifecycle
@@ -34,6 +35,16 @@ flowchart LR
 
 Input polling duration remains part of `PerformanceBaselineMonitor` and the runtime telemetry HUD. Connection changes emit short toast notifications. A primary controller disconnect pauses only the foreground game through the shared Pause scene, never the lobby or an active utility overlay.
 
+### Deterministic rollback netplay core
+
+`src/core/netplay/` defines the allocation-bounded v2.3 rollback boundary. `DeterministicStateCodec` exposes `saveState`, `loadState`, and `hashState` over caller-owned `StateSnapshot` buffers. `StateSnapshotRing` preallocates its slots before gameplay and restores in place, so rollback does not copy scene objects or allocate arrays while resimulating.
+
+Neon Vector and Tetris Pulse each have a versioned binary codec with fixed capacities. The Vector codec stores two player transforms and a 96-entry projectile pool. The Tetris codec stores a 10 by 20 board and a fixed 4 by 4 active-piece grid. Scene integration stays deliberately separate from the Phaser adapters until each game loop is fully moved to deterministic state data. Existing scenes keep their current offline behavior unchanged.
+
+`RollbackInputRing` stores local, received, and predicted remote inputs in typed-array rings. It permits at most twelve frames of late input. `RollbackCoordinator` restores the prior snapshot, replaces only divergent predicted input, and resimulates to the current fixed tick. This is the replacement path for new netplay-enabled game rules; it does not alter legacy scene physics.
+
+`WebRtcLobby` produces a secure short room identity and a copyable fragment invite around the existing `ARC1` manual SDP exchange. The fragment keeps SDP out of HTTP requests. A client can encode an invite as QR only when the SDP payload fits QR capacity, which manual serverless offers do not guarantee. No discovery service, matchmaking server, automatic microphone request, or network requirement is introduced.
+
 ## Subsystems
 
 | Layer | Responsibility | Key locations |
@@ -46,7 +57,7 @@ Input polling duration remains part of `PerformanceBaselineMonitor` and the runt
 | Arcade UI | Generated Nine Slice panels, glow controls, unified HUD frames, profile scenes, and pixel avatars | `src/ui/arcade/`, `src/ui/profile/`, `src/scenes/ProfileScene.ts` |
 | Audio | Generated tracker music, effects, spatial audio, optional Worklet and Wasm DSP | `src/audio/`, `src/engine/AudioEngine.ts` |
 | Persistence | Preferences, scores, replay ledgers, bounded save-state serialization | `src/engine/persistence/`, `src/engine/ScoreLedger.ts` |
-| Networking | Manual WebRTC peers, rollback, signed scores, CRDT and shard contracts | `src/net/`, `src/ui/net/` |
+| Networking | Manual WebRTC peers, typed snapshot rollback core, signed scores, CRDT and shard contracts | `src/core/netplay/`, `src/net/`, `src/ui/net/` |
 | Extensibility | Declarative mod validation, signed package handling, visual graph bytecode | `src/mods/`, `src/ui/mods/`, `src/ui/studio/` |
 
 ## Featured catalog architecture
@@ -55,8 +66,8 @@ The lobby exposes 29 lazy-loaded entries. Treat `src/scenes/ArcadeCatalog.ts` as
 
 | Catalog entry | Scene key | Runtime role | Primary systems |
 |---|---|---|---|
-| Neon Vector | `AsteroidsScene` | Procedural vector survival for solo, co-op, and competitive sessions | Infinite stage generation, shared multiplayer session state, weapon and shield pickups, pooled particles, generated vector art |
-| Tetris Pulse | `TetrisScene` | Cabinet puzzle loop with increasing speed and shared overlay integration | Grid collision, line clearing, deterministic scoring, semantic input compatibility, shared Game Over flow |
+| Neon Vector | `AsteroidsScene` | Procedural vector survival for solo, co-op, and competitive sessions | Infinite stage generation, shared multiplayer session state, versioned binary rollback state contract, weapon and shield pickups, pooled particles, generated vector art |
+| Tetris Pulse | `TetrisScene` | Cabinet puzzle loop with increasing speed and shared overlay integration | Grid collision, line clearing, deterministic scoring, versioned 10 by 20 rollback state contract, semantic input compatibility, shared Game Over flow |
 | Neon Cyber-Caster | `RaycasterScene` | First-person procedural dungeon combat | Deterministic BSP dungeons, DDA ray casting, sprite projection, bounded collision, generated wall shading |
 | Neon Danmaku | `DanmakuScene` | Adaptive bullet-pattern survival benchmark | Fixed-capacity 100,000-projectile ECS, typed arrays, scripted boss phases, adaptive AI director, render-budget sampling |
 | Neon Epoch | `EpochScene` | Procedural simulation and graphics showcase | Generated Gaussian splat cloud, capability-gated Wasm SIMD physics, procedural weather and fluid state, IndexedDB save slots and autosave |
