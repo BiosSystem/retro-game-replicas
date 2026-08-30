@@ -7,6 +7,7 @@
 ### Changed
 - Expand the cabinet catalog from 27 to 29 entries and document both new scene contracts, registration points, and production bundle measurements.
 - Bound audio graph growth during effect bursts and report missed shared-worklet output blocks through the existing performance monitor.
+- Remove the temporary forced Node 24 GitHub Actions runtime override after hosted runners adopted Node 24 by default, and refresh checkout and Node setup action majors in the release pipeline.
 
 ## [v2.1.0] - 2026-08-29
 

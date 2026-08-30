@@ -103,7 +103,7 @@ The latest production build contains 202 modules, a 125.01 kB initial bootstrap 
 
 ## Verification status
 
-The current v2.1 development candidate passes TypeScript analysis, 295 Vitest checks across 102 files, 58 Chromium gameplay and visual regressions, six Firefox and WebKit smoke checks, the production bundle budget, the hardened container validation, and the locked Tauri test profile. The unified-input build is 1,867,197 bytes under the repository's enforced production budget. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the latest hosted result.
+The v2.1.0 release passed TypeScript analysis, 295 Vitest checks across 102 files, 58 Chromium gameplay and visual regressions, six Firefox and WebKit smoke checks, the production bundle budget, hardened container validation, and the locked Tauri test profile. The latest local v2.2 integration verification passes 301 Vitest checks across 104 files, TypeScript analysis, a production build, the enforced bundle baseline, procedural-cabinet browser coverage, and Neon Epoch spatial-audio browser coverage. The current build is 1,882,229 bytes, with a 125.01 kB initial bootstrap bundle and a deferred 1,352.40 kB Phaser runtime chunk. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the protected-branch result.
 
 ## Fun Zone container hosting
 
