@@ -23,6 +23,7 @@ export default class NeonEpochScene extends Phaser.Scene {
   private readonly audioBlock = new Float32Array(1_024);
   private audioPhase = 0;
   private audioConfigureFrame = 0;
+  private spatialUnderruns = 0;
   private simdPhysics: SimdPhysicsCore | null = null;
   private readonly saveStates = arcadeSaveStates;
   private readonly saveProvider: EpochSaveProvider = {
@@ -38,6 +39,7 @@ export default class NeonEpochScene extends Phaser.Scene {
     this.cameraZ = -58;
     this.heading = 0;
     this.elapsed = 0;
+    this.spatialUnderruns = 0;
     this.gfx = this.add.graphics();
     this.hud = new ArcadeHud(this, 8, 8, 624, 0x8effc1);
     this.add.text(320, 462, 'WASD TRAVERSE  Q/E TURN  ESC PAUSE', { fontFamily: 'Courier', fontSize: '11px', color: '#9db7aa' }).setOrigin(0.5).setDepth(5);
@@ -138,6 +140,11 @@ export default class NeonEpochScene extends Phaser.Scene {
       this.audioBlock[index] = wind + rain;
     }
     this.spatialAudio.write(this.audioBlock);
+    const underruns = this.spatialAudio.underruns();
+    if (underruns > this.spatialUnderruns) {
+      window.dispatchEvent(new CustomEvent('arcade-audio-underrun', { detail: { count: underruns - this.spatialUnderruns } }));
+      this.spatialUnderruns = underruns;
+    }
     if (++this.audioConfigureFrame % 30 === 0) this.spatialAudio.configure({ distanceMeters: 12 + weather.rain * 38, listenerTowardSource: Math.sin(this.heading) * 8, sourceTowardListener: weather.wind * 0.35, timeDilation: 1, speedOfSound: 343 });
   }
 

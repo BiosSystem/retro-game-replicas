@@ -71,7 +71,7 @@ npm run tauri build
 | Game flow | Difficulty selection, solo and supported local multiplayer modes, pause, restart, shared Game Over, high-score entry, achievements |
 | Cabinet UI | Generated Nine Slice panels, animated controls, deterministic local player profiles, procedural avatars, and shared HUD frames |
 | Rendering | 640x480 pixel-art canvas, integer 4:3 or 16:9 framing, CRT presets, generated Nine Slice UI, procedural avatars, backgrounds, particles, and effects |
-| Audio | Web Audio chiptune tracker, generated effects, spatial cabinet audio, optional AudioWorklet and Wasm DSP paths |
+| Audio | Web Audio chiptune tracker with cached pulse waves and bounded source scheduling, capped generated effects, spatial cabinet audio, and optional AudioWorklet and Wasm DSP paths |
 | Persistence | Local score ledgers, preferences, deterministic replays, IndexedDB Neon Epoch save states, generated save previews |
 | Connectivity | Manual direct WebRTC peers, local-first verified score gossip, presence mesh, optional spatial voice |
 | Extensibility | Validated declarative stage mods, visual graph compiler, signed packages, procedural sound patches |
@@ -97,9 +97,9 @@ Open Player Profile with P or the west controller button. Keep one deterministic
 
 Open Cabinet Control, then Controller Setup, to view live controller inputs and adjust a per-controller scaled-radial or radial deadzone, trigger threshold, and Fire binding. Profiles use a vendor and product fingerprint when available, prevent duplicate bindings, and stay local to the browser. WebHID support is optional and activates only after selecting Connect WebHID from the controller overlay. Disconnecting the primary controller during an active game opens Pause automatically.
 
-Generate gameplay graphics, sprites, particles, previews, levels, worlds, music, and sound effects from code. Several advanced systems, including WebGPU compute, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD, activate only after capability checks. Deterministic CPU and browser-safe fallbacks remain the baseline path.
+Generate gameplay graphics, sprites, particles, previews, levels, worlds, music, and sound effects from code. The audio engine bounds concurrent generated effects to 24 voices, bounds tracker source scheduling to 48 active sources, and reports shared-worklet buffer underruns into runtime telemetry. Several advanced systems, including WebGPU compute, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD, activate only after capability checks. Deterministic CPU and browser-safe fallbacks remain the baseline path.
 
-The latest production build contains 201 modules, a 124.92 kB initial bootstrap bundle, a deferred 1,352.40 kB Phaser runtime chunk, and no downloaded UI or avatar asset payload.
+The latest production build contains 202 modules, a 125.01 kB initial bootstrap bundle, a deferred 1,352.40 kB Phaser runtime chunk, and no downloaded UI or avatar asset payload.
 
 ## Verification status
 

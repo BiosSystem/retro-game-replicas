@@ -96,6 +96,12 @@ Cabinet Control persists `arcade_visual_mode` with two explicit visual modes. `C
 
 Keep assets procedural. Game scenes draw with Phaser primitives, generated buffers, shaders, typed arrays, and Web Audio nodes. Do not add ROM loading or imported copyrighted game art. Optional WebGPU, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD paths must retain deterministic browser-safe fallbacks.
 
+### Audio scheduling and underrun telemetry
+
+`AudioVoiceAllocator` caps generated sound effects and patch previews at 24 concurrent voices. It uses a fixed `Float64Array` of release times, so overloaded effects are dropped rather than creating an unbounded graph. `WebAudioTrackerBackend` caches its two pulse waves and limits active scheduled tracker sources to 48. It drops a note only when the graph is already at that hard limit.
+
+The spatial AudioWorklet ring reserves header slots for read position, write position, and missed render quanta. The processor increments the underrun counter once per missed output block. Neon Epoch samples this counter and sends a bounded `arcade-audio-underrun` signal to `PerformanceBaselineMonitor`. The MessagePort fallback remains playable but does not claim shared-ring underrun telemetry.
+
 ## Memory and performance discipline
 
 Use typed arrays, fixed-capacity rings, pooled particles, bounded ECS storage, and Worker transfers for heavy paths. Cap frame deltas at 50 ms. The high-volume Danmaku path stores up to 100,000 projectiles in preallocated arrays. Save states, score claims, replay changes, mod packages, and peer messages validate shape and maximum size before use.

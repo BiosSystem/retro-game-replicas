@@ -30,13 +30,20 @@ Use `master` as the protected integration target. Create focused branches with t
 - Boundary: Retain the standard Gamepad API as the default offline input path. Require a user gesture for WebHID access and preserve keyboard, touch, replay, multiplayer, and legacy-scene input contracts
 - Verification: 295 Vitest tests across 102 files, 58 Chromium regressions, 6 Firefox and WebKit smoke checks, locked Cargo tests, and the standard repository production baseline
 
-## Active milestone
+## Completed milestone
 
 - Workstream: P1 additional procedural cabinets
 - Branch: `feat/v2.2-procedural-cabinets`
 - Status: Implemented locally and ready for protected-branch review
 - Scope: Add Neon Relay and Prism Spiral as lazy, original scenes with deterministic wave rules, semantic local co-op input, shared overlays, generated rendering, and no asset payload
 - Verification: 298 Vitest tests across 103 files, static analysis, production build, enforced bundle baseline, full catalog launch coverage, and a dedicated local co-op browser regression
+
+## Active milestone
+
+- Workstream: P2 audio engine optimization
+- Branch: `feat/v2.2-audio-engine`
+- Status: In progress
+- Scope: Bound generated effect and tracker voice graphs, cache tracker wave data, surface shared-worklet underruns through runtime telemetry, and preserve autoplay-safe browser fallbacks
 
 ## Prioritized engineering queue
 

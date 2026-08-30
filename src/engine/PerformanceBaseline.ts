@@ -61,7 +61,7 @@ export class PerformanceBaselineMonitor {
   }
 
   recordInputPoll(durationMs: number) { this.inputPolls.record(durationMs); }
-  recordAudioUnderrun() { this.audioUnderruns += 1; }
+  recordAudioUnderrun(count = 1) { this.audioUnderruns += Math.max(1, Math.min(1024, Math.floor(Number.isFinite(count) ? count : 1))); }
 
   snapshot(frame: TelemetrySnapshot, sceneKey: string | undefined, heapMegabytes = readHeapMegabytes()): PerformanceSnapshot {
     if (heapMegabytes !== null) this.peakHeapMegabytes = Math.max(this.peakHeapMegabytes ?? 0, heapMegabytes);

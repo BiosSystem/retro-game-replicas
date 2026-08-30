@@ -22,10 +22,10 @@ export function sharedSpatialAudioAvailable() {
 
 export function createSpatialRing(requestedFrames = 16_384, preferShared = true): SpatialRing {
   const capacity = Math.max(256, Math.min(262_144, Math.ceil(requestedFrames / 128) * 128));
-  const bytes = 8 + capacity * Float32Array.BYTES_PER_ELEMENT;
+  const bytes = 12 + capacity * Float32Array.BYTES_PER_ELEMENT;
   const shared = preferShared && sharedSpatialAudioAvailable();
   const buffer = shared ? new SharedArrayBuffer(bytes) : new ArrayBuffer(bytes);
-  return { mode: shared ? 'SHARED' : 'MESSAGE', buffer, header: new Int32Array(buffer, 0, 2), samples: new Float32Array(buffer, 8, capacity), capacity };
+  return { mode: shared ? 'SHARED' : 'MESSAGE', buffer, header: new Int32Array(buffer, 0, 3), samples: new Float32Array(buffer, 12, capacity), capacity };
 }
 
 export function writeSpatialRing(ring: SpatialRing, input: Float32Array) {
@@ -39,6 +39,8 @@ export function writeSpatialRing(ring: SpatialRing, input: Float32Array) {
   Atomics.store(ring.header, 1, write);
   return count;
 }
+
+export function spatialRingUnderruns(ring: SpatialRing) { return ring.mode === 'SHARED' ? Atomics.load(ring.header, 2) : 0; }
 
 export function propagationDelaySamples(distanceMeters: number, sampleRate: number, speedOfSound = 343) {
   if (!Number.isFinite(speedOfSound) || speedOfSound <= 0 || !Number.isFinite(sampleRate) || sampleRate <= 0) throw new Error('Invalid propagation constants');
@@ -80,9 +82,9 @@ export class PropagationDelayLine {
 
 function workletSource() {
   return `class BiosRelativisticSpatialProcessor extends AudioWorkletProcessor {
-constructor(){super();this.header=null;this.samples=null;this.capacity=0;this.queue=[];this.offset=0;this.ratio=1;this.delay=0;this.phase=0;this.hold=0;this.history=new Float32Array(Math.ceil(sampleRate*8)+2);this.historyWrite=0;this.port.onmessage=e=>{if(e.data.type==='shared'){this.header=new Int32Array(e.data.buffer,0,2);this.samples=new Float32Array(e.data.buffer,8);this.capacity=this.samples.length}else if(e.data.type==='block'){this.queue.push(new Float32Array(e.data.buffer));if(this.queue.length>16)this.queue.shift()}else if(e.data.type==='params'){this.ratio=Math.max(.25,Math.min(4,e.data.ratio));this.delay=Math.max(0,Math.min(this.history.length-2,e.data.delay))}}}
-pull(){if(this.header&&this.samples){const read=Atomics.load(this.header,0),write=Atomics.load(this.header,1);if(read<write){const sample=this.samples[read%this.capacity];Atomics.store(this.header,0,read+1);return sample}}else if(this.queue.length){const block=this.queue[0],sample=block[this.offset++]||0;if(this.offset>=block.length){this.queue.shift();this.offset=0}return sample}return 0}
-process(_inputs,outputs){const channels=outputs[0];if(!channels||!channels[0])return true;const out=channels[0];for(let i=0;i<out.length;i++){this.phase+=this.ratio;while(this.phase>=1){this.hold=this.pull();this.phase-=1}this.history[this.historyWrite]=this.hold;const read=(this.historyWrite-Math.floor(this.delay)+this.history.length)%this.history.length;out[i]=this.history[read];this.historyWrite=(this.historyWrite+1)%this.history.length}for(let c=1;c<channels.length;c++)channels[c].set(out);return true}}
+constructor(){super();this.header=null;this.samples=null;this.capacity=0;this.queue=[];this.offset=0;this.ratio=1;this.delay=0;this.phase=0;this.hold=0;this.missed=false;this.history=new Float32Array(Math.ceil(sampleRate*8)+2);this.historyWrite=0;this.port.onmessage=e=>{if(e.data.type==='shared'){this.header=new Int32Array(e.data.buffer,0,3);this.samples=new Float32Array(e.data.buffer,12);this.capacity=this.samples.length}else if(e.data.type==='block'){this.queue.push(new Float32Array(e.data.buffer));if(this.queue.length>16)this.queue.shift()}else if(e.data.type==='params'){this.ratio=Math.max(.25,Math.min(4,e.data.ratio));this.delay=Math.max(0,Math.min(this.history.length-2,e.data.delay))}}}
+pull(){if(this.header&&this.samples){const read=Atomics.load(this.header,0),write=Atomics.load(this.header,1);if(read<write){const sample=this.samples[read%this.capacity];Atomics.store(this.header,0,read+1);return sample}}else if(this.queue.length){const block=this.queue[0],sample=block[this.offset++]||0;if(this.offset>=block.length){this.queue.shift();this.offset=0}return sample}this.missed=true;return 0}
+process(_inputs,outputs){const channels=outputs[0];if(!channels||!channels[0])return true;const out=channels[0];this.missed=false;for(let i=0;i<out.length;i++){this.phase+=this.ratio;while(this.phase>=1){this.hold=this.pull();this.phase-=1}this.history[this.historyWrite]=this.hold;const read=(this.historyWrite-Math.floor(this.delay)+this.history.length)%this.history.length;out[i]=this.history[read];this.historyWrite=(this.historyWrite+1)%this.history.length}if(this.missed&&this.header)Atomics.add(this.header,2,1);for(let c=1;c<channels.length;c++)channels[c].set(out);return true}}
 registerProcessor('bios-relativistic-spatial',BiosRelativisticSpatialProcessor);`;
 }
 
@@ -90,6 +92,7 @@ export interface SpatialAudioBridge {
   readonly node: AudioWorkletNode;
   readonly mode: SpatialRingMode;
   write(samples: Float32Array): number;
+  underruns(): number;
   configure(parameters: RelativisticAudioParameters): void;
   close(): void;
 }
@@ -115,6 +118,7 @@ export async function installRelativisticSpatialWorklet(context: AudioContext, d
       node.port.postMessage({ type: 'block', buffer: copy.buffer }, [copy.buffer]);
       return samples.length;
     },
+    underruns() { return spatialRingUnderruns(ring); },
     configure(parameters) {
       node.port.postMessage({
         type: 'params',

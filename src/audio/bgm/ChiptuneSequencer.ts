@@ -81,10 +81,14 @@ export class WebAudioTrackerBackend implements TrackerBackend {
   private readonly mix: GainNode;
   private readonly channels = new Map<TrackerVoice, GainNode>();
   private readonly active = new Set<AudioScheduledSourceNode>();
+  private readonly pulseWaves: [PeriodicWave, PeriodicWave];
+  private readonly sourceLimit: number;
+  private droppedVoiceCount = 0;
   private noise: AudioBuffer;
 
-  constructor(context: AudioContext, destination: AudioNode) {
+  constructor(context: AudioContext, destination: AudioNode, sourceLimit = 48) {
     this.context = context;
+    this.sourceLimit = sourceLimit;
     this.mix = context.createGain();
     this.mix.gain.value = 0.0001;
     this.mix.connect(destination);
@@ -96,19 +100,24 @@ export class WebAudioTrackerBackend implements TrackerBackend {
       this.channels.set(voice, gain);
     }
     this.noise = this.makeNoise();
+    this.pulseWaves = [this.makePulseWave(0.25), this.makePulseWave(0.5)];
   }
 
   get currentTime() { return this.context.currentTime; }
   get activeVoiceCount() { return this.active.size; }
+  get droppedVoices() { return this.droppedVoiceCount; }
   setGain(value: number, at: number, rampSeconds: number) { this.mix.gain.cancelScheduledValues(at); this.mix.gain.setValueAtTime(Math.max(0.0001, this.mix.gain.value), at); this.mix.gain.exponentialRampToValueAtTime(Math.max(0.0001, value), at + rampSeconds); }
   suspend() { return this.context.suspend(); }
   resume() { return this.context.resume(); }
   disposeBefore(_time: number) { /* Sources remove themselves through onended. */ }
 
   schedule(event: ScheduledVoice) {
-    if (event.drum) this.scheduleDrum(event);
-    else if (event.voice === 'ARP' && event.chord) event.chord.forEach((note, index) => this.scheduleTone(event, note + (index % 2) * 12, index * event.duration / event.chord!.length));
-    else if (event.note) this.scheduleTone(event, event.note, 0);
+    if (event.drum) { if (this.canSchedule(1)) this.scheduleDrum(event); return; }
+    if (event.voice === 'ARP' && event.chord) {
+      event.chord.forEach((note, index) => { if (this.canSchedule(1)) this.scheduleTone(event, note + (index % 2) * 12, index * event.duration / event.chord!.length); });
+      return;
+    }
+    if (event.note && this.canSchedule(event.voice === 'LEAD' ? 2 : 1)) this.scheduleTone(event, event.note, 0);
   }
 
   private scheduleTone(event: ScheduledVoice, midi: number, offset: number) {
@@ -118,7 +127,7 @@ export class WebAudioTrackerBackend implements TrackerBackend {
     const duration = event.voice === 'ARP' ? event.duration / 3 : event.duration;
     const frequency = 440 * Math.pow(2, (midi - 69) / 12);
     oscillator.type = event.voice === 'BASS' ? 'triangle' : 'square';
-    if (event.voice === 'LEAD') oscillator.setPeriodicWave(this.makePulseWave(start % 0.5 < 0.25 ? 0.25 : 0.5));
+    if (event.voice === 'LEAD') oscillator.setPeriodicWave(this.pulseWaves[start % 0.5 < 0.25 ? 0 : 1]);
     oscillator.frequency.setValueAtTime(frequency, start);
     if (event.voice === 'BASS') oscillator.frequency.exponentialRampToValueAtTime(frequency * 1.015, start + duration);
     if (event.voice === 'LEAD') {
@@ -154,6 +163,12 @@ export class WebAudioTrackerBackend implements TrackerBackend {
     source.onended = () => { source.disconnect(); this.active.delete(source); };
     source.start(start);
     source.stop(stop);
+  }
+
+  private canSchedule(sourceCount: number) {
+    if (this.active.size + sourceCount <= this.sourceLimit) return true;
+    this.droppedVoiceCount += 1;
+    return false;
   }
 
   private makeNoise() {
