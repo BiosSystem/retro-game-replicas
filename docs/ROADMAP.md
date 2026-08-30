@@ -1,8 +1,12 @@
 # BiosSystem Neon Arcade Roadmap
 
-## v2.2.0 development cycle
+## v2.3.0 development cycle
 
-Use `master` as the protected integration target. Create focused branches with the `feat/v2.2-<system>` or `fix/v2.2-<system>` pattern. Preserve the v2.1.0 release commit as the performance and behavior baseline.
+Use `master` as the protected integration target. Create focused branches with the `feat/v2.3-<system>` or `fix/v2.3-<system>` pattern. Preserve the v2.2.0 release commit as the performance and behavior baseline.
+
+## v2.2.0 release status
+
+All v2.2.0 milestones are complete and released. The release includes procedural co-op cabinets, bounded audio scheduling and underrun telemetry, Node 24 release-workflow alignment, and the Neon Breaker and Cyber-Racer Overdrive upgrade.
 
 ## Completed milestone
 
@@ -38,11 +42,11 @@ Use `master` as the protected integration target. Create focused branches with t
 - Scope: Add Neon Relay and Prism Spiral as lazy, original scenes with deterministic wave rules, semantic local co-op input, shared overlays, generated rendering, and no asset payload
 - Verification: 298 Vitest tests across 103 files, static analysis, production build, enforced bundle baseline, full catalog launch coverage, and a dedicated local co-op browser regression
 
-## Active milestone
+## Completed milestone
 
 - Workstream: P1 flagship cabinet Overdrive upgrade
 - Branch: `feat/v2.2-breaker-racer-overdrive`
-- Status: In progress
+- Status: Merged and released in v2.2.0
 - Scope: Upgrade the existing Neon Breaker and Cyber-Racer cabinets with deterministic racer stepping, generated horizon and city variation, pooled point-light exhaust feedback, and cabinet-facing catalog and Meta-Arcade labels.
 - Boundary: Preserve stable scene keys, local high-score identity, unified input mappings, generated assets, fixed 60 Hz Arcade Physics, and Classic mode fallbacks.
 - Local verification: 302 Vitest tests across 104 files, TypeScript analysis, locked Cargo tests, a 1,883,711-byte bundle baseline, and two focused Chromium cabinet-flow tests.
@@ -63,18 +67,15 @@ Use `master` as the protected integration target. Create focused branches with t
 - Scope: Remove the temporary forced Node 24 action-runtime override after GitHub-hosted runners adopted Node 24 by default. Refresh checkout and Node setup actions to the current documented majors.
 - Verification: Preserve Node 24 application setup, tag-gated validation, GHCR latest and version tags, desktop packaging, and the existing workflow configuration tests.
 
-## Prioritized engineering queue
+## v2.3.0 prioritized engineering queue
 
 | Priority | Workstream | Planned outcome | Acceptance gate |
 |---|---|---|---|
-| P0 | Baseline and telemetry | Capture stable frame-time, memory, input-latency, audio-underrun, and bundle-size baselines for representative low, medium, and high-load scenes | Record reproducible benchmark commands and budgets. Keep all existing test, browser, container, and Cargo gates green |
-| P1 | 2026 visual pipeline | Add Classic and Overdrive visual modes with bounded lights, selective glow, one GPU particle render node per scene, camera feedback, and display-only hit-stop | Preserve the fixed-step simulation and Canvas fallback. Keep one generated spark texture, twelve lights, and 768 GPU particles per scene as hard limits |
-| P1 | Additional arcade cabinets | Add two original procedural cabinet scenes through the lazy catalog and shared Pause, Game Over, score, difficulty, input, and audio contracts | Add deterministic systems tests and catalog launch coverage. Use no ROMs, copied art, copied audio, or external asset bloat |
-| P1 | Gamepad and WebHID mapping | Add user-remappable profiles, stick and trigger calibration, controller fingerprint persistence, hot-plug diagnostics, and an optional capability-gated WebHID adapter | Retain the Gamepad API fallback. Require explicit user activation for WebHID. Verify Xbox, PlayStation, Nintendo, 8BitDo, arcade encoders, generic, keyboard, touch, and dual-player isolation |
-| P2 | Audio engine optimization | Reduce graph churn with reusable nodes, bounded voice allocation, scheduler lookahead tuning, AudioWorklet ring-buffer telemetry, and deterministic suspend and resume behavior | Record underrun and voice-count metrics. Preserve generated audio, autoplay-safe initialization, spatial DSP fallback, and zero steady-state allocation spikes |
-| P2 | Release pipeline maintenance | Remove the temporary forced Node 24 action-runtime override after GitHub-hosted runners adopted Node 24 by default | Keep GHCR `latest` and version tags, all seven native release assets, and the complete release validation matrix intact |
+| P1 | Online netplay and rollback lobby | Add a local-first room browser, direct peer invite flow, rollback session negotiation, and reconnect recovery without a central match server | Preserve manual WebRTC consent, fixed-width input frames, replay compatibility, and offline cabinet play |
+| P2 | Custom shader workshop | Add a validated visual-graph authoring surface with generated preview scenes, bounded uniforms, and shareable local presets | Retain CRT fallback, block unbounded shader sources, and keep HUD text outside effect filters |
+| P2 | Curved CRT cabinet presentation | Add persisted bezel geometry, Bezier cabinet curvature, adaptive integer framing, and accessibility-safe visual controls | Preserve the core 640x480 render surface, pointer input, Canvas fallback, and the 60 FPS budget |
 
-## Delivery sequence
+## Historical v2.1 delivery sequence
 
 1. Establish the P0 benchmark baseline and publish the measurement protocol. Completed on `feat/v2.1-performance-baseline`.
 2. Implement CRT calibration and shader-cache improvements behind existing runtime presets. Completed on `feat/v2.1-crt-calibration` with 284 Vitest tests, 56 Chromium regressions, locked Cargo validation, and a 0.0642 ms measured CRT CPU submission mean.
