@@ -42,7 +42,7 @@ Use `master` as the protected integration target. Create focused branches with t
 
 - Workstream: P2 audio engine optimization
 - Branch: `feat/v2.2-audio-engine`
-- Status: Implemented locally and ready for protected-branch review
+- Status: Merged into `master` and verified
 - Scope: Bound generated effect and tracker voice graphs, cache tracker wave data, surface shared-worklet underruns through runtime telemetry, and preserve autoplay-safe browser fallbacks
 - Verification: 301 Vitest tests across 104 files, static analysis, production build, enforced bundle baseline, and Neon Epoch spatial-audio browser coverage
 
@@ -50,7 +50,7 @@ Use `master` as the protected integration target. Create focused branches with t
 
 - Workstream: P2 release pipeline maintenance
 - Branch: `feat/v2.2-audio-engine`
-- Status: Implemented locally and ready for protected-branch review
+- Status: Merged into `master` and verified
 - Scope: Remove the temporary forced Node 24 action-runtime override after GitHub-hosted runners adopted Node 24 by default. Refresh checkout and Node setup actions to the current documented majors.
 - Verification: Preserve Node 24 application setup, tag-gated validation, GHCR latest and version tags, desktop packaging, and the existing workflow configuration tests.
 
