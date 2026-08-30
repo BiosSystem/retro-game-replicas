@@ -36,6 +36,7 @@ SaveManager.initialize();
 installModApi(window);
 installModManager();
 installSaveStateController();
+void import('./ui/crt/ShaderWorkshopController').then(module => module.installShaderWorkshopController());
 const netplay = import('./ui/net/NetplayController').then(module => module.installNetplayController());
 document.getElementById('netplay-toggle')?.addEventListener('click', event => { event.stopImmediatePropagation(); void netplay.then(controller => controller.toggle(true)); }, { once: true });
 void netplay.then(controller => {

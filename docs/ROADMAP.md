@@ -75,23 +75,32 @@ All v2.2.0 milestones are complete and released. The release includes procedural
 | P2 | Custom shader workshop | Add a validated visual-graph authoring surface with generated preview scenes, bounded uniforms, and shareable local presets | Retain CRT fallback, block unbounded shader sources, and keep HUD text outside effect filters |
 | P2 | Curved CRT cabinet presentation | Add persisted bezel geometry, Bezier cabinet curvature, adaptive integer framing, and accessibility-safe visual controls | Preserve the core 640x480 render surface, pointer input, Canvas fallback, and the 60 FPS budget |
 
-## Active milestone
+## Completed milestone
 
 - Workstream: P1 deterministic snapshots and direct rollback transport
 - Branch: `feat/v2.3-rollback-netplay`
-- Status: Implemented locally and awaiting protected-branch validation
+- Status: Merged and verified
 - Scope: Add fixed-capacity state codecs for Neon Vector and Tetris Pulse, a twelve-frame typed input ring, an in-place rollback coordinator, and manual WebRTC lobby invites.
 - Boundary: Retain current offline Phaser scene behavior until game-specific deterministic state loops adopt the new codec boundary. Keep manual peer consent and do not introduce a matchmaking service or a mandatory network path.
 - Local verification: 308 Vitest tests across 107 files, TypeScript analysis, locked Cargo tests, a 1,885,438-byte bundle baseline, and direct Chromium startup coverage. The complete browser matrix is deferred to protected remote CI because the local sandbox intermittently denies later Chromium process launches.
 
-## Active milestone
+## Completed milestone
 
 - Workstream: P1 cabinet netplay lobby and telemetry HUD
 - Branch: `feat/v2.3-netplay-lobby-ui`
-- Status: Implemented locally and awaiting protected-branch validation
+- Status: Merged and verified
 - Scope: Add host and challenger lobby seats, sanitized room input, manual invite exchange, ready states, recovery status, rolling network telemetry, adaptive input-delay recommendations, and a persisted bezel HUD setting.
 - Boundary: Preserve manual direct signaling, do not represent a six-character label as a standalone SDP transport, and keep the telemetry UI separate from deterministic game state and rendering.
 - Local verification: 312 Vitest tests across 109 files, TypeScript analysis, 62 Chromium catalog, visual, and gameplay tests, locked Cargo tests, and a 1,894,501-byte production baseline. The Chromium matrix completed in 5.6 minutes against the production preview.
+
+## Active milestone
+
+- Workstream: P2 Shader Workshop and curved CRT presentation
+- Branch: `feat/v2.3-shader-workshop-curved-crt`
+- Status: Implemented locally and verified
+- Scope: Add bounded factory and local CRT profiles, persisted tuning, JSON import/export, a cabinet overlay, and presentation-only curvature and phosphor controls.
+- Boundary: Retain fixed-step gameplay, the 640x480 source surface, Canvas fallback, and bounded GPU submission cost. Do not execute user-authored GLSL.
+- Local verification: 314 Vitest tests across 110 files, TypeScript analysis, 63 Chromium catalog and visual tests in 6.1 minutes, locked Cargo tests, and a 1,900,393-byte production baseline with a 110,154-byte bootstrap.
 
 ## Historical v2.1 delivery sequence
 

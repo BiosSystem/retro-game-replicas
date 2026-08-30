@@ -47,6 +47,8 @@ Neon Vector and Tetris Pulse each have a versioned binary codec with fixed capac
 
 `NetplayController` presents the Cabinet Netplay Lobby as a DOM overlay outside Phaser scene ownership. It renders host and challenger seats, controller-state badges, ready toggles, six-character ambiguity-safe room identifiers, a full manual SDP invite field, and recovery state. `NetworkTelemetry` retains a typed rolling 60-sample latency window, calculates jitter and transport receipt loss, clamps visible rollback depth to eight frames, and recommends zero to two local input-delay frames. `NetplayTelemetryHud` remains a toggleable bezel overlay and never enters the game render surface or fixed simulation clock.
 
+`ShaderWorkshop` owns bounded CRT configuration and local JSON import or export. `ShaderWorkshopController` is a DOM overlay that updates only presentation preferences. `CrtShaderPipeline` merges those values into its existing WebGL barrel, bloom, scanline, mask, vignette, and chromatic uniforms, while the reusable phosphor ping-pong surface supplies presentation-only persistence.
+
 ## Subsystems
 
 | Layer | Responsibility | Key locations |

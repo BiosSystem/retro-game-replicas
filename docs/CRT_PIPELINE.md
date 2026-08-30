@@ -14,6 +14,12 @@ Set `SCANLINE PHASE` to 0.00, 0.25, 0.50, or 0.75 through Cabinet Control. Persi
 
 Decode sampled colors into a bounded linear-light approximation before bloom, scanline, mask, and vignette operations. Encode the final phosphor result for display after applying the selected preset. Keep Clean Pixel at gamma 1.0 and use calibrated CRT gamma values for the Arcade CRT and Trinitron presets.
 
+## Shader Workshop and curved cabinet profiles
+
+Open `SHADER WORKSHOP` from Cabinet Control to select Clean Arcade, 1983 Vector Tube, Worn Cyberpunk CRT, Overdrive Neon Lab, or Flat Digital Studio. Each profile exposes bounded curvature, scanline, bloom, shadow-mask, phosphor-persistence, chromatic-convergence, and vignette controls. Persist local settings in `arcade_shader_workshop_v1`; export only the validated JSON representation and reject malformed imports.
+
+The renderer applies curvature as the existing WebGL barrel surface over the fixed 640x480 source frame. The low-resolution ping-pong phosphor surface remains reusable and allocates only on source-size changes. Workshop controls never accept shader source text, never enter game state, and remain subject to the Canvas fallback when WebGL is unavailable.
+
 ## Overscan calibration
 
 Apply overscan before radial curvature so edge cropping remains consistent across both 4:3 and 16:9 display frames. Cycle `CRT OVERSCAN` from 0% through 8% in 2% steps. Clamp invalid stored values before uploading a uniform.

@@ -138,6 +138,14 @@ canvas { max-width: 100%; max-height: 100%; display: block; image-rendering: pix
 #app.impact-directional .arcade-display-surface { transform: translate(var(--impact-offset-x, 0), var(--impact-offset-y, 0)) !important; }
 #controller-toast { position: fixed; right: 18px; bottom: 18px; z-index: 16000; max-width: min(360px, calc(100vw - 36px)); padding: 10px 13px; border: 1px solid #45ffff; background: rgba(1, 12, 24, .92); box-shadow: 0 0 18px rgba(69,255,255,.32); color: #d7ffff; font: 700 12px/1.35 "Cascadia Mono", monospace; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity .16s ease, transform .16s ease; }
 #controller-toast.visible { opacity: 1; transform: translateY(0); }
+.shader-workshop { position: fixed; inset: 8vh max(8vw, 20px); z-index: 19500; overflow: auto; padding: 18px; border: 1px solid #75ffff; background: #030814f5; box-shadow: 0 0 48px #00d5ff55; color: #e9ffff; font: 12px "Cascadia Mono", monospace; }
+.shader-workshop[hidden] { display: none; }
+.shader-workshop header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #176879; }
+.shader-workshop h2 { color: #75ffff; letter-spacing: .12em; }
+.shader-workshop label { display: block; margin: 12px 0; color: #a9dfe8; }
+.shader-workshop input { width: min(100%, 360px); vertical-align: middle; accent-color: #00e5ff; }
+.shader-workshop button, .shader-workshop select, .shader-workshop textarea { margin: 6px; padding: 8px; border: 1px solid #258fa3; background: #071928; color: #e9ffff; font: inherit; }
+.shader-workshop textarea { display: block; width: min(100%, 620px); min-height: 70px; }
 [data-quality="medium"] #app::after { opacity: .75; }
 [data-quality="low"] #app::after { display: none; }
 [data-quality="low"] canvas { filter: none !important; }
