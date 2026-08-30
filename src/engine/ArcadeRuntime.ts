@@ -105,7 +105,7 @@ export class ArcadeRuntime {
     const recordInput = (event: Event) => this.baseline.recordInputEvent(event.timeStamp, performance.now());
     window.addEventListener('keydown', recordInput, true);
     window.addEventListener('pointerdown', recordInput, true);
-    window.addEventListener('arcade-audio-underrun', () => this.baseline.recordAudioUnderrun());
+    window.addEventListener('arcade-audio-underrun', event => this.baseline.recordAudioUnderrun(Number((event as CustomEvent<{ count?: unknown }>).detail?.count) || 1));
   }
 
   private bindControllerStatus() {

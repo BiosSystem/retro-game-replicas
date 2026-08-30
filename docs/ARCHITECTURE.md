@@ -51,7 +51,7 @@ Input polling duration remains part of `PerformanceBaselineMonitor` and the runt
 
 ## Featured catalog architecture
 
-The lobby exposes 27 lazy-loaded entries. Treat `src/scenes/ArcadeCatalog.ts` as the display contract and `src/sceneRegistry.ts` as the executable registration contract. Keep every scene key identical across both files.
+The lobby exposes 29 lazy-loaded entries. Treat `src/scenes/ArcadeCatalog.ts` as the display contract and `src/sceneRegistry.ts` as the executable registration contract. Keep every scene key identical across both files.
 
 | Catalog entry | Scene key | Runtime role | Primary systems |
 |---|---|---|---|
@@ -60,6 +60,8 @@ The lobby exposes 27 lazy-loaded entries. Treat `src/scenes/ArcadeCatalog.ts` as
 | Neon Cyber-Caster | `RaycasterScene` | First-person procedural dungeon combat | Deterministic BSP dungeons, DDA ray casting, sprite projection, bounded collision, generated wall shading |
 | Neon Danmaku | `DanmakuScene` | Adaptive bullet-pattern survival benchmark | Fixed-capacity 100,000-projectile ECS, typed arrays, scripted boss phases, adaptive AI director, render-budget sampling |
 | Neon Epoch | `EpochScene` | Procedural simulation and graphics showcase | Generated Gaussian splat cloud, capability-gated Wasm SIMD physics, procedural weather and fluid state, IndexedDB save slots and autosave |
+| Neon Relay | `RelayScene` | Lane-based signal defense for solo or local co-op | Deterministic wave schedule, procedural drones, semantic two-player input, shared score multipliers, pooled screen entities |
+| Prism Spiral | `SpiralScene` | Orbital survival for solo or local co-op | Deterministic polar wave schedule, wrap-safe angular collision, semantic two-player input, shared score multipliers, procedural vector geometry |
 | Meta-Arcade Hall | `MetaArcadeScene` | Walkable in-world cabinet hub | Generated hall layout, DDA navigation, cabinet scene routing, spatial audio, bounded optional peer presence |
 
 Load these modules only after selection. Preserve deterministic and browser-safe fallbacks when an optional acceleration path is unavailable.
@@ -93,6 +95,12 @@ Cabinet Control persists `arcade_visual_mode` with two explicit visual modes. `C
 `VFXManager` keeps camera shake and chromatic feedback visual-only. Critical impacts request a bounded 30 to 50 ms display-frame hold through `CrtShaderPipeline`, which retains the last submitted WebGL frame without pausing the Phaser scene, physics world, timers, or replay clock. If the CRT path is bypassed or unavailable, the game continues with the existing camera shake and particle fallback.
 
 Keep assets procedural. Game scenes draw with Phaser primitives, generated buffers, shaders, typed arrays, and Web Audio nodes. Do not add ROM loading or imported copyrighted game art. Optional WebGPU, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD paths must retain deterministic browser-safe fallbacks.
+
+### Audio scheduling and underrun telemetry
+
+`AudioVoiceAllocator` caps generated sound effects and patch previews at 24 concurrent voices. It uses a fixed `Float64Array` of release times, so overloaded effects are dropped rather than creating an unbounded graph. `WebAudioTrackerBackend` caches its two pulse waves and limits active scheduled tracker sources to 48. It drops a note only when the graph is already at that hard limit.
+
+The spatial AudioWorklet ring reserves header slots for read position, write position, and missed render quanta. The processor increments the underrun counter once per missed output block. Neon Epoch samples this counter and sends a bounded `arcade-audio-underrun` signal to `PerformanceBaselineMonitor`. The MessagePort fallback remains playable but does not claim shared-ring underrun telemetry.
 
 ## Memory and performance discipline
 

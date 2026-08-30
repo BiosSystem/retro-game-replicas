@@ -1,6 +1,6 @@
 # BiosSystem Neon Arcade
 
-> A procedural retro-futurist arcade platform with 26 original games, a generated Meta-Arcade Hall, and no bundled ROMs or copied game assets.
+> A procedural retro-futurist arcade platform with 28 original games, a generated Meta-Arcade Hall, and no bundled ROMs or copied game assets.
 
 [![Build](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml/badge.svg)](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml)
 [![Release](https://img.shields.io/github/v/release/BiosSystem/retro-game-replicas?color=00ff72)](https://github.com/BiosSystem/retro-game-replicas/releases)
@@ -15,7 +15,7 @@ Capture every image below directly from the current production build. Show proce
 <p align="center">
   <img src="docs/images/screenshots/lobby.png" alt="BiosSystem Neon Arcade lobby with the 2026 Overdrive presentation enabled" width="800">
 </p>
-<p align="center"><sub>Browse the complete 27-entry cabinet catalog from the live BiosSystem Neon Arcade lobby.</sub></p>
+<p align="center"><sub>Browse the complete 29-entry cabinet catalog from the live BiosSystem Neon Arcade lobby.</sub></p>
 
 <table>
   <tr>
@@ -65,13 +65,13 @@ npm run tauri build
 
 | Area | Current implementation |
 |---|---|
-| Arcade catalog | 26 original games plus the generated Meta-Arcade Hall |
+| Arcade catalog | 28 original games plus the generated Meta-Arcade Hall |
 | Runtime | Phaser 4, TypeScript, Vite, lazy game-scene loading, fixed 60 Hz Arcade Physics |
 | Input | Keyboard, touch, Xbox, PlayStation, Nintendo, 8BitDo, arcade encoders, generic controllers, local Player 1 and Player 2 actions |
 | Game flow | Difficulty selection, solo and supported local multiplayer modes, pause, restart, shared Game Over, high-score entry, achievements |
 | Cabinet UI | Generated Nine Slice panels, animated controls, deterministic local player profiles, procedural avatars, and shared HUD frames |
 | Rendering | 640x480 pixel-art canvas, integer 4:3 or 16:9 framing, CRT presets, generated Nine Slice UI, procedural avatars, backgrounds, particles, and effects |
-| Audio | Web Audio chiptune tracker, generated effects, spatial cabinet audio, optional AudioWorklet and Wasm DSP paths |
+| Audio | Web Audio chiptune tracker with cached pulse waves and bounded source scheduling, capped generated effects, spatial cabinet audio, and optional AudioWorklet and Wasm DSP paths |
 | Persistence | Local score ledgers, preferences, deterministic replays, IndexedDB Neon Epoch save states, generated save previews |
 | Connectivity | Manual direct WebRTC peers, local-first verified score gossip, presence mesh, optional spatial voice |
 | Extensibility | Validated declarative stage mods, visual graph compiler, signed packages, procedural sound patches |
@@ -81,7 +81,7 @@ npm run tauri build
 
 **Classic cabinet replicas:** Snake Evolution, Neon Pong, Neon Vector, Neon Breakout, Froggie Crosser, Space Defenders, Tetris Pulse, Minesweeper, Pixel Runner, Brave Bird, and Cyber Chasm.
 
-**Modern arcade games:** Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, and Neon Kombat.
+**Modern arcade games:** Neon Retro Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Relay, and Prism Spiral.
 
 **Procedural Neon worlds:** Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, Neon Genesis, Neon OS, The Singularity, Event Horizon, and Neon Epoch.
 
@@ -97,13 +97,13 @@ Open Player Profile with P or the west controller button. Keep one deterministic
 
 Open Cabinet Control, then Controller Setup, to view live controller inputs and adjust a per-controller scaled-radial or radial deadzone, trigger threshold, and Fire binding. Profiles use a vendor and product fingerprint when available, prevent duplicate bindings, and stay local to the browser. WebHID support is optional and activates only after selecting Connect WebHID from the controller overlay. Disconnecting the primary controller during an active game opens Pause automatically.
 
-Generate gameplay graphics, sprites, particles, previews, levels, worlds, music, and sound effects from code. Several advanced systems, including WebGPU compute, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD, activate only after capability checks. Deterministic CPU and browser-safe fallbacks remain the baseline path.
+Generate gameplay graphics, sprites, particles, previews, levels, worlds, music, and sound effects from code. The audio engine bounds concurrent generated effects to 24 voices, bounds tracker source scheduling to 48 active sources, and reports shared-worklet buffer underruns into runtime telemetry. Several advanced systems, including WebGPU compute, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD, activate only after capability checks. Deterministic CPU and browser-safe fallbacks remain the baseline path.
 
-The latest production build contains 191 modules, a 119.10 kB initial bootstrap bundle, a deferred 1,352.40 kB Phaser runtime chunk, and no downloaded UI or avatar asset payload.
+The latest production build contains 202 modules, a 125.01 kB initial bootstrap bundle, a deferred 1,352.40 kB Phaser runtime chunk, and no downloaded UI or avatar asset payload.
 
 ## Verification status
 
-The current v2.1 development candidate passes TypeScript analysis, 295 Vitest checks across 102 files, 58 Chromium gameplay and visual regressions, six Firefox and WebKit smoke checks, the production bundle budget, the hardened container validation, and the locked Tauri test profile. The unified-input build is 1,867,197 bytes under the repository's enforced production budget. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the latest hosted result.
+The v2.1.0 release passed TypeScript analysis, 295 Vitest checks across 102 files, 58 Chromium gameplay and visual regressions, six Firefox and WebKit smoke checks, the production bundle budget, hardened container validation, and the locked Tauri test profile. The latest local v2.2 integration verification passes 301 Vitest checks across 104 files, TypeScript analysis, a production build, the enforced bundle baseline, procedural-cabinet browser coverage, and Neon Epoch spatial-audio browser coverage. The current build is 1,882,229 bytes, with a 125.01 kB initial bootstrap bundle and a deferred 1,352.40 kB Phaser runtime chunk. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the protected-branch result.
 
 ## Fun Zone container hosting
 

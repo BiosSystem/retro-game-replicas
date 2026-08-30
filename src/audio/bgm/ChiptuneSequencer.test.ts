@@ -83,4 +83,16 @@ describe('ChiptuneSequencer', () => {
     sources.forEach(source => source.onended?.());
     expect(backend.activeVoiceCount).toBe(0);
   });
+
+  it('caps scheduled tracker sources rather than growing an unbounded graph', () => {
+    class Param { value = 0; setValueAtTime() {} exponentialRampToValueAtTime() {} cancelScheduledValues() {} }
+    class Node { connect(target: Node) { return target; } disconnect() {} }
+    class Source extends Node { onended: (() => void) | null = null; frequency = new Param(); type: OscillatorType = 'square'; setPeriodicWave() {} start() {} stop() {} }
+    class Gain extends Node { gain = new Param(); }
+    const context = { currentTime: 1, sampleRate: 100, createGain: () => new Gain(), createBuffer: () => ({ getChannelData: () => new Float32Array(40) }), createOscillator: () => new Source(), createPeriodicWave: () => ({}), suspend: async () => {}, resume: async () => {} } as unknown as AudioContext;
+    const backend = new WebAudioTrackerBackend(context, new Node() as unknown as AudioNode, 1);
+    backend.schedule({ voice: 'LEAD', time: 1, duration: 0.1, note: 69 });
+    expect(backend.activeVoiceCount).toBe(0);
+    expect(backend.droppedVoices).toBe(1);
+  });
 });

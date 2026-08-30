@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PropagationDelayLine, createSpatialRing, propagationDelaySamples, relativisticDopplerRatio } from './RelativisticAudioWorklet';
+import { PropagationDelayLine, createSpatialRing, propagationDelaySamples, relativisticDopplerRatio, spatialRingUnderruns } from './RelativisticAudioWorklet';
 
 describe('relativistic spatial AudioWorklet support', () => {
   it('allocates a bounded fallback ring without cross-origin isolation', () => {
@@ -7,6 +7,8 @@ describe('relativistic spatial AudioWorklet support', () => {
     expect(ring.mode).toBe('MESSAGE');
     expect(ring.capacity).toBe(16_128);
     expect(ring.samples.buffer).toBe(ring.buffer);
+    expect(ring.header).toHaveLength(3);
+    expect(spatialRingUnderruns(ring)).toBe(0);
   });
 
   it('calculates speed-of-sound delay and bounded Doppler shift', () => {

@@ -30,12 +30,29 @@ Use `master` as the protected integration target. Create focused branches with t
 - Boundary: Retain the standard Gamepad API as the default offline input path. Require a user gesture for WebHID access and preserve keyboard, touch, replay, multiplayer, and legacy-scene input contracts
 - Verification: 295 Vitest tests across 102 files, 58 Chromium regressions, 6 Firefox and WebKit smoke checks, locked Cargo tests, and the standard repository production baseline
 
-## Active milestone
+## Completed milestone
 
-- Workstream: v2.2 discovery and baseline refresh
-- Branch: `master`
-- Status: Ready
-- Scope: Reconfirm representative scene performance, select the next isolated cabinet or audio-scheduler workstream, and retain the v2.1.0 controller and visual contracts
+- Workstream: P1 additional procedural cabinets
+- Branch: `feat/v2.2-procedural-cabinets`
+- Status: Implemented locally and ready for protected-branch review
+- Scope: Add Neon Relay and Prism Spiral as lazy, original scenes with deterministic wave rules, semantic local co-op input, shared overlays, generated rendering, and no asset payload
+- Verification: 298 Vitest tests across 103 files, static analysis, production build, enforced bundle baseline, full catalog launch coverage, and a dedicated local co-op browser regression
+
+## Completed milestone
+
+- Workstream: P2 audio engine optimization
+- Branch: `feat/v2.2-audio-engine`
+- Status: Implemented locally and ready for protected-branch review
+- Scope: Bound generated effect and tracker voice graphs, cache tracker wave data, surface shared-worklet underruns through runtime telemetry, and preserve autoplay-safe browser fallbacks
+- Verification: 301 Vitest tests across 104 files, static analysis, production build, enforced bundle baseline, and Neon Epoch spatial-audio browser coverage
+
+## Completed milestone
+
+- Workstream: P2 release pipeline maintenance
+- Branch: `feat/v2.2-audio-engine`
+- Status: Implemented locally and ready for protected-branch review
+- Scope: Remove the temporary forced Node 24 action-runtime override after GitHub-hosted runners adopted Node 24 by default. Refresh checkout and Node setup actions to the current documented majors.
+- Verification: Preserve Node 24 application setup, tag-gated validation, GHCR latest and version tags, desktop packaging, and the existing workflow configuration tests.
 
 ## Prioritized engineering queue
 
@@ -46,7 +63,7 @@ Use `master` as the protected integration target. Create focused branches with t
 | P1 | Additional arcade cabinets | Add two original procedural cabinet scenes through the lazy catalog and shared Pause, Game Over, score, difficulty, input, and audio contracts | Add deterministic systems tests and catalog launch coverage. Use no ROMs, copied art, copied audio, or external asset bloat |
 | P1 | Gamepad and WebHID mapping | Add user-remappable profiles, stick and trigger calibration, controller fingerprint persistence, hot-plug diagnostics, and an optional capability-gated WebHID adapter | Retain the Gamepad API fallback. Require explicit user activation for WebHID. Verify Xbox, PlayStation, Nintendo, 8BitDo, arcade encoders, generic, keyboard, touch, and dual-player isolation |
 | P2 | Audio engine optimization | Reduce graph churn with reusable nodes, bounded voice allocation, scheduler lookahead tuning, AudioWorklet ring-buffer telemetry, and deterministic suspend and resume behavior | Record underrun and voice-count metrics. Preserve generated audio, autoplay-safe initialization, spatial DSP fallback, and zero steady-state allocation spikes |
-| P2 | Release pipeline maintenance | Track native Node.js 24 action support and remove the forced compatibility path when Docker publication actions adopt it | Keep GHCR `latest` and version tags, all seven native release assets, and the complete release validation matrix intact |
+| P2 | Release pipeline maintenance | Remove the temporary forced Node 24 action-runtime override after GitHub-hosted runners adopted Node 24 by default | Keep GHCR `latest` and version tags, all seven native release assets, and the complete release validation matrix intact |
 
 ## Delivery sequence
 

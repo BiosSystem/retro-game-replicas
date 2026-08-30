@@ -3,6 +3,7 @@ import { TRACKS } from '../audio/bgm/tracks';
 import type { SoundPatch } from '../audio/patches/SoundPatch';
 import { SoundPatchStore } from '../audio/patches/SoundPatchStore';
 import type { SpatialAudioBridge } from '../audio/spatial/RelativisticAudioWorklet';
+import { AudioVoiceAllocator } from '../audio/AudioVoiceAllocator';
 
 export type AudioEffect = 'LASER' | 'EXPLOSION' | 'COIN' | 'POWER_UP' | 'STAGE_CLEAR';
 export interface ToneStep { frequency: number; type: OscillatorType; duration: number; delay: number; endFrequency?: number; }
@@ -24,6 +25,7 @@ export class AudioEngine {
     private static musicGain: GainNode | null = null;
     private static sequencer: ChiptuneSequencer | null = null;
     private static pendingTrack: keyof typeof TRACKS | null = null;
+    private static effectVoices = new AudioVoiceAllocator(24);
 
     public static initialize() {
         if (this.ctx) return;
@@ -46,6 +48,7 @@ export class AudioEngine {
         this.musicGain.gain.value = Number(localStorage.getItem('retro_music_volume') ?? '0.55');
         this.musicGain.connect(this.masterGain);
         this.sequencer = new ChiptuneSequencer(new WebAudioTrackerBackend(this.ctx, this.musicGain));
+        this.effectVoices.reset();
         if (this.pendingTrack) this.sequencer.play(TRACKS[this.pendingTrack]);
         this.noiseBuffer = this.createNoiseBuffer(this.ctx);
         document.addEventListener('visibilitychange', () => {
@@ -89,7 +92,7 @@ export class AudioEngine {
 
     public static playTone(frequency: number, type: OscillatorType = 'square', duration: number = 0.1) {
         if (!this.ctx || !this.masterGain) return;
-
+        if (!this.reserveEffectVoice(this.ctx.currentTime, duration)) return;
         this.scheduleTone(frequency, type, duration, this.ctx.currentTime);
     }
 
@@ -99,13 +102,14 @@ export class AudioEngine {
         if (custom) { this.playPatch(custom); return; }
         const now = this.ctx.currentTime;
         const plan = getEffectPlan(effect);
-        for (const tone of plan.tones) this.scheduleTone(tone.frequency, tone.type, tone.duration, now + tone.delay, tone.endFrequency);
-        if (plan.noise) this.playNoise(0.45, now);
+        for (const tone of plan.tones) if (this.reserveEffectVoice(now + tone.delay, tone.duration + 0.01)) this.scheduleTone(tone.frequency, tone.type, tone.duration, now + tone.delay, tone.endFrequency);
+        if (plan.noise && this.reserveEffectVoice(now, 0.45)) this.playNoise(0.45, now);
     }
 
     public static playPatch(patch: SoundPatch) {
         if (!this.ctx || !this.masterGain) return;
         const now = this.ctx.currentTime; const end = now + patch.duration;
+        if (!this.reserveEffectVoice(now, patch.duration + 0.01)) return;
         const gain = this.ctx.createGain(); const filter = this.ctx.createBiquadFilter();
         filter.type = 'lowpass'; filter.frequency.setValueAtTime(patch.filterHz, now);
         gain.gain.setValueAtTime(0.0001, now); gain.gain.exponentialRampToValueAtTime(patch.gain, now + patch.attack); gain.gain.exponentialRampToValueAtTime(0.0001, Math.min(end, now + patch.attack + patch.decay));
@@ -140,6 +144,14 @@ export class AudioEngine {
 
         osc.start(startAt);
         osc.stop(startAt + duration + 0.01);
+    }
+
+    public static effectVoiceDiagnostics() { return this.effectVoices.snapshot(this.ctx?.currentTime ?? 0); }
+
+    private static reserveEffectVoice(startAt: number, duration: number) {
+        const accepted = this.effectVoices.acquire(startAt, duration);
+        if (!accepted) window.dispatchEvent(new CustomEvent('arcade-audio-voice-drop'));
+        return accepted;
     }
 
     private static playNoise(duration: number, startAt: number) {
