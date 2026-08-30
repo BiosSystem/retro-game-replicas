@@ -4,6 +4,7 @@ export type CrtQuality = 'HIGH' | 'MEDIUM' | 'LOW';
 export type CrtQualityPreference = 'AUTO' | CrtQuality;
 
 import { isVisualFrameFrozen } from '../../graphics/VisualFrameFreeze';
+import type { ShaderWorkshopSettings } from '../../core/rendering/crt/ShaderWorkshop';
 
 export interface CrtCalibration {
   overscan: number;
@@ -137,6 +138,7 @@ export class CrtShaderPipeline {
   private submissionSamples = 0;
   private meanSubmissionMs = 0;
   private calibration: CrtCalibration = { overscan: 0, scanlinePhase: 0 };
+  private workshop: ShaderWorkshopSettings | null = null;
   private readonly effective: CrtUniformSettings = { ...CRT_PRESETS.BYPASS.uniforms };
 
   constructor(sourceCanvas: HTMLCanvasElement, parent: HTMLElement, options: CrtShaderPipelineOptions = {}) {
@@ -161,6 +163,7 @@ export class CrtShaderPipeline {
 
   setPreset(name: CrtPresetName) { this.presetName = name; }
   setCalibration(calibration: CrtCalibration) { this.calibration = sanitizeCrtCalibration(calibration); }
+  setWorkshop(settings: ShaderWorkshopSettings | null) { this.workshop = settings; }
   get preset() { return CRT_PRESETS[this.presetName]; }
   get pipelineStatus() { return this.status; }
   get meanCpuSubmissionMs() { return this.meanSubmissionMs; }
@@ -173,7 +176,7 @@ export class CrtShaderPipeline {
     const width = Math.max(1, this.sourceCanvas.width);
     const height = Math.max(1, this.sourceCanvas.height);
     if (this.outputCanvas.width !== width || this.outputCanvas.height !== height) { this.outputCanvas.width = width; this.outputCanvas.height = height; }
-    const profile = applyEffectiveUniforms(this.effective, this.preset.uniforms, quality, this.calibration);
+    const profile = applyEffectiveUniforms(this.effective, this.workshop ? { ...this.preset.uniforms, ...this.workshop } : this.preset.uniforms, quality, this.calibration);
     try {
       const submittedAt = performance.now();
       const gl = this.gl;

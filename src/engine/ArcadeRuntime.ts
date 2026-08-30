@@ -5,6 +5,7 @@ import { InputManager } from './InputManager';
 import { FrameTelemetry, TelemetryHud } from './FrameTelemetry';
 import { ReplayRuntime } from './replay/ReplayRuntime';
 import { CrtShaderPipeline, parseCrtOverscan, parseCrtPreset, parseCrtQuality, parseCrtScanlinePhase, type CrtQualityPreference } from './graphics/CrtShaderPipeline';
+import { readShaderWorkshopSettings } from '../core/rendering/crt/ShaderWorkshop';
 import { DisplayScaler, parseDisplayAspect } from './graphics/DisplayScaler';
 import type { QualityTier } from '../graphics/PooledParticleSystem';
 import { PerformanceBaselineMonitor } from './PerformanceBaseline';
@@ -159,6 +160,7 @@ export class ArcadeRuntime {
     this.crt.setPreset(preset);
     this.crtQualityPreference = parseCrtQuality(localStorage.getItem('arcade_crt_quality'));
     this.crt.setCalibration({ overscan: parseCrtOverscan(localStorage.getItem('arcade_crt_overscan')), scanlinePhase: parseCrtScanlinePhase(localStorage.getItem('arcade_crt_scanline_phase')) });
+    this.crt.setWorkshop(localStorage.getItem('arcade_shader_workshop_enabled') === 'true' ? readShaderWorkshopSettings(localStorage) : null);
     this.displayScaler.setAspect(parseDisplayAspect(localStorage.getItem('arcade_display_aspect')));
     document.documentElement.dataset.crtPreset = preset.toLowerCase();
     document.documentElement.dataset.crtQuality = this.crtQualityPreference.toLowerCase();
