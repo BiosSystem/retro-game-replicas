@@ -60,6 +60,8 @@ The lobby exposes 29 lazy-loaded entries. Treat `src/scenes/ArcadeCatalog.ts` as
 | Neon Cyber-Caster | `RaycasterScene` | First-person procedural dungeon combat | Deterministic BSP dungeons, DDA ray casting, sprite projection, bounded collision, generated wall shading |
 | Neon Danmaku | `DanmakuScene` | Adaptive bullet-pattern survival benchmark | Fixed-capacity 100,000-projectile ECS, typed arrays, scripted boss phases, adaptive AI director, render-budget sampling |
 | Neon Epoch | `EpochScene` | Procedural simulation and graphics showcase | Generated Gaussian splat cloud, capability-gated Wasm SIMD physics, procedural weather and fluid state, IndexedDB save slots and autosave |
+| Neon Breaker | `BreakoutScene` | Fixed-step paddle and ball cabinet loop | Deterministic brick fields, bounded power-ups, shared score submission, pooled impact particles, and generated audio feedback |
+| Cyber-Racer | `RacerScene` | Fixed-tick pseudo-3D horizon race | Generated scanline road, deterministic horizon palette and city skyline, semantic controller input, bounded exhaust lights, and local score flow |
 | Neon Relay | `RelayScene` | Lane-based signal defense for solo or local co-op | Deterministic wave schedule, procedural drones, semantic two-player input, shared score multipliers, pooled screen entities |
 | Prism Spiral | `SpiralScene` | Orbital survival for solo or local co-op | Deterministic polar wave schedule, wrap-safe angular collision, semantic two-player input, shared score multipliers, procedural vector geometry |
 | Meta-Arcade Hall | `MetaArcadeScene` | Walkable in-world cabinet hub | Generated hall layout, DDA navigation, cabinet scene routing, spatial audio, bounded optional peer presence |
@@ -93,6 +95,8 @@ Cabinet Control persists `arcade_visual_mode` with two explicit visual modes. `C
 `SpriteGPULayer` owns one Phaser particle emitter render node, one generated 14 by 14 spark texture, and at most twelve short-lived Phaser lights per scene. It reuses particle capacity and light slots for explosions and hits, applies lighting only to renderable sprite and image objects, and has no Arcade Physics bodies. The emitter receives a selective glow filter while HUD objects stay outside the filter target. Canvas and headless renderers retain the pooled Graphics particle fallback.
 
 `VFXManager` keeps camera shake and chromatic feedback visual-only. Critical impacts request a bounded 30 to 50 ms display-frame hold through `CrtShaderPipeline`, which retains the last submitted WebGL frame without pausing the Phaser scene, physics world, timers, or replay clock. If the CRT path is bypassed or unavailable, the game continues with the existing camera shake and particle fallback.
+
+Neon Breaker and Cyber-Racer use this layer only as a renderer-side enhancement. Breaker impact and brick-destruction callbacks request pooled sparks and bounded lights after deterministic Arcade Physics contacts. Cyber-Racer emits at most one pooled exhaust pulse every 135 ms, schedules its short generated engine tone through the bounded effect allocator, and advances its arcade state at `RACER_TICK_SECONDS`. Neither scene derives score, collision, or progression from visual effects.
 
 Keep assets procedural. Game scenes draw with Phaser primitives, generated buffers, shaders, typed arrays, and Web Audio nodes. Do not add ROM loading or imported copyrighted game art. Optional WebGPU, WebXR, WebCodecs, SharedArrayBuffer, AudioWorklet, and Wasm SIMD paths must retain deterministic browser-safe fallbacks.
 
