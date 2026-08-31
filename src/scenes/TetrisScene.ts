@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { VFXManager } from '../engine/VFXManager';
 import { InputManager } from '../engine/InputManager';
 import { ArcadeHud } from '../ui/arcade/NeonUi';
+import { TetrisVersusAdapter } from '../games/tetris-pulse/TetrisVersusAdapter';
 
 const COLS = 10;
 const ROWS = 20;
@@ -19,6 +20,7 @@ export default class TetrisScene extends Phaser.Scene {
   private graphics!: Phaser.GameObjects.Graphics;
   private difficulty = 'NORMAL';
   private gameOver = false;
+  private versus: TetrisVersusAdapter | null = null;
 
   constructor() {
     super('TetrisScene');
@@ -26,6 +28,7 @@ export default class TetrisScene extends Phaser.Scene {
 
   create(data: any) {
     this.difficulty = data?.difficulty || 'NORMAL';
+    this.versus = data?.mode === 'VERSUS' ? new TetrisVersusAdapter() : null;
     switch (this.difficulty) {
       case 'EASY': this.baseInterval = 1000; break;
       case 'NORMAL': this.baseInterval = 800; break;
@@ -178,11 +181,13 @@ export default class TetrisScene extends Phaser.Scene {
       }
     }
     if (linesCleared > 0) {
+        if (this.versus) this.versus.queueAttack(linesCleared);
         this.score += [0, 100, 300, 500, 800][linesCleared];
         this.scoreHud.set({ score: this.score, stage: Math.floor(this.score / 1000) + 1, combo: linesCleared, status: this.difficulty });
         this.dropInterval = Math.max(100, this.baseInterval - (this.score / 10));
         this.cameras.main.flash(200, 255, 255, 255, false);
     }
+    if (this.versus?.opponent.garbageQueued) this.versus.injectGarbage((this.score + linesCleared) % COLS);
   }
 
   update(_time: number, delta: number) {
@@ -286,6 +291,13 @@ export default class TetrisScene extends Phaser.Scene {
           g.fillStyle(this.activePiece.color, 1);
         }
       }
+    }
+    if (this.versus) {
+      const mini = 8; const mx = 455; const my = 190; const opponent = this.versus.opponent;
+      g.fillStyle(0x080012, .9).fillRect(mx - 8, my - 24, COLS * mini + 16, ROWS * mini + 32);
+      for (let row = 0; row < ROWS; row++) for (let col = 0; col < COLS; col++) if (opponent.board[row * COLS + col]) g.fillStyle(0xff2ec4).fillRect(mx + col * mini, my + row * mini, mini - 1, mini - 1);
+      g.lineStyle(1, 0xff2ec4).strokeRect(mx - 1, my - 1, COLS * mini + 2, ROWS * mini + 2);
+      g.fillStyle(0xff3355, .7).fillRect(mx + COLS * mini + 8, my + (ROWS - opponent.garbageQueued) * mini, 6, opponent.garbageQueued * mini);
     }
   }
 }
