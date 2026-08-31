@@ -7,6 +7,8 @@ import { CoopSession, type ArcadeMode } from '../../multiplayer/CoopSession';
 import type { PlayerId } from '../../multiplayer/MultiInput';
 import { ProceduralStageGenerator, type StageDefinition } from '../../generators/ProceduralStageGenerator';
 import { ArcadeHud } from '../../ui/arcade/NeonUi';
+import { NeonVectorRollbackAdapter } from '../neon-vector/NeonVectorRollbackAdapter';
+import type { NetInputFrame } from '../../net/InputCodec';
 
 export default class NeonAsteroidsScene extends Phaser.Scene {
   private ship!: Phaser.Physics.Arcade.Image;
@@ -29,12 +31,14 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
   private generator = new ProceduralStageGenerator(0x4e454f4e);
   private stageDefinition!: StageDefinition;
   private fireHeld: Record<PlayerId, boolean> = { 1: false, 2: false };
+  private versusAdapter: NeonVectorRollbackAdapter | null = null;
 
   constructor() { super('AsteroidsScene'); }
 
   create(data: { difficulty?: string; mode?: ArcadeMode }) {
     this.difficulty = data?.difficulty ?? 'NORMAL';
     this.mode = data?.mode ?? 'SOLO';
+    this.versusAdapter = this.mode === 'VERSUS' ? new NeonVectorRollbackAdapter() : null;
     this.session = new CoopSession(this.mode);
     this.score = 0; this.stage = 1; this.mineralCount = 0; this.weapon = 'SPREAD'; this.shield = false; this.stagePending = false;
     this.createTextures();
@@ -45,7 +49,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
 
     this.ship = this.physics.add.image(320, 260, 'vector-ship').setDamping(true).setDrag(0.985).setMaxVelocity(320);
     this.ship.setData('player', 1);
-    this.ship2 = this.mode === 'SOLO' ? null : this.physics.add.image(360, 260, 'vector-ship').setTint(0xffff00).setDamping(true).setDrag(0.985).setMaxVelocity(320).setData('player', 2);
+    this.ship2 = this.mode === 'SOLO' ? null : this.physics.add.image(360, 260, 'vector-ship').setTint(this.mode === 'VERSUS' ? 0xff2ec4 : 0xffff00).setDamping(true).setDrag(0.985).setMaxVelocity(320).setData('player', 2);
     this.asteroids = this.physics.add.group(); this.bullets = this.physics.add.group(); this.minerals = this.physics.add.group();
     this.ufos = this.physics.add.group(); this.hostileShots = this.physics.add.group();
     this.physics.add.overlap(this.bullets, this.asteroids, this.hitAsteroid as never, undefined, this);
@@ -65,6 +69,8 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-Q', () => this.cycleWeapon());
     this.input.keyboard?.on('keydown-ESC', () => { this.scene.pause(); this.scene.launch('PauseScene', { scene: this.scene.key }); });
     this.events.once('shutdown', () => AudioEngine.stopTrack());
+    const receiveRemote = (event: Event) => { const input = (event as CustomEvent<NetInputFrame>).detail; if (this.versusAdapter && input) this.versusAdapter.receive(input); };
+    window.addEventListener('arcade-neon-vector-remote', receiveRemote); this.events.once('shutdown', () => window.removeEventListener('arcade-neon-vector-remote', receiveRemote));
     AudioEngine.playTrack('vector');
     this.updateHud();
   }
@@ -73,6 +79,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     this.physics.world.wrap([this.ship, ...(this.ship2 ? [this.ship2] : []), this.asteroids, this.bullets, this.minerals, this.ufos, this.hostileShots], 24);
     this.moveShip(this.ship, 1);
     if (this.ship2?.active) this.moveShip(this.ship2, 2);
+    if (this.versusAdapter && this.ship2?.active) { const view = this.versusAdapter.opponentView(); this.ship2.setTint(view.tint); this.ship2.setPosition(Phaser.Math.Linear(this.ship2.x, 320 + view.x, .2), Phaser.Math.Linear(this.ship2.y, 240 + view.y, .2)); }
     if (this.asteroids.countActive() === 0 && !this.stagePending) {
       this.stagePending = true; this.stage += 1; AudioEngine.playEffect('STAGE_CLEAR');
       this.time.delayedCall(800, () => { this.spawnStage(); this.stagePending = false; });
