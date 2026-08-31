@@ -49,6 +49,8 @@ Neon Vector and Tetris Pulse each have a versioned binary codec with fixed capac
 
 `ShaderWorkshop` owns bounded CRT configuration and local JSON import or export. `ShaderWorkshopController` is a DOM overlay that updates only presentation preferences. `CrtShaderPipeline` merges those values into its existing WebGL barrel, bloom, scanline, mask, vignette, and chromatic uniforms, while the reusable phosphor ping-pong surface supplies presentation-only persistence.
 
+`VersusRules` supplies deterministic Tetris garbage conversion, sixty-tick hash exchange cadence, and a fifteen-second reconnect-forfeit clock. Scene adapters must consume these pure rules through rollback state contracts rather than directly mutating remote Phaser objects.
+
 ## Subsystems
 
 | Layer | Responsibility | Key locations |

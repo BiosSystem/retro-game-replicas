@@ -102,6 +102,13 @@ All v2.2.0 milestones are complete and released. The release includes procedural
 - Boundary: Retain fixed-step gameplay, the 640x480 source surface, Canvas fallback, and bounded GPU submission cost. Do not execute user-authored GLSL.
 - Local verification: 314 Vitest tests across 110 files, TypeScript analysis, 63 Chromium catalog and visual tests in 6.1 minutes, locked Cargo tests, and a 1,900,393-byte production baseline with a 110,154-byte bootstrap.
 
+## Active milestone
+
+- Workstream: P1 live versus netplay scene adapters and v2.3.0 release staging
+- Branch: `feat/v2.3-versus-netplay-release`
+- Status: Deterministic versus rules and release metadata in progress
+- Boundary: Wire only snapshot-backed state into live scenes. Do not mutate active Phaser objects from unvalidated network messages.
+
 ## Historical v2.1 delivery sequence
 
 1. Establish the P0 benchmark baseline and publish the measurement protocol. Completed on `feat/v2.1-performance-baseline`.

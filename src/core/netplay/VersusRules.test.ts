@@ -1,0 +1,3 @@
+import { describe, expect, it } from 'vitest';
+import { garbageLinesForClear, ReconnectForfeitClock, VersusHashExchange } from './VersusRules';
+describe('versus netplay rules', () => { it('converts multi-line clears to bounded garbage', () => expect([1, 2, 3, 4].map(garbageLinesForClear)).toEqual([0, 1, 2, 4])); it('expires a fifteen-second disconnect grace period', () => { const clock = new ReconnectForfeitClock(); clock.disconnect(); for (let tick = 0; tick < 899; tick++) expect(clock.tick()).toBe(false); expect(clock.tick()).toBe(true); }); it('compares hashes on sixty-tick boundaries', () => { const hashes = new VersusHashExchange(); expect(hashes.shouldSend(60)).toBe(true); hashes.receive(4); expect(hashes.diverged(5)).toBe(true); }); });

@@ -111,3 +111,6 @@ curl --fail http://127.0.0.1:8080/healthz
 ```
 
 Keep `compose.yaml` local and ignored. Preserve loopback binding and route public traffic through an HTTPS reverse proxy.
+# Netplay versus development
+
+Use the rollback state codecs and `VersusRules` when adding a versus scene adapter. Send a state hash every 60 fixed ticks, queue Tetris garbage only after a confirmed multi-line clear, and begin the 15-second reconnect clock only after a connected peer disconnects. Keep the normal offline scene path available.
