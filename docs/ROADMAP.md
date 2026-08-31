@@ -1,6 +1,20 @@
 # BiosSystem Neon Arcade Roadmap
 
-## v2.3.0 development cycle
+## v2.4.0 development cycle
+
+Use `master` as the protected integration target. Create focused branches with the `feat/v2.4-<system>` or `fix/v2.4-<system>` pattern. Preserve the v2.3.0 release as the performance and behavior baseline.
+
+| Priority | Workstream | Planned outcome | Acceptance gate |
+|---|---|---|---|
+| P1 | In-Game Chiptune Tracker and FM Synthesizer Studio | Add programmable synth voices, pattern editing, bounded scheduling, and local audio export | Preserve autoplay safety, AudioWorklet fallback, bounded node allocation, and offline play |
+| P2 | Cabinet Decal and Vector Art Workshop | Add generated cabinet side-art, palette decals, and animated marquee authoring | Keep artwork procedural, validate import data, and add no raster asset payload |
+| P3 | Cryptographic High-Score Proofs and P2P Leaderboard Relay | Add verifiable score proofs and opt-in peer relay | Preserve local-first leaderboards, bounded storage, and no central service dependency |
+
+## v2.3.0 release status
+
+All v2.3.0 milestones are complete and released. The release includes direct WebRTC room exchange, rollback-ready state boundaries, network telemetry, a bounded Shader Workshop with curved CRT controls, live versus presentation, reconnect-forfeit handling, generated cabinet UI, and dual-browser verification.
+
+## Historical v2.3.0 development cycle
 
 Use `master` as the protected integration target. Create focused branches with the `feat/v2.3-<system>` or `fix/v2.3-<system>` pattern. Preserve the v2.2.0 release commit as the performance and behavior baseline.
 
@@ -93,20 +107,21 @@ All v2.2.0 milestones are complete and released. The release includes procedural
 - Boundary: Preserve manual direct signaling, do not represent a six-character label as a standalone SDP transport, and keep the telemetry UI separate from deterministic game state and rendering.
 - Local verification: 312 Vitest tests across 109 files, TypeScript analysis, 62 Chromium catalog, visual, and gameplay tests, locked Cargo tests, and a 1,894,501-byte production baseline. The Chromium matrix completed in 5.6 minutes against the production preview.
 
-## Active milestone
+## Completed milestone
 
 - Workstream: P2 Shader Workshop and curved CRT presentation
 - Branch: `feat/v2.3-shader-workshop-curved-crt`
-- Status: Implemented locally and verified
+- Status: Merged and released in v2.3.0
 - Scope: Add bounded factory and local CRT profiles, persisted tuning, JSON import/export, a cabinet overlay, and presentation-only curvature and phosphor controls.
 - Boundary: Retain fixed-step gameplay, the 640x480 source surface, Canvas fallback, and bounded GPU submission cost. Do not execute user-authored GLSL.
 - Local verification: 314 Vitest tests across 110 files, TypeScript analysis, 63 Chromium catalog and visual tests in 6.1 minutes, locked Cargo tests, and a 1,900,393-byte production baseline with a 110,154-byte bootstrap.
 
-## Active milestone
+## Completed milestone
 
 - Workstream: P1 live versus netplay scene adapters and v2.3.0 release staging
 - Branch: `feat/v2.3-versus-netplay-release`
-- Status: Deterministic versus rules and release metadata in progress
+- Status: Merged and released in v2.3.0
+- Scope: Complete live versus presentation with packet telemetry, heartbeat recovery, disconnect forfeit handling, procedural player podiums, generated cabinet UI, and dual-browser browser verification.
 - Boundary: Wire only snapshot-backed state into live scenes. Do not mutate active Phaser objects from unvalidated network messages.
 
 ## Historical v2.1 delivery sequence
