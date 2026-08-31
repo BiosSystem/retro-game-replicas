@@ -9,6 +9,7 @@ import { ProceduralStageGenerator, type StageDefinition } from '../../generators
 import { ArcadeHud } from '../../ui/arcade/NeonUi';
 import { NeonVectorRollbackAdapter } from '../neon-vector/NeonVectorRollbackAdapter';
 import type { NetInputFrame } from '../../net/InputCodec';
+import { ProjectileEventType, readProjectileEvent } from '../neon-vector/ProjectileProtocol';
 
 export default class NeonAsteroidsScene extends Phaser.Scene {
   private ship!: Phaser.Physics.Arcade.Image;
@@ -32,6 +33,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
   private stageDefinition!: StageDefinition;
   private fireHeld: Record<PlayerId, boolean> = { 1: false, 2: false };
   private versusAdapter: NeonVectorRollbackAdapter | null = null;
+  private remoteProjectiles: Phaser.Physics.Arcade.Image[] = [];
 
   constructor() { super('AsteroidsScene'); }
 
@@ -51,6 +53,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     this.ship.setData('player', 1);
     this.ship2 = this.mode === 'SOLO' ? null : this.physics.add.image(360, 260, 'vector-ship').setTint(this.mode === 'VERSUS' ? 0xff2ec4 : 0xffff00).setDamping(true).setDrag(0.985).setMaxVelocity(320).setData('player', 2);
     this.asteroids = this.physics.add.group(); this.bullets = this.physics.add.group(); this.minerals = this.physics.add.group();
+    if (this.mode === 'VERSUS') for (let index = 0; index < 32; index++) { const shot = this.physics.add.image(-64, -64, 'vector-shot').setTint(0xff2ec4).setActive(false).setVisible(false); shot.setData('remoteId', -1); this.remoteProjectiles.push(shot); }
     this.ufos = this.physics.add.group(); this.hostileShots = this.physics.add.group();
     this.physics.add.overlap(this.bullets, this.asteroids, this.hitAsteroid as never, undefined, this);
     this.physics.add.overlap(this.bullets, this.ufos, this.hitUfo as never, undefined, this);
@@ -71,6 +74,8 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     this.events.once('shutdown', () => AudioEngine.stopTrack());
     const receiveRemote = (event: Event) => { const input = (event as CustomEvent<NetInputFrame>).detail; if (this.versusAdapter && input) this.versusAdapter.receive(input); };
     window.addEventListener('arcade-neon-vector-remote', receiveRemote); this.events.once('shutdown', () => window.removeEventListener('arcade-neon-vector-remote', receiveRemote));
+    const receiveProjectile = (event: Event) => this.receiveRemoteProjectile((event as CustomEvent<Uint8Array>).detail);
+    window.addEventListener('arcade-neon-vector-projectile', receiveProjectile); this.events.once('shutdown', () => window.removeEventListener('arcade-neon-vector-projectile', receiveProjectile));
     AudioEngine.playTrack('vector');
     this.updateHud();
   }
@@ -173,6 +178,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     if (firing && !this.fireHeld[player]) this.fire(ship, player);
     this.fireHeld[player] = firing;
   }
+  private receiveRemoteProjectile(bytes: Uint8Array) { const event = readProjectileEvent(bytes); if (!event) return; const active = this.remoteProjectiles.find(shot => shot.getData('remoteId') === event.id); if (event.type !== ProjectileEventType.FIRE_LASER) { if (active) { VFXManager.playExplosion(this, event.x, event.y, 0xff2ec4); active.disableBody(true, true); } return; } const shot = active ?? this.remoteProjectiles.find(candidate => !candidate.active); if (!shot) return; shot.enableBody(true, event.x, event.y, true, true).setRotation(event.angle).setData('remoteId', event.id); this.physics.velocityFromRotation(event.angle, 620, (shot.body as Phaser.Physics.Arcade.Body).velocity); }
 
   private createTextures() {
     const create = (key: string, draw: (graphics: Phaser.GameObjects.Graphics) => void, width: number, height: number) => { if (this.textures.exists(key)) return; const graphics = this.add.graphics(); draw(graphics); graphics.generateTexture(key, width, height); graphics.destroy(); };
