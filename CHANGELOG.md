@@ -1,6 +1,6 @@
 ## [Unreleased]
 
-## [v2.3.0] - 2026-08-30
+## [v2.3.0] - 2026-08-31
 
 ### Added
 - Add deterministic versus rules for Tetris garbage attacks, 60-tick state-hash exchange, and a fifteen-second reconnect forfeit clock as the scene-integration boundary for live netplay.
@@ -11,6 +11,8 @@
 - Add versioned Neon Vector and Tetris Pulse snapshot codecs covering bounded player, projectile, board, and active-piece state without scene-object serialization.
 - Add a twelve-frame typed input ring and in-place rollback coordinator that restores the prior snapshot and resimulates only after divergent remote input arrives.
 - Add secure short room identities and copyable fragment lobby invites around the manual direct WebRTC SDP flow. The fragment remains local to the browser request path and can serve as a QR payload when its SDP size fits QR capacity.
+- Add modular Nine Slice cabinet panels, palette persistence, profile cards, cabinet carousel motion, Neon Vector warp and shield effects, Tetris reactive grid and garbage-siren feedback, and bounded cabinet ambient lighting.
+- Add packet heartbeat monitoring, a fifteen-second reconnect modal, live bezel telemetry, procedural versus podium presentation, and a dual-browser WebRTC lifecycle regression.
 
 ### Changed
 - Upgrade Docker login, metadata, and build-push workflow actions to their Node 24-compatible published majors.
