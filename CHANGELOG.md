@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Added
+- Add the v2.4 tracker core with bounded continuous FM voice graphs, deterministic LFSR noise, packed four-channel 32 or 64 row patterns, tracker effects, lookahead sequencing, compact `.neonseq` song codecs, and offline PCM/WAV export helpers.
+
 ## [v2.3.0] - 2026-08-31
 
 ### Added
