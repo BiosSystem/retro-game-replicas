@@ -2,6 +2,9 @@ import Phaser from 'phaser';
 import { VFXManager } from '../engine/VFXManager';
 import { InputManager } from '../engine/InputManager';
 import { ArcadeHud } from '../ui/arcade/NeonUi';
+import { TetrisVersusAdapter } from '../games/tetris-pulse/TetrisVersusAdapter';
+import { garbageSirenState, GlassShardEmitter, ReactiveGridPulse } from '../games/tetris-pulse/TetrisPulseEffects';
+import { CabinetBezelLighting } from '../core/rendering/CabinetBezelLighting';
 
 const COLS = 10;
 const ROWS = 20;
@@ -19,6 +22,11 @@ export default class TetrisScene extends Phaser.Scene {
   private graphics!: Phaser.GameObjects.Graphics;
   private difficulty = 'NORMAL';
   private gameOver = false;
+  private versus: TetrisVersusAdapter | null = null;
+  private readonly gridPulse = new ReactiveGridPulse();
+  private readonly glassShards = new GlassShardEmitter();
+  private cabinetLights!: CabinetBezelLighting;
+  private garbageWarning = 0;
 
   constructor() {
     super('TetrisScene');
@@ -26,6 +34,7 @@ export default class TetrisScene extends Phaser.Scene {
 
   create(data: any) {
     this.difficulty = data?.difficulty || 'NORMAL';
+    this.versus = data?.mode === 'VERSUS' ? new TetrisVersusAdapter() : null;
     switch (this.difficulty) {
       case 'EASY': this.baseInterval = 1000; break;
       case 'NORMAL': this.baseInterval = 800; break;
@@ -51,6 +60,7 @@ export default class TetrisScene extends Phaser.Scene {
     }).setOrigin(1, 0);
 
     this.graphics = this.add.graphics();
+    this.cabinetLights = new CabinetBezelLighting(this);
 
     // Grid Init
     for (let r = 0; r < ROWS; r++) {
@@ -84,6 +94,8 @@ export default class TetrisScene extends Phaser.Scene {
       this.scene.pause();
       this.scene.launch('PauseScene', { scene: this.scene.key });
     });
+    const freezeForNetplay = (event: Event) => { if ((event as CustomEvent<boolean>).detail) this.scene.pause(); else this.scene.resume(); };
+    window.addEventListener('arcade-netplay-freeze', freezeForNetplay); this.events.once('shutdown', () => window.removeEventListener('arcade-netplay-freeze', freezeForNetplay));
     InputManager.setLegacyGamepadKeyboardBridge(true, this.scene.key);
     this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridge(false, this.scene.key));
   }
@@ -123,6 +135,8 @@ export default class TetrisScene extends Phaser.Scene {
     while (!this.checkCollision(0, 1)) {
         this.activePiece.y++;
     }
+    this.gridPulse.trigger(.75);
+    this.cabinetLights.pulse(320, 420, this.activePiece.color, .7, 180);
     this.lockPiece();
   }
 
@@ -165,6 +179,7 @@ export default class TetrisScene extends Phaser.Scene {
     let linesCleared = 0;
     for (let r = ROWS - 1; r >= 0; r--) {
       if (this.grid[r].every(v => v !== 0)) {
+        const lineColor = this.grid[r].find(value => value !== 0) ?? 0x00ffff;
         this.grid.splice(r, 1);
         this.grid.unshift(new Array(COLS).fill(0));
         linesCleared++;
@@ -173,20 +188,31 @@ export default class TetrisScene extends Phaser.Scene {
         const offsetX = 220;
         const offsetY = 50;
         this.particles.emitParticleAt(offsetX + (COLS * BLOCK_SIZE / 2), offsetY + r * BLOCK_SIZE, 20);
+        this.particles.setParticleTint(lineColor);
+        this.particles.emitParticleAt(offsetX + (COLS * BLOCK_SIZE / 2), offsetY + r * BLOCK_SIZE, 32);
+        this.glassShards.emit(this.time.now);
+        this.cabinetLights.pulse(offsetX + COLS * BLOCK_SIZE / 2, offsetY + r * BLOCK_SIZE, lineColor, .95, 280);
         
         r++;
       }
     }
     if (linesCleared > 0) {
+        if (this.versus) this.versus.queueAttack(linesCleared);
+        this.gridPulse.trigger(Math.min(1, linesCleared / 3));
+        this.garbageWarning = Math.max(this.garbageWarning, this.versus?.opponent.garbageQueued ?? 0);
         this.score += [0, 100, 300, 500, 800][linesCleared];
         this.scoreHud.set({ score: this.score, stage: Math.floor(this.score / 1000) + 1, combo: linesCleared, status: this.difficulty });
         this.dropInterval = Math.max(100, this.baseInterval - (this.score / 10));
         this.cameras.main.flash(200, 255, 255, 255, false);
     }
+    if (this.versus?.opponent.garbageQueued) this.versus.injectGarbage((this.score + linesCleared) % COLS);
   }
 
   update(_time: number, delta: number) {
     if (this.gameOver) return;
+    this.gridPulse.update(delta);
+    this.garbageWarning = Math.max(0, this.garbageWarning - delta / 2500);
+    this.glassShards.update(this.time.now);
     this.timer += delta;
     if (this.timer > this.dropInterval) {
       this.timer = 0;
@@ -246,7 +272,8 @@ export default class TetrisScene extends Phaser.Scene {
     g.fillRect(offsetX, offsetY, COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
     
     // Draw Grid Lines
-    g.lineStyle(1, 0x222222);
+    const pulse = this.gridPulse.value;
+    g.lineStyle(1 + pulse, pulse > 0 ? 0x00ffff : 0x222222, .2 + pulse * .75);
     for (let r = 0; r <= ROWS; r++) g.lineBetween(offsetX, offsetY + r * BLOCK_SIZE, offsetX + COLS * BLOCK_SIZE, offsetY + r * BLOCK_SIZE);
     for (let c = 0; c <= COLS; c++) g.lineBetween(offsetX + c * BLOCK_SIZE, offsetY, offsetX + c * BLOCK_SIZE, offsetY + ROWS * BLOCK_SIZE);
 
@@ -286,6 +313,21 @@ export default class TetrisScene extends Phaser.Scene {
           g.fillStyle(this.activePiece.color, 1);
         }
       }
+    }
+    if (this.versus) {
+      const mini = 8; const mx = 455; const my = 190; const opponent = this.versus.opponent;
+      g.fillStyle(0x080012, .9).fillRect(mx - 8, my - 24, COLS * mini + 16, ROWS * mini + 32);
+      for (let row = 0; row < ROWS; row++) for (let col = 0; col < COLS; col++) if (opponent.board[row * COLS + col]) g.fillStyle(0xff2ec4).fillRect(mx + col * mini, my + row * mini, mini - 1, mini - 1);
+      g.lineStyle(1, 0xff2ec4).strokeRect(mx - 1, my - 1, COLS * mini + 2, ROWS * mini + 2);
+      g.fillStyle(0xff3355, .7).fillRect(mx + COLS * mini + 8, my + (ROWS - opponent.garbageQueued) * mini, 6, opponent.garbageQueued * mini);
+    }
+    const queued = Math.ceil(Math.max(this.garbageWarning, this.versus?.opponent.garbageQueued ?? 0));
+    const siren = garbageSirenState(queued);
+    if (siren !== 'OFF') {
+      const color = siren === 'CRITICAL' ? 0xff2255 : siren === 'ALERT' ? 0xffaa00 : 0xffff00;
+      const alpha = .35 + (Math.sin(this.time.now * .018) + 1) * .25;
+      g.fillStyle(color, alpha).fillRect(offsetX + COLS * BLOCK_SIZE + 12, offsetY + (ROWS - Math.min(ROWS, queued * 2)) * BLOCK_SIZE, 7, Math.min(ROWS, queued * 2) * BLOCK_SIZE);
+      g.lineStyle(1, color, .95).strokeRect(offsetX + COLS * BLOCK_SIZE + 10, offsetY, 11, ROWS * BLOCK_SIZE);
     }
   }
 }

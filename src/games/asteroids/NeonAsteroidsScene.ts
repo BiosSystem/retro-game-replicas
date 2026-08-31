@@ -7,6 +7,11 @@ import { CoopSession, type ArcadeMode } from '../../multiplayer/CoopSession';
 import type { PlayerId } from '../../multiplayer/MultiInput';
 import { ProceduralStageGenerator, type StageDefinition } from '../../generators/ProceduralStageGenerator';
 import { ArcadeHud } from '../../ui/arcade/NeonUi';
+import { NeonVectorRollbackAdapter } from '../neon-vector/NeonVectorRollbackAdapter';
+import type { NetInputFrame } from '../../net/InputCodec';
+import { ProjectileEventType, readProjectileEvent } from '../neon-vector/ProjectileProtocol';
+import { advanceShieldRipples, createWarpStars, warpStretchForSpeed, type ShieldRipple, type WarpStar } from '../neon-vector/NeonVectorVisuals';
+import { CabinetBezelLighting } from '../../core/rendering/CabinetBezelLighting';
 
 export default class NeonAsteroidsScene extends Phaser.Scene {
   private ship!: Phaser.Physics.Arcade.Image;
@@ -29,24 +34,37 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
   private generator = new ProceduralStageGenerator(0x4e454f4e);
   private stageDefinition!: StageDefinition;
   private fireHeld: Record<PlayerId, boolean> = { 1: false, 2: false };
+  private versusAdapter: NeonVectorRollbackAdapter | null = null;
+  private remoteProjectiles: Phaser.Physics.Arcade.Image[] = [];
+  private warpStars: WarpStar[] = [];
+  private warpGraphics!: Phaser.GameObjects.Graphics;
+  private shieldGraphics!: Phaser.GameObjects.Graphics;
+  private shieldRipples: ShieldRipple[] = [];
+  private cabinetLights!: CabinetBezelLighting;
+  private visualTime = 0;
 
   constructor() { super('AsteroidsScene'); }
 
   create(data: { difficulty?: string; mode?: ArcadeMode }) {
     this.difficulty = data?.difficulty ?? 'NORMAL';
     this.mode = data?.mode ?? 'SOLO';
+    this.versusAdapter = this.mode === 'VERSUS' ? new NeonVectorRollbackAdapter() : null;
     this.session = new CoopSession(this.mode);
     this.score = 0; this.stage = 1; this.mineralCount = 0; this.weapon = 'SPREAD'; this.shield = false; this.stagePending = false;
     this.createTextures();
+    this.createWarpStarfield();
     this.add.grid(320, 240, 640, 480, 32, 32, 0x02000c, 1, 0x632cff, 0.1);
+    this.shieldGraphics = this.add.graphics().setDepth(8).setBlendMode(Phaser.BlendModes.ADD);
+    this.cabinetLights = new CabinetBezelLighting(this);
     this.add.text(320, 18, 'NEON VECTOR ASTEROIDS', { fontFamily: 'Courier', fontSize: '20px', color: '#ff2ec4', fontStyle: 'bold' }).setOrigin(0.5);
     this.hud = new ArcadeHud(this, 8, 38, 624, 0xff2ec4);
     this.add.text(628, 12, 'ARROWS THRUST  SPACE FIRE  Q WEAPON  ESC PAUSE', { fontFamily: 'Courier', fontSize: '10px', color: '#8888aa' }).setOrigin(1, 0);
 
     this.ship = this.physics.add.image(320, 260, 'vector-ship').setDamping(true).setDrag(0.985).setMaxVelocity(320);
     this.ship.setData('player', 1);
-    this.ship2 = this.mode === 'SOLO' ? null : this.physics.add.image(360, 260, 'vector-ship').setTint(0xffff00).setDamping(true).setDrag(0.985).setMaxVelocity(320).setData('player', 2);
+    this.ship2 = this.mode === 'SOLO' ? null : this.physics.add.image(360, 260, 'vector-ship').setTint(this.mode === 'VERSUS' ? 0xff2ec4 : 0xffff00).setDamping(true).setDrag(0.985).setMaxVelocity(320).setData('player', 2);
     this.asteroids = this.physics.add.group(); this.bullets = this.physics.add.group(); this.minerals = this.physics.add.group();
+    if (this.mode === 'VERSUS') for (let index = 0; index < 32; index++) { const shot = this.physics.add.image(-64, -64, 'vector-shot').setTint(0xff2ec4).setActive(false).setVisible(false); shot.setData('remoteId', -1); this.remoteProjectiles.push(shot); }
     this.ufos = this.physics.add.group(); this.hostileShots = this.physics.add.group();
     this.physics.add.overlap(this.bullets, this.asteroids, this.hitAsteroid as never, undefined, this);
     this.physics.add.overlap(this.bullets, this.ufos, this.hitUfo as never, undefined, this);
@@ -65,14 +83,23 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-Q', () => this.cycleWeapon());
     this.input.keyboard?.on('keydown-ESC', () => { this.scene.pause(); this.scene.launch('PauseScene', { scene: this.scene.key }); });
     this.events.once('shutdown', () => AudioEngine.stopTrack());
+    const freezeForNetplay = (event: Event) => { if ((event as CustomEvent<boolean>).detail) this.scene.pause(); else this.scene.resume(); };
+    window.addEventListener('arcade-netplay-freeze', freezeForNetplay); this.events.once('shutdown', () => window.removeEventListener('arcade-netplay-freeze', freezeForNetplay));
+    const receiveRemote = (event: Event) => { const input = (event as CustomEvent<NetInputFrame>).detail; if (this.versusAdapter && input) this.versusAdapter.receive(input); };
+    window.addEventListener('arcade-neon-vector-remote', receiveRemote); this.events.once('shutdown', () => window.removeEventListener('arcade-neon-vector-remote', receiveRemote));
+    const receiveProjectile = (event: Event) => this.receiveRemoteProjectile((event as CustomEvent<Uint8Array>).detail);
+    window.addEventListener('arcade-neon-vector-projectile', receiveProjectile); this.events.once('shutdown', () => window.removeEventListener('arcade-neon-vector-projectile', receiveProjectile));
     AudioEngine.playTrack('vector');
     this.updateHud();
   }
 
-  update() {
+  update(_time: number, delta: number) {
+    this.visualTime += Math.min(50, delta);
+    this.updateOverdriveVisuals(delta);
     this.physics.world.wrap([this.ship, ...(this.ship2 ? [this.ship2] : []), this.asteroids, this.bullets, this.minerals, this.ufos, this.hostileShots], 24);
     this.moveShip(this.ship, 1);
     if (this.ship2?.active) this.moveShip(this.ship2, 2);
+    if (this.versusAdapter && this.ship2?.active) { const view = this.versusAdapter.opponentView(); this.ship2.setTint(view.tint); this.ship2.setPosition(Phaser.Math.Linear(this.ship2.x, 320 + view.x, .2), Phaser.Math.Linear(this.ship2.y, 240 + view.y, .2)); }
     if (this.asteroids.countActive() === 0 && !this.stagePending) {
       this.stagePending = true; this.stage += 1; AudioEngine.playEffect('STAGE_CLEAR');
       this.time.delayedCall(800, () => { this.spawnStage(); this.stagePending = false; });
@@ -114,7 +141,8 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     mineral.setVelocity(Phaser.Math.Between(-45, 45), Phaser.Math.Between(-45, 45)).setAngularVelocity(100);
     const player = Number((projectile as Phaser.Physics.Arcade.Image).getData('player')) === 2 ? 2 : 1;
     this.session.score(player, 50 * size, this.time.now); this.score = this.session.totalScore();
-    VFXManager.playExplosion(this, x, y, 0xff2ec4); AudioEngine.playEffect('EXPLOSION'); this.updateHud();
+    const velocity = asteroid.body instanceof Phaser.Physics.Arcade.Body ? asteroid.body.velocity : { x: 0, y: 0 };
+    VFXManager.playExplosion(this, x, y, 0xff2ec4); VFXManager.playDirectionalSparks(this, x, y, velocity.x, velocity.y, 0xff2ec4); this.cabinetLights.pulse(x, y, 0xff2ec4, 1.3); AudioEngine.playEffect('EXPLOSION'); this.updateHud();
   }
 
   private collectMineral(_ship: Phaser.GameObjects.GameObject, target: Phaser.GameObjects.GameObject) {
@@ -145,7 +173,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
   private damageShip(shipObject: Phaser.GameObjects.GameObject, hazard: Phaser.GameObjects.GameObject) {
     hazard.destroy();
     const damaged = shipObject as Phaser.Physics.Arcade.Image;
-    if (this.shield) { this.shield = false; this.ship.clearTint(); this.ship2?.clearTint(); VFXManager.playExplosion(this, damaged.x, damaged.y, 0x00ffff); return; }
+    if (this.shield) { this.shield = false; this.ship.clearTint(); this.ship2?.clearTint(); this.triggerShieldRipple(damaged.x, damaged.y, 0x00ffff); VFXManager.playExplosion(this, damaged.x, damaged.y, 0x00ffff); this.cabinetLights.pulse(damaged.x, damaged.y, 0x00ffff, 1.1); return; }
     const player = Number(damaged.getData('player')) === 2 ? 2 : 1;
     if (this.session.loseLife(player) > 0) { damaged.setPosition(player === 1 ? 300 : 340, 260).setVelocity(0).setTint(player === 2 ? 0xffff00 : 0xffffff); return; }
     damaged.disableBody(true, true);
@@ -166,6 +194,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     if (firing && !this.fireHeld[player]) this.fire(ship, player);
     this.fireHeld[player] = firing;
   }
+  private receiveRemoteProjectile(bytes: Uint8Array) { const event = readProjectileEvent(bytes); if (!event) return; const active = this.remoteProjectiles.find(shot => shot.getData('remoteId') === event.id); if (event.type !== ProjectileEventType.FIRE_LASER) { if (active) { VFXManager.playExplosion(this, event.x, event.y, 0xff2ec4); active.disableBody(true, true); } return; } const shot = active ?? this.remoteProjectiles.find(candidate => !candidate.active); if (!shot) return; shot.enableBody(true, event.x, event.y, true, true).setRotation(event.angle).setData('remoteId', event.id); this.physics.velocityFromRotation(event.angle, 620, (shot.body as Phaser.Physics.Arcade.Body).velocity); }
 
   private createTextures() {
     const create = (key: string, draw: (graphics: Phaser.GameObjects.Graphics) => void, width: number, height: number) => { if (this.textures.exists(key)) return; const graphics = this.add.graphics(); draw(graphics); graphics.generateTexture(key, width, height); graphics.destroy(); };
@@ -177,4 +206,28 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     create('vector-mineral', g => g.lineStyle(2, 0xffff00).strokeTriangle(6, 0, 12, 12, 0, 12), 12, 12);
     create('vector-ufo', g => { g.lineStyle(2, 0xffff00).strokeEllipse(20, 12, 38, 12); g.strokeTriangle(10, 10, 20, 1, 30, 10); }, 40, 24);
   }
+
+  private createWarpStarfield() {
+    this.warpStars = createWarpStars();
+    this.warpGraphics = this.add.graphics().setDepth(-2);
+  }
+
+  private updateOverdriveVisuals(delta: number) {
+    const velocity = this.ship?.body instanceof Phaser.Physics.Arcade.Body ? this.ship.body.velocity.length() : 0;
+    const stretch = warpStretchForSpeed(velocity);
+    this.warpGraphics.clear();
+    for (const star of this.warpStars) {
+      const y = (star.y + this.visualTime * .025 * star.depth) % 480;
+      const length = stretch * star.depth;
+      this.warpGraphics.lineStyle(Math.max(1, star.depth * 1.5), 0x6b72ff, .18 + star.depth * .32).lineBetween(star.x, y, star.x, y + length);
+    }
+    this.shieldRipples = advanceShieldRipples(this.shieldRipples, delta);
+    this.shieldGraphics.clear();
+    for (const ripple of this.shieldRipples) {
+      const progress = ripple.ageMs / ripple.durationMs;
+      this.shieldGraphics.lineStyle(2, ripple.color, (1 - progress) * .8).strokeCircle(ripple.x, ripple.y, 18 + progress * 38);
+    }
+  }
+
+  private triggerShieldRipple(x: number, y: number, color: number) { this.shieldRipples.push({ x, y, ageMs: 0, durationMs: 320, color }); }
 }

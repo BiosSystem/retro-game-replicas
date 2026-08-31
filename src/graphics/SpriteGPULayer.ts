@@ -9,6 +9,8 @@ export interface GpuBurst {
   color: number;
   count: number;
   critical?: boolean;
+  directionX?: number;
+  directionY?: number;
 }
 
 interface ActiveLight {
@@ -74,6 +76,10 @@ export class SpriteGPULayer {
     if (!this.enabled) return;
     this.setSceneObjectLighting(true);
     const count = Math.max(1, Math.min(96, Math.round(effect.count)));
+    if (effect.directionX !== undefined && effect.directionY !== undefined) {
+      const angle = Phaser.Math.RadToDeg(Math.atan2(effect.directionY, effect.directionX));
+      this.emitter.setAngle(angle);
+    } else this.emitter.setAngle(Phaser.Math.Between(0, 360));
     this.emitter.setParticleTint(effect.color);
     this.emitter.explode(count, effect.x, effect.y);
     if (this.glow) this.glow.color = effect.color;

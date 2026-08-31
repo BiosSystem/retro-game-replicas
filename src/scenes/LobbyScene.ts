@@ -12,8 +12,11 @@ import { AttractController, CreditLedger } from '../ui/menu/ArcadeSession';
 import { mountGameScene } from '../ui/menu/SceneLifecycle';
 import type { ArcadeMode } from '../multiplayer/CoopSession';
 import { ARCADE_DIFFICULTIES, ARCADE_GAMES } from './ArcadeCatalog';
-import { createNeonPanel } from '../ui/arcade/NeonUi';
-import { drawRetroAvatar, RetroProfileStore } from '../ui/profile/RetroProfile';
+import { drawRetroAvatar } from '../ui/profile/RetroProfile';
+import { CabinetPalette, createNineSlicePanel, type CabinetPaletteName } from '../ui/NineSlicePanel';
+import { mountNineSlicePanel } from '../ui/NineSlicePanelRenderer';
+import { loadPlayerProfileCard, setPlayerProfilePalette } from '../ui/PlayerProfileCard';
+import { LobbyCarousel } from './lobby/LobbyCarousel';
 type MenuMode = 'GAME_SELECT' | 'DIFFICULTY_SELECT';
 
 const PALETTE = {
@@ -51,6 +54,10 @@ export default class LobbyScene extends Phaser.Scene {
   private selectionCursor!: Phaser.GameObjects.Text;
   private arcadeMode: ArcadeMode = 'SOLO';
   private modeText!: Phaser.GameObjects.Text;
+  private carousel = new LobbyCarousel(this.games.length);
+  private palette: CabinetPaletteName = 'CYAN_SYNTH';
+  private profilePaletteText!: Phaser.GameObjects.Text;
+  private marqueeText!: Phaser.GameObjects.Text;
 
   constructor() { super('LobbyScene'); }
 
@@ -59,6 +66,7 @@ export default class LobbyScene extends Phaser.Scene {
     this.diffItems   = [];
     this.mode        = 'GAME_SELECT';
     this.secretBuffer = '';
+    this.carousel = new LobbyCarousel(this.games.length);
     this.credits = new CreditLedger(localStorage);
     this.attract = new AttractController(30_000, this.time.now);
     this.nextAttractCycle = this.time.now + 30_000;
@@ -178,7 +186,7 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   private buildFooter() {
-    this.add.text(320, 458, 'MOVE  FIRE SELECT  Y ACH  X PROFILE  M MODE  C COIN  START SETTINGS', {
+    this.add.text(320, 458, 'MOVE  FIRE SELECT  Y ACH  X PROFILE  T THEME  M MODE  C COIN  START SETTINGS', {
       fontFamily: "'Share Tech Mono', Courier",
       fontSize: '11px',
       color: PALETTE.muted,
@@ -187,10 +195,14 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   private buildProfile() {
-    const profile = new RetroProfileStore(localStorage).load();
-    createNeonPanel(this, 590, 57, 76, 76, 0xff2ec4, .72).setDepth(6);
+    const card = loadPlayerProfileCard(localStorage);
+    const profile = card.profile;
+    this.palette = card.palette;
+    mountNineSlicePanel(this, 590, 57, 76, 76, createNineSlicePanel('PROFILE', this.palette)).panel.setDepth(6);
     const avatar = this.add.graphics().setDepth(7); drawRetroAvatar(avatar, 590, 53, 48, profile.avatarSeed);
     this.add.text(590, 87, profile.name, { fontFamily: 'Courier', fontSize: '10px', color: '#ffffff' }).setOrigin(.5).setDepth(7);
+    this.add.text(590, 98, card.title, { fontFamily: 'Courier', fontSize: '7px', color: '#8899aa' }).setOrigin(.5).setDepth(7);
+    this.profilePaletteText = this.add.text(590, 107, `${card.pingLabel}  ${paletteLabel(this.palette)}`, { fontFamily: 'Courier', fontSize: '6px', color: CabinetPalette[this.palette] }).setOrigin(.5).setDepth(7);
   }
 
   private buildCoinOp() {
@@ -201,6 +213,7 @@ export default class LobbyScene extends Phaser.Scene {
 
   private buildPreview() {
     this.previewGfx = this.add.graphics().setDepth(5);
+    this.marqueeText = this.add.text(76, 218, this.games[this.selectedGameIndex].name, { fontFamily: "'Share Tech Mono', Courier", fontSize: '9px', color: PALETTE.accent, align: 'center', wordWrap: { width: 110 } }).setOrigin(.5).setDepth(6);
     this.drawPreview(0);
   }
 
@@ -304,6 +317,7 @@ export default class LobbyScene extends Phaser.Scene {
       this.arcadeMode = modes[(modes.indexOf(this.arcadeMode) + 1) % modes.length];
       this.updateModeText(); AudioEngine.playEffect('POWER_UP');
     });
+    this.input.keyboard?.on('keydown-T', () => this.cyclePalette());
 
     this.input.keyboard?.on('keydown', (e: KeyboardEvent) => {
       this.registerActivity();
@@ -316,7 +330,9 @@ export default class LobbyScene extends Phaser.Scene {
     });
   }
 
-  update() {
+  update(_time: number, delta: number) {
+    const carousel = this.carousel.update(delta);
+    this.previewGfx.setX((carousel.position - this.selectedGameIndex) * 10);
     this.drawPreview(this.time.now);
     if (this.attract.isActive(this.time.now)) {
       this.attractText.setText('ATTRACT MODE');
@@ -419,10 +435,12 @@ export default class LobbyScene extends Phaser.Scene {
   updateGameSelection(change: number) {
     const prev = this.selectedGameIndex;
     this.selectedGameIndex = Phaser.Math.Wrap(prev + change, 0, this.games.length);
+    this.carousel.select(this.selectedGameIndex);
 
     this.gameItems[prev].setColor(PALETTE.dim).setScale(1).setFontSize('18px');
     this.gameItems[this.selectedGameIndex].setColor(PALETTE.white).setScale(1.06).setFontSize('20px');
     this.selectionCursor?.setY(92 + this.selectedGameIndex * 13);
+    this.marqueeText?.setText(this.games[this.selectedGameIndex].name);
 
     this.tweens.add({ targets: this.gameItems[this.selectedGameIndex], scale: 1.1, duration: 80, yoyo: true });
   }
@@ -445,4 +463,14 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   private updateModeText() { this.modeText?.setText(`MODE ${this.arcadeMode}`); }
+
+  private cyclePalette() {
+    const palettes = Object.keys(CabinetPalette) as CabinetPaletteName[];
+    const next = palettes[(palettes.indexOf(this.palette) + 1) % palettes.length];
+    this.palette = setPlayerProfilePalette(localStorage, next).palette;
+    this.profilePaletteText?.setColor(CabinetPalette[this.palette]).setText(`LOCAL 0MS  ${paletteLabel(this.palette)}`);
+    AudioEngine.playEffect('POWER_UP');
+  }
 }
+
+function paletteLabel(palette: CabinetPaletteName) { return palette.replace('_', ' '); }
