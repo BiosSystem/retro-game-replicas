@@ -94,6 +94,8 @@ export default class TetrisScene extends Phaser.Scene {
       this.scene.pause();
       this.scene.launch('PauseScene', { scene: this.scene.key });
     });
+    const freezeForNetplay = (event: Event) => { if ((event as CustomEvent<boolean>).detail) this.scene.pause(); else this.scene.resume(); };
+    window.addEventListener('arcade-netplay-freeze', freezeForNetplay); this.events.once('shutdown', () => window.removeEventListener('arcade-netplay-freeze', freezeForNetplay));
     InputManager.setLegacyGamepadKeyboardBridge(true, this.scene.key);
     this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridge(false, this.scene.key));
   }

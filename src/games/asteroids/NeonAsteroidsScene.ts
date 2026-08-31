@@ -83,6 +83,8 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-Q', () => this.cycleWeapon());
     this.input.keyboard?.on('keydown-ESC', () => { this.scene.pause(); this.scene.launch('PauseScene', { scene: this.scene.key }); });
     this.events.once('shutdown', () => AudioEngine.stopTrack());
+    const freezeForNetplay = (event: Event) => { if ((event as CustomEvent<boolean>).detail) this.scene.pause(); else this.scene.resume(); };
+    window.addEventListener('arcade-netplay-freeze', freezeForNetplay); this.events.once('shutdown', () => window.removeEventListener('arcade-netplay-freeze', freezeForNetplay));
     const receiveRemote = (event: Event) => { const input = (event as CustomEvent<NetInputFrame>).detail; if (this.versusAdapter && input) this.versusAdapter.receive(input); };
     window.addEventListener('arcade-neon-vector-remote', receiveRemote); this.events.once('shutdown', () => window.removeEventListener('arcade-neon-vector-remote', receiveRemote));
     const receiveProjectile = (event: Event) => this.receiveRemoteProjectile((event as CustomEvent<Uint8Array>).detail);
