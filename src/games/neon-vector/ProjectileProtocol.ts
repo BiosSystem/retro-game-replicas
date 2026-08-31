@@ -1,5 +1,6 @@
 export const PROJECTILE_PACKET_BYTES = 14;
-export enum ProjectileEventType { FIRE_LASER = 1, PROJECTILE_HIT = 2, PROJECTILE_EXPIRE = 3 }
+export const ProjectileEventType = { FIRE_LASER: 1, PROJECTILE_HIT: 2, PROJECTILE_EXPIRE: 3 } as const;
+export type ProjectileEventType = typeof ProjectileEventType[keyof typeof ProjectileEventType];
 export interface ProjectileEvent { type: ProjectileEventType; id: number; x: number; y: number; angle: number; origin: number; }
 export function writeProjectileEvent(target: Uint8Array, value: ProjectileEvent) { if (target.byteLength < PROJECTILE_PACKET_BYTES) throw new Error('Projectile packet buffer too small'); const view = new DataView(target.buffer, target.byteOffset, PROJECTILE_PACKET_BYTES); view.setUint8(0, value.type); view.setUint16(1, value.id, true); view.setInt16(3, Math.round(value.x * 8), true); view.setInt16(5, Math.round(value.y * 8), true); view.setInt16(7, Math.round(value.angle * 1024), true); view.setUint32(9, value.origin >>> 0, true); view.setUint8(13, 0); return target; }
 export function readProjectileEvent(source: Uint8Array): ProjectileEvent | null { if (source.byteLength !== PROJECTILE_PACKET_BYTES || source[0] < 1 || source[0] > 3) return null; const view = new DataView(source.buffer, source.byteOffset, PROJECTILE_PACKET_BYTES); return { type: source[0] as ProjectileEventType, id: view.getUint16(1, true), x: view.getInt16(3, true) / 8, y: view.getInt16(5, true) / 8, angle: view.getInt16(7, true) / 1024, origin: view.getUint32(9, true) }; }
