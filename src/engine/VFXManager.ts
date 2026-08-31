@@ -28,6 +28,12 @@ export class VFXManager {
         this.getPool(scene).gpu.burst({ x, y, color, count: this.scaleCount(7) });
     }
 
+    static playDirectionalSparks(scene: Phaser.Scene, x: number, y: number, directionX: number, directionY: number, color = 0xff2ec4) {
+        this.getPool(scene).particles.emit({ x, y, count: this.scaleCount(16), speedMin: 90, speedMax: 260, lifeMs: 420, color, size: 3 });
+        this.getPool(scene).gpu.burst({ x, y, color, count: this.scaleCount(22), directionX, directionY });
+        this.applyDirectionalTrauma(scene, x, y, 0.34);
+    }
+
     static screenShake(scene: Phaser.Scene, intensity = 0.015, duration = 150) {
         scene.cameras.main.shake(duration, intensity);
         if (this.isOverdrive()) {
