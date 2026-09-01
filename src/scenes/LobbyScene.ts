@@ -65,6 +65,7 @@ export default class LobbyScene extends Phaser.Scene {
   private palette: CabinetPaletteName = 'CYAN_SYNTH';
   private profilePaletteText!: Phaser.GameObjects.Text;
   private marqueeText!: Phaser.GameObjects.Text;
+  private customizedCabinets = new Set<string>();
 
   constructor() { super('LobbyScene'); }
 
@@ -74,6 +75,7 @@ export default class LobbyScene extends Phaser.Scene {
     this.mode        = 'GAME_SELECT';
     this.secretBuffer = '';
     this.carousel = new LobbyCarousel(this.games.length);
+    this.customizedCabinets = readCustomizedCabinetScenes();
     this.credits = new CreditLedger(localStorage);
     this.attract = new AttractController(30_000, this.time.now);
     this.nextAttractCycle = this.time.now + 30_000;
@@ -234,6 +236,9 @@ export default class LobbyScene extends Phaser.Scene {
     if (mode === 0) this.previewGfx.strokeTriangle(x, y - 16 + pulse, x - 13, y + 13, x + 13, y + 13);
     else if (mode === 1) { this.previewGfx.strokeCircle(x, y, 18 + pulse * 0.2); this.previewGfx.lineBetween(42, y + pulse, 110, y - pulse); }
     else { this.previewGfx.strokeRect(x - 18, y - 18, 36, 36); this.previewGfx.lineBetween(x - 24, y, x + 24, y); }
+    if (this.customizedCabinets.has(this.games[this.selectedGameIndex].scene)) {
+      this.previewGfx.lineStyle(2, 0xff2ec4, .8).strokeRect(29, 231, 96, 88).lineBetween(33, 312, 120, 239).lineBetween(33, 239, 120, 312);
+    }
   }
 
   private updateCreditText() {
@@ -468,6 +473,13 @@ export default class LobbyScene extends Phaser.Scene {
     this.profilePaletteText?.setColor(CabinetPalette[this.palette]).setText(`LOCAL 0MS  ${paletteLabel(this.palette)}`);
     AudioEngine.playEffect('POWER_UP');
   }
+}
+
+function readCustomizedCabinetScenes() {
+  try {
+    const stored = JSON.parse(localStorage.getItem('bios_cabinet_skin_meta_v1') ?? '[]') as unknown;
+    return new Set(Array.isArray(stored) ? stored.filter((scene): scene is string => typeof scene === 'string' && /^[A-Za-z][A-Za-z0-9]*Scene$/.test(scene)) : []);
+  } catch { localStorage.removeItem('bios_cabinet_skin_meta_v1'); return new Set<string>(); }
 }
 
 function paletteLabel(palette: CabinetPaletteName) { return palette.replace('_', ' '); }
