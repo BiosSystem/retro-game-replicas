@@ -1,6 +1,6 @@
 [package]
 name = "biossystem-neon-arcade"
-version = "2.3.0"
+version = "2.4.0"
 description = "BiosSystem Neon Arcade - Procedural arcade platform"
 authors = ["BiosSystem Open Source Community"]
 license = "MIT"

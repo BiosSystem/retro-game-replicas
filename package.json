@@ -1,7 +1,7 @@
 {
   "name": "biossystem-neon-arcade",
   "private": true,
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "A self-contained procedural arcade platform with 28 original games and a generated Meta-Arcade Hall.",
   "author": "BiosSystem Open Source Community",
   "license": "MIT",
