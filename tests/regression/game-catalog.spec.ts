@@ -5,6 +5,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('launch every registered arcade scene without runtime errors', async ({ page }) => {
+  test.setTimeout(120_000);
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
@@ -13,7 +14,7 @@ test('launch every registered arcade scene without runtime errors', async ({ pag
     const lobby = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { games: Array<{ scene: string }> };
     return lobby.games.map(game => game.scene);
   });
-  expect(scenes).toHaveLength(29);
+  expect(scenes).toHaveLength(31);
 
   for (let index = 0; index < scenes.length; index++) {
     const scene = scenes[index];
@@ -167,7 +168,7 @@ test('retain active launch settings when restarting from Pause', async ({ page }
 test('open Pause with Escape in an advanced scene without returning to the lobby', async ({ page }) => {
   await page.goto('/');
   await page.locator('#app canvas').first().waitFor();
-  await launchFromLobby(page, 25);
+  await launchFromLobby(page, 27);
   await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('HorizonScene'))).toBe(true);
   await page.keyboard.press('Escape');
   await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('PauseScene'))).toBe(true);

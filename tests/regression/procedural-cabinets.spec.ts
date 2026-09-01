@@ -1,8 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const cabinets = [
-  { index: 27, scene: 'RelayScene', collection: 'ships' },
-  { index: 28, scene: 'SpiralScene', collection: 'pilots' },
+  { index: 29, scene: 'RelayScene', collection: 'ships' },
+  { index: 30, scene: 'SpiralScene', collection: 'pilots' },
 ] as const;
 
 test.beforeEach(async ({ page }) => {
