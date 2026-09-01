@@ -10,7 +10,7 @@ describe('release configuration', () => {
     const tauriVersion = (JSON.parse(read('src-tauri/tauri.conf.json')) as { version: string }).version;
     const cargoVersion = read('src-tauri/Cargo.toml').match(/^version = "([^"]+)"/m)?.[1];
     const cargoLockVersion = read('src-tauri/Cargo.lock').match(/name = "biossystem-neon-arcade"\r?\nversion = "([^"]+)"/)?.[1];
-    expect([packageVersion, lock.version, lock.packages[''].version, tauriVersion, cargoVersion, cargoLockVersion]).toEqual(['2.3.0', '2.3.0', '2.3.0', '2.3.0', '2.3.0', '2.3.0']);
+    expect([packageVersion, lock.version, lock.packages[''].version, tauriVersion, cargoVersion, cargoLockVersion]).toEqual(['2.4.0', '2.4.0', '2.4.0', '2.4.0', '2.4.0', '2.4.0']);
     expect(read('CHANGELOG.md')).toContain('## [2.0.0] - 2026-08-26');
   });
 
