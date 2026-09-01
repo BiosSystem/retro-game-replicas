@@ -1,0 +1,4 @@
+import { describe, expect, it } from 'vitest';
+import { decodeNeonProof, encodeNeonProof } from '../NeonProofCodec';
+import { compressReplay, createProofIdentity, expandReplay, signProof, verifyProof } from '../HighScoreProof';
+describe('high-score proof', () => { it('compresses deterministic sixty-hertz input', () => { const replay = compressReplay({ version: 1, scene: 'AsteroidsScene', seed: 7, tickRate: 60, durationTicks: 5, inputs: [{ tick: 0, mask: 1 }, { tick: 2, mask: 16 }] }); expect([...expandReplay(replay)]).toEqual([1, 1, 16, 16, 16]); }); it('signs, serializes, and rejects tampering', async () => { const identity = await createProofIdentity(); const proof = await signProof('AsteroidsScene', 900, { seed: 5, ticks: 2, input: new Uint8Array([2, 1]) }, identity); const decoded = decodeNeonProof(encodeNeonProof(proof)); expect(await verifyProof(decoded)).toBe(true); decoded.replay.input[1] = 2; expect(await verifyProof(decoded)).toBe(false); }); });
