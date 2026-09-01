@@ -2,6 +2,7 @@ import { SaveManager } from '../../engine/SaveManager';
 import type { ScoreClaim } from '../../net/swarm/ScoreGossip';
 import { leaderboardGames, rankScores, type LeaderboardSource } from './LeaderboardModel';
 import { avatarSvgDataUri, RetroProfileStore } from '../profile/RetroProfile';
+import { proofCatalog } from '../../core/leaderboard/ProofCatalog';
 
 export class SwarmLeaderboardUi {
   private readonly root: HTMLElement;
@@ -35,7 +36,7 @@ export class SwarmLeaderboardUi {
       </div>
       <div class="leaderboard-table-wrap">
         <table>
-          <thead><tr><th>IDENT</th><th>#</th><th>PLAYER</th><th>GAME</th><th>MODE</th><th>SCORE</th><th>SOURCE</th></tr></thead>
+          <thead><tr><th>IDENT</th><th>#</th><th>PLAYER</th><th>GAME</th><th>MODE</th><th>SCORE</th><th>SOURCE</th><th>PROOF</th></tr></thead>
           <tbody data-list></tbody>
         </table>
       </div>
@@ -67,6 +68,7 @@ export class SwarmLeaderboardUi {
       this.render();
     });
     window.addEventListener('arcade-score-submit', () => this.render());
+    window.addEventListener('arcade-proof-ready', () => this.render());
     window.addEventListener('keydown', event => {
       if (event.code === 'KeyL' && !(event.target as HTMLElement | null)?.matches('input,textarea,select')) this.toggle();
       if (event.code === 'Escape' && !this.root.hidden) this.toggle(false);
@@ -82,7 +84,7 @@ export class SwarmLeaderboardUi {
     select.replaceChildren(new Option('ALL GAMES', ''), ...games.map(game => new Option(displayGame(game), game)));
     select.value = selected;
     this.root.querySelectorAll<HTMLButtonElement>('[data-source]').forEach(button => button.classList.toggle('active', button.dataset.source === this.source));
-    const rows = rankScores(localBoards, this.peerClaims, { game: this.game || undefined, source: this.source, limit: 50 });
+    const rows = rankScores(localBoards, this.peerClaims, { game: this.game || undefined, source: this.source, limit: 50 }); const proofs = proofCatalog();
     const profile = new RetroProfileStore(localStorage).load();
     const body = this.pick<HTMLTableSectionElement>('[data-list]');
     body.replaceChildren(...rows.map((entry, index) => {
@@ -96,12 +98,13 @@ export class SwarmLeaderboardUi {
         row.appendChild(cell);
       }
       row.dataset.source = entry.source;
+      const proof = proofs.find(value => value.game === entry.game && value.score === entry.score); const proofCell = document.createElement('td'); if (proof) { const button = document.createElement('button'); button.type = 'button'; button.textContent = '🔑 VERIFIED'; button.dataset.proof = 'verified'; button.addEventListener('click', () => void import('../../core/leaderboard/VerifiedScoreStore').then(({ VerifiedScoreStore }) => { const value = new VerifiedScoreStore().all().find(item => item.game === proof.game && item.score === proof.score); if (value) window.dispatchEvent(new CustomEvent('arcade-watch-proof', { detail: value })); })); proofCell.appendChild(button); } else proofCell.textContent = 'LOCAL'; row.appendChild(proofCell);
       return row;
     }));
     if (!rows.length) {
       const row = document.createElement('tr');
       const cell = document.createElement('td');
-      cell.colSpan = 7;
+      cell.colSpan = 8;
       cell.textContent = 'NO SCORES IN THIS VIEW';
       row.appendChild(cell);
       body.appendChild(row);
