@@ -2,6 +2,11 @@
 
 ### Added
 - Add the v2.4 tracker core with bounded continuous FM voice graphs, deterministic LFSR noise, packed four-channel 32 or 64 row patterns, tracker effects, lookahead sequencing, compact `.neonseq` song codecs, offline PCM/WAV export helpers, and the generated Tracker Studio editor with QWERTY input, transport, scopes, patch controls, and cabinet BGM routing.
+- Add versioned local tracker project persistence for songs, FM patches, song order, and cabinet BGM slots. Reject corrupt browser data and safely restore a fresh project.
+- Add Tracker Studio browser coverage for catalog launch, QWERTY authoring, transport playback, `.neonseq` export, WAV rendering, lobby return, and persisted cabinet audio assignment.
+
+### Changed
+- Remove the unused Vite build manifest and enforce a 1,950,000-byte decimal production bundle ceiling. The verified Tracker Studio build measures 1,938,402 bytes.
 
 ## [v2.3.0] - 2026-08-31
 

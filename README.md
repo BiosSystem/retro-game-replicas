@@ -15,7 +15,7 @@ Capture every image below directly from the current production build. Show proce
 <p align="center">
   <img src="docs/images/screenshots/lobby.png" alt="BiosSystem Neon Arcade lobby with the 2026 Overdrive presentation enabled" width="800">
 </p>
-<p align="center"><sub>Browse the complete 29-entry cabinet catalog from the live BiosSystem Neon Arcade lobby.</sub></p>
+<p align="center"><sub>Browse the complete 30-entry cabinet catalog from the live BiosSystem Neon Arcade lobby.</sub></p>
 
 <table>
   <tr>
@@ -65,14 +65,14 @@ npm run tauri build
 
 | Area | Current implementation |
 |---|---|
-| Arcade catalog | 28 original games plus the generated Meta-Arcade Hall |
+| Arcade catalog | 28 original games, the generated Meta-Arcade Hall, and Sound Workshop / Tracker Studio |
 | Runtime | Phaser 4, TypeScript, Vite, lazy game-scene loading, fixed 60 Hz Arcade Physics |
 | Input | Keyboard, touch, Xbox, PlayStation, Nintendo, 8BitDo, arcade encoders, generic controllers, local Player 1 and Player 2 actions |
 | Game flow | Difficulty selection, solo and supported local multiplayer modes, pause, restart, shared Game Over, high-score entry, achievements |
 | Cabinet UI | Generated Nine Slice panels, animated controls, deterministic local player profiles, procedural avatars, and shared HUD frames |
 | Rendering | 640x480 pixel-art canvas, integer 4:3 or 16:9 framing, CRT presets, generated Nine Slice UI, procedural avatars, backgrounds, particles, and effects |
-| Audio | Web Audio chiptune tracker with cached pulse waves and bounded source scheduling, capped generated effects, spatial cabinet audio, and optional AudioWorklet and Wasm DSP paths |
-| Persistence | Local score ledgers, preferences, deterministic replays, IndexedDB Neon Epoch save states, generated save previews |
+| Audio | Four-channel FM tracker studio, cached pulse waves, bounded source scheduling, capped generated effects, spatial cabinet audio, and optional AudioWorklet and Wasm DSP paths |
+| Persistence | Local score ledgers, preferences, tracker projects and cabinet BGM slots, deterministic replays, IndexedDB Neon Epoch save states, generated save previews |
 | Connectivity | Manual direct WebRTC peers, copyable lobby invites, fixed snapshot rollback core, local-first verified score gossip, presence mesh, optional spatial voice |
 | Extensibility | Validated declarative stage mods, visual graph compiler, signed packages, procedural sound patches |
 | Delivery | Offline PWA, hardened Nginx container, loopback-only Compose template, optional Tauri desktop shell |
@@ -85,7 +85,23 @@ npm run tauri build
 
 **Procedural Neon worlds:** Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, Neon Genesis, Neon OS, The Singularity, Event Horizon, and Neon Epoch.
 
-**Hub:** Meta-Arcade Hall generates a walkable DDA-rendered cabinet space with spatial audio and optional connected-peer presence.
+**Hub and studio:** Meta-Arcade Hall generates a walkable DDA-rendered cabinet space with spatial audio and optional connected-peer presence. Sound Workshop / Tracker Studio creates, previews, saves, imports, exports, and assigns four-channel `.neonseq` music to the cabinet audio manager.
+
+## Chiptune Tracker Studio
+
+Open **SOUND WORKSHOP / TRACKER STUDIO** from the cabinet selector to edit CH1 lead, CH2 harmony, CH3 bass, and CH4 rhythm patterns. The studio persists the active song, FM patch, order list, and cabinet BGM assignment in the browser. Reject malformed saved data and start a fresh project safely.
+
+| Control | Action |
+|---|---|
+| `Z S X D C V G B H N J M` | Enter C-3 through B-3 notes |
+| `Q 2 W 3 E R 5 T 6 Y 7 U` | Enter C-4 through B-4 notes |
+| Arrow keys and `Tab` | Move the cell cursor and change channel |
+| `Delete` or `Backspace` | Clear the selected cell |
+| `Space` or `F5` | Play or stop the song |
+| `F6`, `F8`, `F9` | Play pattern, stop, record |
+| `[` and `]` | Adjust FM modulation and audition the patch |
+| `F1`, `F2`, `F3` | Select low-pass, high-pass, or band-pass filter |
+| `O`, `L`, `Ctrl+W` | Export `.neonseq`, load `.neonseq`, render WAV |
 
 ## Visual and performance model
 
@@ -103,7 +119,7 @@ Neon Breaker keeps classic paddle and ball collision inside the fixed 60 Hz Arca
 
 Open NETPLAY to enter the Cabinet Netplay Lobby. Host and challenger seats show connection, controller, and ready status. Use the six-character room label to organize the session, then exchange the full fragment-only invite for manual WebRTC SDP negotiation. The browser does not send that fragment to the web host. Enable NETPLAY HUD in Cabinet Control to show RTT, jitter, packet loss, rollback depth, and the recommended zero to two frame input delay. The v2.3 rollback core uses fixed binary snapshots and a twelve-frame input window, starting with versioned state contracts for Neon Vector and Tetris Pulse. Offline cabinet play remains the default while individual games adopt deterministic rollback simulations.
 
-The latest production build contains 206 modules, a 109.58 kB initial bootstrap bundle, a deferred 1,352.40 kB Phaser runtime chunk, and no downloaded UI or avatar asset payload.
+The production build keeps the Tracker Studio and visualizer components behind the cabinet's lazy scene loader. The verified v2.4 Milestone 1 build is 1,938,402 bytes, below the enforced 1,950,000-byte decimal budget, and generates no downloaded UI, avatar, music, or sprite payload.
 
 ## Verification status
 
