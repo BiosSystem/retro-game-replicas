@@ -68,7 +68,7 @@ export class TrackerSequencer {
     for (const channel of TRACKER_CHANNELS) {
       const cell = this.pattern.getCell(this.row, channel);
       const prior = this.channelState[channel];
-      const base: EffectState = cell.note > 0 ? { ...prior, note: cell.note + cell.octave * 12, volume: cell.volume } : prior;
+      const base: EffectState = cell.note > 0 ? { ...prior, note: (cell.note - 1) + (cell.octave + 1) * 12, volume: cell.volume } : prior;
       const state = applyTrackerEffect(cell, this.tick, base);
       this.channelState[channel] = state;
       if (cell.note > 0 && this.tick === 0) {

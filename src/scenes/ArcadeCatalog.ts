@@ -26,6 +26,7 @@ export const ARCADE_GAMES: readonly ArcadeGameDefinition[] = [
   { name: 'CYBER-RACER', scene: 'RacerScene', icon: '🏁' },
   { name: 'NEON CYBER-CASTER', scene: 'RaycasterScene', icon: '🔫' },
   { name: 'META-ARCADE HALL', scene: 'MetaArcadeScene', icon: '🏛️' },
+  { name: 'SOUND WORKSHOP / TRACKER STUDIO', scene: 'TrackerStudioScene', icon: '♫' },
   { name: 'NEON TACTICS', scene: 'TacticsScene', icon: '♟️' },
   { name: 'NEON LABYRINTH', scene: 'LabyrinthScene', icon: '🕸️' },
   { name: 'NEON DANMAKU', scene: 'DanmakuScene', icon: '✦' },

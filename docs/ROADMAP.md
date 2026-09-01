@@ -6,7 +6,7 @@ Use `master` as the protected integration target. Create focused branches with t
 
 | Priority | Workstream | Planned outcome | Acceptance gate |
 |---|---|---|---|
-| P1 | In-Game Chiptune Tracker and FM Synthesizer Studio | In progress: add bounded FM voice graphs, a packed four-channel pattern model, lookahead sequencing, `.neonseq` storage, and offline PCM/WAV export | Preserve autoplay safety, AudioWorklet fallback, bounded node allocation, and offline play |
+| P1 | In-Game Chiptune Tracker and FM Synthesizer Studio | In progress: deliver bounded FM voice graphs, a packed four-channel pattern model, lookahead sequencing, `.neonseq` storage, offline PCM/WAV export, and the interactive Studio scene. Reserve tracker pattern authoring persistence and polish for the remaining P1 work. | Preserve autoplay safety, AudioWorklet fallback, bounded node allocation, and offline play |
 | P2 | Cabinet Decal and Vector Art Workshop | Add generated cabinet side-art, palette decals, and animated marquee authoring | Keep artwork procedural, validate import data, and add no raster asset payload |
 | P3 | Cryptographic High-Score Proofs and P2P Leaderboard Relay | Add verifiable score proofs and opt-in peer relay | Preserve local-first leaderboards, bounded storage, and no central service dependency |
 

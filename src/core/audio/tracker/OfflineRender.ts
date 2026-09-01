@@ -28,7 +28,7 @@ export async function renderSongOffline(song: TrackerSong, sampleRate = 44100): 
         if (cell.note === 0) continue;
         const oscillator = context.createOscillator(); const envelope = context.createGain();
         oscillator.type = channel === 'CH3' ? 'triangle' : channel === 'CH4' ? 'sawtooth' : 'square';
-        oscillator.frequency.value = 440 * Math.pow(2, ((cell.note + cell.octave * 12) - 69) / 12);
+        oscillator.frequency.value = 440 * Math.pow(2, (((cell.note - 1) + (cell.octave + 1) * 12 - 69) / 12));
         envelope.gain.setValueAtTime(0.0001, time); envelope.gain.exponentialRampToValueAtTime(Math.max(0.0001, cell.volume / 255), time + 0.005);
         envelope.gain.exponentialRampToValueAtTime(0.0001, time + rowSeconds * 0.85); oscillator.connect(envelope).connect(gain); oscillator.start(time); oscillator.stop(time + rowSeconds * 0.86);
       }

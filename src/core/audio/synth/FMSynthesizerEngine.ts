@@ -10,6 +10,7 @@ interface SynthVoice {
   modulationGain: GainNode;
   envelope: GainNode;
   filter: BiquadFilterNode;
+  channel: number;
 }
 
 export interface SynthDiagnostics { active: number; dropped: number; capacity: number; }
@@ -22,23 +23,29 @@ export interface SynthDiagnostics { active: number; dropped: number; capacity: n
 export class FMSynthesizerEngine {
   private readonly voices: SynthVoice[] = [];
   private readonly allocator: AudioVoiceAllocator;
-  private readonly destination: AudioNode;
   private readonly context: BaseAudioContext;
   private readonly pulseWaves: Readonly<Record<'pulse12' | 'pulse25', PeriodicWave>>;
+  private readonly channelBuses: GainNode[] = [];
+  private readonly channelAnalysers: AnalyserNode[] = [];
   private voiceCursor = 0;
 
   constructor(context: BaseAudioContext, destination: AudioNode = context.destination, voiceCount = 16) {
-    if (!Number.isInteger(voiceCount) || voiceCount < 1 || voiceCount > 64) throw new Error('Synth voice count must be between 1 and 64');
-    this.context = context; this.destination = destination;
+    if (!Number.isInteger(voiceCount) || voiceCount < 4 || voiceCount > 64) throw new Error('Synth voice count must be between 4 and 64');
+    this.context = context;
     this.pulseWaves = { pulse12: this.createPulseWave(0.125), pulse25: this.createPulseWave(0.25) };
+    for (let channel = 0; channel < 4; channel += 1) {
+      const bus = context.createGain(); const analyser = context.createAnalyser(); analyser.fftSize = 256; bus.connect(analyser).connect(destination);
+      this.channelBuses.push(bus); this.channelAnalysers.push(analyser);
+    }
     this.allocator = new AudioVoiceAllocator(voiceCount);
     for (let index = 0; index < voiceCount; index += 1) this.voices.push(this.createVoice(index));
   }
 
-  trigger(note: number, octave: number, patch: FmPatch = DEFAULT_FM_PATCH, time = this.context.currentTime, gateSeconds = 0.12) {
+  trigger(note: number, octave: number, patch: FmPatch = DEFAULT_FM_PATCH, time = this.context.currentTime, gateSeconds = 0.12, channel = 0) {
     if (!this.allocator.acquire(time, gateSeconds + patch.envelope.release)) return false;
-    const voice = this.voices[this.voiceCursor];
-    this.voiceCursor = (this.voiceCursor + 1) % this.voices.length;
+    const channelIndex = Math.max(0, Math.min(3, Math.floor(channel)));
+    while (this.voices[this.voiceCursor].channel !== channelIndex) this.voiceCursor = (this.voiceCursor + 1) % this.voices.length;
+    const voice = this.voices[this.voiceCursor]; this.voiceCursor = (this.voiceCursor + 1) % this.voices.length;
     const frequency = midiToFrequency(note, octave);
     const start = Math.max(this.context.currentTime, time);
     const end = start + Math.max(0.005, gateSeconds);
@@ -58,6 +65,7 @@ export class FMSynthesizerEngine {
   }
 
   diagnostics(at = this.context.currentTime): SynthDiagnostics { return this.allocator.snapshot(at); }
+  analyser(channel: number) { return this.channelAnalysers[Math.max(0, Math.min(3, Math.floor(channel)))]; }
 
   dispose() {
     for (const voice of this.voices) {
@@ -65,6 +73,8 @@ export class FMSynthesizerEngine {
       voice.carrier.disconnect(); voice.modulator.disconnect(); voice.noise.disconnect();
       voice.waveformGain.disconnect(); voice.noiseGain.disconnect(); voice.modulationGain.disconnect(); voice.envelope.disconnect(); voice.filter.disconnect();
     }
+    for (const analyser of this.channelAnalysers) analyser.disconnect();
+    for (const bus of this.channelBuses) bus.disconnect();
   }
 
   private createVoice(index: number): SynthVoice {
@@ -81,9 +91,10 @@ export class FMSynthesizerEngine {
     noise.buffer = noiseBuffer; noise.loop = true;
     waveformGain.gain.value = 1; noiseGain.gain.value = 0; envelope.gain.value = 0.0001;
     modulator.connect(modulationGain).connect(carrier.frequency);
-    carrier.connect(waveformGain).connect(filter); noise.connect(noiseGain).connect(filter); filter.connect(envelope).connect(this.destination);
+    const channel = index % 4;
+    carrier.connect(waveformGain).connect(filter); noise.connect(noiseGain).connect(filter); filter.connect(envelope).connect(this.channelBuses[channel]);
     carrier.start(); modulator.start(); noise.start();
-    return { carrier, modulator, noise, waveformGain, noiseGain, modulationGain, envelope, filter };
+    return { carrier, modulator, noise, waveformGain, noiseGain, modulationGain, envelope, filter, channel };
   }
 
   private setWaveform(voice: SynthVoice, waveform: SynthWaveform, at: number) {
