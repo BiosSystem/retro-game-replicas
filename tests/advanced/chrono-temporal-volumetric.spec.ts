@@ -22,7 +22,7 @@ test('compile the volumetric WebGPU pipeline when the browser exposes WebGPU', a
 
 async function launchChrono(page: Page) {
   await page.goto('/'); await page.locator('#app canvas').first().waitFor();
-  await page.evaluate(() => { const lobby = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { updateGameSelection(change: number): void; handleSpace(): void }; for (let index = 0; index < 19; index++) lobby.updateGameSelection(1); lobby.handleSpace(); });
+  await page.evaluate(() => { const lobby = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { updateGameSelection(change: number): void; handleSpace(): void }; for (let index = 0; index < 21; index++) lobby.updateGameSelection(1); lobby.handleSpace(); });
   await page.waitForTimeout(220); await page.evaluate(() => ((window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { handleSpace(): void }).handleSpace());
   await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('ChronoScene'))).toBe(true);
 }

@@ -24,6 +24,7 @@ export default class GameOverScene extends Phaser.Scene {
   init(data: GameOverData) { this.gameOverData = data; }
 
   create() {
+    window.dispatchEvent(new CustomEvent('arcade-game-over', { detail: { scene: this.gameOverData.scene, score: this.gameOverData.score ?? 0 } }));
     InputManager.setLegacyGamepadKeyboardBridgeSuspended(true, this.scene.key);
     this.events.once('shutdown', () => InputManager.setLegacyGamepadKeyboardBridgeSuspended(false, this.scene.key));
     this.gamepadState = idleMenuState();

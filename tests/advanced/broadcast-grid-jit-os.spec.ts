@@ -4,7 +4,7 @@ test.beforeEach(async ({ page }) => { await page.addInitScript(() => localStorag
 
 async function launchOs(page: Page) {
   await page.goto('/'); await page.locator('#app canvas').first().waitFor();
-  await page.evaluate(() => { const lobby = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { updateGameSelection(change: number): void; handleSpace(): void }; for (let index = 0; index < 23; index++) lobby.updateGameSelection(1); lobby.handleSpace(); });
+  await page.evaluate(() => { const lobby = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { updateGameSelection(change: number): void; handleSpace(): void }; for (let index = 0; index < 25; index++) lobby.updateGameSelection(1); lobby.handleSpace(); });
   await page.waitForTimeout(150); await page.evaluate(() => ((window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { handleSpace(): void }).handleSpace());
   await expect.poll(() => page.evaluate(() => (window as typeof window & { game: { scene: { isActive(key: string): boolean } } }).game.scene.isActive('OsScene'))).toBe(true);
 }

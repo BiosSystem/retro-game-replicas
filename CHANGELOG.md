@@ -5,6 +5,7 @@
 - Add versioned local tracker project persistence for songs, FM patches, song order, and cabinet BGM slots. Reject corrupt browser data and safely restore a fresh project.
 - Add Tracker Studio browser coverage for catalog launch, QWERTY authoring, transport playback, `.neonseq` export, WAV rendering, lobby return, and persisted cabinet audio assignment.
 - Add a procedural Cabinet Decal Workshop with typed vector paths, symmetry, dual-pass neon strokes, `.neonart` codec validation, bounded history, local cabinet skins, and a 2.5D cabinet projection preview.
+- Add the v2.4 proof core with compact 60 Hz replay runs, P-256 WebCrypto signatures, `.neonproof` binary framing, deterministic verifier boundaries, and opt-in peer relay acceptance.
 
 ### Changed
 - Remove the unused Vite build manifest and enforce a 1,950,000-byte decimal production bundle ceiling. The verified Tracker Studio build measures 1,938,402 bytes.

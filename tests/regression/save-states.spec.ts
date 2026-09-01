@@ -6,7 +6,7 @@ test('capture, preview, and restore a generated Neon Epoch save slot', async ({ 
   await page.locator('#app canvas').first().waitFor();
   await page.evaluate(() => {
     const lobby = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { updateGameSelection(change: number): void; handleSpace(): void };
-    for (let index = 0; index < 26; index++) lobby.updateGameSelection(1);
+    for (let index = 0; index < 28; index++) lobby.updateGameSelection(1);
     lobby.handleSpace();
   });
   await page.waitForTimeout(220);

@@ -143,7 +143,7 @@ Profile gameplay with the built-in telemetry overlay, then run the benchmark and
 
 The lobby manages game selection, difficulty selection, and supported local arcade modes. Every game can invoke shared Pause and Game Over utilities. Restart copies the source launch payload so difficulty and mode survive. Keyboard Escape closes a visible utility panel first, opens Pause during active play, and retains overlay-specific close behavior.
 
-Store preferences and local score boards in `localStorage`. Store bounded Neon Epoch save states and verified peer claims in IndexedDB. Record deterministic replay input changes locally. Manual direct-peer connections can exchange bounded, signed score and world data, but do not provide public matchmaking, central identity, or an authoritative global leaderboard.
+Store preferences and local score boards in `localStorage`. Store bounded Neon Epoch save states and verified peer claims in IndexedDB. Record deterministic replay input changes locally. The proof boundary compresses 60 Hz input runs, signs a bounded `.neonproof` envelope with a browser P-256 key, and requires a deterministic replay verifier before a peer claim is retained. Manual direct-peer connections can exchange bounded signed score and world data, but do not provide public matchmaking, central identity, or an authoritative global leaderboard.
 
 ## Delivery
 

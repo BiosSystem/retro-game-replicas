@@ -9,6 +9,7 @@ export default defineConfig({
   build: {
     // The offline plugin builds its own precache manifest. Avoid emitting Vite's unused JSON manifest.
     manifest: false,
+    target: 'esnext',
     modulePreload: false,
     chunkSizeWarningLimit: 1500,
     rolldownOptions: { output: { codeSplitting: { groups: [

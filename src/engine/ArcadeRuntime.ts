@@ -40,6 +40,7 @@ export class ArcadeRuntime {
     this.crt = new CrtShaderPipeline(game.canvas, displayRoot);
     this.displayScaler = new DisplayScaler(displayRoot, game.canvas, [this.crt.outputCanvas]);
     this.replay = new ReplayRuntime(game);
+    window.addEventListener('arcade-game-over', event => { const detail = (event as CustomEvent<{ scene?: unknown; score?: unknown }>).detail; if (typeof detail.scene === 'string' && typeof detail.score === 'number') void this.replay.prove(detail.scene, detail.score); });
     this.applyPreferences();
     this.bindVisibility();
     this.bindInputStatus();
