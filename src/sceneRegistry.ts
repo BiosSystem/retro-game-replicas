@@ -26,6 +26,7 @@ const loaders: Record<string, () => Promise<{ default: SceneClass }>> = {
   EpochScene: () => import('./games/epoch/NeonEpochScene'),
   RelayScene: () => import('./games/cabinets/NeonRelayScene'),
   SpiralScene: () => import('./games/cabinets/NeonSpiralScene'),
+  TrackerStudioScene: () => import('./scenes/tracker/TrackerStudioScene'),
 };
 
 export async function loadGameScene(key: string): Promise<SceneClass> {

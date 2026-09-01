@@ -17,6 +17,8 @@ import { CabinetPalette, createNineSlicePanel, type CabinetPaletteName } from '.
 import { mountNineSlicePanel } from '../ui/NineSlicePanelRenderer';
 import { loadPlayerProfileCard, setPlayerProfilePalette } from '../ui/PlayerProfileCard';
 import { LobbyCarousel } from './lobby/LobbyCarousel';
+import { cabinetAudioManager } from '../core/audio/CabinetAudioManager';
+import type { TRACKS } from '../audio/bgm/tracks';
 type MenuMode = 'GAME_SELECT' | 'DIFFICULTY_SELECT';
 
 const PALETTE = {
@@ -28,6 +30,11 @@ const PALETTE = {
   danger:   '#ff2255',
   white:    '#ffffff',
   muted:    '#888888',
+};
+
+const CABINET_TRACKS: Partial<Record<string, keyof typeof TRACKS>> = {
+  InvadersScene: 'space', RunnerScene: 'sprint', RacerScene: 'racer', RaycasterScene: 'caster', TacticsScene: 'tactics',
+  LabyrinthScene: 'labyrinth', DanmakuScene: 'danmaku', KombatScene: 'kombat', OdysseyScene: 'odyssey', AsteroidsScene: 'vector',
 };
 
 export default class LobbyScene extends Phaser.Scene {
@@ -145,7 +152,7 @@ export default class LobbyScene extends Phaser.Scene {
   private buildGameList() {
     this.games.forEach((game, i) => {
       const isSelected = i === this.selectedGameIndex;
-      const y          = 92 + i * 13;
+      const y          = 92 + i * 12;
 
       const label  = `${game.icon}  ${game.name}`;
       const color  = isSelected ? PALETTE.white : PALETTE.dim;
@@ -399,17 +406,7 @@ export default class LobbyScene extends Phaser.Scene {
       this.time.delayedCall(200, async () => {
           InputManager.configureArcadeMode(this.arcadeMode, ['AsteroidsScene', 'RunnerScene', 'PongScene'].includes(game.scene));
           AchievementManager.recordPlay(game.scene);
-          if (game.scene === 'InvadersScene') AudioEngine.playTrack('space');
-          else if (game.scene === 'RunnerScene') AudioEngine.playTrack('sprint');
-          else if (game.scene === 'RacerScene') AudioEngine.playTrack('racer');
-          else if (game.scene === 'RaycasterScene') AudioEngine.playTrack('caster');
-          else if (game.scene === 'TacticsScene') AudioEngine.playTrack('tactics');
-          else if (game.scene === 'LabyrinthScene') AudioEngine.playTrack('labyrinth');
-          else if (game.scene === 'DanmakuScene') AudioEngine.playTrack('danmaku');
-          else if (game.scene === 'KombatScene') AudioEngine.playTrack('kombat');
-          else if (game.scene === 'OdysseyScene') AudioEngine.playTrack('odyssey');
-          else if (game.scene === 'AsteroidsScene') AudioEngine.playTrack('vector');
-          else AudioEngine.stopTrack();
+          await cabinetAudioManager.play(game.scene, CABINET_TRACKS[game.scene]);
           await mountGameScene({
             has: key => Boolean(this.scene.manager.keys[key]),
             add: (key, SceneClass) => this.scene.add(key, SceneClass, false),
@@ -439,7 +436,7 @@ export default class LobbyScene extends Phaser.Scene {
 
     this.gameItems[prev].setColor(PALETTE.dim).setScale(1).setFontSize('18px');
     this.gameItems[this.selectedGameIndex].setColor(PALETTE.white).setScale(1.06).setFontSize('20px');
-    this.selectionCursor?.setY(92 + this.selectedGameIndex * 13);
+    this.selectionCursor?.setY(92 + this.selectedGameIndex * 12);
     this.marqueeText?.setText(this.games[this.selectedGameIndex].name);
 
     this.tweens.add({ targets: this.gameItems[this.selectedGameIndex], scale: 1.1, duration: 80, yoyo: true });

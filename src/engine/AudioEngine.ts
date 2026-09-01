@@ -4,6 +4,9 @@ import type { SoundPatch } from '../audio/patches/SoundPatch';
 import { SoundPatchStore } from '../audio/patches/SoundPatchStore';
 import type { SpatialAudioBridge } from '../audio/spatial/RelativisticAudioWorklet';
 import { AudioVoiceAllocator } from '../audio/AudioVoiceAllocator';
+import type { TrackerAudioRuntime } from '../core/audio/TrackerAudioRuntime';
+import type { TrackerSong } from '../core/audio/tracker/TrackerSequencer';
+import type { FmPatch } from '../core/audio/synth/SynthPrimitives';
 
 export type AudioEffect = 'LASER' | 'EXPLOSION' | 'COIN' | 'POWER_UP' | 'STAGE_CLEAR';
 export interface ToneStep { frequency: number; type: OscillatorType; duration: number; delay: number; endFrequency?: number; }
@@ -26,6 +29,7 @@ export class AudioEngine {
     private static sequencer: ChiptuneSequencer | null = null;
     private static pendingTrack: keyof typeof TRACKS | null = null;
     private static effectVoices = new AudioVoiceAllocator(24);
+    private static trackerRuntime: TrackerAudioRuntime | null = null;
 
     public static initialize() {
         if (this.ctx) return;
@@ -76,13 +80,38 @@ export class AudioEngine {
     public static playTrack(id: keyof typeof TRACKS) {
         const track = TRACKS[id];
         if (!track) return;
+        this.stopTrackerSong();
         this.pendingTrack = id;
         this.currentTrack = null;
         this.stopBGM();
         this.sequencer?.play(track);
     }
 
-    public static stopTrack() { this.pendingTrack = null; this.sequencer?.stop(); }
+    public static stopTrack() { this.pendingTrack = null; this.sequencer?.stop(); this.stopTrackerSong(); }
+    public static async playTrackerSong(song: TrackerSong) {
+        this.initialize();
+        if (!this.ctx || !this.musicGain) return false;
+        this.pendingTrack = null; this.sequencer?.stop(); this.stopBGM();
+        if (!this.trackerRuntime) {
+            const { TrackerAudioRuntime } = await import('../core/audio/TrackerAudioRuntime');
+            if (!this.ctx || !this.musicGain || this.pendingTrack) return false;
+            this.trackerRuntime = new TrackerAudioRuntime(this.ctx, this.musicGain);
+        }
+        this.trackerRuntime.play(song);
+        return true;
+    }
+    public static stopTrackerSong() { this.trackerRuntime?.stop(); }
+    public static getTrackerAnalysers() { return this.trackerRuntime ? [0, 1, 2, 3].map(channel => this.trackerRuntime!.analyser(channel)) : []; }
+    public static async auditionTrackerNote(midi: number, patch: FmPatch, channel = 0) {
+        this.initialize();
+        if (!this.ctx || !this.musicGain) return false;
+        if (!this.trackerRuntime) {
+            const { TrackerAudioRuntime } = await import('../core/audio/TrackerAudioRuntime');
+            if (!this.ctx || !this.musicGain) return false;
+            this.trackerRuntime = new TrackerAudioRuntime(this.ctx, this.musicGain);
+        }
+        return this.trackerRuntime.audition(midi, patch, channel);
+    }
     public static setTrackTimeWarp(tempoScale: number, pitchSemitones: number) { this.sequencer?.setTimeWarp(tempoScale, pitchSemitones); }
     public static async createRelativisticSpatialBridge(): Promise<SpatialAudioBridge | null> {
         if (!this.ctx || !this.masterGain) return null;

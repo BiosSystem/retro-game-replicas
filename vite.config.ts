@@ -7,7 +7,8 @@ export default defineConfig({
   server: { headers: { 'Cross-Origin-Opener-Policy': 'same-origin', 'Cross-Origin-Embedder-Policy': 'require-corp' } },
   preview: { headers: { 'Cross-Origin-Opener-Policy': 'same-origin', 'Cross-Origin-Embedder-Policy': 'require-corp' } },
   build: {
-    manifest: true,
+    // The offline plugin builds its own precache manifest. Avoid emitting Vite's unused JSON manifest.
+    manifest: false,
     chunkSizeWarningLimit: 1500,
     rolldownOptions: { output: { codeSplitting: { groups: [
       { name: 'phaser-runtime', test: /node_modules[\\/]phaser/ },

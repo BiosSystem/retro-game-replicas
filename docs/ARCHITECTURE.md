@@ -119,6 +119,12 @@ Keep assets procedural. Game scenes draw with Phaser primitives, generated buffe
 
 ### Audio scheduling and underrun telemetry
 
+The v2.4 tracker core lives in `src/core/audio/` so pattern storage and scheduling remain independent from menu BGM playback. `FMSynthesizerEngine` prebuilds a fixed number of continuous two-operator FM graphs and changes only AudioParam automation while notes play. It supports pulse, triangle, saw, and generated LFSR noise sources, ADSR envelopes, and low-pass, high-pass, or band-pass filters.
+
+`TrackerPattern` stores four channels in packed six-byte cells for 32 or 64 rows. `TrackerSequencer` schedules bounded lookahead windows using the audio clock, while `SongArranger` loops a typed order table. `SongCodec` validates the versioned `.neonseq` format before decoding it, and `OfflineRender` produces raw PCM plus a standard PCM WAV container without imported sample assets.
+
+`TrackerStudioScene` loads lazily from the lobby Sound Workshop entry. Its generated matrix, patch panel, transport display, scope view, and file controls operate on pure editor models. `CabinetAudioManager` selects a local custom tracker song where one exists, otherwise retains the established default cabinet BGM path.
+
 `AudioVoiceAllocator` caps generated sound effects and patch previews at 24 concurrent voices. It uses a fixed `Float64Array` of release times, so overloaded effects are dropped rather than creating an unbounded graph. `WebAudioTrackerBackend` caches its two pulse waves and limits active scheduled tracker sources to 48. It drops a note only when the graph is already at that hard limit.
 
 The spatial AudioWorklet ring reserves header slots for read position, write position, and missed render quanta. The processor increments the underrun counter once per missed output block. Neon Epoch samples this counter and sends a bounded `arcade-audio-underrun` signal to `PerformanceBaselineMonitor`. The MessagePort fallback remains playable but does not claim shared-ring underrun telemetry.

@@ -7,7 +7,7 @@ const files = await collect(root);
 const bytes = files.reduce((sum, file) => sum + file.bytes, 0);
 const bootstrap = files.find(file => /assets[\\/]bootstrap-.*\.js$/.test(file.path));
 const phaser = files.find(file => /assets[\\/]phaser-runtime-.*\.js$/.test(file.path));
-const budgets = { total: 2_500_000, bootstrap: 131_072, phaser: 1_450_000 };
+const budgets = { total: 1_950_000, bootstrap: 131_072, phaser: 1_450_000 };
 const measurements = { total: bytes, bootstrap: bootstrap?.bytes ?? 0, phaser: phaser?.bytes ?? 0 };
 const violations = Object.entries(budgets).filter(([key, budget]) => measurements[key] > budget);
 

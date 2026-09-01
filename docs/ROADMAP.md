@@ -6,7 +6,7 @@ Use `master` as the protected integration target. Create focused branches with t
 
 | Priority | Workstream | Planned outcome | Acceptance gate |
 |---|---|---|---|
-| P1 | In-Game Chiptune Tracker and FM Synthesizer Studio | Add programmable synth voices, pattern editing, bounded scheduling, and local audio export | Preserve autoplay safety, AudioWorklet fallback, bounded node allocation, and offline play |
+| P1 | In-Game Chiptune Tracker and FM Synthesizer Studio | Completed on `feat/v2.4-chiptune-tracker-studio`: bounded FM voice graphs, packed four-channel patterns, lookahead sequencing, `.neonseq` import and export, offline WAV rendering, interactive Studio controls, local project and cabinet BGM persistence, and browser workflow coverage. | Preserve autoplay safety, AudioWorklet fallback, bounded node allocation, offline play, and a 1,950,000-byte decimal production bundle ceiling |
 | P2 | Cabinet Decal and Vector Art Workshop | Add generated cabinet side-art, palette decals, and animated marquee authoring | Keep artwork procedural, validate import data, and add no raster asset payload |
 | P3 | Cryptographic High-Score Proofs and P2P Leaderboard Relay | Add verifiable score proofs and opt-in peer relay | Preserve local-first leaderboards, bounded storage, and no central service dependency |
 
