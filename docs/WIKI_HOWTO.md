@@ -113,6 +113,34 @@ Launch **SOUND WORKSHOP / TRACKER STUDIO** from the cabinet selector. The studio
 
 Keep `.neonseq` files small and versioned. The binary codec rejects invalid signatures, truncated content, unsupported rows, invalid order references, and trailing data instead of passing malformed data to the audio engine.
 
+## Build a Homebrew cartridge
+
+Launch **HOMEBREW STUDIO / CARTRIDGE PLAYER** to run the bundled *Neon Invader* reference cartridge, load a local `.neongame` file, or verify a cartridge error boundary. Keep cartridges deterministic. The runtime gives each module a fixed 1 MiB heap and stops execution after 100,000 instructions in one frame.
+
+| Segment | Encoding |
+|---|---|
+| Header | `NEON` magic (`0x4E454F4E`), version byte, target tick rate (`uint16`, little-endian) |
+| Metadata | Length-prefixed UTF-8 title, author, and version strings |
+| Program | Bytecode length (`uint32`) followed by the instruction buffer |
+| Static assets | Count plus ID and length-prefixed vector and audio segments |
+| Integrity | FNV checksum over the complete payload, verified before execution |
+
+| Opcode group | Operations |
+|---|---|
+| Stack and heap | `OP_PUSH`, `OP_POP`, `OP_DUP`, `OP_SWAP`, `OP_LOAD_I32`, `OP_STORE_I32` |
+| Arithmetic and logic | `OP_ADD`, `OP_SUB`, `OP_MUL`, `OP_DIV`, `OP_MOD`, `OP_BIT_AND`, `OP_BIT_OR`, `OP_BIT_XOR`, `OP_NOT` |
+| Control flow | `OP_JUMP`, `OP_JUMP_IF`, `OP_CALL`, `OP_RET`, `OP_HALT` |
+| Host bridge | `OP_HOST_DRAW`, `OP_HOST_AUDIO`, `OP_HOST_INPUT`, `OP_HOST_TIME` |
+
+Use the host bridge only through these stack call signatures. The bridge clamps all parameters and exposes no DOM, Phaser scene, network, or raw audio-context references.
+
+| Host command | Stack parameters |
+|---|---|
+| `DrawVectorPath` | `pathId, x, y, scale, color` |
+| `PlaySynthNote` | `channel, patchId, note, volume` |
+| `ReadInputBitmask` | `playerIndex` and pushes the normalized input bitmask |
+| `ReadTime` | Pushes a bounded millisecond clock value |
+
 ## Test container delivery
 
 Use a Docker-enabled host:

@@ -1,5 +1,5 @@
 export const NEON_OPCODE = {
-  PUSH: 0x01, POP: 0x02, DUP: 0x03, SWAP: 0x04,
+  PUSH: 0x01, POP: 0x02, DUP: 0x03, SWAP: 0x04, LOAD_I32: 0x05, STORE_I32: 0x06,
   ADD: 0x10, SUB: 0x11, MUL: 0x12, DIV: 0x13, MOD: 0x14, BIT_AND: 0x15, BIT_OR: 0x16, BIT_XOR: 0x17, NOT: 0x18,
   JUMP: 0x20, JUMP_IF: 0x21, CALL: 0x22, RET: 0x23, HALT: 0x24,
   HOST_DRAW: 0x30, HOST_AUDIO: 0x31, HOST_INPUT: 0x32, HOST_TIME: 0x33,
@@ -55,6 +55,7 @@ export class NeonBytecodeVM {
   peek() { if (!this.stackSize) throw new NeonVmError('Stack underflow'); return this.stack[this.stackSize - 1]; }
 
   reset() { this.pc = 0; this.stackSize = 0; this.callSize = 0; this.halted = false; this.registers.fill(0); this.heap.fill(0); }
+  rewind() { this.pc = 0; this.stackSize = 0; this.callSize = 0; this.halted = false; }
 
   step(limit = MAX_INSTRUCTIONS): NeonVmStep {
     if (!Number.isInteger(limit) || limit < 1 || limit > MAX_INSTRUCTIONS) throw new NeonVmError('Invalid instruction quota');
@@ -73,6 +74,8 @@ export class NeonBytecodeVM {
       case NEON_OPCODE.POP: this.pop(); break;
       case NEON_OPCODE.DUP: this.push(this.peek()); break;
       case NEON_OPCODE.SWAP: { const right = this.pop(); const left = this.pop(); this.push(right); this.push(left); break; }
+      case NEON_OPCODE.LOAD_I32: this.push(this.readHeapInt32(this.pop())); break;
+      case NEON_OPCODE.STORE_I32: { const value = this.pop(); this.writeHeapInt32(this.pop(), value); break; }
       case NEON_OPCODE.ADD: this.binary((left, right) => (left + right) | 0); break;
       case NEON_OPCODE.SUB: this.binary((left, right) => (left - right) | 0); break;
       case NEON_OPCODE.MUL: this.binary((left, right) => Math.imul(left, right)); break;

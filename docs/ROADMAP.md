@@ -6,7 +6,7 @@ Use `master` as the protected integration target. Create focused branches with t
 
 | Priority | Workstream | Planned outcome | Acceptance gate |
 |---|---|---|---|
-| P1 | Sandboxed Bytecode VM and Arcade Modding SDK | Build bounded integer bytecode execution, validated `.neongame` cartridges, and a scene-independent host bridge. | Enforce per-tick quotas, a 1 MiB module heap, no DOM access, malformed-file rejection, and the 1,950,000-byte bundle budget |
+| P1 | Sandboxed Bytecode VM and Arcade Modding SDK | Build bounded integer bytecode execution, validated `.neongame` cartridges, a scene-independent host bridge, and the lazy Cartridge Player reference runtime. | Enforce per-tick quotas, a 1 MiB module heap, no DOM access, malformed-file rejection, browser runtime coverage, and the 1,950,000-byte bundle budget |
 | P2 | Multi-Peer Tournament Brackets and Spectator Broadcast Room | Add local-first bracket orchestration, opted-in spectator rooms, and deterministic match result relay. | Preserve direct peer consent, bounded peer state, and offline cabinet behavior |
 | P3 | Low-Latency Direct Raw Input Driver and Arcade Stick Remapping | Extend controller profiles with explicit arcade-stick capabilities and measured polling telemetry. | Preserve Gamepad API fallback, user gesture requirements, and keyboard accessibility |
 

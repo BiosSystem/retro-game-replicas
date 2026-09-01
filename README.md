@@ -15,7 +15,7 @@ Capture every image below directly from the current production build. Show proce
 <p align="center">
   <img src="docs/images/screenshots/lobby.png" alt="BiosSystem Neon Arcade lobby with the 2026 Overdrive presentation enabled" width="800">
 </p>
-<p align="center"><sub>Browse the complete 31-entry cabinet catalog from the live BiosSystem Neon Arcade lobby.</sub></p>
+<p align="center"><sub>Browse the complete 32-entry cabinet catalog from the live BiosSystem Neon Arcade lobby.</sub></p>
 
 <table>
   <tr>
@@ -65,7 +65,7 @@ npm run tauri build
 
 | Area | Current implementation |
 |---|---|
-| Arcade catalog | 28 original games, the generated Meta-Arcade Hall, Sound Workshop / Tracker Studio, and Cabinet Art / Decal Workshop |
+| Arcade catalog | 28 original games, the generated Meta-Arcade Hall, Sound Workshop / Tracker Studio, Cabinet Art / Decal Workshop, and Homebrew Cartridge Player |
 | Runtime | Phaser 4, TypeScript, Vite, lazy game-scene loading, fixed 60 Hz Arcade Physics |
 | Input | Keyboard, touch, Xbox, PlayStation, Nintendo, 8BitDo, arcade encoders, generic controllers, local Player 1 and Player 2 actions |
 | Game flow | Difficulty selection, solo and supported local multiplayer modes, pause, restart, shared Game Over, high-score entry, achievements |
@@ -74,7 +74,7 @@ npm run tauri build
 | Audio | Four-channel FM tracker studio, cached pulse waves, bounded source scheduling, capped generated effects, spatial cabinet audio, and optional AudioWorklet and Wasm DSP paths |
 | Persistence | Local score ledgers, preferences, tracker projects and cabinet BGM slots, deterministic replays, IndexedDB Neon Epoch save states, generated save previews |
 | Connectivity | Manual direct WebRTC peers, copyable lobby invites, fixed snapshot rollback core, local-first verified score gossip, presence mesh, optional spatial voice |
-| Extensibility | Validated declarative stage mods, visual graph compiler, signed packages, procedural sound patches |
+| Extensibility | Sandboxed `.neongame` bytecode cartridges, validated declarative stage mods, visual graph compiler, signed packages, and procedural sound patches |
 | Delivery | Offline PWA, hardened Nginx container, loopback-only Compose template, optional Tauri desktop shell |
 
 ## Games
@@ -103,6 +103,10 @@ Open **SOUND WORKSHOP / TRACKER STUDIO** from the cabinet selector to edit CH1 l
 | `F1`, `F2`, `F3` | Select low-pass, high-pass, or band-pass filter |
 | `O`, `L`, `Ctrl+W` | Export `.neonseq`, load `.neonseq`, render WAV |
 
+## Homebrew Arcade SDK and Bytecode VM
+
+Open **HOMEBREW STUDIO / CARTRIDGE PLAYER** to launch the bundled *Neon Invader* reference cartridge or load a validated `.neongame` file. The player runs deterministic 32-bit bytecode at 60 FPS with a 100,000-instruction frame quota and a maximum 1 MiB module heap. Cartridges have no DOM or scene access. They can only issue sanitized vector draw and synth-note commands, read an input bitmask, and read the clock through the explicit host bridge. Invalid or quota-violating files stay contained in a cabinet error dialog.
+
 ## Visual and performance model
 
 Render the core arcade experience at 640x480 with pixel-art sampling. Select Clean Pixel, Arcade CRT 1980s, Trinitron 1990s, or Bypass. Calibrate stable scanline phase and 0% to 8% overscan, then select AUTO, HIGH, MEDIUM, or LOW quality. The CRT path supports gamma-aware bloom, curvature, chromatic aberration, phosphor masks, vignette, program caching, and a source-canvas fallback.
@@ -119,7 +123,7 @@ Neon Breaker keeps classic paddle and ball collision inside the fixed 60 Hz Arca
 
 Open NETPLAY to enter the Cabinet Netplay Lobby. Host and challenger seats show connection, controller, and ready status. Use the six-character room label to organize the session, then exchange the full fragment-only invite for manual WebRTC SDP negotiation. The browser does not send that fragment to the web host. Enable NETPLAY HUD in Cabinet Control to show RTT, jitter, packet loss, rollback depth, and the recommended zero to two frame input delay. The v2.3 rollback core uses fixed binary snapshots and a twelve-frame input window, starting with versioned state contracts for Neon Vector and Tetris Pulse. Offline cabinet play remains the default while individual games adopt deterministic rollback simulations.
 
-The production build keeps the Tracker Studio and visualizer components behind the cabinet's lazy scene loader. The verified v2.4 Milestone 1 build is 1,938,402 bytes, below the enforced 1,950,000-byte decimal budget, and generates no downloaded UI, avatar, music, or sprite payload.
+The production build keeps the Tracker Studio, visualizer, and cartridge player components behind the cabinet's lazy scene loader. It generates no downloaded UI, avatar, music, or sprite payload.
 
 ## Verification status
 

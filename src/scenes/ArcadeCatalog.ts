@@ -43,6 +43,7 @@ export const ARCADE_GAMES: readonly ArcadeGameDefinition[] = [
   { name: 'NEON EPOCH', scene: 'EpochScene', icon: '◈' },
   { name: 'NEON RELAY', scene: 'RelayScene', icon: '⌁' },
   { name: 'PRISM SPIRAL', scene: 'SpiralScene', icon: '◉' },
+  { name: 'HOMEBREW STUDIO / CARTRIDGE PLAYER', scene: 'CartridgePlayerScene', icon: '▸' },
 ];
 
 export const ARCADE_DIFFICULTIES: readonly ArcadeDifficultyDefinition[] = [

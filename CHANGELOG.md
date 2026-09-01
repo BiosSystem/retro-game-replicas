@@ -2,6 +2,7 @@
 
 ### Added
 - Add the v2.5 scripting-runtime foundation with a bounded deterministic bytecode VM, `.neongame` cartridge validation, and a scene-independent host bridge.
+- Add the lazy Cartridge Player scene, a bounded Neon Invader reference cartridge, input and audio routing, runtime diagnostics, and malformed-cartridge recovery.
 
 ## [v2.4.0] - 2026-09-01
 
