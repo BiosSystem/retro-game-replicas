@@ -1,14 +1,14 @@
 # BiosSystem Neon Arcade Roadmap
 
-## v2.4.0 development cycle
+## v2.5.0 development cycle
 
-Use `master` as the protected integration target. Create focused branches with the `feat/v2.4-<system>` or `fix/v2.4-<system>` pattern. Preserve the v2.3.0 release as the performance and behavior baseline.
+Use `master` as the protected integration target. Create focused branches with the `feat/v2.5-<system>` or `fix/v2.5-<system>` pattern. Preserve the v2.4.0 release as the performance and behavior baseline.
 
 | Priority | Workstream | Planned outcome | Acceptance gate |
 |---|---|---|---|
-| P1 | In-Game Chiptune Tracker and FM Synthesizer Studio | Completed on `feat/v2.4-chiptune-tracker-studio`: bounded FM voice graphs, packed four-channel patterns, lookahead sequencing, `.neonseq` import and export, offline WAV rendering, interactive Studio controls, local project and cabinet BGM persistence, and browser workflow coverage. | Preserve autoplay safety, AudioWorklet fallback, bounded node allocation, offline play, and a 1,950,000-byte decimal production bundle ceiling |
-| P2 | Cabinet Decal and Vector Art Workshop | Completed in PR #33: typed vector paths, mirror symmetry, `.neonart` serialization, local cabinet skins, drawing tools, bounded history, a generated 2.5D cabinet preview, and browser workflow coverage. | Keep artwork procedural, validate import data, add no raster asset payload, and retain the 1,950,000-byte decimal budget |
-| P3 | Cryptographic High-Score Proofs and P2P Leaderboard Relay | Completed in PR #34: compact P-256-signed replay proofs, `.neonproof` framing, local verified-proof storage, top-three direct-peer proof exchange, verified score badges, and spectator replay controls. | Preserve local-first leaderboards, bounded storage, signature validation, replay viewer safety, and no central service dependency |
+| P1 | Sandboxed Bytecode VM and Arcade Modding SDK | Build bounded integer bytecode execution, validated `.neongame` cartridges, and a scene-independent host bridge. | Enforce per-tick quotas, a 1 MiB module heap, no DOM access, malformed-file rejection, and the 1,950,000-byte bundle budget |
+| P2 | Multi-Peer Tournament Brackets and Spectator Broadcast Room | Add local-first bracket orchestration, opted-in spectator rooms, and deterministic match result relay. | Preserve direct peer consent, bounded peer state, and offline cabinet behavior |
+| P3 | Low-Latency Direct Raw Input Driver and Arcade Stick Remapping | Extend controller profiles with explicit arcade-stick capabilities and measured polling telemetry. | Preserve Gamepad API fallback, user gesture requirements, and keyboard accessibility |
 
 ## v2.4.0 release status
 

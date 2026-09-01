@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Added
+- Add the v2.5 scripting-runtime foundation with a bounded deterministic bytecode VM, `.neongame` cartridge validation, and a scene-independent host bridge.
+
 ## [v2.4.0] - 2026-09-01
 
 ### Added
