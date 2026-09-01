@@ -11,7 +11,7 @@ import { GamepadButton } from '../engine/input/GamepadHandler';
 import { AttractController, CreditLedger } from '../ui/menu/ArcadeSession';
 import { mountGameScene } from '../ui/menu/SceneLifecycle';
 import type { ArcadeMode } from '../multiplayer/CoopSession';
-import { ARCADE_DIFFICULTIES, ARCADE_GAMES } from './ArcadeCatalog';
+import { ARCADE_DIFFICULTIES, ARCADE_GAMES, type ArcadeDifficultyDefinition } from './ArcadeCatalog';
 import { drawRetroAvatar } from '../ui/profile/RetroProfile';
 import { CabinetPalette, createNineSlicePanel, type CabinetPaletteName } from '../ui/NineSlicePanel';
 import { mountNineSlicePanel } from '../ui/NineSlicePanelRenderer';
@@ -75,7 +75,7 @@ export default class LobbyScene extends Phaser.Scene {
     this.mode        = 'GAME_SELECT';
     this.secretBuffer = '';
     this.carousel = new LobbyCarousel(this.games.length);
-    this.customizedCabinets = readCustomizedCabinetScenes();
+    this.customizedCabinets = readCustomizedCabinetScenes(); this.game.canvas.dataset.customizedCabinet = this.customizedCabinets.size ? 'true' : 'false'; const activeCanvas = document.querySelector<HTMLCanvasElement>('#app canvas'); if (activeCanvas) activeCanvas.dataset.customizedCabinet = this.customizedCabinets.size ? 'true' : 'false';
     this.credits = new CreditLedger(localStorage);
     this.attract = new AttractController(30_000, this.time.now);
     this.nextAttractCycle = this.time.now + 30_000;
@@ -407,18 +407,23 @@ export default class LobbyScene extends Phaser.Scene {
       this.updateCreditText();
       const game = this.games[this.selectedGameIndex];
       const diff = this.difficulties[this.selectedDiffIndex];
+      if (game.scene === 'DecalWorkshopScene') { void this.startCatalogScene(game.scene, diff.id); return; }
       this.cameras.main.fade(200, 0, 0, 0);
       this.time.delayedCall(200, async () => {
-          InputManager.configureArcadeMode(this.arcadeMode, ['AsteroidsScene', 'RunnerScene', 'PongScene'].includes(game.scene));
-          AchievementManager.recordPlay(game.scene);
-          await cabinetAudioManager.play(game.scene, CABINET_TRACKS[game.scene]);
-          await mountGameScene({
-            has: key => Boolean(this.scene.manager.keys[key]),
-            add: (key, SceneClass) => this.scene.add(key, SceneClass, false),
-            start: (key, sceneData) => this.scene.start(key, sceneData),
-          }, game.scene, { difficulty: diff.id, mode: this.arcadeMode });
+          await this.startCatalogScene(game.scene, diff.id);
       });
     }
+  }
+
+  private async startCatalogScene(scene: string, difficulty: ArcadeDifficultyDefinition['id']) {
+    InputManager.configureArcadeMode(this.arcadeMode, ['AsteroidsScene', 'RunnerScene', 'PongScene'].includes(scene));
+    AchievementManager.recordPlay(scene);
+    await cabinetAudioManager.play(scene, CABINET_TRACKS[scene]);
+    await mountGameScene({
+      has: key => Boolean(this.scene.manager.keys[key]),
+      add: (key, SceneClass) => this.scene.add(key, SceneClass, false),
+      start: (key, sceneData) => this.scene.start(key, sceneData),
+    }, scene, { difficulty, mode: this.arcadeMode });
   }
 
   handleEsc() {
