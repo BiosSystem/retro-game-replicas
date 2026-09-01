@@ -15,7 +15,7 @@ Capture every image below directly from the current production build. Show proce
 <p align="center">
   <img src="docs/images/screenshots/lobby.png" alt="BiosSystem Neon Arcade lobby with the 2026 Overdrive presentation enabled" width="800">
 </p>
-<p align="center"><sub>Browse the complete 30-entry cabinet catalog from the live BiosSystem Neon Arcade lobby.</sub></p>
+<p align="center"><sub>Browse the complete 31-entry cabinet catalog from the live BiosSystem Neon Arcade lobby.</sub></p>
 
 <table>
   <tr>
@@ -65,7 +65,7 @@ npm run tauri build
 
 | Area | Current implementation |
 |---|---|
-| Arcade catalog | 28 original games, the generated Meta-Arcade Hall, and Sound Workshop / Tracker Studio |
+| Arcade catalog | 28 original games, the generated Meta-Arcade Hall, Sound Workshop / Tracker Studio, and Cabinet Art / Decal Workshop |
 | Runtime | Phaser 4, TypeScript, Vite, lazy game-scene loading, fixed 60 Hz Arcade Physics |
 | Input | Keyboard, touch, Xbox, PlayStation, Nintendo, 8BitDo, arcade encoders, generic controllers, local Player 1 and Player 2 actions |
 | Game flow | Difficulty selection, solo and supported local multiplayer modes, pause, restart, shared Game Over, high-score entry, achievements |
