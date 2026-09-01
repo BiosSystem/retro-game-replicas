@@ -8,7 +8,11 @@ Use `master` as the protected integration target. Create focused branches with t
 |---|---|---|---|
 | P1 | In-Game Chiptune Tracker and FM Synthesizer Studio | Completed on `feat/v2.4-chiptune-tracker-studio`: bounded FM voice graphs, packed four-channel patterns, lookahead sequencing, `.neonseq` import and export, offline WAV rendering, interactive Studio controls, local project and cabinet BGM persistence, and browser workflow coverage. | Preserve autoplay safety, AudioWorklet fallback, bounded node allocation, offline play, and a 1,950,000-byte decimal production bundle ceiling |
 | P2 | Cabinet Decal and Vector Art Workshop | Completed in PR #33: typed vector paths, mirror symmetry, `.neonart` serialization, local cabinet skins, drawing tools, bounded history, a generated 2.5D cabinet preview, and browser workflow coverage. | Keep artwork procedural, validate import data, add no raster asset payload, and retain the 1,950,000-byte decimal budget |
-| P3 | Cryptographic High-Score Proofs and P2P Leaderboard Relay | In progress on `feat/v2.4-p2p-highscore-proofs`: compact signed replay proofs, proof codec, deterministic verifier boundary, and opt-in DataChannel relay. | Preserve local-first leaderboards, bounded storage, replay validation, and no central service dependency |
+| P3 | Cryptographic High-Score Proofs and P2P Leaderboard Relay | Completed in PR #34: compact P-256-signed replay proofs, `.neonproof` framing, local verified-proof storage, top-three direct-peer proof exchange, verified score badges, and spectator replay controls. | Preserve local-first leaderboards, bounded storage, signature validation, replay viewer safety, and no central service dependency |
+
+## v2.4.0 release status
+
+All v2.4.0 milestones are complete. The release delivers the Tracker Studio, Cabinet Decal Workshop, and signed replay-proof leaderboard features while preserving generated asset pipelines and offline-first play.
 
 ## v2.3.0 release status
 
