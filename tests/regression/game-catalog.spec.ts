@@ -14,7 +14,7 @@ test('launch every registered arcade scene without runtime errors', async ({ pag
     const lobby = (window as typeof window & { game: { scene: { getScene(key: string): unknown } } }).game.scene.getScene('LobbyScene') as { games: Array<{ scene: string }> };
     return lobby.games.map(game => game.scene);
   });
-  expect(scenes).toHaveLength(31);
+  expect(scenes).toHaveLength(32);
 
   for (let index = 0; index < scenes.length; index++) {
     const scene = scenes[index];

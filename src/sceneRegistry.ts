@@ -28,6 +28,7 @@ const loaders: Record<string, () => Promise<{ default: SceneClass }>> = {
   SpiralScene: () => import('./games/cabinets/NeonSpiralScene'),
   TrackerStudioScene: () => import('./scenes/tracker/TrackerStudioScene'),
   DecalWorkshopScene: () => import('./scenes/workshop/DecalWorkshopScene'),
+  CartridgePlayerScene: () => import('./scenes/scripting/CartridgePlayerScene'),
 };
 
 export async function loadGameScene(key: string): Promise<SceneClass> {
