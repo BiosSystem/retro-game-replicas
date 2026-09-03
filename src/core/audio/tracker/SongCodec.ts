@@ -1,12 +1,11 @@
 import { TrackerPattern, TRACKER_CELL_BYTES, TRACKER_CHANNEL_COUNT } from './TrackerPattern';
 import type { TrackerInstrument, TrackerSong } from './TrackerSequencer';
+import { asBytes, decodeUtf8, encodeUtf8, hasBytes, viewOf } from '../../utils/binary';
 
 const MAGIC = 0x4e534551; // NS EQ
 const VERSION = 1;
 const HEADER_BYTES = 16;
 const INSTRUMENT_BYTES = 18;
-const textEncoder = new TextEncoder();
-const textDecoder = new TextDecoder();
 
 export class SongCodecError extends Error {}
 
@@ -25,7 +24,7 @@ export function encodeSong(song: TrackerSong): ArrayBuffer {
   let offset = HEADER_BYTES;
   for (const instrument of instruments) {
     bytes[offset] = byte(instrument.id);
-    const encodedName = textEncoder.encode(instrument.name).subarray(0, INSTRUMENT_BYTES - 2);
+    const encodedName = encodeUtf8(instrument.name).subarray(0, INSTRUMENT_BYTES - 2);
     bytes[offset + 1] = encodedName.length; bytes.set(encodedName, offset + 2); offset += INSTRUMENT_BYTES;
   }
   for (const pattern of song.patterns) { bytes[offset] = pattern.rows; offset += 1; bytes.set(pattern.data, offset); offset += pattern.data.length; }
@@ -34,9 +33,9 @@ export function encodeSong(song: TrackerSong): ArrayBuffer {
 }
 
 export function decodeSong(source: ArrayBuffer | Uint8Array): DecodedSong {
-  const bytes = source instanceof Uint8Array ? source : new Uint8Array(source);
+  const bytes = asBytes(source);
   if (bytes.byteLength < HEADER_BYTES) throw new SongCodecError('Song data is truncated before its header');
-  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const view = viewOf(bytes);
   if (view.getUint32(0) !== MAGIC) throw new SongCodecError('Song data has an invalid neonseq signature');
   if (view.getUint8(4) !== VERSION) throw new SongCodecError('Song data uses an unsupported neonseq version');
   const bpm = view.getUint16(5); const speed = view.getUint8(7); const patternCount = view.getUint16(8); const orderCount = view.getUint16(10);
@@ -47,7 +46,7 @@ export function decodeSong(source: ArrayBuffer | Uint8Array): DecodedSong {
     requireBytes(bytes, offset, INSTRUMENT_BYTES);
     const length = bytes[offset + 1];
     if (length > INSTRUMENT_BYTES - 2) throw new SongCodecError('Song instrument name is malformed');
-    instruments.push({ id: bytes[offset], name: textDecoder.decode(bytes.subarray(offset + 2, offset + 2 + length)) });
+    instruments.push({ id: bytes[offset], name: decodeUtf8(bytes.subarray(offset + 2, offset + 2 + length)) });
     offset += INSTRUMENT_BYTES;
   }
   const patterns: TrackerPattern[] = [];
@@ -72,5 +71,5 @@ function validate(song: TrackerSong) {
   if (song.instruments.length > 0xff) throw new SongCodecError('Song contains too many instruments');
   for (const entry of song.order) if (!song.patterns[entry]) throw new SongCodecError('Song order refers to a missing pattern');
 }
-function requireBytes(bytes: Uint8Array, offset: number, count: number) { if (offset < 0 || count < 0 || offset + count > bytes.length) throw new SongCodecError('Song data is truncated'); }
+function requireBytes(bytes: Uint8Array, offset: number, count: number) { if (!hasBytes(bytes, offset, count)) throw new SongCodecError('Song data is truncated'); }
 function byte(value: number) { return Math.max(0, Math.min(255, Math.floor(value))); }

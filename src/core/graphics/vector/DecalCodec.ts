@@ -1,4 +1,5 @@
 import { CABINET_SLOTS, SYMMETRY_MODES, type VectorArtDocument, type VectorLayer, type VectorPath, type VectorSegment } from './VectorArtModel';
+import { asBytes, hasBytes, viewOf } from '../../utils/binary';
 
 const MAGIC = 0x4e415254; const VERSION = 1; const HEADER_BYTES = 12; const LAYER_BYTES = 16;
 const SEGMENT_BYTES = { LINE: 5, QUADRATIC: 9, CUBIC: 13, CLOSE: 1 } as const;
@@ -15,7 +16,7 @@ export function encodeDecal(document: VectorArtDocument): ArrayBuffer {
 }
 
 export function decodeDecal(source: ArrayBuffer | Uint8Array): VectorArtDocument {
-  const bytes = source instanceof Uint8Array ? source : new Uint8Array(source); const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength); requireBytes(bytes, 0, HEADER_BYTES);
+  const bytes = asBytes(source); const view = viewOf(bytes); requireBytes(bytes, 0, HEADER_BYTES);
   let offset = 0; if (view.getUint32(offset) !== MAGIC) throw new DecalCodecError(); offset += 4; if (view.getUint8(offset++) !== VERSION) throw new DecalCodecError();
   const width = view.getUint16(offset); offset += 2; const height = view.getUint16(offset); offset += 2; const symmetry = SYMMETRY_MODES[view.getUint8(offset++)]; const layerCount = view.getUint8(offset++); offset += 1;
   if (!width || !height || !symmetry || layerCount === 0) throw new DecalCodecError(); const layers: VectorLayer[] = [];
@@ -44,7 +45,7 @@ function decodePath(view: DataView, bytes: Uint8Array, offset: number) {
 function point(view: DataView, offset: number, value: { x: number; y: number }) { view.setUint16(offset, value.x); view.setUint16(offset + 2, value.y); return offset + 4; }
 function readPoint(view: DataView, offset: number) { return { x: view.getUint16(offset), y: view.getUint16(offset + 2) }; }
 function segmentCode(segment: VectorSegment) { return segment.type === 'LINE' ? 1 : segment.type === 'QUADRATIC' ? 2 : segment.type === 'CUBIC' ? 3 : 4; }
-function requireBytes(bytes: Uint8Array, offset: number, count: number) { if (offset < 0 || count < 0 || offset + count > bytes.length) throw new DecalCodecError(); }
+function requireBytes(bytes: Uint8Array, offset: number, count: number) { if (!hasBytes(bytes, offset, count)) throw new DecalCodecError(); }
 function validateDocument(document: VectorArtDocument) {
   if (!Number.isInteger(document.width) || !Number.isInteger(document.height) || document.width < 1 || document.height < 1 || document.width > 65535 || document.height > 65535 || !SYMMETRY_MODES.includes(document.symmetry) || document.layers.length < 1 || document.layers.length > 255) throw new DecalCodecError();
   for (const layer of document.layers) { if (!CABINET_SLOTS.includes(layer.slot) || !Number.isInteger(layer.style.width) || layer.style.width < 1 || layer.style.width > 16 || !Number.isInteger(layer.style.glow) || layer.style.glow < 0 || layer.style.glow > 255 || layer.paths.length > 65535) throw new DecalCodecError(); }

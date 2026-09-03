@@ -1,8 +1,9 @@
 import { defineConfig } from 'vitest/config';
+import { finalMinifyPlugin } from './build/FinalMinifyPlugin';
 import { offlineBundlePlugin } from './build/OfflineBundlePlugin';
 
 export default defineConfig({
-  plugins: [offlineBundlePlugin()],
+  plugins: [finalMinifyPlugin(), offlineBundlePlugin()],
   test: { exclude: ['tests/**', 'node_modules/**', 'dist/**'] },
   server: { headers: { 'Cross-Origin-Opener-Policy': 'same-origin', 'Cross-Origin-Embedder-Policy': 'require-corp' } },
   preview: { headers: { 'Cross-Origin-Opener-Policy': 'same-origin', 'Cross-Origin-Embedder-Policy': 'require-corp' } },
@@ -12,9 +13,12 @@ export default defineConfig({
     target: 'esnext',
     modulePreload: false,
     chunkSizeWarningLimit: 1500,
-    rolldownOptions: { output: { codeSplitting: { groups: [
+    rolldownOptions: {
+      treeshake: { propertyReadSideEffects: false },
+      output: { minify: { compress: { dropConsole: true } }, codeSplitting: { groups: [
       { name: 'phaser-runtime', test: /node_modules[\\/]phaser/ },
       { name: 'audio-tracker', test: /src[\\/]audio[\\/]bgm/ },
-    ] } } },
+    ] } },
+    },
   },
 });
