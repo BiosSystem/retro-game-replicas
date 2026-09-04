@@ -1,6 +1,6 @@
 # BiosSystem Neon Arcade
 
-> A procedural retro-futurist arcade platform with 28 original games, a generated Meta-Arcade Hall, and no bundled ROMs or copied game assets.
+> A procedural retro-futurist arcade platform with 28 original games, four creative and system experiences, a generated Meta-Arcade Hall, and no bundled ROMs or copied game assets.
 
 [![Build](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml/badge.svg)](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml)
 [![Release](https://img.shields.io/github/v/release/BiosSystem/retro-game-replicas?color=00ff72)](https://github.com/BiosSystem/retro-game-replicas/releases)
@@ -10,26 +10,35 @@
 
 ## Live game gallery
 
-Capture every image below directly from the current production build. Show procedural runtime graphics only, with no mockups, imported ROM art, or third-party game assets.
+Every image below is captured directly from the current production build. The gallery shows real procedural runtime graphics from the redesigned cabinet, with no mockups, imported ROM art, or third-party game assets.
 
 <p align="center">
-  <img src="docs/images/screenshots/lobby.png" alt="BiosSystem Neon Arcade lobby with the 2026 Overdrive presentation enabled" width="800">
+  <img src="docs/images/screenshots/lobby.png" alt="Current 32-entry BiosSystem Neon Arcade lobby rendered by the redesigned cabinet" width="800">
 </p>
-<p align="center"><sub>Browse the complete 32-entry cabinet catalog from the live BiosSystem Neon Arcade lobby.</sub></p>
+<p align="center"><sub>The current lobby presents all 28 games and four hub, studio, and cartridge experiences.</sub></p>
 
 <table>
   <tr>
+    <td width="50%" align="center"><img src="docs/images/screenshots/neon-invader.png" alt="Neon Invader reference cartridge running inside the sandboxed Cartridge Player"><br><sub>Neon Invader - sandboxed v2.5 reference cartridge</sub></td>
+    <td width="50%" align="center"><img src="docs/images/screenshots/neon-relay.png" alt="Neon Relay running its procedural defense wave"><br><sub>Neon Relay - procedural co-op defense</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/images/screenshots/prism-spiral.png" alt="Prism Spiral rendering a live procedural wisp wave"><br><sub>Prism Spiral - radial survival combat</sub></td>
     <td width="50%" align="center"><img src="docs/images/screenshots/neon-vector.png" alt="Neon Vector running with Overdrive glow, scanlines, and procedural asteroid combat"><br><sub>Neon Vector - Overdrive vector combat</sub></td>
-    <td width="50%" align="center"><img src="docs/images/screenshots/tetris-pulse.png" alt="Tetris Pulse with crisp pixel blocks in the Overdrive CRT presentation"><br><sub>Tetris Pulse - crisp grid play</sub></td>
   </tr>
   <tr>
     <td width="50%" align="center"><img src="docs/images/screenshots/neon-cyber-caster.png" alt="Neon Cyber-Caster generated DDA dungeon under the Overdrive display pipeline"><br><sub>Neon Cyber-Caster - generated DDA dungeon</sub></td>
     <td width="50%" align="center"><img src="docs/images/screenshots/neon-danmaku.png" alt="Neon Danmaku with dense pooled projectiles and Overdrive glow"><br><sub>Neon Danmaku - projectile pattern combat</sub></td>
   </tr>
   <tr>
-    <td colspan="2" align="center"><img src="docs/images/screenshots/neon-epoch.png" alt="Neon Epoch procedural world rendered through the 2026 Overdrive pipeline" width="640"><br><sub>Neon Epoch - procedural world and Overdrive lighting</sub></td>
+    <td width="50%" align="center"><img src="docs/images/screenshots/tetris-pulse.png" alt="Tetris Pulse with crisp pixel blocks in the Overdrive CRT presentation"><br><sub>Tetris Pulse - crisp grid play</sub></td>
+    <td width="50%" align="center"><img src="docs/images/screenshots/neon-epoch.png" alt="Neon Epoch procedural world rendered through the 2026 Overdrive pipeline"><br><sub>Neon Epoch - procedural world and Overdrive lighting</sub></td>
   </tr>
 </table>
+
+## Current milestone
+
+Milestone 1 of v2.5 adds a deterministic 32-bit stack bytecode VM, a 100,000-instruction frame quota, the validated .neongame binary format, an explicit host bridge, and the lazy-loaded Homebrew Cartridge Player. The bundled *Neon Invader* cartridge demonstrates sanitized vector drawing, generated synth audio, input, bounded heap state, and runtime recovery without exposing the DOM or Phaser scene internals.
 
 ## Quick start
 
@@ -79,13 +88,15 @@ npm run tauri build
 
 ## Games
 
+The 32-entry cabinet catalog contains 28 playable games and four hub, workshop, or runtime experiences.
+
 **Classic cabinet replicas:** Snake Evolution, Neon Pong, Neon Vector, Neon Breaker, Froggie Crosser, Space Defenders, Tetris Pulse, Minesweeper, Pixel Runner, Brave Bird, and Cyber Chasm.
 
 **Modern arcade games:** Cyber-Racer, Neon Cyber-Caster, Neon Tactics, Neon Labyrinth, Neon Danmaku, Neon Kombat, Neon Relay, and Prism Spiral.
 
 **Procedural Neon worlds:** Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, Neon Genesis, Neon OS, The Singularity, Event Horizon, and Neon Epoch.
 
-**Hub and studio:** Meta-Arcade Hall generates a walkable DDA-rendered cabinet space with spatial audio and optional connected-peer presence. Sound Workshop / Tracker Studio creates, previews, saves, imports, exports, and assigns four-channel `.neonseq` music to the cabinet audio manager.
+**Hub, studios, and homebrew:** Meta-Arcade Hall generates a walkable DDA-rendered cabinet space with spatial audio and optional connected-peer presence. Sound Workshop / Tracker Studio creates and assigns four-channel `.neonseq` music. Cabinet Art / Decal Workshop creates validated vector cabinet skins. Homebrew Studio / Cartridge Player runs sandboxed `.neongame` cartridges and includes the generated *Neon Invader* reference game.
 
 ## Chiptune Tracker Studio
 
@@ -127,7 +138,7 @@ The production build keeps the Tracker Studio, visualizer, and cartridge player 
 
 ## Verification status
 
-The v2.1.0 release passed TypeScript analysis, 295 Vitest checks across 102 files, 58 Chromium gameplay and visual regressions, six Firefox and WebKit smoke checks, the production bundle budget, hardened container validation, and the locked Tauri test profile. The v2.2.0 release passed 302 Vitest checks across 104 files, TypeScript analysis, the production bundle baseline, hosted browser coverage, hardened container validation, locked Cargo checks, and cross-platform desktop packaging. The active v2.3 branch passes 308 Vitest checks across 107 files, TypeScript analysis, locked Cargo tests, and a 1,885,438-byte production baseline. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the protected-branch result.
+The v2.5 Milestone 1 master build passes TypeScript analysis, 360 Vitest checks across 130 files, the Cartridge Player Playwright regression, locked Cargo tests, and a 1,943,323-byte production baseline. Pull request validation also passed the complete Chromium regression suite, Firefox and WebKit smoke tests, hardened container checks, and Tauri source validation before merge. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the protected-branch result.
 
 ## Fun Zone container hosting
 
