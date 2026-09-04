@@ -6,6 +6,7 @@ import { CoopSession, type ArcadeMode } from '../../multiplayer/CoopSession';
 import type { PlayerId } from '../../multiplayer/MultiInput';
 import { ArcadeHud } from '../../ui/arcade/NeonUi';
 import { deterministicLane, isNear, relayWave, type CabinetDifficulty, type WaveSpec } from './CabinetWaveSystems';
+import relayRooftop from '../../assets/relay/neon-relay-rooftop-v3.jpg';
 
 interface RelayShot { sprite: Phaser.GameObjects.Rectangle; owner: PlayerId; }
 interface RelayDrone { sprite: Phaser.GameObjects.Polygon; hp: number; }
@@ -30,19 +31,23 @@ export default class NeonRelayScene extends Phaser.Scene {
 
   constructor() { super('RelayScene'); }
 
+  preload() {
+    if (!this.textures.exists('neon-relay-rooftop')) this.load.image('neon-relay-rooftop', relayRooftop);
+  }
+
   create(data: { difficulty?: CabinetDifficulty; mode?: ArcadeMode }) {
     this.difficulty = data?.difficulty ?? 'NORMAL';
     this.mode = data?.mode ?? 'SOLO';
     this.session = new CoopSession(this.mode); this.stage = 1; this.score = 0; this.ended = false;
     this.shots = []; this.drones = []; this.fireReady = { 1: 0, 2: 0 };
     this.createStage();
-    this.add.rectangle(320, 240, 640, 480, 0x020611).setDepth(-2);
-    this.add.grid(320, 260, 640, 440, 32, 32, 0x020611, 1, 0x00dfff, 0.11).setDepth(-1);
+    this.add.image(320, 240, 'neon-relay-rooftop').setScale(2).setDepth(-3);
+    this.add.rectangle(320, 240, 640, 480, 0x020611, 0.28).setDepth(-2);
     this.add.text(320, 14, 'NEON RELAY // SIGNAL DEFENSE', { fontFamily: 'Courier', fontSize: '19px', color: '#00eaff', fontStyle: 'bold' }).setOrigin(0.5);
     this.add.text(628, 42, 'MOVE A/D OR ARROWS  FIRE SPACE/ENTER  ESC PAUSE', { fontFamily: 'Courier', fontSize: '9px', color: '#7799aa' }).setOrigin(1, 0);
     this.hud = new ArcadeHud(this, 8, 38, 624, 0x00dfff);
-    for (const x of this.lanes) this.add.line(x, 77, 0, 0, 0, 382, 0x00dfff, 0.14);
-    this.add.rectangle(320, 442, 564, 18, 0x06273d).setStrokeStyle(2, 0x00dfff, 0.7);
+    for (const x of this.lanes) this.add.line(x, 96, 0, 0, 0, 315, 0x00dfff, 0.18);
+    this.add.rectangle(320, 442, 564, 22, 0x06273d, 0.82).setStrokeStyle(2, 0x00dfff, 0.7);
     this.createShip(1, 320, 407, 0x00ffff);
     if (this.mode !== 'SOLO') this.createShip(2, 424, 407, 0xffff44);
     this.input.keyboard?.on('keydown-ESC', () => this.openPause());
