@@ -44,7 +44,7 @@ export default class NeonRelayScene extends Phaser.Scene {
     this.add.image(320, 240, 'neon-relay-rooftop').setScale(2).setDepth(-3);
     this.add.rectangle(320, 240, 640, 480, 0x020611, 0.28).setDepth(-2);
     this.add.text(320, 14, 'NEON RELAY // SIGNAL DEFENSE', { fontFamily: 'Courier', fontSize: '19px', color: '#00eaff', fontStyle: 'bold' }).setOrigin(0.5);
-    this.add.text(628, 42, 'MOVE A/D OR ARROWS  FIRE SPACE/ENTER  ESC PAUSE', { fontFamily: 'Courier', fontSize: '9px', color: '#7799aa' }).setOrigin(1, 0);
+    this.add.text(628, 82, 'MOVE A/D OR ARROWS  FIRE SPACE/ENTER  ESC PAUSE', { fontFamily: 'Courier', fontSize: '9px', color: '#9cc9d8' }).setOrigin(1, 0).setDepth(30);
     this.hud = new ArcadeHud(this, 8, 38, 624, 0x00dfff);
     for (const x of this.lanes) this.add.line(x, 96, 0, 0, 0, 315, 0x00dfff, 0.18);
     this.add.rectangle(320, 442, 564, 22, 0x06273d, 0.82).setStrokeStyle(2, 0x00dfff, 0.7);

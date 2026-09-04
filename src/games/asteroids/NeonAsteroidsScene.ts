@@ -12,6 +12,7 @@ import type { NetInputFrame } from '../../net/InputCodec';
 import { ProjectileEventType, readProjectileEvent } from '../neon-vector/ProjectileProtocol';
 import { advanceShieldRipples, createWarpStars, warpStretchForSpeed, type ShieldRipple, type WarpStar } from '../neon-vector/NeonVectorVisuals';
 import { CabinetBezelLighting } from '../../core/rendering/CabinetBezelLighting';
+import neonVectorSpace from '../../assets/vector/neon-vector-space-v1.jpg';
 
 export default class NeonAsteroidsScene extends Phaser.Scene {
   private ship!: Phaser.Physics.Arcade.Image;
@@ -45,6 +46,10 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
 
   constructor() { super('AsteroidsScene'); }
 
+  preload() {
+    if (!this.textures.exists('neon-vector-space')) this.load.image('neon-vector-space', neonVectorSpace);
+  }
+
   create(data: { difficulty?: string; mode?: ArcadeMode }) {
     this.difficulty = data?.difficulty ?? 'NORMAL';
     this.mode = data?.mode ?? 'SOLO';
@@ -52,13 +57,15 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     this.session = new CoopSession(this.mode);
     this.score = 0; this.stage = 1; this.mineralCount = 0; this.weapon = 'SPREAD'; this.shield = false; this.stagePending = false;
     this.createTextures();
+    this.add.image(320, 240, 'neon-vector-space').setScale(2).setDepth(-4);
+    this.add.rectangle(320, 240, 640, 480, 0x02000c, 0.24).setDepth(-3);
     this.createWarpStarfield();
-    this.add.grid(320, 240, 640, 480, 32, 32, 0x02000c, 1, 0x632cff, 0.1);
+    this.add.grid(320, 240, 640, 480, 32, 32, 0x02000c, 0, 0x632cff, 0.045).setDepth(-1);
     this.shieldGraphics = this.add.graphics().setDepth(8).setBlendMode(Phaser.BlendModes.ADD);
     this.cabinetLights = new CabinetBezelLighting(this);
     this.add.text(320, 18, 'NEON VECTOR ASTEROIDS', { fontFamily: 'Courier', fontSize: '20px', color: '#ff2ec4', fontStyle: 'bold' }).setOrigin(0.5);
     this.hud = new ArcadeHud(this, 8, 38, 624, 0xff2ec4);
-    this.add.text(628, 12, 'ARROWS THRUST  SPACE FIRE  Q WEAPON  ESC PAUSE', { fontFamily: 'Courier', fontSize: '10px', color: '#8888aa' }).setOrigin(1, 0);
+    this.add.text(628, 466, 'ARROWS THRUST  SPACE FIRE  Q WEAPON  ESC PAUSE', { fontFamily: 'Courier', fontSize: '10px', color: '#aeb4d8' }).setOrigin(1, 1).setDepth(30);
 
     this.ship = this.physics.add.image(320, 260, 'vector-ship').setDamping(true).setDrag(0.985).setMaxVelocity(320);
     this.ship.setData('player', 1);

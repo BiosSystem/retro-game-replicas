@@ -8,6 +8,7 @@ import { arcadeSaveStates, epochSaveBridge, type EpochSaveProvider } from '../..
 import { captureSaveThumbnail } from '../../engine/persistence/SaveStateThumbnail';
 import { epochCore, epochDiagnostics, epochWeather } from './EpochSystems';
 import { ArcadeHud } from '../../ui/arcade/NeonUi';
+import neonEpochWetlands from '../../assets/epoch/neon-epoch-wetlands-v1.jpg';
 
 export default class NeonEpochScene extends Phaser.Scene {
   private gfx!: Phaser.GameObjects.Graphics;
@@ -33,6 +34,10 @@ export default class NeonEpochScene extends Phaser.Scene {
 
   constructor() { super('EpochScene'); }
 
+  preload() {
+    if (!this.textures.exists('neon-epoch-wetlands')) this.load.image('neon-epoch-wetlands', neonEpochWetlands);
+  }
+
   create() {
     this.core = epochCore(this.seed);
     this.cameraX = 0;
@@ -40,6 +45,7 @@ export default class NeonEpochScene extends Phaser.Scene {
     this.heading = 0;
     this.elapsed = 0;
     this.spatialUnderruns = 0;
+    this.add.image(320, 240, 'neon-epoch-wetlands').setScale(2).setDepth(-2);
     this.gfx = this.add.graphics();
     this.hud = new ArcadeHud(this, 8, 8, 624, 0x8effc1);
     this.add.text(320, 462, 'WASD TRAVERSE  Q/E TURN  ESC PAUSE', { fontFamily: 'Courier', fontSize: '11px', color: '#9db7aa' }).setOrigin(0.5).setDepth(5);
@@ -152,12 +158,16 @@ export default class NeonEpochScene extends Phaser.Scene {
     const graphics = this.gfx.clear();
     const weather = epochWeather(this.seed, this.elapsed);
     const sky = Phaser.Display.Color.GetColor(4 + Math.round(weather.cloudCover * 8), 19 + Math.round((1 - weather.cloudCover) * 20), 29 + Math.round((1 - weather.cloudCover) * 32));
-    graphics.fillGradientStyle(sky, sky, 0x07190f, 0x020705).fillRect(0, 0, 640, 480);
-    graphics.fillStyle(0x0c2517, 0.95).fillRect(0, 280, 640, 180);
+    graphics.fillGradientStyle(sky, sky, 0x07190f, 0x020705, 0.34, 0.34, 0.44, 0.48).fillRect(0, 0, 640, 480);
+    graphics.fillStyle(0x0c2517, 0.30).fillRect(0, 280, 640, 180);
     const projected = projectSplatCloud(this.core.cloud, { x: this.cameraX, y: 5, z: this.cameraZ, yaw: this.heading, pitch: -0.03, focalLength: 330, near: 0.5 }, 640, 480, 1_000);
-    for (const splat of projected) {
+    // The splat cloud remains the navigable simulation, but it reads as a field of
+    // bioluminescent spores rather than a layer of oversized debug discs.
+    for (let index = 0; index < projected.length; index += 3) {
+      const splat = projected[index];
       const color = Phaser.Display.Color.GetColor(Math.min(255, Math.round(splat.red * 255)), Math.min(255, Math.round(splat.green * 255)), Math.min(255, Math.round(splat.blue * 255)));
-      graphics.fillStyle(color, Math.min(0.72, splat.opacity)).fillEllipse(splat.x, splat.y, Math.min(42, splat.radiusX * 5), Math.min(36, splat.radiusY * 5));
+      const radius = Math.max(1, Math.min(4, Math.max(splat.radiusX, splat.radiusY) * 0.48));
+      graphics.fillStyle(color, Math.min(0.18, splat.opacity * 0.24)).fillCircle(splat.x, splat.y, radius);
     }
     for (let index = 0; index < Math.floor(weather.rain * 90); index++) {
       const x = (index * 83 + Math.floor(this.elapsed * weather.wind * 9)) % 680 - 20;

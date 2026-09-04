@@ -27,9 +27,9 @@ This plan preserves original gameplay, fixed-step rules, accessibility, offline 
 
 ## Bundle recovery gate
 
-The current production baseline is 1,948,775 bytes, leaving 1,225 bytes. That is enough for the compact Neon Relay backdrop but not a catalog-wide art pack.
+The pre-overhaul production baseline was 1,948,775 bytes, leaving 1,225 bytes. Replacing the unused full Phaser distribution with its Arcade Physics-only distribution recovered 106,214 bytes. The current measured production output is 1,854,517 bytes, leaving 95,483 bytes beneath the release ceiling after three scene-local original background plates.
 
-Before any broad sprite or environment rollout, recover at least 250 KB from optional runtime code and duplicate helpers, with a baseline target of 1,700,000 bytes or less. The 1.95 MB ceiling remains unchanged. Every visual PR must report:
+The 250 KB recovery target remains the preferred headroom for the catalog-wide sprite rollout; it is not yet met. Until then, every visual PR must remain beneath the 1.95 MB ceiling and report:
 
 1. total production bytes;
 2. bytes added by its scene-local assets;
@@ -77,9 +77,9 @@ Each module must use pooling or bounded collections. No new effect may allocate 
 
 | Game | Visual direction | Delivery status |
 |---|---|---|
-| Neon Relay | Rainy cyberpunk rooftop defense, animated city depth, turret/ship sprites, drones, weather, projectile trails, impact lighting. | Environment implemented locally; actor and VFX pass remains. |
-| Neon Vector | Premium vector combat with bold ships, meteor materials, dense combat readability, layered star fields, and responsive weapon effects. | Planned. |
-| Neon Epoch | A procedural neon ecosystem with authored terrain motifs, water, foliage, weather, creatures, and readable world-state feedback. | Planned. |
+| Neon Relay | Rainy cyberpunk rooftop defense, animated city depth, turret/ship sprites, drones, weather, projectile trails, impact lighting. | Original rooftop environment implemented; actor and VFX pass remains. |
+| Neon Vector | Premium vector combat with bold ships, meteor materials, dense combat readability, layered star fields, and responsive weapon effects. | Original deep-space environment and HUD spacing implemented; actor/material pass remains. |
+| Neon Epoch | A procedural neon ecosystem with authored terrain motifs, water, foliage, weather, creatures, and readable world-state feedback. | Original wetland environment and restrained bioluminescent simulation layer implemented; world-state art pass remains. |
 
 Tier 1 establishes the visual benchmark. It is complete only when each game has a strong raw-frame screenshot during active play, not only a title or wave-zero screen.
 
@@ -111,7 +111,7 @@ Refresh Meta-Arcade Hall, Tracker Studio, Decal Workshop, and the Cartridge Play
 
 ### V0 — visual platform and budget recovery
 
-- Recover 250 KB while retaining the 1.95 MB release ceiling.
+- Recover the remaining 143,786 bytes toward the 250 KB headroom target while retaining the 1.95 MB release ceiling. (106,214 bytes recovered.)
 - Add `ArcadeVisualTheme`, `LayeredBackdrop`, `CombatVfx`, and visual regression capture support.
 - Publish the art bible, scene palette registry, and asset-size manifest.
 - Verify standard, low-quality, and reduced-motion modes.
@@ -158,4 +158,4 @@ Refresh Meta-Arcade Hall, Tracker Studio, Decal Workshop, and the Cartridge Play
 
 ## Current status
 
-The local `feat/v2.6-relay-visual-foundation` branch contains the first environment benchmark: a compact original Neon Relay rooftop plate. It is intentionally only the first step. The shared system, art packs, and the rest of the catalog are still planned work and must not be represented as complete.
+The local `feat/v2.6-relay-visual-foundation` branch now contains three scene-local original environment benchmarks: Neon Relay's rainy rooftop, Neon Vector's deep-space combat frame, and Neon Epoch's bioluminescent wetland. The Arcade Physics-only Phaser runtime recovery provides 95,483 bytes of current release headroom. TypeScript lint, 360 Vitest tests, the cartridge runtime Playwright test, and the production baseline all pass. This is an implemented visual foundation, not a completed catalog overhaul: shared art systems, actor sprites, action VFX, accessibility-mode visual validation, and every remaining cabinet are still planned work.
