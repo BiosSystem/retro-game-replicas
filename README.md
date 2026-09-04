@@ -8,33 +8,14 @@
 
 **BiosSystem Neon Arcade** keeps the existing `BiosSystem/retro-game-replicas` repository slug for continuity. Build original arcade replicas, procedurally generated Neon worlds, and a cabinet-style launcher from one TypeScript codebase.
 
-## Live game gallery
+## Featured runtime scene
 
-Every image below is captured directly from the current production build. The gallery shows real procedural runtime graphics from the redesigned cabinet, with no mockups, imported ROM art, or third-party game assets.
+The arcade is built from original procedural graphics, with no imported ROM art or third-party game assets. This live Neon Epoch scene is the most representative current example of the project's world-generation and Overdrive presentation.
 
 <p align="center">
-  <img src="docs/images/screenshots/lobby.png" alt="Current 32-entry BiosSystem Neon Arcade lobby rendered by the redesigned cabinet" width="800">
+  <img src="docs/images/screenshots/neon-epoch.png" alt="Neon Epoch procedural world rendered through the Overdrive display pipeline" width="800">
 </p>
-<p align="center"><sub>The current lobby presents all 28 games and four hub, studio, and cartridge experiences.</sub></p>
-
-<table>
-  <tr>
-    <td width="50%" align="center"><img src="docs/images/screenshots/neon-invader.png" alt="Neon Invader reference cartridge running inside the sandboxed Cartridge Player"><br><sub>Neon Invader - sandboxed v2.5 reference cartridge</sub></td>
-    <td width="50%" align="center"><img src="docs/images/screenshots/neon-relay.png" alt="Neon Relay running its procedural defense wave"><br><sub>Neon Relay - procedural co-op defense</sub></td>
-  </tr>
-  <tr>
-    <td width="50%" align="center"><img src="docs/images/screenshots/prism-spiral.png" alt="Prism Spiral rendering a live procedural wisp wave"><br><sub>Prism Spiral - radial survival combat</sub></td>
-    <td width="50%" align="center"><img src="docs/images/screenshots/neon-vector.png" alt="Neon Vector running with Overdrive glow, scanlines, and procedural asteroid combat"><br><sub>Neon Vector - Overdrive vector combat</sub></td>
-  </tr>
-  <tr>
-    <td width="50%" align="center"><img src="docs/images/screenshots/neon-cyber-caster.png" alt="Neon Cyber-Caster generated DDA dungeon under the Overdrive display pipeline"><br><sub>Neon Cyber-Caster - generated DDA dungeon</sub></td>
-    <td width="50%" align="center"><img src="docs/images/screenshots/neon-danmaku.png" alt="Neon Danmaku with dense pooled projectiles and Overdrive glow"><br><sub>Neon Danmaku - projectile pattern combat</sub></td>
-  </tr>
-  <tr>
-    <td width="50%" align="center"><img src="docs/images/screenshots/tetris-pulse.png" alt="Tetris Pulse with crisp pixel blocks in the Overdrive CRT presentation"><br><sub>Tetris Pulse - crisp grid play</sub></td>
-    <td width="50%" align="center"><img src="docs/images/screenshots/neon-epoch.png" alt="Neon Epoch procedural world rendered through the 2026 Overdrive pipeline"><br><sub>Neon Epoch - procedural world and Overdrive lighting</sub></td>
-  </tr>
-</table>
+<p align="center"><sub>Neon Epoch - procedural world generation and Overdrive lighting.</sub></p>
 
 ## Current milestone
 
