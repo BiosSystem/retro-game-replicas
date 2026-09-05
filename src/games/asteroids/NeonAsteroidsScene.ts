@@ -43,6 +43,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
   private shieldRipples: ShieldRipple[] = [];
   private cabinetLights!: CabinetBezelLighting;
   private visualTime = 0;
+  private exhaustReady: Record<PlayerId, number> = { 1: 0, 2: 0 };
 
   constructor() { super('AsteroidsScene'); }
 
@@ -196,7 +197,14 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     const inverted = this.stageDefinition?.modifier === 'INVERTED_CONTROLS' ? -1 : 1;
     if (player === 1 ? InputManager.isP1Down('LEFT') : InputManager.isP2Down('LEFT')) ship.setAngularVelocity(-210 * inverted);
     else if (player === 1 ? InputManager.isP1Down('RIGHT') : InputManager.isP2Down('RIGHT')) ship.setAngularVelocity(210 * inverted); else ship.setAngularVelocity(0);
-    if (player === 1 ? InputManager.isP1Down('UP') : InputManager.isP2Down('UP')) this.physics.velocityFromRotation(ship.rotation - Math.PI / 2, 235, (ship.body as Phaser.Physics.Arcade.Body).acceleration); else ship.setAcceleration(0);
+    const thrusting = player === 1 ? InputManager.isP1Down('UP') : InputManager.isP2Down('UP');
+    if (thrusting) {
+      this.physics.velocityFromRotation(ship.rotation - Math.PI / 2, 235, (ship.body as Phaser.Physics.Arcade.Body).acceleration);
+      if (this.time.now >= this.exhaustReady[player]) {
+        VFXManager.playEngineExhaust(this, ship.x, ship.y + 14, player === 1 ? 0x00ffff : 0xff2ec4);
+        this.exhaustReady[player] = this.time.now + 90;
+      }
+    } else ship.setAcceleration(0);
     const firing = player === 1 ? InputManager.isP1Down('FIRE') : InputManager.isP2Down('FIRE');
     if (firing && !this.fireHeld[player]) this.fire(ship, player);
     this.fireHeld[player] = firing;
@@ -205,13 +213,13 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
 
   private createTextures() {
     const create = (key: string, draw: (graphics: Phaser.GameObjects.Graphics) => void, width: number, height: number) => { if (this.textures.exists(key)) return; const graphics = this.add.graphics(); draw(graphics); graphics.generateTexture(key, width, height); graphics.destroy(); };
-    create('vector-ship', g => { g.lineStyle(2, 0x00ffff).strokeTriangle(16, 0, 3, 30, 16, 23).strokeTriangle(16, 0, 29, 30, 16, 23); }, 32, 32);
-    create('vector-asteroid', g => { g.lineStyle(2, 0xff2ec4).strokePoints([new Phaser.Math.Vector2(20,1), new Phaser.Math.Vector2(37,10), new Phaser.Math.Vector2(34,29), new Phaser.Math.Vector2(19,39), new Phaser.Math.Vector2(3,31), new Phaser.Math.Vector2(1,12)], true); }, 40, 40);
+    create('vector-ship', g => { g.fillStyle(0x133d63).fillTriangle(16, 0, 3, 30, 16, 23).fillTriangle(16, 0, 29, 30, 16, 23); g.fillStyle(0xdfffff).fillTriangle(16, 4, 11, 25, 16, 21).fillTriangle(16, 4, 21, 25, 16, 21); g.fillStyle(0x051624).fillTriangle(16, 7, 13, 18, 16, 16).fillTriangle(16, 7, 19, 18, 16, 16); g.lineStyle(1, 0x00ffff).strokeTriangle(16, 0, 3, 30, 16, 23).strokeTriangle(16, 0, 29, 30, 16, 23); }, 32, 32);
+    create('vector-asteroid', g => { const points = [new Phaser.Math.Vector2(20, 1), new Phaser.Math.Vector2(37, 10), new Phaser.Math.Vector2(34, 29), new Phaser.Math.Vector2(19, 39), new Phaser.Math.Vector2(3, 31), new Phaser.Math.Vector2(1, 12)]; g.fillStyle(0x3b1d51).fillPoints(points, true); g.fillStyle(0x712766).fillTriangle(20, 4, 33, 12, 20, 20).fillTriangle(7, 28, 20, 20, 28, 34); g.lineStyle(2, 0xff2ec4).strokePoints(points, true); }, 40, 40);
     create('vector-shot', g => g.fillStyle(0x00ffff).fillCircle(3, 3, 3), 6, 6);
     create('vector-laser', g => g.fillStyle(0xffffff).fillRect(0, 0, 3, 18), 3, 18);
     create('vector-hostile', g => g.fillStyle(0xff2255).fillCircle(4, 4, 4), 8, 8);
     create('vector-mineral', g => g.lineStyle(2, 0xffff00).strokeTriangle(6, 0, 12, 12, 0, 12), 12, 12);
-    create('vector-ufo', g => { g.lineStyle(2, 0xffff00).strokeEllipse(20, 12, 38, 12); g.strokeTriangle(10, 10, 20, 1, 30, 10); }, 40, 24);
+    create('vector-ufo', g => { g.fillStyle(0x4d3c12).fillEllipse(20, 13, 38, 12); g.fillStyle(0xe9d75c).fillTriangle(10, 10, 20, 1, 30, 10); g.fillStyle(0x5df5ff).fillCircle(20, 8, 4); g.lineStyle(2, 0xffff00).strokeEllipse(20, 13, 38, 12).strokeTriangle(10, 10, 20, 1, 30, 10); }, 40, 24);
   }
 
   private createWarpStarfield() {
