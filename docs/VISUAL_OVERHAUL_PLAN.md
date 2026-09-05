@@ -27,7 +27,7 @@ This plan preserves original gameplay, fixed-step rules, accessibility, offline 
 
 ## Bundle recovery gate
 
-The pre-overhaul production baseline was 1,948,775 bytes, leaving 1,225 bytes. Replacing the unused full Phaser distribution with its Arcade Physics-only distribution recovered 106,214 bytes. The current measured production output is 1,857,107 bytes, leaving 92,893 bytes beneath the release ceiling after the flagship art and shared visual-foundation work.
+The pre-overhaul production baseline was 1,948,775 bytes, leaving 1,225 bytes. Replacing the unused full Phaser distribution with its Arcade Physics-only distribution recovered 106,214 bytes. The current measured production output is 1,858,026 bytes, leaving 91,974 bytes beneath the release ceiling after the flagship art and shared visual-foundation work.
 
 The 250 KB recovery target remains the preferred headroom for the catalog-wide sprite rollout; it is not yet met. Until then, every visual PR must remain beneath the 1.95 MB ceiling and report:
 
@@ -79,7 +79,7 @@ Each module must use pooling or bounded collections. No new effect may allocate 
 |---|---|---|
 | Neon Relay | Rainy cyberpunk rooftop defense, animated city depth, turret/ship sprites, drones, weather, projectile trails, impact lighting. | Original rooftop, player and drone silhouettes, and bounded engine/impact VFX implemented; projectile and objective art pass remains. |
 | Neon Vector | Premium vector combat with bold ships, meteor materials, dense combat readability, layered star fields, and responsive weapon effects. | Original deep-space environment and HUD spacing implemented; actor/material pass remains. |
-| Neon Epoch | A procedural neon ecosystem with authored terrain motifs, water, foliage, weather, creatures, and readable world-state feedback. | Original wetland environment and restrained bioluminescent simulation layer implemented; world-state art pass remains. |
+| Neon Epoch | A procedural neon ecosystem with authored terrain motifs, water, foliage, weather, creatures, and readable world-state feedback. | Original wetland, restrained bioluminescent simulation, traversal corridor, animated fauna, weather, and fluid-state rendering implemented. |
 
 Tier 1 establishes the visual benchmark. It is complete only when each game has a strong raw-frame screenshot during active play, not only a title or wave-zero screen.
 
@@ -158,4 +158,4 @@ Refresh Meta-Arcade Hall, Tracker Studio, Decal Workshop, and the Cartridge Play
 
 ## Current status
 
-The local `feat/v2.6-relay-visual-foundation` branch now contains three scene-local original environment benchmarks, Relay and Vector actor passes, shared theme/backdrop modules, reduced-motion-safe camera feedback, and raw-frame Playwright capture coverage. The Arcade Physics-only Phaser runtime recovery provides 92,893 bytes of current release headroom. TypeScript lint, 362 Vitest tests, two Playwright browser gates, and the production baseline all pass. Remaining work is the Epoch world-state pass, broader actor/projectile art, the Tier 2 and catalog batches, and hub/studio presentation.
+The local `feat/v2.6-relay-visual-foundation` branch now contains three scene-local original environment benchmarks, Relay and Vector actor passes, Epoch traversal/fauna/world-state art, shared theme/backdrop modules, reduced-motion-safe camera feedback, and raw-frame Playwright capture coverage. The Arcade Physics-only Phaser runtime recovery provides 91,974 bytes of current release headroom. TypeScript lint, 362 Vitest tests, two Playwright browser gates, and the production baseline all pass. Remaining work is broader projectile/action art, the Tier 2 and catalog batches, and hub/studio presentation.
