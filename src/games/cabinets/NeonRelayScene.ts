@@ -6,13 +6,16 @@ import { CoopSession, type ArcadeMode } from '../../multiplayer/CoopSession';
 import type { PlayerId } from '../../multiplayer/MultiInput';
 import { ArcadeHud } from '../../ui/arcade/NeonUi';
 import { deterministicLane, isNear, relayWave, type CabinetDifficulty, type WaveSpec } from './CabinetWaveSystems';
+import relayRooftop from '../../assets/relay/neon-relay-rooftop-v3.jpg';
+import { addLayeredBackdrop } from '../../graphics/LayeredBackdrop';
+import { ARCADE_PALETTES } from '../../graphics/ArcadeVisualTheme';
 
 interface RelayShot { sprite: Phaser.GameObjects.Rectangle; owner: PlayerId; }
-interface RelayDrone { sprite: Phaser.GameObjects.Polygon; hp: number; }
+interface RelayDrone { sprite: Phaser.GameObjects.Image; hp: number; }
 
 export default class NeonRelayScene extends Phaser.Scene {
   private readonly lanes = [112, 216, 320, 424, 528];
-  private readonly ships = new Map<PlayerId, Phaser.GameObjects.Triangle>();
+  private readonly ships = new Map<PlayerId, Phaser.GameObjects.Image>();
   private shots: RelayShot[] = [];
   private drones: RelayDrone[] = [];
   private session = new CoopSession('SOLO');
@@ -23,6 +26,7 @@ export default class NeonRelayScene extends Phaser.Scene {
   private spawned = 0;
   private nextSpawnAt = 0;
   private fireReady: Record<PlayerId, number> = { 1: 0, 2: 0 };
+  private exhaustReady: Record<PlayerId, number> = { 1: 0, 2: 0 };
   private difficulty: CabinetDifficulty = 'NORMAL';
   private mode: ArcadeMode = 'SOLO';
   private wave!: WaveSpec;
@@ -30,19 +34,23 @@ export default class NeonRelayScene extends Phaser.Scene {
 
   constructor() { super('RelayScene'); }
 
+  preload() {
+    if (!this.textures.exists('neon-relay-rooftop')) this.load.image('neon-relay-rooftop', relayRooftop);
+  }
+
   create(data: { difficulty?: CabinetDifficulty; mode?: ArcadeMode }) {
     this.difficulty = data?.difficulty ?? 'NORMAL';
     this.mode = data?.mode ?? 'SOLO';
     this.session = new CoopSession(this.mode); this.stage = 1; this.score = 0; this.ended = false;
-    this.shots = []; this.drones = []; this.fireReady = { 1: 0, 2: 0 };
+    this.shots = []; this.drones = []; this.fireReady = { 1: 0, 2: 0 }; this.exhaustReady = { 1: 0, 2: 0 };
     this.createStage();
-    this.add.rectangle(320, 240, 640, 480, 0x020611).setDepth(-2);
-    this.add.grid(320, 260, 640, 440, 32, 32, 0x020611, 1, 0x00dfff, 0.11).setDepth(-1);
+    this.createActorTextures();
+    addLayeredBackdrop(this, { texture: 'neon-relay-rooftop', veil: ARCADE_PALETTES.relay.background, veilAlpha: 0.28 });
     this.add.text(320, 14, 'NEON RELAY // SIGNAL DEFENSE', { fontFamily: 'Courier', fontSize: '19px', color: '#00eaff', fontStyle: 'bold' }).setOrigin(0.5);
-    this.add.text(628, 42, 'MOVE A/D OR ARROWS  FIRE SPACE/ENTER  ESC PAUSE', { fontFamily: 'Courier', fontSize: '9px', color: '#7799aa' }).setOrigin(1, 0);
+    this.add.text(628, 82, 'MOVE A/D OR ARROWS  FIRE SPACE/ENTER  ESC PAUSE', { fontFamily: 'Courier', fontSize: '9px', color: '#9cc9d8' }).setOrigin(1, 0).setDepth(30);
     this.hud = new ArcadeHud(this, 8, 38, 624, 0x00dfff);
-    for (const x of this.lanes) this.add.line(x, 77, 0, 0, 0, 382, 0x00dfff, 0.14);
-    this.add.rectangle(320, 442, 564, 18, 0x06273d).setStrokeStyle(2, 0x00dfff, 0.7);
+    for (const x of this.lanes) this.add.line(x, 96, 0, 0, 0, 315, 0x00dfff, 0.18);
+    this.add.rectangle(320, 442, 564, 22, 0x06273d, 0.82).setStrokeStyle(2, 0x00dfff, 0.7);
     this.createShip(1, 320, 407, 0x00ffff);
     if (this.mode !== 'SOLO') this.createShip(2, 424, 407, 0xffff44);
     this.input.keyboard?.on('keydown-ESC', () => this.openPause());
@@ -65,7 +73,7 @@ export default class NeonRelayScene extends Phaser.Scene {
   }
 
   private createShip(player: PlayerId, x: number, y: number, color: number) {
-    const ship = this.add.triangle(x, y, 0, 18, 18, 18, 9, 0, color).setStrokeStyle(2, 0xffffff, 0.75);
+    const ship = this.add.image(x, y, 'relay-ship').setTint(color);
     ship.setData('player', player); this.ships.set(player, ship);
   }
 
@@ -73,12 +81,18 @@ export default class NeonRelayScene extends Phaser.Scene {
     const ship = this.ships.get(player); if (!ship) return;
     const left = player === 1 ? InputManager.isP1Down('LEFT') : InputManager.isP2Down('LEFT');
     const right = player === 1 ? InputManager.isP1Down('RIGHT') : InputManager.isP2Down('RIGHT');
-    ship.x = Phaser.Math.Clamp(ship.x + (left === right ? 0 : left ? -1 : 1) * 270 * dt, 52, 588);
+    const direction = left === right ? 0 : left ? -1 : 1;
+    ship.x = Phaser.Math.Clamp(ship.x + direction * 270 * dt, 52, 588);
+    ship.setRotation(direction * 0.12);
+    if (direction && this.time.now >= this.exhaustReady[player]) {
+      VFXManager.playEngineExhaust(this, ship.x, ship.y + 14, player === 1 ? 0x00ffff : 0xffff44);
+      this.exhaustReady[player] = this.time.now + 90;
+    }
     const fire = player === 1 ? InputManager.isP1Down('FIRE') : InputManager.isP2Down('FIRE');
     if (fire && this.time.now >= this.fireReady[player]) this.fire(ship, player);
   }
 
-  private fire(ship: Phaser.GameObjects.Triangle, owner: PlayerId) {
+  private fire(ship: Phaser.GameObjects.Image, owner: PlayerId) {
     const shot = this.add.rectangle(ship.x, ship.y - 20, 4, 16, owner === 1 ? 0x00ffff : 0xffff44);
     this.shots.push({ sprite: shot, owner }); this.fireReady[owner] = this.time.now + 150; AudioEngine.playEffect('LASER');
   }
@@ -88,7 +102,7 @@ export default class NeonRelayScene extends Phaser.Scene {
       const lane = deterministicLane(this.stage, this.spawned, this.lanes.length);
       const x = this.lanes[lane]; const hp = this.stage % 5 === 0 && this.spawned === 0 ? 3 : 1;
       const color = hp > 1 ? 0xff2ec4 : lane % 2 ? 0x50aaff : 0x00ff9d;
-      const sprite = this.add.polygon(x, 75, [0, -12, 11, 0, 0, 12, -11, 0], color).setStrokeStyle(2, 0xffffff, 0.45);
+      const sprite = this.add.image(x, 75, 'relay-drone').setTint(color);
       sprite.setData('speed', this.wave.speed + lane * 3); this.drones.push({ sprite, hp }); this.spawned += 1; this.nextSpawnAt += this.wave.intervalMs;
     }
   }
@@ -115,9 +129,27 @@ export default class NeonRelayScene extends Phaser.Scene {
 
   private damageDrone(drone: RelayDrone, owner: PlayerId) {
     drone.hp -= 1; VFXManager.playHit(this, drone.sprite.x, drone.sprite.y, 0x00ffff);
-    if (drone.hp > 0) { drone.sprite.setFillStyle(0xffffff); return; }
+    if (drone.hp > 0) { drone.sprite.setTint(0xffffff); return; }
     this.session.score(owner, 40 + this.stage * 8, this.time.now); this.score = this.session.totalScore();
     VFXManager.playExplosion(this, drone.sprite.x, drone.sprite.y, 0x00dfff); drone.sprite.destroy(); this.drones = this.drones.filter(candidate => candidate !== drone); AudioEngine.playEffect('EXPLOSION'); this.updateHud();
+  }
+
+  private createActorTextures() {
+    const create = (key: string, width: number, height: number, draw: (graphics: Phaser.GameObjects.Graphics) => void) => {
+      if (this.textures.exists(key)) return;
+      const graphics = this.add.graphics(); draw(graphics); graphics.generateTexture(key, width, height); graphics.destroy();
+    };
+    create('relay-ship', 36, 34, graphics => {
+      graphics.fillStyle(0x173d59, 0.95).fillTriangle(18, 1, 34, 29, 18, 25).fillTriangle(18, 1, 2, 29, 18, 25);
+      graphics.fillStyle(0xffffff, 0.9).fillTriangle(18, 4, 25, 24, 18, 21).fillTriangle(18, 4, 11, 24, 18, 21);
+      graphics.fillStyle(0x061220).fillTriangle(18, 7, 22, 18, 18, 16).fillTriangle(18, 7, 14, 18, 18, 16);
+      graphics.fillStyle(0xffffff, 0.8).fillRect(15, 27, 6, 4); graphics.lineStyle(1, 0xffffff, 0.9).strokeTriangle(18, 1, 34, 29, 18, 25).strokeTriangle(18, 1, 2, 29, 18, 25);
+    });
+    create('relay-drone', 28, 26, graphics => {
+      graphics.fillStyle(0x25224a).fillCircle(14, 13, 10); graphics.fillStyle(0xffffff, 0.8).fillCircle(14, 13, 6);
+      graphics.fillStyle(0x171126).fillRect(3, 11, 22, 5); graphics.fillStyle(0xffffff).fillCircle(14, 13, 2);
+      graphics.lineStyle(1, 0xffffff, 0.8).strokeCircle(14, 13, 10).lineBetween(3, 13, 25, 13);
+    });
   }
 
   private updateHud() {

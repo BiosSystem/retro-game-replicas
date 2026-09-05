@@ -1,5 +1,9 @@
 # BiosSystem Neon Arcade Roadmap
 
+## v2.6 visual overhaul
+
+The next production focus is a catalog-wide visual overhaul. The work begins with shared visual infrastructure, bundle recovery under the existing 1.95 MB ceiling, and three flagship benchmark scenes: Neon Relay, Neon Vector, and Neon Epoch. See [Visual Overhaul Plan](VISUAL_OVERHAUL_PLAN.md) for tiering, technical constraints, art direction, and scene-level acceptance gates.
+
 ## v2.5.0 development cycle
 
 Use `master` as the protected integration target. Create focused branches with the `feat/v2.5-<system>` or `fix/v2.5-<system>` pattern. Preserve the v2.4.0 release as the performance and behavior baseline.
