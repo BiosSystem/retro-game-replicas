@@ -7,6 +7,8 @@ import type { PlayerId } from '../../multiplayer/MultiInput';
 import { ArcadeHud } from '../../ui/arcade/NeonUi';
 import { deterministicLane, isNear, relayWave, type CabinetDifficulty, type WaveSpec } from './CabinetWaveSystems';
 import relayRooftop from '../../assets/relay/neon-relay-rooftop-v3.jpg';
+import { addLayeredBackdrop } from '../../graphics/LayeredBackdrop';
+import { ARCADE_PALETTES } from '../../graphics/ArcadeVisualTheme';
 
 interface RelayShot { sprite: Phaser.GameObjects.Rectangle; owner: PlayerId; }
 interface RelayDrone { sprite: Phaser.GameObjects.Image; hp: number; }
@@ -43,8 +45,7 @@ export default class NeonRelayScene extends Phaser.Scene {
     this.shots = []; this.drones = []; this.fireReady = { 1: 0, 2: 0 }; this.exhaustReady = { 1: 0, 2: 0 };
     this.createStage();
     this.createActorTextures();
-    this.add.image(320, 240, 'neon-relay-rooftop').setScale(2).setDepth(-3);
-    this.add.rectangle(320, 240, 640, 480, 0x020611, 0.28).setDepth(-2);
+    addLayeredBackdrop(this, { texture: 'neon-relay-rooftop', veil: ARCADE_PALETTES.relay.background, veilAlpha: 0.28 });
     this.add.text(320, 14, 'NEON RELAY // SIGNAL DEFENSE', { fontFamily: 'Courier', fontSize: '19px', color: '#00eaff', fontStyle: 'bold' }).setOrigin(0.5);
     this.add.text(628, 82, 'MOVE A/D OR ARROWS  FIRE SPACE/ENTER  ESC PAUSE', { fontFamily: 'Courier', fontSize: '9px', color: '#9cc9d8' }).setOrigin(1, 0).setDepth(30);
     this.hud = new ArcadeHud(this, 8, 38, 624, 0x00dfff);

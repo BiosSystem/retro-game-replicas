@@ -13,6 +13,8 @@ import { ProjectileEventType, readProjectileEvent } from '../neon-vector/Project
 import { advanceShieldRipples, createWarpStars, warpStretchForSpeed, type ShieldRipple, type WarpStar } from '../neon-vector/NeonVectorVisuals';
 import { CabinetBezelLighting } from '../../core/rendering/CabinetBezelLighting';
 import neonVectorSpace from '../../assets/vector/neon-vector-space-v1.jpg';
+import { addLayeredBackdrop } from '../../graphics/LayeredBackdrop';
+import { ARCADE_PALETTES } from '../../graphics/ArcadeVisualTheme';
 
 export default class NeonAsteroidsScene extends Phaser.Scene {
   private ship!: Phaser.Physics.Arcade.Image;
@@ -58,10 +60,8 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     this.session = new CoopSession(this.mode);
     this.score = 0; this.stage = 1; this.mineralCount = 0; this.weapon = 'SPREAD'; this.shield = false; this.stagePending = false;
     this.createTextures();
-    this.add.image(320, 240, 'neon-vector-space').setScale(2).setDepth(-4);
-    this.add.rectangle(320, 240, 640, 480, 0x02000c, 0.24).setDepth(-3);
+    addLayeredBackdrop(this, { texture: 'neon-vector-space', veil: ARCADE_PALETTES.vector.background, veilAlpha: 0.24, grid: { size: 32, color: 0x632cff, alpha: 0.045 } });
     this.createWarpStarfield();
-    this.add.grid(320, 240, 640, 480, 32, 32, 0x02000c, 0, 0x632cff, 0.045).setDepth(-1);
     this.shieldGraphics = this.add.graphics().setDepth(8).setBlendMode(Phaser.BlendModes.ADD);
     this.cabinetLights = new CabinetBezelLighting(this);
     this.add.text(320, 18, 'NEON VECTOR ASTEROIDS', { fontFamily: 'Courier', fontSize: '20px', color: '#ff2ec4', fontStyle: 'bold' }).setOrigin(0.5);

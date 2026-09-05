@@ -27,7 +27,7 @@ This plan preserves original gameplay, fixed-step rules, accessibility, offline 
 
 ## Bundle recovery gate
 
-The pre-overhaul production baseline was 1,948,775 bytes, leaving 1,225 bytes. Replacing the unused full Phaser distribution with its Arcade Physics-only distribution recovered 106,214 bytes. The current measured production output is 1,855,522 bytes, leaving 94,478 bytes beneath the release ceiling after three scene-local original background plates and the Relay actor pass.
+The pre-overhaul production baseline was 1,948,775 bytes, leaving 1,225 bytes. Replacing the unused full Phaser distribution with its Arcade Physics-only distribution recovered 106,214 bytes. The current measured production output is 1,857,107 bytes, leaving 92,893 bytes beneath the release ceiling after the flagship art and shared visual-foundation work.
 
 The 250 KB recovery target remains the preferred headroom for the catalog-wide sprite rollout; it is not yet met. Until then, every visual PR must remain beneath the 1.95 MB ceiling and report:
 
@@ -112,7 +112,7 @@ Refresh Meta-Arcade Hall, Tracker Studio, Decal Workshop, and the Cartridge Play
 ### V0 — visual platform and budget recovery
 
 - Recover the remaining 143,786 bytes toward the 250 KB headroom target while retaining the 1.95 MB release ceiling. (106,214 bytes recovered.)
-- Add `ArcadeVisualTheme`, `LayeredBackdrop`, `CombatVfx`, and visual regression capture support.
+- `ArcadeVisualTheme`, `LayeredBackdrop`, pooled `VFXManager` integration, and flagship visual regression capture support are implemented.
 - Publish the art bible, scene palette registry, and asset-size manifest.
 - Verify standard, low-quality, and reduced-motion modes.
 
@@ -158,4 +158,4 @@ Refresh Meta-Arcade Hall, Tracker Studio, Decal Workshop, and the Cartridge Play
 
 ## Current status
 
-The local `feat/v2.6-relay-visual-foundation` branch now contains three scene-local original environment benchmarks and a first actor pass: Neon Relay's rainy rooftop, readable player and drone silhouettes, bounded engine/impact feedback; Neon Vector's deep-space combat frame; and Neon Epoch's bioluminescent wetland. The Arcade Physics-only Phaser runtime recovery provides 94,478 bytes of current release headroom. TypeScript lint, 360 Vitest tests, the cartridge runtime Playwright test, and the production baseline all pass. This is an implemented visual foundation, not a completed catalog overhaul: shared art systems, remaining actor and projectile sprites, accessibility-mode visual validation, and every remaining cabinet are still planned work.
+The local `feat/v2.6-relay-visual-foundation` branch now contains three scene-local original environment benchmarks, Relay and Vector actor passes, shared theme/backdrop modules, reduced-motion-safe camera feedback, and raw-frame Playwright capture coverage. The Arcade Physics-only Phaser runtime recovery provides 92,893 bytes of current release headroom. TypeScript lint, 362 Vitest tests, two Playwright browser gates, and the production baseline all pass. Remaining work is the Epoch world-state pass, broader actor/projectile art, the Tier 2 and catalog batches, and hub/studio presentation.
