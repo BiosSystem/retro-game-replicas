@@ -4,9 +4,10 @@ const flagships = [
   { index: 2, scene: 'AsteroidsScene', name: 'neon-vector' },
   { index: 28, scene: 'EpochScene', name: 'neon-epoch' },
   { index: 29, scene: 'RelayScene', name: 'neon-relay' },
+  { index: 30, scene: 'SpiralScene', name: 'prism-spiral' },
 ] as const;
 
-test('flagship scenes lazy-load and render clean raw frames', async ({ page }, testInfo) => {
+test('priority visual scenes lazy-load and render clean raw frames', async ({ page }, testInfo) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => {
