@@ -27,7 +27,7 @@ This plan preserves original gameplay, fixed-step rules, accessibility, offline 
 
 ## Bundle recovery gate
 
-The pre-overhaul production baseline was 1,948,775 bytes, leaving 1,225 bytes. Replacing the unused full Phaser distribution with its Arcade Physics-only distribution recovered 106,214 bytes. The current measured production output is 1,854,517 bytes, leaving 95,483 bytes beneath the release ceiling after three scene-local original background plates.
+The pre-overhaul production baseline was 1,948,775 bytes, leaving 1,225 bytes. Replacing the unused full Phaser distribution with its Arcade Physics-only distribution recovered 106,214 bytes. The current measured production output is 1,855,522 bytes, leaving 94,478 bytes beneath the release ceiling after three scene-local original background plates and the Relay actor pass.
 
 The 250 KB recovery target remains the preferred headroom for the catalog-wide sprite rollout; it is not yet met. Until then, every visual PR must remain beneath the 1.95 MB ceiling and report:
 
@@ -77,7 +77,7 @@ Each module must use pooling or bounded collections. No new effect may allocate 
 
 | Game | Visual direction | Delivery status |
 |---|---|---|
-| Neon Relay | Rainy cyberpunk rooftop defense, animated city depth, turret/ship sprites, drones, weather, projectile trails, impact lighting. | Original rooftop environment implemented; actor and VFX pass remains. |
+| Neon Relay | Rainy cyberpunk rooftop defense, animated city depth, turret/ship sprites, drones, weather, projectile trails, impact lighting. | Original rooftop, player and drone silhouettes, and bounded engine/impact VFX implemented; projectile and objective art pass remains. |
 | Neon Vector | Premium vector combat with bold ships, meteor materials, dense combat readability, layered star fields, and responsive weapon effects. | Original deep-space environment and HUD spacing implemented; actor/material pass remains. |
 | Neon Epoch | A procedural neon ecosystem with authored terrain motifs, water, foliage, weather, creatures, and readable world-state feedback. | Original wetland environment and restrained bioluminescent simulation layer implemented; world-state art pass remains. |
 
@@ -158,4 +158,4 @@ Refresh Meta-Arcade Hall, Tracker Studio, Decal Workshop, and the Cartridge Play
 
 ## Current status
 
-The local `feat/v2.6-relay-visual-foundation` branch now contains three scene-local original environment benchmarks: Neon Relay's rainy rooftop, Neon Vector's deep-space combat frame, and Neon Epoch's bioluminescent wetland. The Arcade Physics-only Phaser runtime recovery provides 95,483 bytes of current release headroom. TypeScript lint, 360 Vitest tests, the cartridge runtime Playwright test, and the production baseline all pass. This is an implemented visual foundation, not a completed catalog overhaul: shared art systems, actor sprites, action VFX, accessibility-mode visual validation, and every remaining cabinet are still planned work.
+The local `feat/v2.6-relay-visual-foundation` branch now contains three scene-local original environment benchmarks and a first actor pass: Neon Relay's rainy rooftop, readable player and drone silhouettes, bounded engine/impact feedback; Neon Vector's deep-space combat frame; and Neon Epoch's bioluminescent wetland. The Arcade Physics-only Phaser runtime recovery provides 94,478 bytes of current release headroom. TypeScript lint, 360 Vitest tests, the cartridge runtime Playwright test, and the production baseline all pass. This is an implemented visual foundation, not a completed catalog overhaul: shared art systems, remaining actor and projectile sprites, accessibility-mode visual validation, and every remaining cabinet are still planned work.
