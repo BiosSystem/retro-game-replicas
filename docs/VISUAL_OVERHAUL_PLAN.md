@@ -158,4 +158,6 @@ Refresh Meta-Arcade Hall, Tracker Studio, Decal Workshop, and the Cartridge Play
 
 ## Current status
 
+Latest verification update: Cyber-Caster now has distinct hostile/core/exit silhouettes, perspective floor and ceiling detail, and a visible weapon. Production output is 1,862,125 bytes (87,875 bytes below the ceiling). The browser capture test now drives controls and saves actual 640x480 renderer snapshots for eight scenes. It is a rendering smoke test with review artifacts, not a pixel-difference visual regression or proof of the full art acceptance bar. The bundle gate now rejects missing runtime chunks; three isolated fixture tests cover partial, complete, and oversized builds.
+
 The local `feat/v2.6-relay-visual-foundation` branch now contains the three flagship passes, shared theme/backdrop and accessibility-safe feedback, raw-frame Playwright coverage, plus Tier 2 Breaker, Racer, Labyrinth, and Prism Spiral material/silhouette passes. Current release headroom is 89,431 bytes. TypeScript lint, 362 Vitest tests, and Playwright coverage for seven visual scenes plus the cartridge runtime all pass. Remaining work is broader projectile/action art, the other Tier 2 and catalog batches, and hub/studio presentation.

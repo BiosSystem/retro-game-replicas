@@ -1,9 +1,11 @@
 import { expect, test } from '@playwright/test';
+import { writeFile } from 'node:fs/promises';
 
 const flagships = [
   { index: 2, scene: 'AsteroidsScene', name: 'neon-vector' },
   { index: 3, scene: 'BreakoutScene', name: 'neon-breaker' },
   { index: 11, scene: 'RacerScene', name: 'cyber-racer' },
+  { index: 12, scene: 'RaycasterScene', name: 'cyber-caster' },
   { index: 17, scene: 'LabyrinthScene', name: 'neon-labyrinth' },
   { index: 28, scene: 'EpochScene', name: 'neon-epoch' },
   { index: 29, scene: 'RelayScene', name: 'neon-relay' },
@@ -35,8 +37,21 @@ test('priority visual scenes lazy-load and render clean raw frames', async ({ pa
       const game = (window as typeof window & { game: { scene: { getScene(key: string): { scene: { isActive(): boolean } } } } }).game;
       try { return game.scene.getScene(scene).scene.isActive(); } catch { return false; }
     }, flagship.scene)).toBe(true);
-    await page.waitForTimeout(350);
-    await testInfo.attach(`${flagship.name}-raw-frame`, { body: await canvas.screenshot(), contentType: 'image/png' });
+    await page.keyboard.down('ArrowUp');
+    await page.keyboard.down('Space');
+    await page.waitForTimeout(750);
+    await page.keyboard.up('Space');
+    await page.keyboard.up('ArrowUp');
+    const frame = await page.evaluate(() => new Promise<string>(resolve => {
+      const game = (window as typeof window & { game: { renderer: { snapshot(callback: (image: HTMLImageElement) => void): void } } }).game;
+      game.renderer.snapshot(image => resolve(image.src));
+    }));
+    const buffer = Buffer.from(frame.split(',')[1], 'base64');
+    expect(buffer.readUInt32BE(16)).toBe(640);
+    expect(buffer.readUInt32BE(20)).toBe(480);
+    const capturePath = testInfo.outputPath(`${flagship.name}-raw-frame.png`);
+    await writeFile(capturePath, buffer);
+    await testInfo.attach(`${flagship.name}-raw-frame`, { path: capturePath, contentType: 'image/png' });
   }
 
   expect(errors).toEqual([]);
