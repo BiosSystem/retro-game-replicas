@@ -27,7 +27,7 @@ This plan preserves original gameplay, fixed-step rules, accessibility, offline 
 
 ## Bundle recovery gate
 
-The pre-overhaul production baseline was 1,948,775 bytes, leaving 1,225 bytes. Replacing the unused full Phaser distribution with its Arcade Physics-only distribution recovered 106,214 bytes. The current measured production output is 1,859,318 bytes, leaving 90,682 bytes beneath the release ceiling after the flagship art, shared foundation, Breaker, and Prism Spiral passes.
+The pre-overhaul production baseline was 1,948,775 bytes, leaving 1,225 bytes. Replacing the unused full Phaser distribution with its Arcade Physics-only distribution recovered 106,214 bytes. The current measured production output is 1,859,733 bytes, leaving 90,267 bytes beneath the release ceiling after the flagship art, shared foundation, and first Tier 2 passes.
 
 The 250 KB recovery target remains the preferred headroom for the catalog-wide sprite rollout; it is not yet met. Until then, every visual PR must remain beneath the 1.95 MB ceiling and report:
 
@@ -88,7 +88,7 @@ Tier 1 establishes the visual benchmark. It is complete only when each game has 
 | Game | Required art treatment |
 |---|---|
 | Neon Breaker | Brick/paddle/ball materials and framed arena implemented; animated power-up pass remains. |
-| Cyber-Racer | Hand-authored road-side props, skyline variants, vehicle sprites, weather, exhaust, boost trail. |
+| Cyber-Racer | Layered skyline/road, designed roadside silhouettes, readable player/ghost vehicles, exhaust, boost feedback, and reduced-motion-safe collisions implemented. |
 | Neon Cyber-Caster | Textured dungeon modules, enemy silhouettes, pickups, muzzle flash, distance fog. |
 | Neon Danmaku | Boss sprites, patterned bullet families, spell-card backgrounds, readable danger gradients. |
 | Neon Labyrinth | Tileset, room themes, character states, pickups, environmental animation. |
@@ -158,4 +158,4 @@ Refresh Meta-Arcade Hall, Tracker Studio, Decal Workshop, and the Cartridge Play
 
 ## Current status
 
-The local `feat/v2.6-relay-visual-foundation` branch now contains the three flagship passes, shared theme/backdrop and accessibility-safe feedback, raw-frame Playwright coverage, plus Tier 2 Breaker and Prism Spiral material/silhouette passes. Current release headroom is 90,682 bytes. TypeScript lint, 362 Vitest tests, two Playwright browser gates covering four visual scenes plus the cartridge runtime, and the production baseline all pass. Remaining work is broader projectile/action art, the other Tier 2 and catalog batches, and hub/studio presentation.
+The local `feat/v2.6-relay-visual-foundation` branch now contains the three flagship passes, shared theme/backdrop and accessibility-safe feedback, raw-frame Playwright coverage, plus Tier 2 Breaker, Racer, and Prism Spiral material/silhouette passes. Current release headroom is 90,267 bytes. TypeScript lint, 362 Vitest tests, and Playwright coverage for six visual scenes plus the cartridge runtime all pass. Remaining work is broader projectile/action art, the other Tier 2 and catalog batches, and hub/studio presentation.

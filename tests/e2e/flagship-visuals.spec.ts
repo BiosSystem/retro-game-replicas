@@ -2,6 +2,8 @@ import { expect, test } from '@playwright/test';
 
 const flagships = [
   { index: 2, scene: 'AsteroidsScene', name: 'neon-vector' },
+  { index: 3, scene: 'BreakoutScene', name: 'neon-breaker' },
+  { index: 11, scene: 'RacerScene', name: 'cyber-racer' },
   { index: 28, scene: 'EpochScene', name: 'neon-epoch' },
   { index: 29, scene: 'RelayScene', name: 'neon-relay' },
   { index: 30, scene: 'SpiralScene', name: 'prism-spiral' },
