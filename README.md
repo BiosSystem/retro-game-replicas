@@ -10,7 +10,7 @@
 
 ## Real gameplay gallery — visual overhaul in progress
 
-These are unedited 640x480 frames exported from the running games after keyboard input, with the cabinet CRT presentation excluded. They show the current implementation, not concept art or a promise of final quality. The v2.6 overhaul is still in progress: the first ten scene passes do not yet meet every animation, accessibility, and art-direction acceptance criterion in the [visual production plan](docs/VISUAL_OVERHAUL_PLAN.md).
+These are unedited 640x480 frames exported from the running games after keyboard input, with the cabinet CRT presentation excluded. They show the current implementation, not concept art or a promise of final quality. The v2.6 overhaul is still in progress: the first thirteen scene passes do not yet meet every animation, accessibility, and art-direction acceptance criterion in the [visual production plan](docs/VISUAL_OVERHAUL_PLAN.md).
 
 <p align="center">
   <img src="docs/images/screenshots/v26-neon-vector.png" alt="Neon Vector actual gameplay with faceted asteroids and a cyan ship" width="640">
@@ -24,6 +24,10 @@ These are unedited 640x480 frames exported from the running games after keyboard
 | Neon Relay | Neon Epoch |
 |---|---|
 | ![Actual Neon Relay ship firing at incoming drones](docs/images/screenshots/v26-neon-relay.png) | ![Actual Neon Epoch wetland traversal frame](docs/images/screenshots/v26-neon-epoch.png) |
+
+| Neon Pong | Froggie Crosser |
+|---|---|
+| ![Actual Neon Pong court with modeled paddles](docs/images/screenshots/v26-neon-pong.png) | ![Actual Froggie Crosser road and river gameplay](docs/images/screenshots/v26-froggie-crosser.png) |
 
 Capture provenance: `tests/e2e/flagship-visuals.spec.ts`, Chromium, reduced motion enabled, production build. Background plates are original generated artwork; gameplay actors and effects are rendered by the game. Documentation screenshots are not included in the production bundle.
 

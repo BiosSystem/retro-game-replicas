@@ -2,8 +2,11 @@ import { expect, test } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
 
 const flagships = [
+  { index: 0, scene: 'SnakeScene', name: 'snake-evolution' },
+  { index: 1, scene: 'PongScene', name: 'neon-pong' },
   { index: 2, scene: 'AsteroidsScene', name: 'neon-vector' },
   { index: 3, scene: 'BreakoutScene', name: 'neon-breaker' },
+  { index: 4, scene: 'FroggerScene', name: 'froggie-crosser' },
   { index: 11, scene: 'RacerScene', name: 'cyber-racer' },
   { index: 12, scene: 'RaycasterScene', name: 'cyber-caster' },
   { index: 17, scene: 'LabyrinthScene', name: 'neon-labyrinth' },

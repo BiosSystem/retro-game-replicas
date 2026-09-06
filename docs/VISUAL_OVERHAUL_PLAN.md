@@ -27,7 +27,7 @@ This plan preserves original gameplay, fixed-step rules, accessibility, offline 
 
 ## Bundle recovery gate
 
-The pre-overhaul production baseline was 1,948,775 bytes. Switching to the Arcade Physics-only Phaser distribution recovered 106,214 bytes before subsequent art changes. The latest production output is 1,864,295 bytes, leaving 85,705 bytes below the 1,950,000-byte ceiling. The preferred 250 KB recovery target is still not met.
+The pre-overhaul production baseline was 1,948,775 bytes. Switching to the Arcade Physics-only Phaser distribution recovered 106,214 bytes before subsequent art changes. The latest production output is 1,867,846 bytes, leaving 82,154 bytes below the 1,950,000-byte ceiling. The preferred 250 KB recovery target is still not met.
 
 The 250 KB recovery target remains the preferred headroom for the catalog-wide sprite rollout; it is not yet met. Until then, every visual PR must remain beneath the 1.95 MB ceiling and report:
 
@@ -97,7 +97,7 @@ Tier 1 establishes the visual benchmark. It is complete only when each game has 
 
 ### Tier 3: classic cabinet refresh
 
-Upgrade Snake Evolution, Neon Pong, Froggie Crosser, Space Defenders, Tetris Pulse, Minesweeper, Pixel Runner, Brave Bird, and Cyber Chasm with compact tile/sprite kits, motion states, themed backgrounds, and a quiet common HUD. Neon Vector is delivered in Tier 1.
+Snake Evolution, Neon Pong, and Froggie Crosser now have first material/silhouette passes: directional snake eyes and fruit on a garden floor, a restrained Pong court with paddle/ball materials, and a recognizable frog with vehicle/log details. Their physics geometry is unchanged. Space Defenders, Tetris Pulse, Minesweeper, Pixel Runner, Brave Bird, and Cyber Chasm still need this pass. Full motion-state and accessibility acceptance remains open for the tier. Neon Vector is tracked in Tier 1.
 
 ### Tier 4: procedural worlds
 
@@ -157,6 +157,8 @@ Refresh Meta-Arcade Hall, Tracker Studio, Decal Workshop, and the Cartridge Play
 - The capture used for documentation is an active gameplay frame and accurately represents the shipped scene.
 
 ## Current status
+
+Classic batch update: Snake, Pong, and Frogger bring the capture inventory to 13 scenes. Production output is **1,867,846 bytes**, leaving **82,154 bytes** below the ceiling. TypeScript and all 362 units pass; the 15 focused browser/catalog/control checks pass. The preceding action/gallery commit `9f1e9ec` passed the complete GitHub validation, including Linux Firefox. This is incremental progress, not completion of the catalog-wide overhaul.
 
 Validation on 2026-09-06: all 69 Chromium regressions pass, as do the three WebKit smoke tests. The focused ten-scene capture test also verifies reduced-motion collision/fire behavior. `cargo test --locked --manifest-path src-tauri/Cargo.toml` succeeds (the native crate currently defines zero tests). Local Firefox is blocked before application startup: the downloaded Firefox 1538 build reports a Windows side-by-side `mozglue` assembly error. Do not count those three checks as passing; GitHub's Linux Firefox gate remains required.
 
