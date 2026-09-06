@@ -27,7 +27,7 @@ This plan preserves original gameplay, fixed-step rules, accessibility, offline 
 
 ## Bundle recovery gate
 
-The pre-overhaul production baseline was 1,948,775 bytes. Switching to the Arcade Physics-only Phaser distribution recovered 106,214 bytes before subsequent art changes. The latest production output is 1,867,846 bytes, leaving 82,154 bytes below the 1,950,000-byte ceiling. The preferred 250 KB recovery target is still not met.
+The pre-overhaul production baseline was 1,948,775 bytes. Switching to the Arcade Physics-only Phaser distribution recovered 106,214 bytes before subsequent art changes. The latest production output is 1,873,739 bytes, leaving 76,261 bytes below the 1,950,000-byte ceiling. The preferred 250 KB recovery target is still not met.
 
 The 250 KB recovery target remains the preferred headroom for the catalog-wide sprite rollout; it is not yet met. Until then, every visual PR must remain beneath the 1.95 MB ceiling and report:
 
@@ -97,7 +97,7 @@ Tier 1 establishes the visual benchmark. It is complete only when each game has 
 
 ### Tier 3: classic cabinet refresh
 
-Snake Evolution, Neon Pong, and Froggie Crosser now have first material/silhouette passes: directional snake eyes and fruit on a garden floor, a restrained Pong court with paddle/ball materials, and a recognizable frog with vehicle/log details. Their physics geometry is unchanged. Space Defenders, Tetris Pulse, Minesweeper, Pixel Runner, Brave Bird, and Cyber Chasm still need this pass. Full motion-state and accessibility acceptance remains open for the tier. Neon Vector is tracked in Tier 1.
+All nine Tier 3 classics now have first material/silhouette passes. Snake, Pong, Frogger, Space Defenders, Tetris, Minesweeper, Pixel Runner, Brave Bird, and Cyber Chasm each have a designed setting, readable actor or object materials, compact HUD treatment, and a production framebuffer capture. Physics geometry and game rules are unchanged. Full action-state, ambient-motion, performance, low-quality, and accessibility acceptance remains open for the tier. Neon Vector is tracked in Tier 1.
 
 ### Tier 4: procedural worlds
 
@@ -158,10 +158,6 @@ Refresh Meta-Arcade Hall, Tracker Studio, Decal Workshop, and the Cartridge Play
 
 ## Current status
 
-Classic batch update: Snake, Pong, and Frogger bring the capture inventory to 13 scenes. Production output is **1,867,846 bytes**, leaving **82,154 bytes** below the ceiling. TypeScript and all 362 units pass; the 15 focused browser/catalog/control checks pass. The preceding action/gallery commit `9f1e9ec` passed the complete GitHub validation, including Linux Firefox. This is incremental progress, not completion of the catalog-wide overhaul.
+Verification update (2026-09-06): nineteen scenes now have real 640x480 production-frame capture coverage, including every Tier 3 classic. TypeScript analysis, all 362 unit tests, the three bundle-gate fixtures, and all 69 Chromium regressions pass. Production output is **1,873,739 bytes**, leaving **76,261 bytes** below the ceiling. The preceding classic commit `e6271fa` passed complete GitHub validation, including Linux Firefox. WebKit's three local smoke tests and the native Cargo build also pass; the new commit still requires remote CI.
 
-Validation on 2026-09-06: all 69 Chromium regressions pass, as do the three WebKit smoke tests. The focused ten-scene capture test also verifies reduced-motion collision/fire behavior. `cargo test --locked --manifest-path src-tauri/Cargo.toml` succeeds (the native crate currently defines zero tests). Local Firefox is blocked before application startup: the downloaded Firefox 1538 build reports a Windows side-by-side `mozglue` assembly error. Do not count those three checks as passing; GitHub's Linux Firefox gate remains required.
-
-Latest verification update (2026-09-06): ten scene passes now have real 640x480 framebuffer capture coverage. Danmaku has a framed arena and boss/player silhouettes; Kombat has a rooftop arena, armored fighters, and a quiet health/timer HUD. Cyber-Caster has distinct hostile/core/exit silhouettes, floor/ceiling detail, and a weapon. These remain initial art passes, not completed art acceptance. The README gallery now uses reviewed gameplay exports rather than the older cabinet screenshot.
-
-Verified locally: TypeScript analysis, 362 unit tests, three isolated bundle-gate fixtures, and the focused gameplay/capture tests pass. The gate rejects partial builds and is now enforced in GitHub CI. Full Chromium, cross-browser, and native verification are tracked separately; screenshots alone do not prove performance, pixel regression, or complete accessibility. Reduced-motion collision/fire assertions and rotated Vector exhaust address specific discovered defects. Remaining work includes actor/action animation, projectile/objective art, classic and world batches, Tactics (previously omitted from the tier list), hub/studio presentation, low-quality/high-action benchmarks, and final art review.
+The captures are rendering and active-state smoke artifacts, not pixel-difference baselines or proof of completed art acceptance. Local Firefox remains blocked before application startup by a Windows side-by-side `mozglue` assembly error, so Linux Firefox in GitHub CI remains authoritative. Remaining work is the procedural-world batch, Tactics, hub/studio/runtime presentation, deeper actor/action and projectile/objective animation, low-quality/high-action performance benchmarks, catalog-wide accessibility review, and final art acceptance.

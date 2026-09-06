@@ -7,6 +7,12 @@ const flagships = [
   { index: 2, scene: 'AsteroidsScene', name: 'neon-vector' },
   { index: 3, scene: 'BreakoutScene', name: 'neon-breaker' },
   { index: 4, scene: 'FroggerScene', name: 'froggie-crosser' },
+  { index: 5, scene: 'InvadersScene', name: 'space-defenders' },
+  { index: 6, scene: 'TetrisScene', name: 'tetris-pulse' },
+  { index: 7, scene: 'MinesweeperScene', name: 'minefield-sweep' },
+  { index: 8, scene: 'RunnerScene', name: 'pixel-runner' },
+  { index: 9, scene: 'BirdScene', name: 'brave-bird' },
+  { index: 10, scene: 'CyberScene', name: 'cyber-chasm' },
   { index: 11, scene: 'RacerScene', name: 'cyber-racer' },
   { index: 12, scene: 'RaycasterScene', name: 'cyber-caster' },
   { index: 17, scene: 'LabyrinthScene', name: 'neon-labyrinth' },
@@ -42,6 +48,31 @@ test('priority visual scenes lazy-load and render clean raw frames', async ({ pa
       const game = (window as typeof window & { game: { scene: { getScene(key: string): { scene: { isActive(): boolean } } } } }).game;
       try { return game.scene.getScene(scene).scene.isActive(); } catch { return false; }
     }, flagship.scene)).toBe(true);
+    if (flagship.scene === 'BirdScene') await page.evaluate(() => {
+      const game = (window as any).game;
+      const scene = game.scene.getScene('BirdScene');
+      scene.spawnPipes();
+      for (const pipe of scene.pipes.getChildren()) {
+        pipe.body.reset(560, pipe.y);
+        pipe.body.setVelocityX(-scene.pipeSpeed);
+      }
+    });
+    if (flagship.scene === 'MinesweeperScene') await page.evaluate(() => {
+      const scene = (window as any).game.scene.getScene('MinesweeperScene');
+      scene.firstClick = false;
+      scene.placeMines(5, 5);
+      scene.reveal(scene.grid[5][5]);
+      const hidden = scene.grid.flat().find((tile: any) => !tile.revealed);
+      if (hidden) scene.toggleFlag(hidden);
+    });
+    if (flagship.scene === 'RunnerScene') await page.evaluate(() => {
+      const scene = (window as any).game.scene.getScene('RunnerScene');
+      scene.spawnObstacle();
+      for (const obstacle of scene.obstacles.getChildren()) {
+        obstacle.body.reset(520, obstacle.y);
+        obstacle.body.setVelocityX(-scene.speed);
+      }
+    });
     await page.keyboard.down('ArrowUp');
     await page.keyboard.down('Space');
     await page.waitForTimeout(750);

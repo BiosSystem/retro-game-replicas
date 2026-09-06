@@ -52,19 +52,37 @@ export default class RunnerScene extends Phaser.Scene {
     // Create textures if missing
     if (!this.textures.exists('bg_city')) {
       const g = this.add.graphics();
-      g.fillStyle(0x111122); g.fillRect(0, 0, 64, 64); g.generateTexture('bg_city', 64, 64); g.clear();
-      g.fillStyle(0x112222); g.fillRect(0, 0, 64, 64); g.generateTexture('bg_trees', 64, 64); g.destroy();
+      g.fillStyle(0x11162b).fillRect(0, 0, 128, 128);
+      for (let x = 0; x < 128; x += 22) {
+        const h = 32 + (x * 7) % 52;
+        g.fillStyle(0x172641).fillRect(x, 128 - h, 18, h);
+        for (let y = 134 - h; y < 120; y += 15) g.fillStyle(0x6c8294, .3).fillRect(x + 5, y, 4, 3);
+      }
+      g.generateTexture('bg_city', 128, 128); g.clear();
+      for (let x = 0; x < 128; x += 28) {
+        g.fillStyle(0x132f37).fillRect(x + 11, 70, 5, 58);
+        g.fillStyle(0x1f4a49).fillTriangle(x, 88, x + 14, 36 + x % 19, x + 28, 88);
+      }
+      g.generateTexture('bg_trees', 128, 128); g.destroy();
     }
 
     // Parallax BG
-    this.bg1 = this.add.tileSprite(320, 240, 640, 480, 'bg_city').setTint(0x112233);
-    this.bg2 = this.add.tileSprite(320, 240, 640, 480, 'bg_trees').setTint(0x224455);
+    this.bg1 = this.add.tileSprite(320, 240, 640, 480, 'bg_city');
+    this.bg2 = this.add.tileSprite(320, 240, 640, 480, 'bg_trees');
+    this.bg1.tileScaleY = 4;
+    this.bg2.tileScaleY = 4;
 
     // Ground
     const ground = this.add.rectangle(320, 440, 640, 80, 0x336677);
     this.physics.add.existing(ground, true);
+    const runway = this.add.graphics();
+    runway.fillStyle(0x101b27).fillRect(0, 401, 640, 79).fillStyle(0x375568).fillRect(0, 401, 640, 7);
+    runway.lineStyle(1, 0x678394, .35);
+    for (let x = -40; x < 700; x += 64) runway.lineBetween(x, 480, x + 38, 407);
+    runway.lineBetween(0, 446, 640, 446);
 
     this.createRunnerTextures();
+    this.createHazardTextures();
     this.player = this.physics.add.sprite(100, 380, 'runner-idle');
     this.animator = this.createAnimator();
     (this.player.body as Phaser.Physics.Arcade.Body).setGravityY(1500);
@@ -78,17 +96,17 @@ export default class RunnerScene extends Phaser.Scene {
     this.obstacles = this.physics.add.group();
 
     // UI
-    this.add.text(320, 20, 'PIXEL RUNNER', { fontFamily: 'Courier', fontSize: '24px', color: '#00ffcc', fontStyle: 'bold' }).setOrigin(0.5);
-    this.scoreText = this.add.text(20, 20, 'SCORE: 0', { fontFamily: 'Courier', fontSize: '20px', color: '#ffffff' });
-    this.add.text(20, 50, `${this.mode}  P1 WASD+SPACE  P2 ARROWS+ENTER`, { fontFamily: 'Courier', fontSize: '13px', color: '#aaaaaa' });
+    this.add.text(320, 18, 'PIXEL RUNNER // NIGHT SECTOR', { fontFamily: 'Courier', fontSize: '18px', color: '#bde4e5', fontStyle: 'bold' }).setOrigin(0.5).setDepth(10);
+    this.scoreText = this.add.text(12, 42, 'SCORE 0', { fontFamily: 'Courier', fontSize: '12px', color: '#ffffff' }).setDepth(10);
+    this.add.text(20, 60, `${this.mode}  P1 WASD+SPACE  P2 ARROWS+ENTER`, { fontFamily: 'Courier', fontSize: '12px', color: '#8fa7ad' }).setDepth(10);
 
     const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
-    this.add.text(630, 20, `DIFF: ${this.difficulty}`, {
+    this.add.text(628, 12, this.difficulty, {
       fontFamily: 'Courier',
-      fontSize: '16px',
+      fontSize: '13px',
       color: diffColors[this.difficulty] || '#00ff00',
       fontStyle: 'bold'
-    }).setOrigin(1, 0);
+    }).setOrigin(1, 0).setDepth(10);
 
     // Collisions
     this.physics.add.collider(this.player, ground);
@@ -158,11 +176,11 @@ export default class RunnerScene extends Phaser.Scene {
       const isHigh = hazard.kind === 'FLYER';
       const y = isHigh ? 330 : 385;
       const h = isHigh ? 20 : 30;
-      const color = isHigh ? 0xff0055 : 0xffaa00;
-
-      const obs = this.add.rectangle(700, y, this.stageDefinition.boss ? 55 : 25, this.stageDefinition.boss ? h * 1.6 : h, color);
-      this.physics.add.existing(obs, false); // Dynamic body so it can move via velocity!
+      const width = this.stageDefinition.boss ? 55 : 25;
+      const height = this.stageDefinition.boss ? h * 1.6 : h;
+      const obs = this.physics.add.image(700, y, isHigh ? 'runner-flyer' : 'runner-barrier').setDisplaySize(width, height);
       const body = obs.body as Phaser.Physics.Arcade.Body;
+      body.setSize(width, height);
       body.setAllowGravity(false);
       body.setImmovable(true);
       body.setVelocityX(-this.speed * hazard.speed);
@@ -225,11 +243,12 @@ export default class RunnerScene extends Phaser.Scene {
       for (const frame of frames) {
           if (this.textures.exists(frame.key)) continue;
           const graphics = this.add.graphics();
-          graphics.fillStyle(0x00ffcc);
+          graphics.fillStyle(0x94c5c0);
           if (frame.crouch) {
               graphics.fillRect(4, 22, 26, 16);
               graphics.fillRect(22, 14, 10, 10);
               graphics.fillRect(2, 36, 28, 8);
+              graphics.fillStyle(0xe0f1e9).fillRect(9, 24, 17, 8).fillRect(24, 16, 6, 4);
           } else {
               graphics.fillRect(11, 4, 12, 12);
               graphics.fillRect(8, 16, 18, 20);
@@ -237,9 +256,31 @@ export default class RunnerScene extends Phaser.Scene {
               graphics.fillRect(24, 19, 5, 18);
               graphics.fillRect(9 + frame.leg, 35, 6, frame.jump ? 10 : 13);
               graphics.fillRect(19 - frame.leg, 35, 6, frame.jump ? 10 : 13);
+              graphics.fillStyle(0x172733).fillRect(13, 7, 8, 4);
+              graphics.fillStyle(0xe0f1e9).fillTriangle(9, 18, 25, 18, 17, 32);
+              graphics.fillStyle(0x4c8190).fillRect(7, 34, 7, 5).fillRect(21, 34, 7, 5);
           }
           graphics.generateTexture(frame.key, 34, 50);
           graphics.destroy();
+      }
+  }
+
+  private createHazardTextures() {
+      if (!this.textures.exists('runner-barrier')) {
+          const g = this.add.graphics();
+          g.fillStyle(0x17212d).fillRoundedRect(2, 5, 36, 33, 4);
+          g.fillStyle(0xe38a3d).fillRect(5, 9, 30, 7).fillRect(5, 25, 30, 7);
+          for (let x = 6; x < 34; x += 10) g.fillStyle(0xffd171).fillTriangle(x, 16, x + 7, 16, x + 2, 25);
+          g.lineStyle(1, 0xf2b35d).strokeRoundedRect(2, 5, 36, 33, 4);
+          g.generateTexture('runner-barrier', 40, 40); g.destroy();
+      }
+      if (!this.textures.exists('runner-flyer')) {
+          const g = this.add.graphics();
+          g.fillStyle(0x151e31).fillEllipse(20, 15, 30, 14).fillTriangle(7, 14, 0, 4, 15, 10).fillTriangle(33, 14, 40, 4, 25, 10);
+          g.fillStyle(0xe56a8f).fillEllipse(20, 13, 14, 7);
+          g.fillStyle(0xffd5df).fillRect(15, 11, 10, 2);
+          g.lineStyle(1, 0xef8da7).strokeEllipse(20, 15, 30, 14);
+          g.generateTexture('runner-flyer', 40, 28); g.destroy();
       }
   }
 }
