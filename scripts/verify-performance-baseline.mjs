@@ -1,3 +1,4 @@
+// Run with node --test; intentionally outside Vitest's *.test.* discovery.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, copyFile, writeFile, rm } from 'node:fs/promises';

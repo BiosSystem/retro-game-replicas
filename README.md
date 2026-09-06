@@ -8,14 +8,24 @@
 
 **BiosSystem Neon Arcade** keeps the existing `BiosSystem/retro-game-replicas` repository slug for continuity. Build original arcade replicas, procedurally generated Neon worlds, and a cabinet-style launcher from one TypeScript codebase.
 
-## Featured runtime scene
+## Real gameplay gallery — visual overhaul in progress
 
-The arcade is built from original procedural graphics, with no imported ROM art or third-party game assets. This live Neon Epoch scene is the most representative current example of the project's world-generation and Overdrive presentation.
+These are unedited 640x480 frames exported from the running games after keyboard input, with the cabinet CRT presentation excluded. They show the current implementation, not concept art or a promise of final quality. The v2.6 overhaul is still in progress: the first ten scene passes do not yet meet every animation, accessibility, and art-direction acceptance criterion in the [visual production plan](docs/VISUAL_OVERHAUL_PLAN.md).
 
 <p align="center">
-  <img src="docs/images/screenshots/neon-epoch.png" alt="Neon Epoch procedural world rendered through the Overdrive display pipeline" width="800">
+  <img src="docs/images/screenshots/v26-neon-vector.png" alt="Neon Vector actual gameplay with faceted asteroids and a cyan ship" width="640">
 </p>
-<p align="center"><sub>Neon Epoch - procedural world generation and Overdrive lighting.</sub></p>
+<p align="center"><sub>Neon Vector — current ship, asteroid materials, and deep-space background.</sub></p>
+
+| Neon Danmaku | Neon Kombat |
+|---|---|
+| ![Actual Neon Danmaku boss and bullet pattern](docs/images/screenshots/v26-neon-danmaku.png) | ![Actual Neon Kombat fighters on the rooftop arena](docs/images/screenshots/v26-neon-kombat.png) |
+
+| Neon Relay | Neon Epoch |
+|---|---|
+| ![Actual Neon Relay ship firing at incoming drones](docs/images/screenshots/v26-neon-relay.png) | ![Actual Neon Epoch wetland traversal frame](docs/images/screenshots/v26-neon-epoch.png) |
+
+Capture provenance: `tests/e2e/flagship-visuals.spec.ts`, Chromium, reduced motion enabled, production build. Background plates are original generated artwork; gameplay actors and effects are rendered by the game. Documentation screenshots are not included in the production bundle.
 
 ## Current milestone
 

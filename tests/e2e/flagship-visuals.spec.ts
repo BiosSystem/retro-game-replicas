@@ -7,6 +7,8 @@ const flagships = [
   { index: 11, scene: 'RacerScene', name: 'cyber-racer' },
   { index: 12, scene: 'RaycasterScene', name: 'cyber-caster' },
   { index: 17, scene: 'LabyrinthScene', name: 'neon-labyrinth' },
+  { index: 18, scene: 'DanmakuScene', name: 'neon-danmaku' },
+  { index: 19, scene: 'KombatScene', name: 'neon-kombat' },
   { index: 28, scene: 'EpochScene', name: 'neon-epoch' },
   { index: 29, scene: 'RelayScene', name: 'neon-relay' },
   { index: 30, scene: 'SpiralScene', name: 'prism-spiral' },
@@ -52,6 +54,22 @@ test('priority visual scenes lazy-load and render clean raw frames', async ({ pa
     const capturePath = testInfo.outputPath(`${flagship.name}-raw-frame.png`);
     await writeFile(capturePath, buffer);
     await testInfo.attach(`${flagship.name}-raw-frame`, { path: capturePath, contentType: 'image/png' });
+
+    if (flagship.scene === 'DanmakuScene' || flagship.scene === 'RaycasterScene') {
+      const shaking = await page.evaluate(key => {
+        const game = (window as any).game;
+        const scene = game.scene.getScene(key);
+        if (key === 'DanmakuScene') {
+          scene.projectiles.clear();
+          scene.projectiles.spawn({ x: scene.playerX, y: scene.playerY, vx: 0, vy: 0, life: 1, kind: 0 });
+          const lives = scene.lives;
+          scene.collide();
+          if (scene.lives === lives) throw new Error('Collision fixture did not hit the player');
+        } else scene.fire();
+        return scene.cameras.main.shakeEffect.isRunning;
+      }, flagship.scene);
+      expect(shaking, `${flagship.scene} must honor reduced motion during impacts`).toBe(false);
+    }
   }
 
   expect(errors).toEqual([]);

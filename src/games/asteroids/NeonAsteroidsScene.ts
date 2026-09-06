@@ -201,7 +201,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     if (thrusting) {
       this.physics.velocityFromRotation(ship.rotation - Math.PI / 2, 235, (ship.body as Phaser.Physics.Arcade.Body).acceleration);
       if (this.time.now >= this.exhaustReady[player]) {
-        VFXManager.playEngineExhaust(this, ship.x, ship.y + 14, player === 1 ? 0x00ffff : 0xff2ec4);
+        VFXManager.playEngineExhaust(this, ship.x - Math.sin(ship.rotation) * 14, ship.y + Math.cos(ship.rotation) * 14, player === 1 ? 0x00ffff : 0xff2ec4);
         this.exhaustReady[player] = this.time.now + 90;
       }
     } else ship.setAcceleration(0);

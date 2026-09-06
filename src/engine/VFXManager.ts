@@ -80,6 +80,8 @@ export class VFXManager {
     }
 
     private static applyDirectionalTrauma(scene: Phaser.Scene, x: number, y: number, magnitude: number) {
+        const mediaMatches = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reducedMotionEnabled(typeof localStorage === 'undefined' ? undefined : localStorage, mediaMatches)) return;
         if (!this.isOverdrive()) return;
         const camera = scene.cameras.main;
         const horizontal = x < camera.midPoint.x ? 1 : -1;
