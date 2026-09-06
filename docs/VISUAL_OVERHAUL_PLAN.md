@@ -103,6 +103,8 @@ All nine Tier 3 classics now have first material/silhouette passes. Snake, Pong,
 
 Upgrade Neon Odyssey, Neon Chrono, Neon Paradox, Neon Nexus, Neon Genesis, Neon OS, The Singularity, and Event Horizon with authored material libraries and atmospheric layers. Preserve procedural generation, but use it to arrange designed building blocks rather than draw only abstract geometry. Neon Epoch is delivered in Tier 1.
 
+The world-scene presentation foundation is now in place: all eight worlds have safe-band HUD hierarchy and production-frame coverage; Neon Odyssey also has an initial atmospheric planet treatment, Event Horizon has an uncluttered field presentation, and Neon Tactics has a framed, legible strategic board. Deep authored materials, actor/action feedback, and ambient-motion acceptance remain open for this tier.
+
 ### Tier 5: hubs, studios, and runtime experiences
 
 Refresh Meta-Arcade Hall, Tracker Studio, Decal Workshop, and the Cartridge Player. These surfaces need strong layout, cabinet art, previews, and clear hierarchy, but must never be marketed as flagship gameplay screenshots.
@@ -158,6 +160,6 @@ Refresh Meta-Arcade Hall, Tracker Studio, Decal Workshop, and the Cartridge Play
 
 ## Current status
 
-Verification update (2026-09-06): nineteen scenes now have real 640x480 production-frame capture coverage, including every Tier 3 classic. TypeScript analysis, all 362 unit tests, the three bundle-gate fixtures, and all 69 Chromium regressions pass. Production output is **1,873,739 bytes**, leaving **76,261 bytes** below the ceiling. The preceding classic commit `e6271fa` passed complete GitHub validation, including Linux Firefox. WebKit's three local smoke tests and the native Cargo build also pass; the new commit still requires remote CI.
+Verification update (2026-09-07): twenty-eight scenes now have real 640x480 production-frame capture coverage, including every Tier 3 classic and the complete procedural-world batch. TypeScript analysis, all 362 unit tests, the three bundle-gate fixtures, and all 69 Chromium regressions pass. Production output is **1,874,883 bytes**, leaving **75,117 bytes** below the ceiling. The preceding classic commit `e563666` passed complete GitHub validation, including Linux Firefox. WebKit's three local smoke tests and the native Cargo build also pass; this world-foundation commit still requires remote CI.
 
-The captures are rendering and active-state smoke artifacts, not pixel-difference baselines or proof of completed art acceptance. Local Firefox remains blocked before application startup by a Windows side-by-side `mozglue` assembly error, so Linux Firefox in GitHub CI remains authoritative. Remaining work is the procedural-world batch, Tactics, hub/studio/runtime presentation, deeper actor/action and projectile/objective animation, low-quality/high-action performance benchmarks, catalog-wide accessibility review, and final art acceptance.
+The captures are rendering and active-state smoke artifacts, not pixel-difference baselines or proof of completed art acceptance. Local Firefox remains blocked before application startup by a Windows side-by-side `mozglue` assembly error, so Linux Firefox in GitHub CI remains authoritative. Remaining work is deeper Tier 4 world materials and ambient/action feedback, Tactics actor/action art, hub/studio/runtime presentation, deeper actor/action and projectile/objective animation, low-quality/high-action performance benchmarks, catalog-wide accessibility review, and final art acceptance.

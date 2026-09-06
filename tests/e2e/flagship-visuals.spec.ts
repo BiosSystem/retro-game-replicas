@@ -15,15 +15,25 @@ const flagships = [
   { index: 10, scene: 'CyberScene', name: 'cyber-chasm' },
   { index: 11, scene: 'RacerScene', name: 'cyber-racer' },
   { index: 12, scene: 'RaycasterScene', name: 'cyber-caster' },
+  { index: 16, scene: 'TacticsScene', name: 'neon-tactics' },
   { index: 17, scene: 'LabyrinthScene', name: 'neon-labyrinth' },
   { index: 18, scene: 'DanmakuScene', name: 'neon-danmaku' },
   { index: 19, scene: 'KombatScene', name: 'neon-kombat' },
+  { index: 20, scene: 'OdysseyScene', name: 'neon-odyssey' },
+  { index: 21, scene: 'ChronoScene', name: 'neon-chrono' },
+  { index: 22, scene: 'ParadoxScene', name: 'neon-paradox' },
+  { index: 23, scene: 'NexusScene', name: 'neon-nexus' },
+  { index: 24, scene: 'GenesisScene', name: 'neon-genesis' },
+  { index: 25, scene: 'OsScene', name: 'neon-os' },
+  { index: 26, scene: 'SingularityScene', name: 'the-singularity' },
+  { index: 27, scene: 'HorizonScene', name: 'event-horizon' },
   { index: 28, scene: 'EpochScene', name: 'neon-epoch' },
   { index: 29, scene: 'RelayScene', name: 'neon-relay' },
   { index: 30, scene: 'SpiralScene', name: 'prism-spiral' },
 ] as const;
 
 test('priority visual scenes lazy-load and render clean raw frames', async ({ page }, testInfo) => {
+  test.setTimeout(90_000);
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => {
