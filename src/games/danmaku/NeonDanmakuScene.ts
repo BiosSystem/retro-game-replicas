@@ -217,8 +217,10 @@ export default class NeonDanmakuScene extends Phaser.Scene {
     this.shots += count;
   }
   private collide() {
-    for (let i = 0; i < this.projectiles.capacity; i++) {
+    let remaining = this.projectiles.activeCount;
+    for (let i = 0; i < this.projectiles.capacity && remaining > 0; i++) {
       if (!this.projectiles.active[i]) continue;
+      remaining--;
       const distance = Math.hypot(
         this.projectiles.x[i] - this.playerX,
         this.projectiles.y[i] - this.playerY,
@@ -244,7 +246,7 @@ export default class NeonDanmakuScene extends Phaser.Scene {
         1800,
         Math.floor((delta > 20 ? 6000 : 16000) * density),
       ),
-      stride = Math.max(
+      activeStride = Math.max(
         1,
         Math.ceil(this.projectiles.activeCount / renderBudget),
       );
@@ -253,8 +255,12 @@ export default class NeonDanmakuScene extends Phaser.Scene {
     this.drawSpellCardTransition();
     this.gfx.lineStyle(1, 0x441177, 0.12);
     for (let y = 40; y < 480; y += 32) this.gfx.lineBetween(0, y, 640, y);
-    for (let i = 0; i < this.projectiles.capacity; i += stride)
+    let remaining = this.projectiles.activeCount;
+    let activeIndex = 0;
+    for (let i = 0; i < this.projectiles.capacity && remaining > 0; i++)
       if (this.projectiles.active[i]) {
+        remaining--;
+        if (activeIndex++ % activeStride !== 0) continue;
         const x = this.projectiles.x[i],
           y = this.projectiles.y[i],
           kind = this.projectiles.kind[i];

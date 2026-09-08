@@ -149,7 +149,7 @@ The production build keeps the Tracker Studio, visualizer, and cartridge player 
 
 ## Verification status
 
-The current v2.6 branch passes TypeScript analysis, 362 Vitest checks across 131 files, three bundle-gate fixtures, and all 72 local Chromium regressions. The production output is 1,891,135 bytes, leaving 58,865 bytes below the 1,950,000-byte ceiling. Linux Firefox remains authoritative for cross-browser validation because this workstation's local Firefox installation has a Windows side-by-side `mozglue` failure; WebKit smoke tests and locked Cargo tests previously pass. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the protected-branch result.
+The current v2.6 branch passes TypeScript analysis, 362 Vitest checks across 131 files, three bundle-gate fixtures, and all 72 local Chromium regressions. The production output is 1,891,281 bytes, leaving 58,719 bytes below the 1,950,000-byte ceiling. Linux Firefox remains authoritative for cross-browser validation because this workstation's local Firefox installation has a Windows side-by-side `mozglue` failure; WebKit smoke tests and locked Cargo tests previously pass. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the protected-branch result.
 
 ## Fun Zone container hosting
 
