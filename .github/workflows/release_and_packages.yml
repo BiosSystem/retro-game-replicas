@@ -48,8 +48,14 @@ jobs:
       - name: Run Unit and Integration Tests
         run: npm test
 
+      - name: Verify Bundle Gate Fixtures
+        run: node --test scripts/verify-performance-baseline.mjs
+
       - name: Build Production Bundle
         run: npm run build
+
+      - name: Enforce Production Bundle Budget
+        run: node scripts/performance-baseline.mjs
 
       - name: Run Chromium Regression Tests
         run: npm run test:regression

@@ -4,6 +4,7 @@ import { playModAudioEvent } from '../audio/patches/ModAudioBridge';
 import { readVisualMode } from '../graphics/VisualMode';
 import { SpriteGPULayer } from '../graphics/SpriteGPULayer';
 import { requestVisualHitStop } from '../graphics/VisualFrameFreeze';
+import { reducedMotionEnabled, visualDensity } from '../graphics/ArcadeVisualTheme';
 
 interface ScenePool { particles: PooledParticleSystem; graphics: Phaser.GameObjects.Graphics; gpu: SpriteGPULayer; }
 
@@ -35,6 +36,8 @@ export class VFXManager {
     }
 
     static screenShake(scene: Phaser.Scene, intensity = 0.015, duration = 150) {
+        const mediaMatches = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reducedMotionEnabled(typeof localStorage === 'undefined' ? undefined : localStorage, mediaMatches)) return;
         scene.cameras.main.shake(duration, intensity);
         if (this.isOverdrive()) {
             const visualDuration = intensity >= 0.02 ? 50 : intensity >= 0.012 ? 40 : 30;
@@ -68,8 +71,7 @@ export class VFXManager {
     }
 
     private static scaleCount(count: number) {
-        const quality = document.documentElement.dataset.quality;
-        const scale = quality === 'low' ? 0.35 : quality === 'medium' ? 0.65 : 1;
+        const scale = visualDensity(document.documentElement.dataset.quality);
         return Math.max(1, Math.round(count * scale));
     }
 
@@ -78,6 +80,8 @@ export class VFXManager {
     }
 
     private static applyDirectionalTrauma(scene: Phaser.Scene, x: number, y: number, magnitude: number) {
+        const mediaMatches = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reducedMotionEnabled(typeof localStorage === 'undefined' ? undefined : localStorage, mediaMatches)) return;
         if (!this.isOverdrive()) return;
         const camera = scene.cameras.main;
         const horizontal = x < camera.midPoint.x ? 1 : -1;
