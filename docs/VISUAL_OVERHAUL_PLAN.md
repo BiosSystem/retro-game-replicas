@@ -27,7 +27,7 @@ This plan preserves original gameplay, fixed-step rules, accessibility, offline 
 
 ## Bundle recovery gate
 
-The pre-overhaul production baseline was 1,948,775 bytes. Switching to the Arcade Physics-only Phaser distribution recovered 106,214 bytes before subsequent art changes. The latest production output is 1,889,260 bytes, leaving 60,740 bytes below the 1,950,000-byte ceiling. The preferred 250 KB recovery target is still not met.
+The pre-overhaul production baseline was 1,948,775 bytes. Switching to the Arcade Physics-only Phaser distribution recovered 106,214 bytes before subsequent art changes. The latest production output is 1,890,305 bytes, leaving 59,695 bytes below the 1,950,000-byte ceiling. The preferred 250 KB recovery target is still not met.
 
 The 250 KB recovery target remains the preferred headroom for the catalog-wide sprite rollout; it is not yet met. Until then, every visual PR must remain beneath the 1.95 MB ceiling and report:
 
@@ -87,7 +87,7 @@ Tier 1 establishes the visual benchmark. It is complete only when each game has 
 
 | Game | Required art treatment |
 |---|---|
-| Neon Breaker | Brick/paddle/ball materials and framed arena implemented; animated power-up pass remains. |
+| Neon Breaker | Brick/paddle/ball materials, framed arena, silhouette-specific power-up icons, motion-safe drop animation, and pickup feedback implemented; final high-action acceptance remains. |
 | Cyber-Racer | Layered skyline/road, designed roadside silhouettes, readable player/ghost vehicles, exhaust, boost feedback, and reduced-motion-safe collisions implemented. |
 | Neon Cyber-Caster | Textured dungeon modules, occluded enemy/pickup silhouettes, distance fog, weapon recoil, muzzle flash, impact states, and incoming-damage framing implemented; final encounter-state acceptance remains. |
 | Neon Danmaku | Layered arena, articulated boss armor, silhouette-specific bullet families, adaptive draw density, and reduced-motion-safe hit response implemented; final spell-card transition pass remains. |
@@ -162,6 +162,6 @@ The first Tier 5 presentation pass is implemented. Meta-Arcade has a layered hal
 
 ## Current status
 
-Verification update (2026-09-08): twenty-eight gameplay scenes have real 640x480 production-frame capture coverage, including every Tier 3 classic and the complete procedural-world batch; Tier 5 presentation surfaces are covered by dedicated functional render tests. TypeScript analysis, all 362 unit tests, the three bundle-gate fixtures, and all 70 Chromium regressions pass. The acceptance suite now stresses Danmaku with 512 live projectiles and The Singularity's heavy renderer under LOW quality and reduced motion, enforcing bounded p95 frame cadence plus dark/bright luminance separation. Production output is **1,889,260 bytes**, leaving **60,740 bytes** below the ceiling. Commit `64c752d` passed complete GitHub validation, including Linux Firefox; the newest action-feedback commits require remote CI. WebKit's three local smoke tests and the native Cargo build previously pass.
+Verification update (2026-09-08): twenty-eight gameplay scenes have real 640x480 production-frame capture coverage, including every Tier 3 classic and the complete procedural-world batch; Tier 5 presentation surfaces are covered by dedicated functional render tests. TypeScript analysis, all 362 unit tests, the three bundle-gate fixtures, and all 71 Chromium regressions pass. The acceptance suite now stresses Danmaku with 512 live projectiles and The Singularity's heavy renderer under LOW quality and reduced motion, enforces bounded p95 frame cadence plus dark/bright luminance separation, and verifies silhouette-specific Breaker power-ups freeze their transforms in reduced-motion mode. Production output is **1,890,305 bytes**, leaving **59,695 bytes** below the ceiling. Commit `64c752d` passed complete GitHub validation, including Linux Firefox; the newest action-feedback commits require remote CI. WebKit's three local smoke tests and the native Cargo build previously pass.
 
 The captures are rendering and active-state smoke artifacts, not pixel-difference baselines or proof of completed art acceptance. Local Firefox remains blocked before application startup by a Windows side-by-side `mozglue` assembly error, so Linux Firefox in GitHub CI remains authoritative. Remaining work is catalog-wide action, hit, destruction, projectile, and objective animation; extending performance and accessibility acceptance beyond the representative heavy scenes; README gallery curation for the strongest final gameplay frames; and final art acceptance.
