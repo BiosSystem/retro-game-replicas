@@ -133,7 +133,8 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     for (const offset of offsets) {
       const bullet = this.bullets.create(ship.x, ship.y, this.weapon === 'LASER' ? 'vector-laser' : 'vector-shot') as Phaser.Physics.Arcade.Image;
       this.physics.velocityFromRotation(ship.rotation - Math.PI / 2 + offset, this.weapon === 'LASER' ? 720 : 480, (bullet.body as Phaser.Physics.Arcade.Body).velocity);
-      bullet.setData('damage', this.weapon === 'LASER' ? 2 : 1).setData('player', player);
+      bullet.setRotation(ship.rotation + offset).setData('damage', this.weapon === 'LASER' ? 2 : 1).setData('player', player);
+      if (this.weapon === 'LASER') bullet.setSize(5, 20); else bullet.setCircle(3, 2, 7);
       this.time.delayedCall(900, () => bullet.destroy());
     }
     AudioEngine.playEffect('LASER');
@@ -182,6 +183,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     hazard.destroy();
     const damaged = shipObject as Phaser.Physics.Arcade.Image;
     if (this.shield) { this.shield = false; this.ship.clearTint(); this.ship2?.clearTint(); this.triggerShieldRipple(damaged.x, damaged.y, 0x00ffff); VFXManager.playExplosion(this, damaged.x, damaged.y, 0x00ffff); this.cabinetLights.pulse(damaged.x, damaged.y, 0x00ffff, 1.1); return; }
+    VFXManager.playHit(this, damaged.x, damaged.y, 0xff5577); VFXManager.screenShake(this, .012, 120); this.cabinetLights.pulse(damaged.x, damaged.y, 0xff3355, 1.15);
     const player = Number(damaged.getData('player')) === 2 ? 2 : 1;
     if (this.session.loseLife(player) > 0) { damaged.setPosition(player === 1 ? 300 : 340, 260).setVelocity(0).setTint(player === 2 ? 0xffff00 : 0xffffff); return; }
     damaged.disableBody(true, true);
@@ -215,10 +217,10 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     const create = (key: string, draw: (graphics: Phaser.GameObjects.Graphics) => void, width: number, height: number) => { if (this.textures.exists(key)) return; const graphics = this.add.graphics(); draw(graphics); graphics.generateTexture(key, width, height); graphics.destroy(); };
     create('vector-ship', g => { g.fillStyle(0x133d63).fillTriangle(16, 0, 3, 30, 16, 23).fillTriangle(16, 0, 29, 30, 16, 23); g.fillStyle(0xdfffff).fillTriangle(16, 4, 11, 25, 16, 21).fillTriangle(16, 4, 21, 25, 16, 21); g.fillStyle(0x051624).fillTriangle(16, 7, 13, 18, 16, 16).fillTriangle(16, 7, 19, 18, 16, 16); g.lineStyle(1, 0x00ffff).strokeTriangle(16, 0, 3, 30, 16, 23).strokeTriangle(16, 0, 29, 30, 16, 23); }, 32, 32);
     create('vector-asteroid', g => { const points = [new Phaser.Math.Vector2(20, 1), new Phaser.Math.Vector2(37, 10), new Phaser.Math.Vector2(34, 29), new Phaser.Math.Vector2(19, 39), new Phaser.Math.Vector2(3, 31), new Phaser.Math.Vector2(1, 12)]; g.fillStyle(0x3b1d51).fillPoints(points, true); g.fillStyle(0x712766).fillTriangle(20, 4, 33, 12, 20, 20).fillTriangle(7, 28, 20, 20, 28, 34); g.lineStyle(2, 0xff2ec4).strokePoints(points, true); }, 40, 40);
-    create('vector-shot', g => g.fillStyle(0x00ffff).fillCircle(3, 3, 3), 6, 6);
-    create('vector-laser', g => g.fillStyle(0xffffff).fillRect(0, 0, 3, 18), 3, 18);
-    create('vector-hostile', g => g.fillStyle(0xff2255).fillCircle(4, 4, 4), 8, 8);
-    create('vector-mineral', g => g.lineStyle(2, 0xffff00).strokeTriangle(6, 0, 12, 12, 0, 12), 12, 12);
+    create('vector-shot', g => { g.fillStyle(0x00ffff, .12).fillEllipse(5, 10, 10, 20); g.fillStyle(0x7fffff, .42).fillTriangle(5, 19, 2, 6, 8, 6); g.fillStyle(0xffffff).fillRoundedRect(3, 1, 4, 12, 2); }, 10, 20);
+    create('vector-laser', g => { g.fillStyle(0xff2ec4, .12).fillEllipse(4, 15, 8, 30); g.fillStyle(0xff70df, .45).fillRect(2, 4, 4, 24); g.fillStyle(0xffffff).fillRect(3, 0, 2, 24); }, 8, 30);
+    create('vector-hostile', g => { g.fillStyle(0xff2255, .16).fillCircle(7, 7, 7); g.lineStyle(2, 0xff5577, .9).strokeCircle(7, 7, 4).lineBetween(1, 7, 13, 7).lineBetween(7, 1, 7, 13); g.fillStyle(0xffffff).fillCircle(7, 7, 2); }, 14, 14);
+    create('vector-mineral', g => { g.fillStyle(0xffff00, .14).fillCircle(8, 8, 8); g.fillStyle(0x6e5b13).fillTriangle(8, 0, 16, 8, 8, 16).fillTriangle(8, 0, 0, 8, 8, 16); g.lineStyle(2, 0xffff70).strokeTriangle(8, 0, 16, 8, 8, 16).strokeTriangle(8, 0, 0, 8, 8, 16); g.fillStyle(0xffffff, .8).fillCircle(8, 7, 2); }, 16, 16);
     create('vector-ufo', g => { g.fillStyle(0x4d3c12).fillEllipse(20, 13, 38, 12); g.fillStyle(0xe9d75c).fillTriangle(10, 10, 20, 1, 30, 10); g.fillStyle(0x5df5ff).fillCircle(20, 8, 4); g.lineStyle(2, 0xffff00).strokeEllipse(20, 13, 38, 12).strokeTriangle(10, 10, 20, 1, 30, 10); }, 40, 24);
   }
 
