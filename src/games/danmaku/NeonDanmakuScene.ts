@@ -24,6 +24,7 @@ export default class NeonDanmakuScene extends Phaser.Scene {
   private readonly telemetry = new FrameTelemetry(120);
   private gfx!: Phaser.GameObjects.Graphics;
   private hud!: ArcadeHud;
+  private spellCardText!: Phaser.GameObjects.Text;
   private playerX = 320;
   private playerY = 430;
   private bossX = 320;
@@ -44,6 +45,7 @@ export default class NeonDanmakuScene extends Phaser.Scene {
   private shots = 0;
   private hits = 0;
   private damage = 0;
+  private spellCardUntil = 0;
   constructor() {
     super("DanmakuScene");
   }
@@ -80,8 +82,20 @@ export default class NeonDanmakuScene extends Phaser.Scene {
     this.elapsed = 0;
     this.nextWave = 0;
     this.phase = 0;
+    this.spellCardUntil = 0;
     this.gfx = this.add.graphics();
     this.hud = new ArcadeHud(this, 8, 8, 624, 0xff2ec4);
+    this.spellCardText = this.add
+      .text(320, 190, "", {
+        fontFamily: "Courier",
+        fontSize: "18px",
+        color: "#fff4ff",
+        fontStyle: "bold",
+        align: "center",
+      })
+      .setOrigin(0.5)
+      .setDepth(4)
+      .setVisible(false);
     this.input.keyboard?.on("keydown-ESC", () =>
       this.scene.start("LobbyScene"),
     );
@@ -126,6 +140,14 @@ export default class NeonDanmakuScene extends Phaser.Scene {
     if (this.elapsed > this.stage * 12) {
       this.stage++;
       this.phase = scriptedBossPhase(this.stage);
+      const pattern = [
+        "SPIRAL BLOOM",
+        "POLYGON SEAL",
+        "HOMING VEIL",
+        "MIXED ECLIPSE",
+      ][this.phase];
+      this.spellCardUntil = this.time.now + 1500;
+      this.spellCardText.setText(`SPELL CARD ${this.stage}\n${pattern}`);
       AudioEngine.playEffect("STAGE_CLEAR");
     }
     this.draw(delta);
@@ -228,6 +250,7 @@ export default class NeonDanmakuScene extends Phaser.Scene {
       );
     this.gfx.clear().fillStyle(0x03020c).fillRect(0, 0, 640, 480);
     this.drawArena();
+    this.drawSpellCardTransition();
     this.gfx.lineStyle(1, 0x441177, 0.12);
     for (let y = 40; y < 480; y += 32) this.gfx.lineBetween(0, y, 640, y);
     for (let i = 0; i < this.projectiles.capacity; i += stride)
@@ -275,6 +298,23 @@ export default class NeonDanmakuScene extends Phaser.Scene {
       combo: Math.max(1, Math.round(this.decision.pressure * 8)),
       status: `${this.decision.pattern}  ${this.projectiles.activeCount} SHOTS  ${frame.fps.toFixed(0)} FPS`,
     });
+  }
+  private drawSpellCardTransition() {
+    const remaining = this.spellCardUntil - this.time.now;
+    if (remaining <= 0) {
+      this.spellCardText.setVisible(false);
+      return;
+    }
+    const alpha = Math.min(1, remaining / 240, (1500 - remaining) / 180);
+    this.gfx
+      .fillStyle(0x2d073d, alpha * 0.42)
+      .fillRect(48, 116, 544, 148)
+      .lineStyle(2, 0xff2ec4, alpha * 0.8)
+      .strokeRect(62, 130, 516, 120)
+      .lineStyle(1, 0x00ffcc, alpha * 0.55)
+      .lineBetween(92, 144, 548, 144)
+      .lineBetween(92, 236, 548, 236);
+    this.spellCardText.setVisible(true).setAlpha(alpha);
   }
   private drawBoss() {
     const center = { x: this.bossX, y: this.bossY };

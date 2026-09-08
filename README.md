@@ -10,7 +10,7 @@
 
 ## Real gameplay gallery — visual overhaul in progress
 
-These are unedited 640x480 frames exported from the production build after keyboard input, with the cabinet CRT presentation excluded. They show the current implementation, not concept art or a promise of final quality. The gallery was refreshed from the passing 71-test Chromium run on 2026-09-08. The v2.6 overhaul is still in progress: the first twenty-eight scene passes do not yet meet every animation, accessibility, and art-direction acceptance criterion in the [visual production plan](docs/VISUAL_OVERHAUL_PLAN.md).
+These are unedited 640x480 frames exported from the production build after keyboard input, with the cabinet CRT presentation excluded. They show the current implementation, not concept art or a promise of final quality. The gallery was refreshed from the passing 72-test Chromium run on 2026-09-08. The v2.6 overhaul is still in progress: the first twenty-eight scene passes do not yet meet every animation, accessibility, and art-direction acceptance criterion in the [visual production plan](docs/VISUAL_OVERHAUL_PLAN.md).
 
 <p align="center">
   <img src="docs/images/screenshots/v26-neon-vector.png" alt="Neon Vector actual gameplay with faceted asteroids and a cyan ship" width="640">
@@ -149,7 +149,7 @@ The production build keeps the Tracker Studio, visualizer, and cartridge player 
 
 ## Verification status
 
-The current v2.6 branch passes TypeScript analysis, 362 Vitest checks across 131 files, three bundle-gate fixtures, and all 71 local Chromium regressions. The production output is 1,890,305 bytes, leaving 59,695 bytes below the 1,950,000-byte ceiling. Linux Firefox remains authoritative for cross-browser validation because this workstation's local Firefox installation has a Windows side-by-side `mozglue` failure; WebKit smoke tests and locked Cargo tests previously pass. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the protected-branch result.
+The current v2.6 branch passes TypeScript analysis, 362 Vitest checks across 131 files, three bundle-gate fixtures, and all 72 local Chromium regressions. The production output is 1,891,135 bytes, leaving 58,865 bytes below the 1,950,000-byte ceiling. Linux Firefox remains authoritative for cross-browser validation because this workstation's local Firefox installation has a Windows side-by-side `mozglue` failure; WebKit smoke tests and locked Cargo tests previously pass. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the protected-branch result.
 
 ## Fun Zone container hosting
 
