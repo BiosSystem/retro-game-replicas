@@ -10,7 +10,7 @@
 
 ## Real gameplay gallery — visual overhaul in progress
 
-These are unedited 640x480 frames exported from the running games after keyboard input, with the cabinet CRT presentation excluded. They show the current implementation, not concept art or a promise of final quality. The v2.6 overhaul is still in progress: the first twenty-eight scene passes do not yet meet every animation, accessibility, and art-direction acceptance criterion in the [visual production plan](docs/VISUAL_OVERHAUL_PLAN.md).
+These are unedited 640x480 frames exported from the production build after keyboard input, with the cabinet CRT presentation excluded. They show the current implementation, not concept art or a promise of final quality. The gallery was refreshed from the passing 71-test Chromium run on 2026-09-08. The v2.6 overhaul is still in progress: the first twenty-eight scene passes do not yet meet every animation, accessibility, and art-direction acceptance criterion in the [visual production plan](docs/VISUAL_OVERHAUL_PLAN.md).
 
 <p align="center">
   <img src="docs/images/screenshots/v26-neon-vector.png" alt="Neon Vector actual gameplay with faceted asteroids and a cyan ship" width="640">
@@ -20,6 +20,10 @@ These are unedited 640x480 frames exported from the running games after keyboard
 | Neon Danmaku | Neon Kombat |
 |---|---|
 | ![Actual Neon Danmaku boss and bullet pattern](docs/images/screenshots/v26-neon-danmaku.png) | ![Actual Neon Kombat fighters on the rooftop arena](docs/images/screenshots/v26-neon-kombat.png) |
+
+| Neon Breaker | Neon Cyber-Caster |
+|---|---|
+| ![Actual Neon Breaker brick field, paddle, and live ball](docs/images/screenshots/v26-neon-breaker.png) | ![Actual Neon Cyber-Caster raycast dungeon and weapon view](docs/images/screenshots/v26-cyber-caster.png) |
 
 | Neon Relay | Neon Epoch |
 |---|---|
@@ -45,7 +49,7 @@ Capture provenance: `tests/e2e/flagship-visuals.spec.ts`, Chromium, reduced moti
 
 ## Current milestone
 
-Milestone 1 of v2.5 adds a deterministic 32-bit stack bytecode VM, a 100,000-instruction frame quota, the validated .neongame binary format, an explicit host bridge, and the lazy-loaded Homebrew Cartridge Player. The bundled *Neon Invader* cartridge demonstrates sanitized vector drawing, generated synth audio, input, bounded heap state, and runtime recovery without exposing the DOM or Phaser scene internals.
+The v2.6 visual-foundation milestone upgrades all twenty-eight gameplay scenes plus the four hub, studio, and runtime experiences while preserving their deterministic rules and compact delivery. Recent action passes add distinct projectile and pickup silhouettes, motion-safe high-load rendering, richer objective and damage states, and production-frame regression coverage. The v2.5 sandboxed 32-bit bytecode VM, validated `.neongame` format, and lazy-loaded Homebrew Cartridge Player remain intact.
 
 ## Quick start
 
@@ -145,7 +149,7 @@ The production build keeps the Tracker Studio, visualizer, and cartridge player 
 
 ## Verification status
 
-The v2.5 Milestone 1 master build passes TypeScript analysis, 360 Vitest checks across 130 files, the Cartridge Player Playwright regression, locked Cargo tests, and a 1,943,323-byte production baseline. Pull request validation also passed the complete Chromium regression suite, Firefox and WebKit smoke tests, hardened container checks, and Tauri source validation before merge. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the protected-branch result.
+The current v2.6 branch passes TypeScript analysis, 362 Vitest checks across 131 files, three bundle-gate fixtures, and all 71 local Chromium regressions. The production output is 1,890,305 bytes, leaving 59,695 bytes below the 1,950,000-byte ceiling. Linux Firefox remains authoritative for cross-browser validation because this workstation's local Firefox installation has a Windows side-by-side `mozglue` failure; WebKit smoke tests and locked Cargo tests previously pass. Follow the live [GitHub Actions workflow](https://github.com/BiosSystem/retro-game-replicas/actions/workflows/release_and_packages.yml) for the protected-branch result.
 
 ## Fun Zone container hosting
 
