@@ -10,7 +10,7 @@ import relayRooftop from '../../assets/relay/neon-relay-rooftop-v3.jpg';
 import { addLayeredBackdrop } from '../../graphics/LayeredBackdrop';
 import { ARCADE_PALETTES } from '../../graphics/ArcadeVisualTheme';
 
-interface RelayShot { sprite: Phaser.GameObjects.Rectangle; owner: PlayerId; }
+interface RelayShot { sprite: Phaser.GameObjects.Image; owner: PlayerId; }
 interface RelayDrone { sprite: Phaser.GameObjects.Image; hp: number; }
 
 export default class NeonRelayScene extends Phaser.Scene {
@@ -20,6 +20,7 @@ export default class NeonRelayScene extends Phaser.Scene {
   private drones: RelayDrone[] = [];
   private session = new CoopSession('SOLO');
   private hud!: ArcadeHud;
+  private relayCore!: Phaser.GameObjects.Image;
   private stage = 1;
   private score = 0;
   private integrity = 6;
@@ -51,6 +52,7 @@ export default class NeonRelayScene extends Phaser.Scene {
     this.hud = new ArcadeHud(this, 8, 38, 624, 0x00dfff);
     for (const x of this.lanes) this.add.line(x, 96, 0, 0, 0, 315, 0x00dfff, 0.18);
     this.add.rectangle(320, 442, 564, 22, 0x06273d, 0.82).setStrokeStyle(2, 0x00dfff, 0.7);
+    this.relayCore = this.add.image(320, 432, 'relay-core').setDepth(4);
     this.createShip(1, 320, 407, 0x00ffff);
     if (this.mode !== 'SOLO') this.createShip(2, 424, 407, 0xffff44);
     this.input.keyboard?.on('keydown-ESC', () => this.openPause());
@@ -62,6 +64,7 @@ export default class NeonRelayScene extends Phaser.Scene {
     if (this.ended) return;
     const dt = Math.min(delta, 50) / 1000;
     this.moveShip(1, dt); if (this.ships.has(2)) this.moveShip(2, dt);
+    this.relayCore.setRotation(this.time.now * .0007).setScale(.92 + Math.sin(this.time.now * .004) * .05).setAlpha(.5 + this.integrity / 12);
     this.spawnDrones(); this.stepShots(dt); this.stepDrones(dt);
     if (this.spawned >= this.wave.count && this.drones.length === 0) {
       this.stage += 1; this.createStage(); AudioEngine.playEffect('STAGE_CLEAR'); VFXManager.floatingText(this, 320, 245, `RELAY TIER ${this.stage}`, '#00ffff');
@@ -93,7 +96,7 @@ export default class NeonRelayScene extends Phaser.Scene {
   }
 
   private fire(ship: Phaser.GameObjects.Image, owner: PlayerId) {
-    const shot = this.add.rectangle(ship.x, ship.y - 20, 4, 16, owner === 1 ? 0x00ffff : 0xffff44);
+    const shot = this.add.image(ship.x, ship.y - 20, 'relay-shot').setTint(owner === 1 ? 0x00ffff : 0xffff44).setDepth(8);
     this.shots.push({ sprite: shot, owner }); this.fireReady[owner] = this.time.now + 150; AudioEngine.playEffect('LASER');
   }
 
@@ -149,6 +152,17 @@ export default class NeonRelayScene extends Phaser.Scene {
       graphics.fillStyle(0x25224a).fillCircle(14, 13, 10); graphics.fillStyle(0xffffff, 0.8).fillCircle(14, 13, 6);
       graphics.fillStyle(0x171126).fillRect(3, 11, 22, 5); graphics.fillStyle(0xffffff).fillCircle(14, 13, 2);
       graphics.lineStyle(1, 0xffffff, 0.8).strokeCircle(14, 13, 10).lineBetween(3, 13, 25, 13);
+    });
+    create('relay-shot', 10, 28, graphics => {
+      graphics.fillStyle(0xffffff, .12).fillEllipse(5, 15, 10, 27);
+      graphics.fillStyle(0xffffff, .32).fillTriangle(5, 27, 2, 8, 8, 8);
+      graphics.fillStyle(0xffffff).fillRoundedRect(3, 1, 4, 17, 2);
+    });
+    create('relay-core', 62, 42, graphics => {
+      graphics.fillStyle(0x00dfff, .1).fillCircle(31, 21, 20);
+      graphics.lineStyle(2, 0x00dfff, .8).strokeEllipse(31, 21, 58, 24).strokeEllipse(31, 21, 32, 38);
+      graphics.fillStyle(0x071424, .95).fillCircle(31, 21, 11).lineStyle(2, 0xffffff, .85).strokeCircle(31, 21, 11);
+      graphics.fillStyle(0xffffff, .92).fillCircle(31, 21, 4);
     });
   }
 

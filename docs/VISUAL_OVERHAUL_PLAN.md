@@ -77,7 +77,7 @@ Each module must use pooling or bounded collections. No new effect may allocate 
 
 | Game | Visual direction | Delivery status |
 |---|---|---|
-| Neon Relay | Rainy cyberpunk rooftop defense, animated city depth, turret/ship sprites, drones, weather, projectile trails, impact lighting. | Original rooftop, player and drone silhouettes, and bounded engine/impact VFX implemented; projectile and objective art pass remains. |
+| Neon Relay | Rainy cyberpunk rooftop defense, animated city depth, turret/ship sprites, drones, weather, projectile trails, impact lighting. | Original rooftop, player and drone silhouettes, bounded engine/impact VFX, modeled projectile trails, and an animated integrity-aware relay objective implemented. Final action-state acceptance remains. |
 | Neon Vector | Premium vector combat with bold ships, meteor materials, dense combat readability, layered star fields, and responsive weapon effects. | Original deep-space environment and HUD spacing implemented; actor/material pass remains. |
 | Neon Epoch | A procedural neon ecosystem with authored terrain motifs, water, foliage, weather, creatures, and readable world-state feedback. | Original wetland, restrained bioluminescent simulation, traversal corridor, animated fauna, weather, and fluid-state rendering implemented. |
 
@@ -123,7 +123,7 @@ The first Tier 5 presentation pass is implemented. Meta-Arcade has a layered hal
 ### V1 — Neon Relay completion
 
 - Keep the newly implemented original rooftop background.
-- Add player, drone, projectile, and objective sprite states.
+- Player, drone, projectile, and integrity-aware objective sprite states are implemented.
 - Add rain, puddle reflections, hologram flicker, trail, and impact passes.
 - Capture a gameplay screenshot after action begins; remove all zero-action marketing captures.
 
