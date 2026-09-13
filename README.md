@@ -10,7 +10,7 @@
 
 ## Real gameplay gallery — visual overhaul in progress
 
-These are unedited 640x480 frames exported from the production build after keyboard input, with the cabinet CRT presentation excluded. They show the current implementation, not concept art or a promise of final quality. The gallery was refreshed from the passing 72-test Chromium run on 2026-09-08. The v2.6 overhaul is still in progress: the first twenty-eight scene passes do not yet meet every animation, accessibility, and art-direction acceptance criterion in the [visual production plan](docs/VISUAL_OVERHAUL_PLAN.md).
+These are unedited 640x480 frames exported from the production build after keyboard input, with the cabinet CRT presentation excluded. They show the current implementation, not concept art or a promise of final quality. The gallery was refreshed through the passing production-frame capture run on 2026-09-13; Cyber-Caster and Neon Kombat now show verified live impact states rather than idle encounter setup. The v2.6 overhaul is still in progress: the first twenty-eight scene passes do not yet meet every animation, accessibility, and art-direction acceptance criterion in the [visual production plan](docs/VISUAL_OVERHAUL_PLAN.md).
 
 <p align="center">
   <img src="docs/images/screenshots/v26-neon-vector.png" alt="Neon Vector actual gameplay with faceted asteroids and a cyan ship" width="640">
@@ -19,11 +19,11 @@ These are unedited 640x480 frames exported from the production build after keybo
 
 | Neon Danmaku | Neon Kombat |
 |---|---|
-| ![Actual Neon Danmaku boss and bullet pattern](docs/images/screenshots/v26-neon-danmaku.png) | ![Actual Neon Kombat fighters on the rooftop arena](docs/images/screenshots/v26-neon-kombat.png) |
+| ![Actual Neon Danmaku boss and bullet pattern](docs/images/screenshots/v26-neon-danmaku.png) | ![Actual Neon Kombat live hit and combo state on the rooftop arena](docs/images/screenshots/v26-neon-kombat.png) |
 
 | Neon Breaker | Neon Cyber-Caster |
 |---|---|
-| ![Actual Neon Breaker brick field, paddle, and live ball](docs/images/screenshots/v26-neon-breaker.png) | ![Actual Neon Cyber-Caster raycast dungeon and weapon view](docs/images/screenshots/v26-cyber-caster.png) |
+| ![Actual Neon Breaker brick field, paddle, and live ball](docs/images/screenshots/v26-neon-breaker.png) | ![Actual Neon Cyber-Caster muzzle flash and enemy impact in the raycast dungeon](docs/images/screenshots/v26-cyber-caster.png) |
 
 | Neon Relay | Neon Epoch |
 |---|---|
@@ -45,7 +45,7 @@ These are unedited 640x480 frames exported from the production build after keybo
 |---|---|
 | ![Actual Pixel Runner night-sector gameplay](docs/images/screenshots/v26-pixel-runner.png) | ![Actual Cyber Chasm data-vault maze](docs/images/screenshots/v26-cyber-chasm.png) |
 
-Capture provenance: `tests/e2e/flagship-visuals.spec.ts`, Chromium, reduced motion enabled, production build. Background plates are original generated artwork; gameplay actors and effects are rendered by the game. Documentation screenshots are not included in the production bundle.
+Capture provenance: `tests/e2e/flagship-visuals.spec.ts`, Chromium, reduced motion enabled, production build. The Cyber-Caster fixture verifies weapon recoil, muzzle flash, enemy damage, score, and hit timing; the Kombat fixture drives the real P1 input path until a verified hit, combo, and hit-stun state. Background plates are original generated artwork; gameplay actors and effects are rendered by the game. Documentation screenshots are not included in the production bundle.
 
 ## Current milestone
 
