@@ -13,7 +13,7 @@ Support only the latest tagged release. Apply security fixes to the active relea
 
 ## Report a vulnerability
 
-Do not open a public issue for an undisclosed vulnerability. Send the report to `security@bios-system.net` with affected versions, reproduction steps, impact, and any proposed mitigation.
+Do not open a public issue for an undisclosed vulnerability. Submit the report securely through [GitHub Private Vulnerability Reporting](https://github.com/BiosSystem/retro-game-replicas/security/advisories/new) with affected versions, reproduction steps, impact, and any proposed mitigation.
 
 Target acknowledgement within 24 hours and a remediation plan within three business days. Coordinate disclosure after a verified fix becomes available.
 

@@ -114,7 +114,7 @@ Return the exact claims accepted during each signature-verification merge. Persi
 
 Project persistent device boards and the verified connected-peer view through one source-aware leaderboard center. Keep each device board capped at ten entries per game and difficulty, retain up to fifty projected rows in the visible view, sort by score then timestamp then player, and label every row as device or peer verified. Refresh after every local submission and peer merge. Open the center from the cabinet, with L, or close it with Escape.
 
-Do not send scores to bios-system.net yet. Keep central synchronization pending until the service publishes an HTTPS endpoint, authentication method, request schema, response schema, rate limits, replay-verification policy, and privacy or retention rules. Do not infer these contracts in the client.
+Do not send scores to the central service yet. Keep central synchronization pending until the service publishes an HTTPS endpoint, authentication method, request schema, response schema, rate limits, replay-verification policy, and privacy or retention rules. Do not infer these contracts in the client.
 
 Current verification for the unified leaderboard milestone:
 
