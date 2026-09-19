@@ -14,6 +14,7 @@ export default class FroggerScene extends Phaser.Scene {
   private onLog: any = null;
   private speedMult = 1.0;
   private difficulty = 'NORMAL';
+  private materials!: Phaser.GameObjects.Graphics;
 
   constructor() {
     super('FroggerScene');
@@ -41,16 +42,24 @@ export default class FroggerScene extends Phaser.Scene {
     this.add.rectangle(320, 48, 640, 32, 0x114411); // Goal
     this.add.rectangle(320, 264, 640, 32, 0x332211); // Median
     this.add.rectangle(320, 448, 640, 32, 0x332211); // Start
+    const scenery = this.add.graphics();
+    scenery.lineStyle(1, 0x71b9bf, .22);
+    for (let y = 78; y < 245; y += 16) for (let x = (y * 7) % 41; x < 640; x += 57) scenery.lineBetween(x, y, x + 19, y);
+    for (let y = 288; y < 432; y += 32) for (let x = 0; x < 640; x += 48) scenery.fillStyle(0xa8b4b2, .25).fillRect(x, y, 22, 2);
+    for (const y of [40, 444]) for (let x = 8; x < 640; x += 24) {
+      scenery.fillStyle(0x496346).fillTriangle(x, y + 10, x + 3, y, x + 6, y + 10);
+      scenery.fillStyle(0x80975f).fillRect(x + 2, y + 6, 2, 5);
+    }
 
     // UI
     this.add.text(320, 16, 'FROGGIE CROSSER', { fontFamily: 'Courier', fontSize: '20px', color: '#00ffcc', fontStyle: 'bold' }).setOrigin(0.5);
-    this.scoreText = this.add.text(20, 16, 'SCORE: 0', { fontFamily: 'Courier', fontSize: '18px', color: '#ffffff' });
+    this.scoreText = this.add.text(12, 12, 'SCORE: 0', { fontFamily: 'Courier', fontSize: '13px', color: '#ffffff' });
     this.add.text(20, 460, 'ARROWS: MOVE | ESC: LOBBY', { fontFamily: 'Courier', fontSize: '14px', color: '#aaaaaa' });
 
     const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
-    this.add.text(630, 16, `DIFF: ${this.difficulty}`, {
+    this.add.text(628, 12, this.difficulty, {
       fontFamily: 'Courier',
-      fontSize: '16px',
+      fontSize: '13px',
       color: diffColors[this.difficulty] || '#00ff00',
       fontStyle: 'bold'
     }).setOrigin(1, 0);
@@ -64,6 +73,8 @@ export default class FroggerScene extends Phaser.Scene {
 
     // Player
     this.player = this.add.rectangle(320, 448, 24, 24, 0x00ff00);
+    this.player.setFillStyle(0x00ff00, 0);
+    this.materials = this.add.graphics().setDepth(2);
     this.physics.add.existing(this.player);
     (this.player.body as Phaser.Physics.Arcade.Body).setCollideWorldBounds(true);
 
@@ -163,6 +174,8 @@ export default class FroggerScene extends Phaser.Scene {
           if (this.player.x < 0 || this.player.x > 640) this.endGame('OUT OF BOUNDS');
       }
 
+      this.drawMaterials();
+
       // Check active collisions
       if (!this.isMoving) {
           this.physics.overlap(this.player, this.cars, () => this.endGame('SPLAT!'));
@@ -176,6 +189,33 @@ export default class FroggerScene extends Phaser.Scene {
               });
               if (!on) this.endGame('SPLASH!');
           }
+      }
+  }
+
+  private drawMaterials() {
+      const g = this.materials.clear();
+      for (const object of this.cars.getChildren()) {
+          const car = object as Phaser.GameObjects.Rectangle;
+          const facing = (car.body as Phaser.Physics.Arcade.Body).velocity.x < 0 ? -1 : 1;
+          g.fillStyle(0x0b1420).fillRect(car.x - 10, car.y - 12, 8, 3).fillRect(car.x + 6, car.y - 12, 8, 3).fillRect(car.x - 10, car.y + 9, 8, 3).fillRect(car.x + 6, car.y + 9, 8, 3);
+          g.fillStyle(0x23374c).fillRoundedRect(car.x - 8, car.y - 7, 18, 14, 3);
+          g.fillStyle(0x9cc5ce).fillRect(car.x - 6, car.y - 5, 5, 10);
+          g.fillStyle(0xffe7b0).fillRect(car.x + facing * 18 - 1, car.y - 7, 3, 4).fillRect(car.x + facing * 18 - 1, car.y + 3, 3, 4);
+      }
+      for (const object of this.logs.getChildren()) {
+          const log = object as Phaser.GameObjects.Rectangle;
+          g.lineStyle(1, 0xd1a772, .7).lineBetween(log.x - log.width / 2 + 6, log.y - 5, log.x + log.width / 2 - 6, log.y - 5);
+          g.lineStyle(2, 0x503a2e).lineBetween(log.x - log.width / 2 + 5, log.y + 5, log.x + log.width / 2 - 8, log.y + 5);
+          g.lineStyle(1, 0xe1b57b).strokeEllipse(log.x + log.width / 2 - 5, log.y, 6, 17);
+      }
+      const { x, y } = this.player;
+      g.fillStyle(0x071b16, .65).fillEllipse(x, y + 8, 26, 8);
+      g.fillStyle(0x548747).fillRoundedRect(x - 12, y - 5, 6, 15, 3).fillRoundedRect(x + 6, y - 5, 6, 15, 3);
+      g.fillStyle(0x9ad47b).fillEllipse(x, y, 16, 21);
+      g.fillStyle(0xd4eaa3).fillEllipse(x, y + 3, 9, 12);
+      for (const side of [-1, 1]) {
+          g.fillStyle(0xccebab).fillCircle(x + side * 6, y - 8, 5);
+          g.fillStyle(0x132b28).fillCircle(x + side * 6, y - 9, 2);
       }
   }
 

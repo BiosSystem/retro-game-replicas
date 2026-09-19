@@ -44,17 +44,25 @@ export default class TetrisScene extends Phaser.Scene {
     this.dropInterval = this.baseInterval;
     this.gameOver = false;
     this.score = 0;
+    const tower = this.add.graphics().setDepth(-2);
+    tower.fillGradientStyle(0x10172a, 0x10172a, 0x070a14, 0x070a14).fillRect(0, 0, 640, 480);
+    tower.fillStyle(0x131f32).fillRoundedRect(196, 36, 248, 430, 12);
+    tower.lineStyle(2, 0x385a6b, .65).strokeRoundedRect(196, 36, 248, 430, 12);
+    for (const x of [174, 454]) {
+      tower.fillStyle(0x1b2e42).fillRect(x, 48, 10, 408);
+      for (let y = 58; y < 450; y += 30) tower.fillStyle(0x5a8290, .35).fillRect(x + 2, y, 6, 12);
+    }
 
     // UI
-    this.add.text(320, 20, 'TETRIS: PULSE', { fontFamily: 'Courier', fontSize: '24px', color: '#00ffff' }).setOrigin(0.5);
+    this.add.text(320, 18, 'TETRIS // PULSE STACK', { fontFamily: 'Courier', fontSize: '18px', color: '#bdeef0' }).setOrigin(0.5);
     this.scoreHud = new ArcadeHud(this, 420, 70, 205, 0x00ffff);
     this.scoreHud.set({ score: 0, stage: 1, status: this.difficulty });
     this.add.text(450, 140, 'ARROWS: MOVE\nUP: ROTATE\nSPACE: DROP\nESC: LOBBY', { fontFamily: 'Courier', fontSize: '14px', color: '#aaaaaa' });
 
     const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
-    this.add.text(630, 20, `DIFF: ${this.difficulty}`, {
+    this.add.text(628, 16, this.difficulty, {
       fontFamily: 'Courier',
-      fontSize: '16px',
+      fontSize: '13px',
       color: diffColors[this.difficulty] || '#00ff00',
       fontStyle: 'bold'
     }).setOrigin(1, 0);
@@ -286,6 +294,7 @@ export default class TetrisScene extends Phaser.Scene {
             // Subtle shine
             g.fillStyle(0xffffff, 0.2);
             g.fillRect(offsetX + c * BLOCK_SIZE + 1, offsetY + r * BLOCK_SIZE + 1, BLOCK_SIZE - 2, 4);
+            g.fillStyle(0x050912, .32).fillRect(offsetX + c * BLOCK_SIZE + 4, offsetY + r * BLOCK_SIZE + BLOCK_SIZE - 5, BLOCK_SIZE - 7, 3);
         }
       }
     }
@@ -310,6 +319,7 @@ export default class TetrisScene extends Phaser.Scene {
           // Highlighting active piece
           g.fillStyle(0xffffff, 0.3);
           g.fillRect(offsetX + (this.activePiece.x + c) * BLOCK_SIZE + 1, offsetY + (this.activePiece.y + r) * BLOCK_SIZE + 1, BLOCK_SIZE - 2, 4);
+          g.fillStyle(0x050912, .28).fillRect(offsetX + (this.activePiece.x + c) * BLOCK_SIZE + 4, offsetY + (this.activePiece.y + r) * BLOCK_SIZE + BLOCK_SIZE - 5, BLOCK_SIZE - 7, 3);
           g.fillStyle(this.activePiece.color, 1);
         }
       }

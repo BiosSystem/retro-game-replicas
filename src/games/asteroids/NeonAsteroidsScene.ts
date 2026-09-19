@@ -12,6 +12,9 @@ import type { NetInputFrame } from '../../net/InputCodec';
 import { ProjectileEventType, readProjectileEvent } from '../neon-vector/ProjectileProtocol';
 import { advanceShieldRipples, createWarpStars, warpStretchForSpeed, type ShieldRipple, type WarpStar } from '../neon-vector/NeonVectorVisuals';
 import { CabinetBezelLighting } from '../../core/rendering/CabinetBezelLighting';
+import neonVectorSpace from '../../assets/vector/neon-vector-space-v1.jpg';
+import { addLayeredBackdrop } from '../../graphics/LayeredBackdrop';
+import { ARCADE_PALETTES } from '../../graphics/ArcadeVisualTheme';
 
 export default class NeonAsteroidsScene extends Phaser.Scene {
   private ship!: Phaser.Physics.Arcade.Image;
@@ -42,8 +45,13 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
   private shieldRipples: ShieldRipple[] = [];
   private cabinetLights!: CabinetBezelLighting;
   private visualTime = 0;
+  private exhaustReady: Record<PlayerId, number> = { 1: 0, 2: 0 };
 
   constructor() { super('AsteroidsScene'); }
+
+  preload() {
+    if (!this.textures.exists('neon-vector-space')) this.load.image('neon-vector-space', neonVectorSpace);
+  }
 
   create(data: { difficulty?: string; mode?: ArcadeMode }) {
     this.difficulty = data?.difficulty ?? 'NORMAL';
@@ -52,13 +60,13 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     this.session = new CoopSession(this.mode);
     this.score = 0; this.stage = 1; this.mineralCount = 0; this.weapon = 'SPREAD'; this.shield = false; this.stagePending = false;
     this.createTextures();
+    addLayeredBackdrop(this, { texture: 'neon-vector-space', veil: ARCADE_PALETTES.vector.background, veilAlpha: 0.24, grid: { size: 32, color: 0x632cff, alpha: 0.045 } });
     this.createWarpStarfield();
-    this.add.grid(320, 240, 640, 480, 32, 32, 0x02000c, 1, 0x632cff, 0.1);
     this.shieldGraphics = this.add.graphics().setDepth(8).setBlendMode(Phaser.BlendModes.ADD);
     this.cabinetLights = new CabinetBezelLighting(this);
     this.add.text(320, 18, 'NEON VECTOR ASTEROIDS', { fontFamily: 'Courier', fontSize: '20px', color: '#ff2ec4', fontStyle: 'bold' }).setOrigin(0.5);
     this.hud = new ArcadeHud(this, 8, 38, 624, 0xff2ec4);
-    this.add.text(628, 12, 'ARROWS THRUST  SPACE FIRE  Q WEAPON  ESC PAUSE', { fontFamily: 'Courier', fontSize: '10px', color: '#8888aa' }).setOrigin(1, 0);
+    this.add.text(628, 466, 'ARROWS THRUST  SPACE FIRE  Q WEAPON  ESC PAUSE', { fontFamily: 'Courier', fontSize: '10px', color: '#aeb4d8' }).setOrigin(1, 1).setDepth(30);
 
     this.ship = this.physics.add.image(320, 260, 'vector-ship').setDamping(true).setDrag(0.985).setMaxVelocity(320);
     this.ship.setData('player', 1);
@@ -125,7 +133,8 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     for (const offset of offsets) {
       const bullet = this.bullets.create(ship.x, ship.y, this.weapon === 'LASER' ? 'vector-laser' : 'vector-shot') as Phaser.Physics.Arcade.Image;
       this.physics.velocityFromRotation(ship.rotation - Math.PI / 2 + offset, this.weapon === 'LASER' ? 720 : 480, (bullet.body as Phaser.Physics.Arcade.Body).velocity);
-      bullet.setData('damage', this.weapon === 'LASER' ? 2 : 1).setData('player', player);
+      bullet.setRotation(ship.rotation + offset).setData('damage', this.weapon === 'LASER' ? 2 : 1).setData('player', player);
+      if (this.weapon === 'LASER') bullet.setSize(5, 20); else bullet.setCircle(3, 2, 7);
       this.time.delayedCall(900, () => bullet.destroy());
     }
     AudioEngine.playEffect('LASER');
@@ -174,6 +183,7 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     hazard.destroy();
     const damaged = shipObject as Phaser.Physics.Arcade.Image;
     if (this.shield) { this.shield = false; this.ship.clearTint(); this.ship2?.clearTint(); this.triggerShieldRipple(damaged.x, damaged.y, 0x00ffff); VFXManager.playExplosion(this, damaged.x, damaged.y, 0x00ffff); this.cabinetLights.pulse(damaged.x, damaged.y, 0x00ffff, 1.1); return; }
+    VFXManager.playHit(this, damaged.x, damaged.y, 0xff5577); VFXManager.screenShake(this, .012, 120); this.cabinetLights.pulse(damaged.x, damaged.y, 0xff3355, 1.15);
     const player = Number(damaged.getData('player')) === 2 ? 2 : 1;
     if (this.session.loseLife(player) > 0) { damaged.setPosition(player === 1 ? 300 : 340, 260).setVelocity(0).setTint(player === 2 ? 0xffff00 : 0xffffff); return; }
     damaged.disableBody(true, true);
@@ -189,7 +199,14 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
     const inverted = this.stageDefinition?.modifier === 'INVERTED_CONTROLS' ? -1 : 1;
     if (player === 1 ? InputManager.isP1Down('LEFT') : InputManager.isP2Down('LEFT')) ship.setAngularVelocity(-210 * inverted);
     else if (player === 1 ? InputManager.isP1Down('RIGHT') : InputManager.isP2Down('RIGHT')) ship.setAngularVelocity(210 * inverted); else ship.setAngularVelocity(0);
-    if (player === 1 ? InputManager.isP1Down('UP') : InputManager.isP2Down('UP')) this.physics.velocityFromRotation(ship.rotation - Math.PI / 2, 235, (ship.body as Phaser.Physics.Arcade.Body).acceleration); else ship.setAcceleration(0);
+    const thrusting = player === 1 ? InputManager.isP1Down('UP') : InputManager.isP2Down('UP');
+    if (thrusting) {
+      this.physics.velocityFromRotation(ship.rotation - Math.PI / 2, 235, (ship.body as Phaser.Physics.Arcade.Body).acceleration);
+      if (this.time.now >= this.exhaustReady[player]) {
+        VFXManager.playEngineExhaust(this, ship.x - Math.sin(ship.rotation) * 14, ship.y + Math.cos(ship.rotation) * 14, player === 1 ? 0x00ffff : 0xff2ec4);
+        this.exhaustReady[player] = this.time.now + 90;
+      }
+    } else ship.setAcceleration(0);
     const firing = player === 1 ? InputManager.isP1Down('FIRE') : InputManager.isP2Down('FIRE');
     if (firing && !this.fireHeld[player]) this.fire(ship, player);
     this.fireHeld[player] = firing;
@@ -198,13 +215,13 @@ export default class NeonAsteroidsScene extends Phaser.Scene {
 
   private createTextures() {
     const create = (key: string, draw: (graphics: Phaser.GameObjects.Graphics) => void, width: number, height: number) => { if (this.textures.exists(key)) return; const graphics = this.add.graphics(); draw(graphics); graphics.generateTexture(key, width, height); graphics.destroy(); };
-    create('vector-ship', g => { g.lineStyle(2, 0x00ffff).strokeTriangle(16, 0, 3, 30, 16, 23).strokeTriangle(16, 0, 29, 30, 16, 23); }, 32, 32);
-    create('vector-asteroid', g => { g.lineStyle(2, 0xff2ec4).strokePoints([new Phaser.Math.Vector2(20,1), new Phaser.Math.Vector2(37,10), new Phaser.Math.Vector2(34,29), new Phaser.Math.Vector2(19,39), new Phaser.Math.Vector2(3,31), new Phaser.Math.Vector2(1,12)], true); }, 40, 40);
-    create('vector-shot', g => g.fillStyle(0x00ffff).fillCircle(3, 3, 3), 6, 6);
-    create('vector-laser', g => g.fillStyle(0xffffff).fillRect(0, 0, 3, 18), 3, 18);
-    create('vector-hostile', g => g.fillStyle(0xff2255).fillCircle(4, 4, 4), 8, 8);
-    create('vector-mineral', g => g.lineStyle(2, 0xffff00).strokeTriangle(6, 0, 12, 12, 0, 12), 12, 12);
-    create('vector-ufo', g => { g.lineStyle(2, 0xffff00).strokeEllipse(20, 12, 38, 12); g.strokeTriangle(10, 10, 20, 1, 30, 10); }, 40, 24);
+    create('vector-ship', g => { g.fillStyle(0x133d63).fillTriangle(16, 0, 3, 30, 16, 23).fillTriangle(16, 0, 29, 30, 16, 23); g.fillStyle(0xdfffff).fillTriangle(16, 4, 11, 25, 16, 21).fillTriangle(16, 4, 21, 25, 16, 21); g.fillStyle(0x051624).fillTriangle(16, 7, 13, 18, 16, 16).fillTriangle(16, 7, 19, 18, 16, 16); g.lineStyle(1, 0x00ffff).strokeTriangle(16, 0, 3, 30, 16, 23).strokeTriangle(16, 0, 29, 30, 16, 23); }, 32, 32);
+    create('vector-asteroid', g => { const points = [new Phaser.Math.Vector2(20, 1), new Phaser.Math.Vector2(37, 10), new Phaser.Math.Vector2(34, 29), new Phaser.Math.Vector2(19, 39), new Phaser.Math.Vector2(3, 31), new Phaser.Math.Vector2(1, 12)]; g.fillStyle(0x3b1d51).fillPoints(points, true); g.fillStyle(0x712766).fillTriangle(20, 4, 33, 12, 20, 20).fillTriangle(7, 28, 20, 20, 28, 34); g.lineStyle(2, 0xff2ec4).strokePoints(points, true); }, 40, 40);
+    create('vector-shot', g => { g.fillStyle(0x00ffff, .12).fillEllipse(5, 10, 10, 20); g.fillStyle(0x7fffff, .42).fillTriangle(5, 19, 2, 6, 8, 6); g.fillStyle(0xffffff).fillRoundedRect(3, 1, 4, 12, 2); }, 10, 20);
+    create('vector-laser', g => { g.fillStyle(0xff2ec4, .12).fillEllipse(4, 15, 8, 30); g.fillStyle(0xff70df, .45).fillRect(2, 4, 4, 24); g.fillStyle(0xffffff).fillRect(3, 0, 2, 24); }, 8, 30);
+    create('vector-hostile', g => { g.fillStyle(0xff2255, .16).fillCircle(7, 7, 7); g.lineStyle(2, 0xff5577, .9).strokeCircle(7, 7, 4).lineBetween(1, 7, 13, 7).lineBetween(7, 1, 7, 13); g.fillStyle(0xffffff).fillCircle(7, 7, 2); }, 14, 14);
+    create('vector-mineral', g => { g.fillStyle(0xffff00, .14).fillCircle(8, 8, 8); g.fillStyle(0x6e5b13).fillTriangle(8, 0, 16, 8, 8, 16).fillTriangle(8, 0, 0, 8, 8, 16); g.lineStyle(2, 0xffff70).strokeTriangle(8, 0, 16, 8, 8, 16).strokeTriangle(8, 0, 0, 8, 8, 16); g.fillStyle(0xffffff, .8).fillCircle(8, 7, 2); }, 16, 16);
+    create('vector-ufo', g => { g.fillStyle(0x4d3c12).fillEllipse(20, 13, 38, 12); g.fillStyle(0xe9d75c).fillTriangle(10, 10, 20, 1, 30, 10); g.fillStyle(0x5df5ff).fillCircle(20, 8, 4); g.lineStyle(2, 0xffff00).strokeEllipse(20, 13, 38, 12).strokeTriangle(10, 10, 20, 1, 30, 10); }, 40, 24);
   }
 
   private createWarpStarfield() {
