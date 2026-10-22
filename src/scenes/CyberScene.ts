@@ -16,6 +16,7 @@ export default class CyberScene extends Phaser.Scene {
   private playerSpeed = 180;
   private ghostSpeed = 120;
   private difficulty = 'NORMAL';
+  private materials!: Phaser.GameObjects.Graphics;
   private map: number[][] = [
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
     [1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
@@ -54,16 +55,19 @@ export default class CyberScene extends Phaser.Scene {
 
     this.score = 0;
     this.isOverclocked = false;
+    const backdrop = this.add.graphics().setDepth(-2);
+    backdrop.fillGradientStyle(0x07131d, 0x07131d, 0x03080e, 0x03080e).fillRect(0, 0, 640, 480);
+    for (let y = 58; y < 456; y += 24) backdrop.lineStyle(1, 0x173443, .18).lineBetween(44, y, 596, y);
     
     // UI
-    this.add.text(320, 20, 'CYBER CHASM: DATA RUNNER', { fontFamily: 'Courier', fontSize: '22px', color: '#00ffcc', fontStyle: 'bold' }).setOrigin(0.5);
-    this.scoreText = this.add.text(20, 20, 'SCORE: 0', { fontFamily: 'Courier', fontSize: '18px', color: '#ffffff' });
+    this.add.text(320, 18, 'CYBER CHASM // DATA VAULT', { fontFamily: 'Courier', fontSize: '17px', color: '#9ddfe1', fontStyle: 'bold' }).setOrigin(0.5);
+    this.scoreText = this.add.text(12, 12, 'SCORE 0', { fontFamily: 'Courier', fontSize: '13px', color: '#ffffff' });
     this.add.text(320, 465, 'ARROWS: NAVIGATE | ESC: LOBBY', { fontFamily: 'Courier', fontSize: '12px', color: '#aaaaaa' }).setOrigin(0.5);
 
     const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
-    this.add.text(630, 20, `DIFF: ${this.difficulty}`, {
+    this.add.text(628, 12, this.difficulty, {
       fontFamily: 'Courier',
-      fontSize: '16px',
+      fontSize: '13px',
       color: diffColors[this.difficulty] || '#00ff00',
       fontStyle: 'bold'
     }).setOrigin(1, 0);
@@ -74,6 +78,7 @@ export default class CyberScene extends Phaser.Scene {
 
     const offsetX = (640 - (this.map[0].length * TILE)) / 2;
     const offsetY = 50;
+    const architecture = this.add.graphics().setDepth(1);
 
     // Build Labyrinth
     const walls = this.physics.add.staticGroup();
@@ -83,8 +88,9 @@ export default class CyberScene extends Phaser.Scene {
         const y = offsetY + r * TILE + TILE/2;
         
         if (this.map[r][c] === 1) {
-            const wall = this.add.rectangle(x, y, TILE - 2, TILE - 2, 0x112233);
-            wall.setStrokeStyle(1, 0x005577);
+            const wall = this.add.rectangle(x, y, TILE - 2, TILE - 2, 0x14283a);
+            wall.setStrokeStyle(1, 0x326379, .75);
+            architecture.fillStyle(0x7fa9ae, .16).fillRect(x - 9, y - 9, 18, 3);
             walls.add(wall);
         } else {
             if (Math.random() < 0.05) {
@@ -102,7 +108,9 @@ export default class CyberScene extends Phaser.Scene {
 
     // Player
     this.player = this.add.rectangle(offsetX + TILE * 11 + TILE/2, offsetY + TILE * 15 + TILE/2, 18, 18, 0xffff00);
+    this.player.setAlpha(0);
     this.physics.add.existing(this.player);
+    this.materials = this.add.graphics().setDepth(3);
 
     // Ghosts
     this.spawnGhost(offsetX + TILE * 11, offsetY + TILE * 10, 0xff0000);
@@ -132,6 +140,7 @@ export default class CyberScene extends Phaser.Scene {
 
   spawnGhost(x: number, y: number, color: number) {
       const g = this.add.rectangle(x + TILE/2, y + TILE/2, 20, 20, color);
+      g.setAlpha(0).setData('color', color).setData('frightened', false);
       this.physics.add.existing(g);
       const body = g.body as Phaser.Physics.Arcade.Body;
       body.setCollideWorldBounds(true);
@@ -152,8 +161,7 @@ export default class CyberScene extends Phaser.Scene {
       this.cameras.main.flash(200, 255, 0, 255);
       
       this.ghosts.getChildren().forEach((g: any) => {
-          g.setAlpha(0.5);
-          g.setFillStyle(0x3333ff);
+          g.setData('frightened', true);
       });
   }
 
@@ -174,8 +182,7 @@ export default class CyberScene extends Phaser.Scene {
               this.isOverclocked = false;
               this.player.setFillStyle(0xffff00);
               this.ghosts.getChildren().forEach((g: any) => {
-                  g.setAlpha(1);
-                  g.setFillStyle(0xff0000); 
+                  g.setData('frightened', false);
               });
           }
       }
@@ -189,6 +196,28 @@ export default class CyberScene extends Phaser.Scene {
               body.setVelocity(d.x, d.y);
           }
       });
+      this.drawActors();
+  }
+
+  private drawActors() {
+      const g = this.materials.clear();
+      const body = this.player.body as Phaser.Physics.Arcade.Body;
+      const angle = body.velocity.x ? (body.velocity.x > 0 ? 0 : Math.PI) : body.velocity.y > 0 ? Math.PI / 2 : -Math.PI / 2;
+      const mouth = 0.48;
+      g.fillStyle(this.isOverclocked ? 0xe39be8 : 0xf2d875).slice(this.player.x, this.player.y, 10, angle + mouth, angle + Math.PI * 2 - mouth, false).fillPath();
+      g.fillStyle(0xfff3c4).fillCircle(this.player.x - Math.sin(angle) * 4, this.player.y + Math.cos(angle) * 4, 2);
+      for (const object of this.ghosts.getChildren()) {
+          const ghost = object as Phaser.GameObjects.Rectangle;
+          const color = ghost.getData('frightened') ? 0x526b9e : ghost.getData('color') as number;
+          g.fillStyle(0x02060b, .65).fillEllipse(ghost.x, ghost.y + 9, 21, 6);
+          g.fillStyle(color).fillRoundedRect(ghost.x - 10, ghost.y - 10, 20, 19, 8);
+          g.fillTriangle(ghost.x - 10, ghost.y + 4, ghost.x - 5, ghost.y + 10, ghost.x, ghost.y + 4);
+          g.fillTriangle(ghost.x, ghost.y + 4, ghost.x + 5, ghost.y + 10, ghost.x + 10, ghost.y + 4);
+          for (const side of [-1, 1]) {
+              g.fillStyle(0xf2f6e8).fillEllipse(ghost.x + side * 4, ghost.y - 3, 6, 8);
+              g.fillStyle(0x101b29).fillCircle(ghost.x + side * 4, ghost.y - 2, 2);
+          }
+      }
   }
 
   endGame() {

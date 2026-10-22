@@ -42,20 +42,26 @@ export default class SnakeScene extends Phaser.Scene {
     this.gameOver = false;
 
     this.graphics = this.add.graphics();
+    const garden = this.add.graphics().setDepth(-1);
+    garden.fillGradientStyle(0x102922, 0x102922, 0x081914, 0x081914).fillRect(0, 0, 640, 480);
+    for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
+      if ((x + y) % 2 === 0) garden.fillStyle(0x2d4938, .16).fillRect(x * 16, y * 16, 16, 16);
+      if ((x * 13 + y * 7) % 37 === 0) garden.lineStyle(1, 0x62815b, .25).lineBetween(x * 16 + 3, y * 16 + 12, x * 16 + 7, y * 16 + 8);
+    }
 
     this.placeFood();
 
     this.scoreText = this.add.text(10, 10, 'SCORE: 0', {
       fontFamily: 'Courier',
-      fontSize: '24px',
-      color: '#00ff00',
+      fontSize: '14px',
+      color: '#d9efd3',
       fontStyle: 'bold'
     }).setDepth(10);
 
     const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
     this.add.text(630, 10, `DIFF: ${this.difficulty}`, {
       fontFamily: 'Courier',
-      fontSize: '20px',
+      fontSize: '14px',
       color: diffColors[this.difficulty] || '#00ff00',
       fontStyle: 'bold'
     }).setOrigin(1, 0).setDepth(10);
@@ -75,6 +81,7 @@ export default class SnakeScene extends Phaser.Scene {
     // Energetic baseline
     const track = [110, 0, 110, 0, 146.83, 0, 110, 0, 98, 0, 110, 0, 146.83, 0, 0, 0];
     AudioEngine.playBGM(track, 100, 'triangle');
+    this.draw();
   }
 
   placeFood() {
@@ -154,13 +161,22 @@ export default class SnakeScene extends Phaser.Scene {
 
     // Draw snake
     this.snake.forEach((segment, index) => {
-      if (index === 0) this.graphics.fillStyle(0x00cc00, 1);
-      else this.graphics.fillStyle(0x00ff00, 1);
-      this.graphics.fillRect(segment.x * TILE_SIZE, segment.y * TILE_SIZE, TILE_SIZE - 1, TILE_SIZE - 1);
+      const x = segment.x * TILE_SIZE, y = segment.y * TILE_SIZE;
+      this.graphics.fillStyle(0x030d0a).fillRoundedRect(x + 1, y + 2, 14, 14, 4);
+      this.graphics.fillStyle(index === 0 ? 0xc7e996 : 0x62b783).fillRoundedRect(x, y, 14, 13, 4);
+      this.graphics.fillStyle(0xe5f6b7, .6).fillRect(x + 3, y + 2, 7, 2);
+      if (index === 0) {
+        const dx = this.direction === 'RIGHT' ? 1 : this.direction === 'LEFT' ? -1 : 0;
+        const dy = this.direction === 'DOWN' ? 1 : this.direction === 'UP' ? -1 : 0;
+        for (const side of [-1, 1]) this.graphics.fillStyle(0x10261c).fillCircle(x + 7 + dx * 3 + dy * side * 3, y + 6 + dy * 3 + dx * side * 3, 2);
+      } else this.graphics.fillStyle(0x287158).fillRect(x + 5, y + 7, 4, 3);
     });
 
     // Draw food
-    this.graphics.fillStyle(0xff0000, 1);
-    this.graphics.fillRect(this.food.x * TILE_SIZE, this.food.y * TILE_SIZE, TILE_SIZE - 1, TILE_SIZE - 1);
+    const x = this.food.x * TILE_SIZE, y = this.food.y * TILE_SIZE;
+    this.graphics.fillStyle(0x13231a).fillEllipse(x + 8, y + 13, 14, 5);
+    this.graphics.fillStyle(0xe9846c).fillCircle(x + 7, y + 9, 6);
+    this.graphics.fillStyle(0xffd4a2).fillCircle(x + 5, y + 7, 2);
+    this.graphics.fillStyle(0x97c678).fillTriangle(x + 7, y + 4, x + 9, y, x + 14, y + 2);
   }
 }

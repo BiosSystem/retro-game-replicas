@@ -3,7 +3,7 @@ import { VFXManager } from '../engine/VFXManager';
 import { InputManager } from '../engine/InputManager';
 
 export default class BirdScene extends Phaser.Scene {
-  private bird!: Phaser.GameObjects.Rectangle;
+  private bird!: Phaser.Physics.Arcade.Image;
   private pipes!: Phaser.Physics.Arcade.Group;
   private score = 0;
   private scoreText!: Phaser.GameObjects.Text;
@@ -31,25 +31,24 @@ export default class BirdScene extends Phaser.Scene {
     this.timer = 0;
 
     // BG
-    this.add.rectangle(320, 240, 640, 480, 0x050510);
-    this.add.grid(320, 240, 640, 480, 32, 32, 0x112233, 0.1);
+    this.drawNightSky();
 
     // UI
-    this.add.text(320, 20, 'BRAVE BIRD: NOCTURNAL', { fontFamily: 'Courier', fontSize: '24px', color: '#ffff00', fontStyle: 'bold' }).setOrigin(0.5);
-    this.scoreText = this.add.text(320, 100, '0', { fontFamily: 'Courier', fontSize: '80px', color: '#ffffff' }).setOrigin(0.5).setAlpha(0.2);
+    this.add.text(320, 18, 'BRAVE BIRD // NIGHT FLIGHT', { fontFamily: 'Courier', fontSize: '18px', color: '#f2daa0', fontStyle: 'bold' }).setOrigin(0.5);
+    this.scoreText = this.add.text(320, 75, '0', { fontFamily: 'Courier', fontSize: '54px', color: '#fff3d0' }).setOrigin(0.5).setAlpha(0.25);
     this.add.text(20, 450, 'SPACE / CLICK: FLAP | ESC: LOBBY', { fontFamily: 'Courier', fontSize: '14px', color: '#aaaaaa' });
 
     const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
-    this.add.text(630, 20, `DIFF: ${this.difficulty}`, {
+    this.add.text(628, 42, this.difficulty, {
       fontFamily: 'Courier',
-      fontSize: '16px',
+      fontSize: '13px',
       color: diffColors[this.difficulty] || '#00ff00',
       fontStyle: 'bold'
     }).setOrigin(1, 0);
 
     // Bird
-    this.bird = this.add.rectangle(150, 240, 24, 24, 0xffff00);
-    this.physics.add.existing(this.bird);
+    this.createFlightTextures();
+    this.bird = this.physics.add.image(150, 240, 'brave-bird');
     const body = this.bird.body as Phaser.Physics.Arcade.Body;
     body.setGravityY(1200);
     body.setCollideWorldBounds(false);
@@ -83,6 +82,42 @@ export default class BirdScene extends Phaser.Scene {
 
     // Collisions
     this.physics.add.collider(this.bird, this.pipes, () => this.endGame());
+  }
+
+  private drawNightSky() {
+      const g = this.add.graphics().setDepth(-2);
+      g.fillGradientStyle(0x101b32, 0x101b32, 0x321c31, 0x321c31).fillRect(0, 0, 640, 480);
+      g.fillStyle(0xd8c8a1, .55).fillCircle(500, 130, 58);
+      g.fillStyle(0x17233a).fillCircle(518, 116, 55);
+      for (let i = 0; i < 48; i++) g.fillStyle(i % 7 ? 0x9caec0 : 0xf3e4c4, i % 7 ? .35 : .75).fillCircle((i * 89 + 31) % 640, 52 + (i * 53) % 300, i % 7 ? 1 : 1.5);
+      g.fillStyle(0x0b1522).fillRect(0, 420, 640, 60);
+      for (let x = 0; x < 640; x += 34) g.fillStyle(0x111d2a).fillTriangle(x, 420, x + 18, 382 - x % 47, x + 38, 420);
+      g.fillStyle(0x070b13, .85).fillRect(0, 0, 640, 48);
+  }
+
+  private createFlightTextures() {
+      if (!this.textures.exists('brave-bird')) {
+          const g = this.add.graphics();
+          g.fillStyle(0x151b28, .6).fillEllipse(17, 20, 28, 8);
+          g.fillStyle(0xcc893e).fillEllipse(14, 13, 24, 17);
+          g.fillStyle(0xf1be58).fillTriangle(5, 14, 15, 6, 16, 17);
+          g.fillStyle(0xffdf78).fillTriangle(22, 11, 32, 15, 22, 17);
+          g.fillStyle(0xf5ead2).fillCircle(20, 10, 5).fillStyle(0x17202b).fillCircle(22, 9, 2);
+          g.lineStyle(1, 0xf6cf75).strokeEllipse(14, 13, 24, 17);
+          g.generateTexture('brave-bird', 34, 26); g.destroy();
+      }
+      for (const top of [true, false]) {
+          const key = top ? 'night-pipe-top' : 'night-pipe-bottom';
+          if (this.textures.exists(key)) continue;
+          const g = this.add.graphics();
+          g.fillStyle(0x183642).fillRect(7, 0, 46, 480);
+          g.fillStyle(0x2d6770).fillRect(9, 0, 6, 480);
+          for (let y = 18; y < 480; y += 34) g.fillStyle(0x0f2933, .8).fillRect(17, y, 32, 3);
+          g.fillStyle(0x102631).fillRoundedRect(0, top ? 458 : 0, 60, 22, 5);
+          g.fillStyle(0x5c9b9d).fillRect(3, top ? 458 : 18, 54, 3);
+          g.lineStyle(2, 0x7bc1b9, .8).strokeRect(7, 0, 46, 480);
+          g.generateTexture(key, 60, 480); g.destroy();
+      }
   }
 
   flap() {
@@ -129,15 +164,8 @@ export default class BirdScene extends Phaser.Scene {
       const gap = this.pipeGap;
       const pos = Phaser.Math.Between(100, 350);
 
-      const top = this.add.rectangle(740, pos - gap/2 - 240, 60, 480, 0x33aa33);
-      const bot = this.add.rectangle(740, pos + gap/2 + 240, 60, 480, 0x33aa33);
-      
-      // Neon glow
-      top.setStrokeStyle(2, 0x00ff00, 0.8);
-      bot.setStrokeStyle(2, 0x00ff00, 0.8);
-
-      this.physics.add.existing(top);
-      this.physics.add.existing(bot);
+      const top = this.physics.add.image(740, pos - gap/2 - 240, 'night-pipe-top');
+      const bot = this.physics.add.image(740, pos + gap/2 + 240, 'night-pipe-bottom');
 
       const topBody = top.body as Phaser.Physics.Arcade.Body;
       topBody.setVelocityX(-this.pipeSpeed);
@@ -156,7 +184,7 @@ export default class BirdScene extends Phaser.Scene {
   endGame() {
       this.physics.pause();
       VFXManager.screenShake(this, 0.03, 400);
-      this.bird.setFillStyle(0xff0000);
+      this.bird.setTint(0xff6b5f);
       
       this.scene.pause();
       this.scene.launch('GameOverScene', { scene: this.scene.key, title: 'FLIGHT TERMINATED', score: this.score, difficulty: this.difficulty, submitScore: true, color: '#ffff00' });

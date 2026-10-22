@@ -1,9 +1,14 @@
 import { defineConfig } from 'vitest/config';
+import { fileURLToPath } from 'node:url';
 import { finalMinifyPlugin } from './build/FinalMinifyPlugin';
 import { offlineBundlePlugin } from './build/OfflineBundlePlugin';
 
+const arcadePhysicsPhaser = fileURLToPath(new URL('./node_modules/phaser/dist/phaser-arcade-physics.min.js', import.meta.url));
+
 export default defineConfig({
   plugins: [finalMinifyPlugin(), offlineBundlePlugin()],
+  publicDir: 'public',
+  resolve: { alias: { phaser: arcadePhysicsPhaser } },
   test: { exclude: ['tests/**', 'node_modules/**', 'dist/**'] },
   server: { headers: { 'Cross-Origin-Opener-Policy': 'same-origin', 'Cross-Origin-Embedder-Policy': 'require-corp' } },
   preview: { headers: { 'Cross-Origin-Opener-Policy': 'same-origin', 'Cross-Origin-Embedder-Policy': 'require-corp' } },

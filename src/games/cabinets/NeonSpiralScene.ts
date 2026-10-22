@@ -8,14 +8,14 @@ import { ArcadeHud } from '../../ui/arcade/NeonUi';
 import { deterministicAngle, shortestAngleDelta, spiralWave, type CabinetDifficulty, type WaveSpec } from './CabinetWaveSystems';
 
 interface SpiralShot { sprite: Phaser.GameObjects.Rectangle; angle: number; owner: PlayerId; radius: number; }
-interface SpiralWisp { sprite: Phaser.GameObjects.Arc; angle: number; radius: number; hp: number; }
+interface SpiralWisp { sprite: Phaser.GameObjects.Image; angle: number; radius: number; hp: number; }
 
 const CENTER_X = 320;
 const CENTER_Y = 268;
 const ORBIT_RADIUS = 150;
 
 export default class NeonSpiralScene extends Phaser.Scene {
-  private readonly pilots = new Map<PlayerId, Phaser.GameObjects.Triangle>();
+  private readonly pilots = new Map<PlayerId, Phaser.GameObjects.Image>();
   private readonly angles: Record<PlayerId, number> = { 1: -Math.PI / 2, 2: Math.PI / 2 };
   private shots: SpiralShot[] = [];
   private wisps: SpiralWisp[] = [];
@@ -37,8 +37,13 @@ export default class NeonSpiralScene extends Phaser.Scene {
   create(data: { difficulty?: CabinetDifficulty; mode?: ArcadeMode }) {
     this.difficulty = data?.difficulty ?? 'NORMAL'; this.mode = data?.mode ?? 'SOLO'; this.session = new CoopSession(this.mode);
     this.stage = 1; this.score = 0; this.shields = 5; this.spawned = 0; this.shots = []; this.wisps = []; this.fireReady = { 1: 0, 2: 0 }; this.ended = false;
+    this.createTextures();
     this.add.rectangle(320, 240, 640, 480, 0x090012).setDepth(-2);
     this.add.grid(320, 260, 640, 440, 32, 32, 0x090012, 1, 0xff2ec4, 0.08).setDepth(-1);
+    for (let index = 0; index < 42; index++) {
+      const x = (index * 149 + 37) % 640; const y = 76 + (index * 83) % 382; const radius = index % 7 === 0 ? 2 : 1;
+      this.add.circle(x, y, radius, index % 3 ? 0x9d5cff : 0x00dfff, 0.22 + (index % 5) * 0.08).setDepth(-1);
+    }
     this.add.text(320, 14, 'PRISM SPIRAL // ORBITAL SURVIVAL', { fontFamily: 'Courier', fontSize: '19px', color: '#ff2ec4', fontStyle: 'bold' }).setOrigin(0.5);
     this.add.text(628, 42, 'ORBIT A/D OR ARROWS  FIRE SPACE/ENTER  ESC PAUSE', { fontFamily: 'Courier', fontSize: '9px', color: '#aa7799' }).setOrigin(1, 0);
     for (const radius of [72, 112, ORBIT_RADIUS, 196]) this.add.circle(CENTER_X, CENTER_Y, radius).setStrokeStyle(1, radius === ORBIT_RADIUS ? 0xff2ec4 : 0x602050, radius === ORBIT_RADIUS ? 0.65 : 0.22);
@@ -60,7 +65,7 @@ export default class NeonSpiralScene extends Phaser.Scene {
   }
 
   private createStage() { this.wave = spiralWave(this.stage, this.difficulty); this.spawned = 0; this.nextSpawnAt = this.time?.now ?? 0; }
-  private createPilot(player: PlayerId, color: number) { const pilot = this.add.triangle(0, 0, 0, 18, 18, 18, 9, 0, color).setStrokeStyle(2, 0xffffff, 0.75); this.pilots.set(player, pilot); this.positionPilot(player); }
+  private createPilot(player: PlayerId, color: number) { const pilot = this.add.image(0, 0, 'spiral-pilot').setTint(color); this.pilots.set(player, pilot); this.positionPilot(player); }
   private positionPilot(player: PlayerId) {
     const pilot = this.pilots.get(player); if (!pilot) return;
     const angle = this.angles[player]; pilot.setPosition(CENTER_X + Math.cos(angle) * ORBIT_RADIUS, CENTER_Y + Math.sin(angle) * ORBIT_RADIUS).setRotation(angle + Math.PI / 2);
@@ -83,7 +88,7 @@ export default class NeonSpiralScene extends Phaser.Scene {
   private spawnWisps() {
     while (this.spawned < this.wave.count && this.time.now >= this.nextSpawnAt) {
       const angle = deterministicAngle(this.stage, this.spawned); const hp = this.stage % 4 === 0 && this.spawned === 0 ? 3 : 1;
-      const sprite = this.add.circle(0, 0, hp > 1 ? 13 : 8, hp > 1 ? 0xff2255 : 0xb638ff).setStrokeStyle(2, 0xffd5ff, 0.6);
+      const sprite = this.add.image(0, 0, 'spiral-wisp').setTint(hp > 1 ? 0xff2255 : 0xb638ff).setScale(hp > 1 ? 1.35 : 1);
       this.wisps.push({ sprite, angle, radius: 242, hp }); this.positionWisp(this.wisps[this.wisps.length - 1]); this.spawned += 1; this.nextSpawnAt += this.wave.intervalMs;
     }
   }
@@ -108,9 +113,15 @@ export default class NeonSpiralScene extends Phaser.Scene {
 
   private damageWisp(wisp: SpiralWisp, owner: PlayerId) {
     wisp.hp -= 1; VFXManager.playHit(this, wisp.sprite.x, wisp.sprite.y, 0xffaaff);
-    if (wisp.hp > 0) { wisp.sprite.setFillStyle(0xffffff); return; }
+    if (wisp.hp > 0) { wisp.sprite.setTint(0xffffff); return; }
     this.session.score(owner, 50 + this.stage * 10, this.time.now); this.score = this.session.totalScore(); VFXManager.playExplosion(this, wisp.sprite.x, wisp.sprite.y, 0xff2ec4);
     wisp.sprite.destroy(); this.wisps = this.wisps.filter(candidate => candidate !== wisp); AudioEngine.playEffect('EXPLOSION'); this.updateHud();
+  }
+
+  private createTextures() {
+    const make = (key: string, size: number, draw: (graphics: Phaser.GameObjects.Graphics) => void) => { if (this.textures.exists(key)) return; const graphics = this.add.graphics(); draw(graphics); graphics.generateTexture(key, size, size); graphics.destroy(); };
+    make('spiral-pilot', 28, graphics => { graphics.fillStyle(0x32135c).fillTriangle(14, 1, 27, 23, 14, 19).fillTriangle(14, 1, 1, 23, 14, 19); graphics.fillStyle(0xffffff, .9).fillTriangle(14, 5, 20, 20, 14, 16).fillTriangle(14, 5, 8, 20, 14, 16); graphics.fillStyle(0x080014).fillCircle(14, 12, 3); graphics.lineStyle(1, 0xffffff, .85).strokeTriangle(14, 1, 27, 23, 14, 19).strokeTriangle(14, 1, 1, 23, 14, 19); });
+    make('spiral-wisp', 26, graphics => { graphics.fillStyle(0x36114f, .9).fillCircle(13, 13, 11).fillTriangle(13, 0, 17, 8, 9, 8).fillTriangle(13, 26, 17, 18, 9, 18).fillTriangle(0, 13, 8, 9, 8, 17).fillTriangle(26, 13, 18, 9, 18, 17); graphics.fillStyle(0xffffff, .75).fillCircle(13, 13, 5); graphics.fillStyle(0x13051d).fillCircle(13, 13, 2); graphics.lineStyle(1, 0xffd5ff, .85).strokeCircle(13, 13, 11); });
   }
 
   private positionWisp(wisp: SpiralWisp) { wisp.sprite.setPosition(CENTER_X + Math.cos(wisp.angle) * wisp.radius, CENTER_Y + Math.sin(wisp.angle) * wisp.radius); }

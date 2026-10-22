@@ -29,8 +29,10 @@ export class ProjectileEcs {
   }
   update(deltaSeconds: number, targetX = 320, targetY = 440) {
     const dt = clamp(finite(deltaSeconds), 0, 0.05); const turn = dt * 2.4;
-    for (let i = 0; i < this.capacity; i++) {
+    let remaining = this.activeCount;
+    for (let i = 0; i < this.capacity && remaining > 0; i++) {
       if (!this.active[i]) continue;
+      remaining--;
       if (this.kind[i] === 2) { const dx = targetX - this.x[i], dy = targetY - this.y[i], length = Math.hypot(dx, dy) || 1; const speed = Math.hypot(this.vx[i], this.vy[i]); this.vx[i] += (dx / length * speed - this.vx[i]) * turn; this.vy[i] += (dy / length * speed - this.vy[i]) * turn; }
       this.x[i] += this.vx[i] * dt; this.y[i] += this.vy[i] * dt; this.life[i] -= dt;
       if (this.life[i] <= 0 || this.x[i] < -96 || this.x[i] > 736 || this.y[i] < -96 || this.y[i] > 576) this.remove(i);
