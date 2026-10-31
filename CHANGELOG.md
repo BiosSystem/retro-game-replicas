@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Security
+- Escape player names and controller labels in the netplay lobby before they reach `innerHTML`, and share one `escapeHtml` helper with the versus podium. Names are still local defaults today; this closes the sink before peers can set them. (#50)
+
 ### Added
 - Add the v2.5 scripting-runtime foundation with a bounded deterministic bytecode VM, `.neongame` cartridge validation, and a scene-independent host bridge.
 - Add the lazy Cartridge Player scene, a bounded Neon Invader reference cartridge, input and audio routing, runtime diagnostics, and malformed-cartridge recovery.

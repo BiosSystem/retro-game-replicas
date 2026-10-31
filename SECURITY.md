@@ -37,7 +37,7 @@ Store bounded save-state memory and verified connected-peer claims in IndexedDB.
 
 ### Peer protocols
 
-Require manual peer establishment. Bound message sizes, peer counts, replay records, score envelopes, and world-state operations. Verify Ed25519 signatures before accepting peer score claims or signed state. Treat signatures as integrity and actor-key proofs, not central identity or anti-cheat guarantees.
+Require manual peer establishment. Escape peer-visible names and labels with the shared `escapeHtml` before any `innerHTML` render. Bound message sizes, peer counts, replay records, score envelopes, and world-state operations. Verify Ed25519 signatures before accepting peer score claims or signed state. Treat signatures as integrity and actor-key proofs, not central identity or anti-cheat guarantees.
 
 ### Rendering and compute
 
