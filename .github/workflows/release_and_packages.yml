@@ -55,24 +55,11 @@ jobs:
       - name: Build Production Bundle
         run: npm run build
 
-      - name: Stress Tracker Spec (temporary)
-        continue-on-error: true
-        run: npx playwright test tests/e2e/tracker-studio.spec.ts --repeat-each=20 --output=stress-results
-
-      - name: Upload Stress Traces (temporary)
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: stress-traces
-          path: stress-results/
-          retention-days: 3
-          if-no-files-found: warn
-
       - name: Run Chromium Regression Tests
         run: npm run test:regression
 
       - name: Upload Playwright Traces
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v7
         with:
           name: playwright-traces

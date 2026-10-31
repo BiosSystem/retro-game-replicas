@@ -14,7 +14,7 @@ test('opens Tracker Studio, edits notes, runs transport, exports, and returns to
   await page.keyboard.press('z'); await page.keyboard.press('s'); await page.keyboard.press('x');
   await expect.poll(async () => Number(await canvas.getAttribute('data-tracker-row'))).toBeGreaterThanOrEqual(3);
   await page.keyboard.press('Space');
-  try { await expect.poll(() => canvas.getAttribute('data-tracker-state')).toBe('PLAYING_SONG'); } catch (error) { console.log('TRACKER-DIAG', JSON.stringify(await canvas.evaluate(node => ({ ...(node as HTMLCanvasElement).dataset, active: document.activeElement?.tagName + '#' + (document.activeElement?.id ?? '') + '.' + (document.activeElement?.className ?? ''), audio: String((window as any).AudioContext ? 'yes' : 'no') })))); throw error; }
+  await expect.poll(() => canvas.getAttribute('data-tracker-state')).toBe('PLAYING_SONG');
   await expect.poll(() => canvas.getAttribute('data-tracker-scope')).toBe('active');
   const neonseqDownload = page.waitForEvent('download', download => download.suggestedFilename() === 'studio.neonseq'); await page.keyboard.press('o'); expect((await neonseqDownload).suggestedFilename()).toBe('studio.neonseq');
   const wavDownload = page.waitForEvent('download', download => download.suggestedFilename() === 'studio.wav'); await page.keyboard.press('Control+w'); expect((await wavDownload).suggestedFilename()).toBe('studio.wav');
