@@ -1,4 +1,5 @@
 import { avatarSvgDataUri } from '../../ui/profile/RetroProfile';
+import { escapeHtml } from '../../ui/escapeHtml';
 
 export interface VersusMatchResult {
   winnerName: string;
@@ -44,4 +45,3 @@ export class VersusPodiumScene {
   private buttons() { return Array.from(this.root.querySelectorAll<HTMLButtonElement>('button')); }
 }
 
-function escapeHtml(value: string) { return value.replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character] ?? character)); }

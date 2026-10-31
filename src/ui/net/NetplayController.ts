@@ -10,6 +10,7 @@ import type { DnaPayload } from '../../meta/dna/AvatarDna';
 import { NetworkTelemetry } from '../../core/netplay/NetworkTelemetry';
 import { createRoomId, createRoomInvite, readRoomInvite } from '../../core/netplay/WebRtcLobby';
 import { NetplayLobbyModel, type LobbyStatus, type NetplaySeat } from '../../scenes/lobby/NetplayLobbyModel';
+import { lobbySeatsHtml } from './lobbySeats';
 import { NetplayTelemetryHud } from './NetplayTelemetryHud';
 import { HeartbeatMonitor } from '../../scenes/versus/HeartbeatMonitor';
 import { NetplayDisconnectModal } from '../../scenes/versus/NetplayDisconnectModal';
@@ -57,7 +58,7 @@ export class NetplayController {
   private status(value: string): void { this.pick<HTMLOutputElement>('[data-status]').textContent = value; }
   private room(value: string): void { this.pick<HTMLElement>('[data-room]').textContent = value ? `ROOM ${value}` : ''; }
   private setLobbyStatus(status: LobbyStatus): void { this.lobby.setStatus(status); this.renderLobby(); }
-  private renderLobby(): void { const snapshot = this.lobby.snapshot(); this.pick('[data-seats]').innerHTML = [snapshot.host, snapshot.challenger].map(player => `<article class="netplay-seat ${player.connected ? 'connected' : ''} ${player.ready ? 'ready' : ''}"><i style="--avatar-color:hsl(${player.avatarSeed % 360} 85% 60%)"></i><strong>${player.seat === 'HOST' ? 'P1 HOST' : 'P2 CHALLENGER'}</strong><b>${player.name}</b><small>${player.controller} ${player.ready ? 'READY' : player.connected ? 'WAITING' : 'OFFLINE'}</small></article>`).join(''); this.pick<HTMLButtonElement>('[data-ready-host]').textContent = snapshot.host.ready ? 'UNREADY P1' : 'READY P1'; this.pick<HTMLButtonElement>('[data-ready-challenger]').textContent = snapshot.challenger.ready ? 'UNREADY P2' : 'READY P2'; }
+  private renderLobby(): void { const snapshot = this.lobby.snapshot(); this.pick('[data-seats]').innerHTML = lobbySeatsHtml([snapshot.host, snapshot.challenger]); this.pick<HTMLButtonElement>('[data-ready-host]').textContent = snapshot.host.ready ? 'UNREADY P1' : 'READY P1'; this.pick<HTMLButtonElement>('[data-ready-challenger]').textContent = snapshot.challenger.ready ? 'UNREADY P2' : 'READY P2'; }
   private pick<ElementType extends HTMLElement = HTMLElement>(selector: string): ElementType { const element = this.root.querySelector<ElementType>(selector); if (!element) throw new Error(`Missing netplay element: ${selector}`); return element; }
 }
 function loadIceConfiguration(): RTCConfiguration { try { const raw = localStorage.getItem('retro_ice_servers_v1'); if (!raw) return {}; const value: unknown = JSON.parse(raw); if (!Array.isArray(value) || value.length > 4) return {}; const iceServers = value.flatMap(item => validIceServer(item) ? [item] : []); return { iceServers }; } catch { return {}; } }
