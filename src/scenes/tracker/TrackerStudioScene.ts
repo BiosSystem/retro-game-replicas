@@ -30,7 +30,7 @@ export default class TrackerStudioScene extends Phaser.Scene {
 
   constructor() { super('TrackerStudioScene'); }
 
-  create() {
+  create() { console.debug('[tracker-create]', this.time.now);
     const project = this.projects.load(makeStudioProject);
     this.song = project.song; this.cabinetScene = project.cabinetScene; cabinetAudioManager.setCustomSong(this.cabinetScene, this.song);
     this.gridModel = new PatternGridModel(this.song.patterns[0]); this.patchModel = new PatchEditorModel(project.patch); this.playlist = new PlaylistModel([...this.song.order]);
@@ -51,7 +51,7 @@ export default class TrackerStudioScene extends Phaser.Scene {
   }
 
   private bindKeys() {
-    this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
+    this.input.keyboard?.on('keydown', (event: KeyboardEvent) => { console.debug('[tracker-key]', event.key, event.repeat, this.transportModel.state, this.time.now);
       const key = event.key.toLowerCase();
       if (key === 'w' && event.ctrlKey) { event.preventDefault(); void this.renderWav(); return; }
       if (key in TRACKER_PIANO_KEYS) { event.preventDefault(); if (this.gridModel.insertPianoKey(key)) { void AudioEngine.auditionTrackerNote(TRACKER_PIANO_KEYS[key as keyof typeof TRACKER_PIANO_KEYS], this.patchModel.patch, this.gridModel.cursor.channel); this.grid.render(); this.persistProject(); this.refreshStatus(); } return; }
@@ -67,7 +67,7 @@ export default class TrackerStudioScene extends Phaser.Scene {
 
   private async playSong() { this.transportModel.playSong(); this.song.bpm = this.transportModel.bpm; this.song.speed = this.transportModel.speed; this.startedAt = this.time.now; await AudioEngine.playTrackerSong(this.song); this.scopes.destroy(); this.scopes = new ChannelVisualizer(this, AudioEngine.getTrackerAnalysers(), 410, 62); this.persistProject(); this.transport.render(); this.refreshStatus(); }
   private async playPattern() { this.transportModel.playPattern(); this.startedAt = this.time.now; await AudioEngine.playTrackerSong({ ...this.song, order: new Uint16Array([this.playlist.order[0]]) }); this.transport.render(); this.refreshStatus(); }
-  private stopSong() { this.transportModel.stop(); AudioEngine.stopTrackerSong(); this.transport.render(); this.refreshStatus(); }
+  private stopSong() { console.debug('[tracker-stop]', new Error().stack); this.transportModel.stop(); AudioEngine.stopTrackerSong(); this.transport.render(); this.refreshStatus(); }
   private refreshStatus() { this.status.setText(`ROW ${this.gridModel.cursor.row.toString(16).toUpperCase().padStart(2, '0')}  ${this.gridModel.selectedChannel()}  PATCH ${this.patchModel.patch.waveform}  PLAYLIST ${this.playlist.order.map(id => id.toString(16).toUpperCase()).join(' > ')}  CUSTOM BGM READY`); }
   private adjustPatch(delta: number) { this.patchModel.setModulationIndex(this.patchModel.patch.modulationIndex + delta); this.patchPanel.render(); void AudioEngine.auditionTrackerNote(60, this.patchModel.patch, this.gridModel.cursor.channel); }
   private setFilter(mode: 'lowpass' | 'highpass' | 'bandpass') { this.patchModel.setFilter(mode, this.patchModel.patch.filter.frequency, this.patchModel.patch.filter.q); this.patchPanel.render(); void AudioEngine.auditionTrackerNote(60, this.patchModel.patch, this.gridModel.cursor.channel); }
