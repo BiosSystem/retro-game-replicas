@@ -17,6 +17,7 @@ import { arcadeCompute } from './engine/compute/ComputePipeline';
 import { installVisualModStudio } from './ui/studio/VisualModStudio';
 import { installSwarmLeaderboard } from './ui/swarm/SwarmLeaderboardUi';
 import { installPhaserDeltaGuard } from './engine/PhaserDeltaGuard';
+import { installPhaserKeyboardQueueGuard } from './engine/PhaserKeyboardQueueGuard';
 import { installSaveStateController } from './ui/saves/SaveStateController';
 
 const game = new Phaser.Game({
@@ -30,6 +31,7 @@ const game = new Phaser.Game({
 (window as typeof window & { game?: Phaser.Game }).game = game;
 const deltaGuard = installPhaserDeltaGuard(game);
 document.documentElement.dataset.frameDeltaCap = `${deltaGuard.maximumDeltaMs}ms`;
+installPhaserKeyboardQueueGuard(game);
 new ArcadeRuntime(game);
 InputManager.initialize();
 SaveManager.initialize();

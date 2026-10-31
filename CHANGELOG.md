@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+### Fixed
+- Deliver each key press to the scenes once when a frame runs slow. Phaser 4 replayed the queued key events with every new one until the end of the frame, so a single Space could start and then stop Tracker Studio playback and a note key could be entered several times. This was the intermittent `tracker-studio.spec.ts` failure on CI. (#52)
+
+### Changed
+- Keep Playwright traces for failing tests and upload them from CI. (#52)
+
 ### Security
 - Escape player names and controller labels in the netplay lobby before they reach `innerHTML`, and share one `escapeHtml` helper with the versus podium. Names are still local defaults today; this closes the sink before peers can set them. (#50)
 
