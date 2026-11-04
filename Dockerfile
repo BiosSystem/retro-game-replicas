@@ -1,5 +1,5 @@
 # Syntax: docker/dockerfile:1
-FROM node:24.14.1-alpine3.23 AS builder
+FROM node:24.22.1-alpine3.23 AS builder
 
 WORKDIR /app
 COPY package*.json ./
@@ -8,7 +8,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM nginx:1.28.3-alpine3.23
+FROM nginx:1.31.2-alpine3.23
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
