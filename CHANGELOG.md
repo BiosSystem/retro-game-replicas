@@ -1,3 +1,7 @@
+## [Unreleased] - 2026-11-04
+
+- Dependabot: weekly version updates (cargo, docker, github-actions, npm); minor and patch grouped, new releases held 7 days. (#54)
+
 ## [Unreleased]
 
 ### Fixed
