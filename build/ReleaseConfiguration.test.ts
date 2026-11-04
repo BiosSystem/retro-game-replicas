@@ -27,8 +27,9 @@ describe('release configuration', () => {
     expect(nginx).toContain('try_files $uri $uri/ /index.html');
     expect(nginx).toContain('location = /healthz');
     const dockerfile = read('Dockerfile');
-    expect(dockerfile).toContain('FROM node:24.14.1-alpine3.23 AS builder');
-    expect(dockerfile).toContain('FROM nginx:1.28.3-alpine3.23');
+    // Fully pinned tags on the Node 24 line; the exact patch is Dependabot's to move.
+    expect(dockerfile).toMatch(/^FROM node:24\.\d+\.\d+-alpine3\.\d+ AS builder\r?$/m);
+    expect(dockerfile).toMatch(/^FROM nginx:1\.\d+\.\d+-alpine3\.\d+\r?$/m);
     expect(dockerfile).toContain('RUN npm ci');
     expect(dockerfile).toContain('COPY nginx.conf /etc/nginx/conf.d/default.conf');
     expect(dockerfile).toContain('USER 10001:10001');
