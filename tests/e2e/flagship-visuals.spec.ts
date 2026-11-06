@@ -145,48 +145,38 @@ test("priority visual scenes lazy-load and render clean raw frames", async ({
       });
     } else if (flagship.scene === "KombatScene") {
       await page.keyboard.down("KeyD");
-      await expect
-        .poll(
-          () =>
-            page.evaluate(() => {
-              const scene = (window as any).game.scene.getScene("KombatScene");
-              const state = scene.rollback.snapshot().state;
-              return Math.abs(state.p2.x - state.p1.x);
-            }),
-          { timeout: 3000 },
-        )
-        .toBeLessThanOrEqual(62);
+      const distance = await page.evaluate(() => {
+        const scene = (window as any).game.scene.getScene("KombatScene");
+        scene.scene.pause();
+        // Close to jab reach (46) so the Space press below lands; the
+        // assertion keeps the wider kick reach (62) as its bound.
+        for (let frame = 0; frame < 120; frame++) {
+          const state = scene.rollback.snapshot().state;
+          if (Math.abs(state.p2.x - state.p1.x) <= 46) break;
+          scene.step();
+        }
+        scene.draw();
+        const state = scene.rollback.snapshot().state;
+        return Math.abs(state.p2.x - state.p1.x);
+      });
       await page.keyboard.up("KeyD");
-      const impactFrame = page.evaluate(
-        () =>
-          new Promise<{
-            combo: number;
-            damage: number;
-            hitstun: number;
-            shaking: boolean;
-          }>((resolve, reject) => {
-            const scene = (window as any).game.scene.getScene("KombatScene");
-            const deadline = performance.now() + 2000;
-            const captureHit = () => {
-              const state = scene.rollback.snapshot().state;
-              if (state.p2.health < 1000) {
-                scene.scene.pause();
-                scene.draw();
-                resolve({
-                  combo: state.p2.combo,
-                  damage: state.p2.comboDamage,
-                  hitstun: state.p2.hitstun,
-                  shaking: scene.cameras.main.shakeEffect.isRunning,
-                });
-              } else if (performance.now() >= deadline)
-                reject(new Error("Kombat action fixture did not land a hit"));
-              else requestAnimationFrame(captureHit);
-            };
-            requestAnimationFrame(captureHit);
-          }),
-      );
+      expect(distance).toBeLessThanOrEqual(62);
       await page.keyboard.down("Space");
-      const impact = await impactFrame;
+      const impact = await page.evaluate(() => {
+        const scene = (window as any).game.scene.getScene("KombatScene");
+        let state = scene.rollback.snapshot().state;
+        for (let frame = 0; frame < 30 && state.p2.health === 1000; frame++) {
+          scene.step();
+          state = scene.rollback.snapshot().state;
+        }
+        scene.draw();
+        return {
+          combo: state.p2.combo,
+          damage: state.p2.comboDamage,
+          hitstun: state.p2.hitstun,
+          shaking: scene.cameras.main.shakeEffect.isRunning,
+        };
+      });
       await page.keyboard.up("Space");
       expect(impact.combo).toBeGreaterThan(0);
       expect(impact.damage).toBeGreaterThan(0);
