@@ -7,7 +7,17 @@ const files = await collect(root);
 const bytes = files.reduce((sum, file) => sum + file.bytes, 0);
 const bootstrap = files.find(file => /assets[\\/]bootstrap-.*\.js$/.test(file.path));
 const phaser = files.find(file => /assets[\\/]phaser-runtime-.*\.js$/.test(file.path));
-const budgets = { total: 1_950_000, bootstrap: 131_072, phaser: 1_450_000 };
+const required = ['index.html', 'sw.js', 'manifest.webmanifest'];
+const missing = required.filter(path => !files.some(file => file.path === path && file.bytes > 0));
+if (!bootstrap?.bytes) missing.push('bootstrap chunk');
+if (!phaser?.bytes) missing.push('Phaser runtime chunk');
+if (missing.length) throw new Error(`Incomplete production build: ${missing.join(', ')}`);
+// Bootstrap: since Vite 8.3 Rolldown keeps the statically imported engine
+// modules (InputManager, ModRuntime, SaveStateServices, ...) inside the
+// bootstrap chunk instead of emitting them as shared chunks. The boot payload
+// did not grow (112 KB + 55 KB of shared chunks before, 160 KB in one file
+// after), so the budget covers the whole payload. See docs/PERFORMANCE_BASELINE.md.
+const budgets = { total: 1_950_000, bootstrap: 176_128, phaser: 1_450_000 };
 const measurements = { total: bytes, bootstrap: bootstrap?.bytes ?? 0, phaser: phaser?.bytes ?? 0 };
 const violations = Object.entries(budgets).filter(([key, budget]) => measurements[key] > budget);
 

@@ -40,14 +40,15 @@ export default class InvadersScene extends Phaser.Scene {
     this.wavePending = false;
     this.gameOver = false;
     this.progression = new ProgressionDirector();
-    this.add.text(320, 20, 'SPACE DEFENDERS - ARROWS TO MOVE - SPACE TO SHOOT - ESC TO LOBBY', { fontSize: '10px', color: '#00ff00' }).setOrigin(0.5);
-    this.scoreText = this.add.text(10, 10, 'SCORE: 0', { fontSize: '20px', color: '#ffffff' });
-    this.stageText = this.add.text(10, 34, 'STAGE 1  X1', { fontSize: '14px', color: '#00ffcc' });
+    this.drawSector();
+    this.add.text(320, 17, 'SPACE DEFENDERS', { fontFamily: 'Courier', fontSize: '18px', color: '#d8f4ef', fontStyle: 'bold' }).setOrigin(.5);
+    this.scoreText = this.add.text(10, 40, 'SCORE 000000', { fontFamily: 'Courier', fontSize: '13px', color: '#ffffff' });
+    this.stageText = this.add.text(10, 57, 'STAGE 1  X1', { fontFamily: 'Courier', fontSize: '12px', color: '#79c7c3' });
 
     const diffColors: any = { EASY: '#00ffcc', NORMAL: '#00ff00', HARD: '#ffff00', EXPERT: '#ff0055' };
-    this.add.text(630, 10, `DIFF: ${this.difficulty}`, {
+    this.add.text(630, 42, this.difficulty, {
       fontFamily: 'Courier',
-      fontSize: '16px',
+      fontSize: '13px',
       color: diffColors[this.difficulty] || '#00ff00',
       fontStyle: 'bold'
     }).setOrigin(1, 0);
@@ -55,17 +56,22 @@ export default class InvadersScene extends Phaser.Scene {
     // Generate textures once if missing
     if (!this.textures.exists('player')) {
       const playerG = this.add.graphics();
-      playerG.lineStyle(2, 0x00ff00);
-      playerG.strokeRect(0, 0, 30, 20);
-      playerG.generateTexture('player', 30, 20);
+      playerG.fillStyle(0x102b39).fillTriangle(18, 0, 2, 25, 34, 25).fillRect(7, 18, 22, 8);
+      playerG.fillStyle(0xc2fff3).fillTriangle(18, 4, 12, 21, 24, 21);
+      playerG.fillStyle(0x00cda9).fillRect(3, 23, 9, 3).fillRect(24, 23, 9, 3);
+      playerG.lineStyle(1, 0x5cebd4).strokeTriangle(18, 0, 2, 25, 34, 25);
+      playerG.generateTexture('player', 36, 28);
       playerG.destroy();
     }
 
     if (!this.textures.exists('alien')) {
       const alienG = this.add.graphics();
-      alienG.lineStyle(2, 0xffffff);
-      alienG.strokeCircle(15, 15, 10);
-      alienG.generateTexture('alien', 30, 30);
+      alienG.fillStyle(0x351e55).fillRoundedRect(3, 7, 26, 17, 6);
+      alienG.fillStyle(0xb874c7).fillTriangle(3, 10, 0, 2, 10, 8).fillTriangle(29, 10, 32, 2, 22, 8);
+      alienG.fillStyle(0xeacdf0).fillRect(8, 12, 5, 3).fillRect(19, 12, 5, 3);
+      alienG.fillStyle(0x0a1020).fillRect(10, 13, 2, 2).fillRect(20, 13, 2, 2);
+      alienG.lineStyle(1, 0xd49ddd).strokeRoundedRect(3, 7, 26, 17, 6);
+      alienG.generateTexture('alien', 32, 28);
       alienG.destroy();
     }
 
@@ -171,6 +177,20 @@ export default class InvadersScene extends Phaser.Scene {
         this.wavePending = false;
       });
     }
+  }
+
+  private drawSector() {
+    const g = this.add.graphics().setDepth(-2);
+    g.fillGradientStyle(0x080d1d, 0x080d1d, 0x02050c, 0x02050c).fillRect(0, 0, 640, 480);
+    for (let i = 0; i < 72; i++) {
+      const x = (i * 83 + 17) % 640, y = 70 + (i * 47) % 330;
+      g.fillStyle(i % 9 ? 0x7194aa : 0xcde8e6, i % 9 ? .35 : .7).fillRect(x, y, i % 9 ? 1 : 2, 1);
+    }
+    g.fillStyle(0x0b1726).fillRect(0, 425, 640, 55);
+    g.lineStyle(1, 0x315566, .5).lineBetween(0, 425, 640, 425);
+    for (let x = 12; x < 640; x += 48) g.fillStyle(0x142c38).fillTriangle(x, 425, x + 18, 407, x + 36, 425);
+    g.fillStyle(0x050813, .95).fillRect(0, 0, 640, 72);
+    g.lineStyle(1, 0x355262).lineBetween(0, 72, 640, 72);
   }
 
   private spawnWave() {

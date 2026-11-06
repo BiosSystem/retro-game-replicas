@@ -49,8 +49,12 @@ Open Cabinet Control and set `TELEMETRY: ON`, or enter the `B-I-O-S` keyboard se
 
 | Measurement | Budget |
 |---|---:|
-| Complete generated `dist` tree | 2,500,000 bytes |
-| Bootstrap JavaScript chunk | 131,072 bytes |
+| Complete generated `dist` tree | 1,950,000 bytes |
+| Bootstrap JavaScript chunk | 176,128 bytes |
 | Deferred Phaser runtime | 1,450,000 bytes |
 
 Fail `npm run baseline` when any build budget is exceeded. Update a budget only with measured evidence and a documented architectural reason.
+
+Budget history:
+
+- Bootstrap 131,072 -> 176,128 bytes (2026-11-06). The Vite 8.0.16 -> 8.3.5 bump changed Rolldown's chunking: the engine modules that `bootstrap.ts` imports statically (InputManager 17.8 kB, ModRuntime 7.3 kB, NeonBytecodeVM 6.6 kB, SaveStateServices 5.4 kB, CabinetAudioManager 5.2 kB, SceneLifecycle, NeonVM, RetroProfile, NeonUi, ShaderWorkshop, NineSlicePanelRenderer) were shared chunks loaded at boot and are now part of the bootstrap file. Measured on the same source: 112,454 bytes plus 55 kB of shared chunks before, 159,685 bytes in one file after. The boot payload shrank; only the file the budget measures changed.
