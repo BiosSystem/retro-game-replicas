@@ -1,5 +1,5 @@
 # Syntax: docker/dockerfile:1
-FROM node:24.22.1-alpine3.23 AS builder
+FROM node:24.22.2-alpine3.23 AS builder
 
 WORKDIR /app
 COPY package*.json ./
